@@ -24,9 +24,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests().antMatchers("/", "/home").permitAll().antMatchers("/admin/**").access("hasRole('ADMIN')")
-        .antMatchers("/dashboard/**").access("hasRole('USER') or hasRole('ADMIN')").and().formLogin()
-        .defaultSuccessUrl("/dashboard").loginPage("/login").usernameParameter("email")
+    http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**")
+        .access("hasRole('ADMIN')").antMatchers("/panel/**", "/user/**").access("hasRole('USER') or hasRole('ADMIN')")
+        .and().formLogin().defaultSuccessUrl("/panel").loginPage("/login").usernameParameter("email")
         .passwordParameter("password").and().csrf().and().exceptionHandling().accessDeniedPage("/Access_Denied");
   }
 }

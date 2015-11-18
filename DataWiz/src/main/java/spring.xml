@@ -2,9 +2,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
-	<!-- DTO-Bean-Declaration -->
-	<bean id="DataWizUser" class="de.zpid.datawiz.model.DataWizUser"
-		scope="prototype" />
-	<bean id="DataWizUserRoles" class="de.zpid.datawiz.model.DataWizUserRoles"
+	<bean id="UserDTO" class="de.zpid.datawiz.dto.UserDTO" scope="prototype" />
+	<bean id="UserRoleDTO" class="de.zpid.datawiz.dto.UserRoleDTO"
 		scope="prototype" />
 </beans>

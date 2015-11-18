@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import de.zpid.datawiz.model.DataWizUser;
+import de.zpid.datawiz.dto.UserDTO;
 
 @Controller
-@RequestMapping(value = "/dashboard")
-public class DashBoardController {
+@RequestMapping(value = "/panel")
+public class PanelController {
 
-  private static final Logger log = Logger.getLogger(DashBoardController.class);
+  private static final Logger log = Logger.getLogger(PanelController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
-  @ModelAttribute("DataWizUser")
-  public DataWizUser createAdministrationForm() {
-    return (DataWizUser) context.getBean("DataWizUser");
+  @ModelAttribute("UserDTO")
+  public UserDTO createAdministrationForm() {
+    return (UserDTO) context.getBean("UserDTO");
   }
 
   @RequestMapping(method = RequestMethod.GET)
@@ -30,16 +30,16 @@ public class DashBoardController {
     if (log.isDebugEnabled()) {
       log.debug("execute dashboardPage()");
     }
-    return "test";
+    return "panel";
   }
 
   @RequestMapping(method = RequestMethod.POST)
-  public String doPost(@Valid @ModelAttribute("DataWizUser") DataWizUser person, BindingResult bindingResult) {
+  public String doPost(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult) {
     if (log.isDebugEnabled()) {
       log.debug("execute dashboardPage()");
     }
     if (bindingResult.hasErrors()) {
-      return "test";
+      return "panel";
     }
     return "welcome";
   }

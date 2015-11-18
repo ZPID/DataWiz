@@ -1,11 +1,12 @@
 <%@ include file="templates/header.jsp"%>
+<%@ include file="templates/navbar.jsp"%>
 <div id="mainWrapper">
   <div class="login-container">
     <div class="login-card">
       <div class="login-form">
         <c:url var="loginUrl" value="/login" />
         <a href="login?datawiz_locale=en">English </a> | <a href="login?datawiz_locale=de">German</a>
-        <sf:form action="${loginUrl}" commandName="DataWizUser" StyleClass="form-horizontal">
+        <sf:form action="${loginUrl}" commandName="UserDTO" StyleClass="form-horizontal">
           <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
           <c:if test="${param.error != null}">
             <div class="alert alert-danger">
