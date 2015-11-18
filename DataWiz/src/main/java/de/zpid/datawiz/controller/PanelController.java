@@ -4,7 +4,9 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.util.CustomUserDetails;
 
 @Controller
 @RequestMapping(value = "/panel")
@@ -26,10 +29,13 @@ public class PanelController {
   }
 
   @RequestMapping(method = RequestMethod.GET)
-  public String dashboardPage() {
+  public String dashboardPage(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute dashboardPage()");
     }
+    UserDTO user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
+        .getUser();
+    System.out.println(user);
     return "panel";
   }
 

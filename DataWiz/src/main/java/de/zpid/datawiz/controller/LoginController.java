@@ -8,8 +8,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.authentication.AccountExpiredException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +25,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import de.zpid.datawiz.dao.UserDao;
 import de.zpid.datawiz.dto.UserDTO;
@@ -32,6 +39,9 @@ public class LoginController {
 
   @Autowired
   private UserDao userDao;
+
+  @Autowired
+  private MessageSource messageSource;
 
   @ModelAttribute("UserDTO")
   public UserDTO createAdministrationForm() {
@@ -48,9 +58,13 @@ public class LoginController {
   }
 
   @RequestMapping(value = "/login", method = RequestMethod.GET)
-  public String loginPage() {
+  public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model,
+      HttpServletRequest request) {
     if (log.isDebugEnabled()) {
       log.debug("execute loginPage()");
+    }
+    if (error != null) {
+      model.put("error", getErrorMessage(request, "SPRING_SECURITY_LAST_EXCEPTION"));
     }
     return "login";
   }
@@ -137,5 +151,22 @@ public class LoginController {
       userName = principal.toString();
     }
     return userName;
+  }
+
+  private String getErrorMessage(HttpServletRequest request, String key) {
+    Exception exception = (Exception) request.getSession().getAttribute(key);
+    String error = "";
+    if (exception instanceof BadCredentialsException) {
+      error = messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale());
+    } else if (exception instanceof LockedException) {
+      error = messageSource.getMessage("login.locked", null, LocaleContextHolder.getLocale());
+    } else if (exception instanceof AccountExpiredException) {
+      error = messageSource.getMessage("login.expired", null, LocaleContextHolder.getLocale());
+    } else if (exception instanceof InternalAuthenticationServiceException) {
+      error = messageSource.getMessage("login.system.error", null, LocaleContextHolder.getLocale());
+    } else {
+      error = messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale());
+    }
+    return error;
   }
 }

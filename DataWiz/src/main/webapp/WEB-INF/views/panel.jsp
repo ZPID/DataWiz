@@ -11,6 +11,11 @@
             <sf:errors path="firstName" class="help-inline" />
           </div>
           <sf:button>sdfsd</sf:button>
+          <br />
+          <sec:authorize access="hasRole('ADMIN')">          
+          This content will only be visible to users who have
+          the "supervisor" authority in their list of <tt>GrantedAuthority</tt>s.          
+          </sec:authorize>
         </sf:form>
       </div>
     </div>
