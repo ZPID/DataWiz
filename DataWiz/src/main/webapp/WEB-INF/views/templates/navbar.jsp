@@ -35,7 +35,7 @@
               <a href="?datawiz_locale=de"><img alt="" src="static/images/gb.png"></a>
             </c:when>
           </c:choose></li>
-        <sec:authorize access="isFullyAuthenticated()">
+        <sec:authorize access="isAuthenticated()">
           <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
             aria-haspopup="true" aria-expanded="false">${principal.username}<span class="caret"></span></a>
             <ul class="dropdown-menu">

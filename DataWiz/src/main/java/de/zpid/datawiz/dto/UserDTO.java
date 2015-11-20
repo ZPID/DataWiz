@@ -5,28 +5,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Pattern;
 
-import org.hibernate.validator.constraints.Email;
+import de.zpid.datawiz.util.RegexUtil;
 
 public class UserDTO implements Serializable {
 
   private static final long serialVersionUID = -4743208731231501718L;
 
   private int id;
+
+  @NotNull
+  @Pattern(regexp = RegexUtil.validEmail)
+  private String email;
+  private String account_state;
+  private List<UserRoleDTO> globalRoles = new ArrayList<UserRoleDTO>();
+
   @NotNull
   private String password;
-  @NotNull
-  @Size(min = 3, max = 30)
+
+  @Pattern(regexp = RegexUtil.regexStringWithoutNumber + RegexUtil.size0to250)
   private String firstName;
-  @NotNull
-  @Size(min = 3, max = 30)
+
+  @Pattern(regexp = RegexUtil.regexStringWithoutNumber + RegexUtil.size0to250)
   private String lastName;
-  @Email
-  @NotNull
-  private String email;
-  private String state;
-  private List<UserRoleDTO> globalRoles = new ArrayList<UserRoleDTO>();
 
   public int getId() {
     return id;
@@ -68,12 +70,12 @@ public class UserDTO implements Serializable {
     this.email = email;
   }
 
-  public String getState() {
-    return state;
+  public String getAccountState() {
+    return account_state;
   }
 
-  public void setState(String state) {
-    this.state = state;
+  public void setAccountState(String state) {
+    this.account_state = state;
   }
 
   public List<UserRoleDTO> getGlobalRoles() {
@@ -109,7 +111,7 @@ public class UserDTO implements Serializable {
   @Override
   public String toString() {
     return "UserDTO [id=" + id + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
-        + ", email=" + email + ", state=" + state + ", globalRoles=" + globalRoles + "]";
+        + ", email=" + email + ", account_state=" + account_state + ", globalRoles=" + globalRoles + "]";
   }
 
 }

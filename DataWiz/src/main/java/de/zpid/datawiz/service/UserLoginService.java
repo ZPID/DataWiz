@@ -11,7 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import de.zpid.datawiz.dao.UserDao;
+import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.util.CustomUserDetails;
 
@@ -20,7 +20,7 @@ public class UserLoginService implements UserDetailsService {
 
   final Logger log = Logger.getLogger(UserLoginService.class);
   @Autowired
-  private UserDao userDao;
+  private UserDAO userDao;
 
   @Transactional(readOnly = true)
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

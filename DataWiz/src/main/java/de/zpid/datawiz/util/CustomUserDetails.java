@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,12 +20,14 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
+import de.zpid.datawiz.controller.LoginController;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 
 public class CustomUserDetails implements UserDetails, CredentialsContainer {
 
   private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
+  private static final Logger log = Logger.getLogger(LoginController.class);
 
   private UserDTO user;
   private String password;
@@ -41,29 +44,33 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
       throw new IllegalArgumentException("Cannot pass null or empty values to constructor");
     }
     try {
-      switch (AccountState.valueOf(user.getState().toUpperCase().trim())) {
+      switch (AccountState.valueOf(user.getAccountState().toUpperCase().trim())) {
       case ACTIVE:
-        System.out.println("ACTIVE");
+        if (log.isDebugEnabled())
+          log.debug("User State is ACTIVE for User: " + user.getEmail());
         this.accountNonExpired = true;
         this.accountNonLocked = true;
         this.credentialsNonExpired = true;
         this.enabled = true;
         break;
       case EXPIRED:
-        System.out.println("EXPIRED");
+        if (log.isDebugEnabled())
+          log.debug("User State is EXPIRED for User: " + user.getEmail());
         this.accountNonExpired = false;
         this.accountNonLocked = true;
         this.credentialsNonExpired = false;
         this.enabled = true;
         break;
       case LOCKED:
-        System.out.println("LOCKED");
+        if (log.isDebugEnabled())
+          log.debug("User State is LOCKED for User: " + user.getEmail());
         this.accountNonExpired = true;
         this.accountNonLocked = false;
         this.credentialsNonExpired = true;
         this.enabled = true;
         break;
       default:
+        log.warn("User State is UNKNOWN for User: " + user.getEmail());
         this.accountNonExpired = false;
         this.accountNonLocked = false;
         this.credentialsNonExpired = false;
@@ -71,8 +78,10 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
         break;
       }
     } catch (Exception e) {
+      log.warn("Please check AccountState enum and users state column - they have different entities for user: "
+          + user.getEmail());
       throw new InternalAuthenticationServiceException(
-          "State from DB doesn't match AccountState ENUM values: " + user.getState().toUpperCase().trim());
+          "State from DB doesn't match AccountState ENUM values: " + user.getAccountState().toUpperCase().trim());
     }
     this.user = user;
     this.username = user.getEmail();

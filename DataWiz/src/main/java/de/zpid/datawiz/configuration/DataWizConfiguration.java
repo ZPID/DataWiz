@@ -22,7 +22,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import de.zpid.datawiz.dao.UserDao;
+import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dao.VersionControlDAO;
 
 @Configuration
 @EnableWebMvc
@@ -56,7 +58,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public DataSource getDataSource() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
     dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource.setUrl("jdbc:mysql://localhost:3306/sectest");
+    dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz");
     dataSource.setUsername("root");
     dataSource.setPassword("");
 
@@ -77,7 +79,19 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired
   @Bean(name = "userDao")
-  public UserDao getUserDao() {
-    return new UserDao(getDataSource());
+  public UserDAO getUserDao() {
+    return new UserDAO(getDataSource());
+  }
+
+  @Autowired
+  @Bean(name = "versionControlDao")
+  public VersionControlDAO getVersionControlDao() {
+    return new VersionControlDAO(getDataSource());
+  }
+
+  @Autowired
+  @Bean(name = "projectDao")
+  public ProjectDAO getProjectDao() {
+    return new ProjectDAO(getDataSource());
   }
 }

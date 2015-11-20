@@ -1,17 +1,15 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -22,14 +20,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import de.zpid.datawiz.dao.UserDao;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
 
 @Controller
 public class LoginController {
@@ -37,11 +35,14 @@ public class LoginController {
   private static final Logger log = Logger.getLogger(LoginController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
-  @Autowired
-  private UserDao userDao;
+//  @Autowired
+//  private UserDAO userDao;
 
   @Autowired
   private MessageSource messageSource;
+
+  @Autowired
+  private HttpServletRequest request;
 
   @ModelAttribute("UserDTO")
   public UserDTO createAdministrationForm() {
@@ -57,14 +58,13 @@ public class LoginController {
     return "welcome";
   }
 
-  @RequestMapping(value = "/login", method = RequestMethod.GET)
-  public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model,
-      HttpServletRequest request) {
+  @RequestMapping(value = "/login")
+  public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute loginPage()");
     }
     if (error != null) {
-      model.put("error", getErrorMessage(request, "SPRING_SECURITY_LAST_EXCEPTION"));
+      model.put("error", getErrorMessage("SPRING_SECURITY_LAST_EXCEPTION"));
     }
     return "login";
   }
@@ -74,51 +74,18 @@ public class LoginController {
     if (log.isDebugEnabled()) {
       log.debug("execute registerDataWizUser()- GET");
     }
-    return "";
+    return "register_edit";
   }
 
   @RequestMapping(value = { "/register" }, method = RequestMethod.POST)
-  public String saveDataWizUser() {
+  public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult) {
     if (log.isDebugEnabled()) {
       log.debug("execute registerDataWizUser()- POST");
     }
-    return "";
-  }
-
-  @RequestMapping(value = "/admin", method = RequestMethod.GET)
-  public String adminPage(ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute adminPage()");
+    if (bindingResult.hasErrors()) {
+      return "register_edit";
     }
-    model.addAttribute("user", getPrincipal());
-    UserDTO user = null;
-    try {
-      user = userDao.findByMail("123@qwe.dewf");
-    } catch (DataAccessException | SQLException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
-    }
-    if (user == null) {
-      user = new UserDTO();
-    }
-    user.setEmail("asdsdg");
-    user.setPassword("123");
-    user.setState("Active");
-    user.setFirstName("Test");
-    user.setLastName("hase");
-    UserRoleDTO prof = new UserRoleDTO();
-    prof.setRoleId(2);
-    ArrayList<UserRoleDTO> hset = new ArrayList<UserRoleDTO>();
-    hset.add(prof);
-    user.setGlobalRoles(hset);
-    log.error("1");
-    try {
-      userDao.saveOrUpdate(user);
-    } catch (Exception e) {
-      log.warn("email not unique = " + e);
-      // return "welcome";
-    }
-    return "admin/admin";
+    return "register_edit";
   }
 
   @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
@@ -131,10 +98,15 @@ public class LoginController {
   }
 
   @RequestMapping(value = "/logout", method = RequestMethod.GET)
-  public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
+  public String logout(HttpServletRequest request, HttpServletResponse response) {
     if (log.isDebugEnabled()) {
       log.debug("execute logoutPage()");
     }
+    String cookieName = "remember-me";
+    Cookie cookie = new Cookie(cookieName, null);
+    cookie.setMaxAge(0);
+    cookie.setPath(StringUtils.hasLength(request.getContextPath()) ? request.getContextPath() : "/");
+    response.addCookie(cookie);
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     if (auth != null) {
       new SecurityContextLogoutHandler().logout(request, response, auth);
@@ -142,6 +114,10 @@ public class LoginController {
     return "redirect:/login?logout";
   }
 
+  /**
+   * 
+   * @return Username of authenticated User
+   */
   private String getPrincipal() {
     String userName = null;
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -153,7 +129,15 @@ public class LoginController {
     return userName;
   }
 
-  private String getErrorMessage(HttpServletRequest request, String key) {
+  /**
+   * Returns custom messages for Login Exceptions - Checks BadCredentialsException, LockedException,
+   * AccountExpiredException and InternalAuthenticationServiceException. Input String
+   * 
+   * @param key
+   *          SessionParameterKey
+   * @return Custom ErrorMessage
+   */
+  private String getErrorMessage(String key) {
     Exception exception = (Exception) request.getSession().getAttribute(key);
     String error = "";
     if (exception instanceof BadCredentialsException) {

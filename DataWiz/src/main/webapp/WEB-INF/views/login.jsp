@@ -2,11 +2,15 @@
 <%@ include file="templates/navbar.jsp"%>
 <div id="mainWrapper">
   <div class="container">
+    <ol class="breadcrumb">
+      <c:url var="homeUrl" value="/" />
+      <li><a href="${homeUrl}">Home</a></li>
+      <li class="active">Login</li>
+    </ol>
     <div class="login-card">
       <div class="login-form">
         <c:url var="loginUrl" value="/login" />
         <sf:form action="${loginUrl}" commandName="UserDTO" StyleClass="form-horizontal">
-          <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
           <c:if test="${param.error != null}">
             <div class="alert alert-danger">
               <p>
@@ -32,6 +36,11 @@
               <i class="fa fa-lock"></i>
             </sf:label>
             <sf:password cssClass="form-control" path="password" placeholder="Enter Password" required="required" />
+          </div>
+          <div class="input-group input-sm">
+            <div class="checkbox">
+              <label><input type="checkbox" id="remember-me" name="remember-me">Remember Me</label>
+            </div>
           </div>
           <div class="form-actions">
             <sf:button type="submit" class="btn btn-block btn-primary btn-default">
