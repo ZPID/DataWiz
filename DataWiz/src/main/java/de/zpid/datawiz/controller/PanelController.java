@@ -20,6 +20,7 @@ import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.CustomUserDetails;
+import de.zpid.datawiz.util.Roles;
 
 @Controller
 @RequestMapping(value = "/panel")
@@ -49,6 +50,7 @@ public class PanelController {
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    model.put("project_roles", Roles.class);
     model.put("ProjectForm", pform);
     return "panel";
   }

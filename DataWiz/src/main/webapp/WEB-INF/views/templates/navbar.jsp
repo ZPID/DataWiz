@@ -29,21 +29,21 @@
       <ul class="nav navbar-nav navbar-right">
         <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
             <c:when test="${localeCode eq 'de'}">
-              <a href="?datawiz_locale=en"><img alt="" src="static/images/de.png"></a>
+              <a href="?datawiz_locale=en"><img alt="" src="<c:url value="/static/images/de.png" />"></a>
             </c:when>
             <c:when test="${localeCode eq 'en'}">
-              <a href="?datawiz_locale=de"><img alt="" src="static/images/gb.png"></a>
+              <a href="?datawiz_locale=de"><img alt="" src="<c:url value="/static/images/gb.png" />"></a>
             </c:when>
           </c:choose></li>
         <sec:authorize access="isAuthenticated()">
           <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
             aria-haspopup="true" aria-expanded="false">${principal.username}<span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="#">Projekte</a></li>
+              <li><a href="<c:url value="/panel" />">Projekte</a></li>
               <li><a href="#">Eigene Daten</a></li>
               <li><a href="#">Placeholder</a></li>
               <li role="separator" class="divider"></li>
-              <li><a href="logout">Logout</a></li>
+              <li><a href="<c:url value="/logout" />">Logout</a></li>
             </ul></li>
         </sec:authorize>
         <sec:authorize access="isAnonymous()">

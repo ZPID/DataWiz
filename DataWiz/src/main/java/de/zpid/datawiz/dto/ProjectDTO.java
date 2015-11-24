@@ -2,6 +2,7 @@ package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 public class ProjectDTO implements Serializable {
 
@@ -54,8 +55,7 @@ public class ProjectDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "ProjectDTO [id=" + id + ", name=" + name + ", description=" + description + ", created=" + created
-        + ", projectRole=" + projectRole + "]";
+    return "ProjectDTO [id=" + id + ", name=" + name + ", created=" + created + ", projectRole=" + projectRole + "]";
   }
 
 }

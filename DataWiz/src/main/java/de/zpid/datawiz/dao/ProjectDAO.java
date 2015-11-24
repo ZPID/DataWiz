@@ -8,7 +8,9 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import de.zpid.datawiz.dto.ProjectDTO;
@@ -54,4 +56,46 @@ public class ProjectDAO {
     });
   }
 
+  /**
+   * Returns the project and the UserRole in one turn. For that, UserID and ProjectID is important, because projects and
+   * users have an mxn relationship!
+   * 
+   * @param pid
+   * @param uid
+   * @return
+   * @throws SQLException
+   * @throws DataAccessException
+   */
+  public ProjectDTO findByIdWithRole(String pid, String uid) throws SQLException, DataAccessException {
+    if (log.isDebugEnabled())
+      log.debug("execute findByIdWithRole for projectID: " + pid + " UserID=" + uid);
+    ProjectDTO project = jdbcTemplate.query(
+        "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_project"
+            + " LEFT JOIN dw_user_roles ON dw_project.id = dw_user_roles.project_id"
+            + " LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id"
+            + " WHERE  dw_project.id = ? AND  dw_user_roles.user_id = ?",
+        new Object[] { pid, uid }, new ResultSetExtractor<ProjectDTO>() {
+          @Override
+          public ProjectDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
+            if (rs.next()) {
+              ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
+              UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
+              role.setRoleId(rs.getInt("role_id"));
+              role.setProjectId(rs.getInt("id"));
+              role.setUserId(rs.getInt("user_id"));
+              role.setType(rs.getString("type"));
+              project.setProjectRole(role);
+              project.setId(rs.getInt("id"));
+              project.setName(rs.getString("name"));
+              project.setDescription(rs.getString("description"));
+              project.setCreated(rs.getDate("created"));
+              return project;
+            }
+            return null;
+          }
+        });
+    if (log.isDebugEnabled())
+      log.debug("leaving findByID project: " + project);
+    return project;
+  }
 }

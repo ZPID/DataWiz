@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import de.zpid.datawiz.util.RegexUtil;
+import de.zpid.datawiz.util.Roles;
 
 public class UserDTO implements Serializable {
 
@@ -84,6 +85,20 @@ public class UserDTO implements Serializable {
 
   public void setGlobalRoles(List<UserRoleDTO> globalRoles) {
     this.globalRoles = globalRoles;
+  }
+/**
+ * 
+ * @param role
+ * @return
+ */
+  public boolean hasRole(Roles role) {
+    if (this.globalRoles != null && this.globalRoles.size() > 0) {
+      for (UserRoleDTO tmp : this.globalRoles) {
+        if (tmp.getType().equals(role.name()))
+          return true;
+      }
+    }
+    return false;
   }
 
   @Override

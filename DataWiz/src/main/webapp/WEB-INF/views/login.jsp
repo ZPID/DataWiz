@@ -1,12 +1,8 @@
 <%@ include file="templates/header.jsp"%>
 <%@ include file="templates/navbar.jsp"%>
 <div id="mainWrapper">
-  <div class="container">
-    <ol class="breadcrumb">
-      <c:url var="homeUrl" value="/" />
-      <li><a href="${homeUrl}">Home</a></li>
-      <li class="active">Login</li>
-    </ol>
+  <div class="login_container">
+    <%@ include file="templates/breadcrump.jsp"%>
     <div class="login-card">
       <div class="login-form">
         <c:url var="loginUrl" value="/login" />

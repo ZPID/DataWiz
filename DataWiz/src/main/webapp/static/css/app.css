@@ -1,8 +1,8 @@
 /* Breite bis 765 pixel */
 @media ( max-width : 765px) {
   /* LOGIN */
-  .container {
-    background-color: floralwhite;
+  .login_container {
+    background-color: white;
     width: 80%;
     left: 10%;
     position: absolute;
@@ -16,7 +16,7 @@
   }  
   /* Content */
   .content-container {
-    background-color: floralwhite;
+    background-color: white;
     width: 80%;
     left: 10%;
     position: absolute;
@@ -24,8 +24,8 @@
 }
 /* Breite ab 766 pixel */
 @media ( min-width : 766px) {
-  .container {
-    background-color: floralwhite;
+  .login_container {
+    background-color: white;
     width: 60%;
     left: 20%;
     position: absolute;
@@ -39,7 +39,7 @@
   }
   /* Content */
   .content-container {
-    background-color: floralwhite;
+    background-color: white;
     width: 70%;
     left: 15%;
     position: absolute;
@@ -47,8 +47,8 @@
 }
 /* Breite ab 1200 pixel */
 @media ( min-width : 1200px) {
-  .container {
-    background-color: floralwhite;
+  .login_container {
+    background-color: white;
     width: 40%;
     left: 30%;
     position: absolute;
@@ -62,7 +62,7 @@
   }
   /* Content */
   .content-container {
-    background-color: floralwhite;
+    background-color: white;
     width: 60%;
     left: 20%;
     position: absolute;
