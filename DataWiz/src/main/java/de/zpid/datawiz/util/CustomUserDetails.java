@@ -85,7 +85,7 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
     }
     this.user = user;
     this.username = user.getEmail();
-    this.password = user.getPassword();
+    this.password = user.getPassword().trim();
     user.setPassword("");
     List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
     if (user.getGlobalRoles() != null)
@@ -133,7 +133,6 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
     // Ensure array iteration order is predictable (as per
     // UserDetails.getAuthorities() contract and SEC-717)
     SortedSet<GrantedAuthority> sortedAuthorities = new TreeSet<GrantedAuthority>(new AuthorityComparator());
-
     for (GrantedAuthority grantedAuthority : authorities) {
       Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
       sortedAuthorities.add(grantedAuthority);
@@ -153,11 +152,9 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
       if (g2.getAuthority() == null) {
         return -1;
       }
-
       if (g1.getAuthority() == null) {
         return 1;
       }
-
       return g1.getAuthority().compareTo(g2.getAuthority());
     }
   }
@@ -195,20 +192,17 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
     sb.append("AccountNonLocked: ").append(this.accountNonLocked).append("; ");
     if (!authorities.isEmpty()) {
       sb.append("Granted Authorities: ");
-
       boolean first = true;
       for (GrantedAuthority auth : authorities) {
         if (!first) {
           sb.append(",");
         }
         first = false;
-
         sb.append(auth);
       }
     } else {
       sb.append("Not granted any authorities");
     }
-
     return sb.toString();
   }
 

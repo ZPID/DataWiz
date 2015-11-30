@@ -28,7 +28,7 @@ public class UserLoginService implements UserDetailsService {
       log.debug("execute loadUserByUsername with email=" + email);
     UserDTO user = null;
     try {
-      user = userDao.findByMail(email);
+      user = userDao.findByMail(email, true);
     } catch (DataAccessException | SQLException e) {
       log.debug("DataAccessException or  SQLException: " + e.getMessage());
     }

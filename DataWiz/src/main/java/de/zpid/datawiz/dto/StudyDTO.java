@@ -2,7 +2,7 @@ package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
 
-public class DataSheetDTO implements Serializable {
+public class StudyDTO implements Serializable {
 
   private static final long serialVersionUID = -7300213401850684971L;
   private int id;
@@ -35,7 +35,7 @@ public class DataSheetDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "DataSheetDTO [id=" + id + ", name=" + name + ", descrption=" + descrption + "]";
+    return "StudyDTO [id=" + id + ", name=" + name + ", descrption=" + descrption + "]";
   }
 
 }

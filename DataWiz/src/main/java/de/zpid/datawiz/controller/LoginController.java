@@ -1,5 +1,7 @@
 package de.zpid.datawiz.controller;
 
+import java.sql.SQLException;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -17,17 +20,21 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.util.Roles;
 
 @Controller
 public class LoginController {
@@ -35,8 +42,11 @@ public class LoginController {
   private static final Logger log = Logger.getLogger(LoginController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
-//  @Autowired
-//  private UserDAO userDao;
+  @Autowired
+  private UserDAO userDao;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Autowired
   private MessageSource messageSource;
@@ -74,18 +84,68 @@ public class LoginController {
     if (log.isDebugEnabled()) {
       log.debug("execute registerDataWizUser()- GET");
     }
-    return "register_edit";
+    return "register";
   }
 
   @RequestMapping(value = { "/register" }, method = RequestMethod.POST)
-  public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult) {
-    if (log.isDebugEnabled()) {
+  public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult,
+      ModelMap model) {
+    if (log.isDebugEnabled())
       log.debug("execute registerDataWizUser()- POST");
+    try {
+      // password check
+      if (!person.getPassword().equals(person.getPassword_retyped())) {
+        bindingResult.rejectValue("password", "passwords.not.equal");
+        if (log.isDebugEnabled())
+          log.debug("Password and retyped password not equal!");
+      }
+      // GTC(AGB) check
+      if (!person.isCheckedGTC()) {
+        bindingResult.rejectValue("checkedGTC", "email.already.exists");
+        if (log.isDebugEnabled())
+          log.debug("Email is already used for an account email:" + person.getEmail());
+      }
+      // Email exists check
+      if (userDao.findByMail(person.getEmail(), false) != null) {
+        bindingResult.rejectValue("email", "email.already.exists");
+        if (log.isDebugEnabled())
+          log.debug("Email is already used for an account email:" + person.getEmail());
+      }
+      // return to registerform if errors
+      if (bindingResult.hasErrors()) {
+        return "register";
+      }
+      // at this point registerform is valid
+      person.setPassword(passwordEncoder.encode(person.getPassword()));
+      userDao.saveOrUpdate(person, false);
+    } catch (DataAccessException | SQLException e) {
+      log.warn("DBS error during user registration: " + e.getStackTrace());
+      model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
+      return "error";
     }
-    if (bindingResult.hasErrors()) {
-      return "register_edit";
+    person.setPassword("");
+    person.setPassword_retyped("");
+    return "register_email";
+  }
+
+  @RequestMapping(value = "/activate/{mail}/{activationCode}", method = RequestMethod.GET)
+  public String activateAccount(@PathVariable String mail, @PathVariable String activationCode, ModelMap model) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute activateAccount email: " + mail + " code: " + activationCode);
     }
-    return "register_edit";
+    try {
+      UserDTO user = userDao.findByMail(mail, false);
+      if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
+          && user.getActivationCode().equals(activationCode)) {
+        userDao.activateUserAccount(user);
+        userDao.setRole(user.getId(), 0, Roles.USER.toInt());
+      }
+    } catch (DataAccessException | SQLException e) {
+      log.warn("DBS error during user registration: " + e.getStackTrace());
+      model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
+      return "error";
+    }
+    return "redirect:/login?activated";
   }
 
   @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)

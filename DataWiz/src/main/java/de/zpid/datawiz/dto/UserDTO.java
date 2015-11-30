@@ -10,6 +10,11 @@ import javax.validation.constraints.Pattern;
 import de.zpid.datawiz.util.RegexUtil;
 import de.zpid.datawiz.util.Roles;
 
+/**
+ * 
+ * @author Ronny Boelter
+ *
+ */
 public class UserDTO implements Serializable {
 
   private static final long serialVersionUID = -4743208731231501718L;
@@ -30,6 +35,13 @@ public class UserDTO implements Serializable {
 
   @Pattern(regexp = RegexUtil.regexStringWithoutNumber + RegexUtil.size0to250)
   private String lastName;
+
+  private String activationCode;
+
+  // Values for RegisterCheck
+  @NotNull
+  private String password_retyped;
+  private boolean checkedGTC;
 
   public int getId() {
     return id;
@@ -86,11 +98,44 @@ public class UserDTO implements Serializable {
   public void setGlobalRoles(List<UserRoleDTO> globalRoles) {
     this.globalRoles = globalRoles;
   }
-/**
- * 
- * @param role
- * @return
- */
+
+  public String getAccount_state() {
+    return account_state;
+  }
+
+  public void setAccount_state(String account_state) {
+    this.account_state = account_state;
+  }
+
+  public String getPassword_retyped() {
+    return password_retyped;
+  }
+
+  public void setPassword_retyped(String password_retyped) {
+    this.password_retyped = password_retyped;
+  }
+
+  public boolean isCheckedGTC() {
+    return checkedGTC;
+  }
+
+  public void setCheckedGTC(boolean checkedGTC) {
+    this.checkedGTC = checkedGTC;
+  }
+
+  public String getActivationCode() {
+    return activationCode;
+  }
+
+  public void setActivationCode(String activationCode) {
+    this.activationCode = activationCode;
+  }
+
+  /**
+   * 
+   * @param role
+   * @return
+   */
   public boolean hasRole(Roles role) {
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
       for (UserRoleDTO tmp : this.globalRoles) {
@@ -105,7 +150,13 @@ public class UserDTO implements Serializable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
+    result = prime * result + ((account_state == null) ? 0 : account_state.hashCode());
+    result = prime * result + ((email == null) ? 0 : email.hashCode());
+    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+    result = prime * result + ((globalRoles == null) ? 0 : globalRoles.hashCode());
     result = prime * result + id;
+    result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+    result = prime * result + ((password == null) ? 0 : password.hashCode());
     return result;
   }
 
@@ -115,18 +166,48 @@ public class UserDTO implements Serializable {
       return true;
     if (obj == null)
       return false;
-    if (!(obj instanceof UserDTO))
+    if (getClass() != obj.getClass())
       return false;
     UserDTO other = (UserDTO) obj;
+    if (account_state == null) {
+      if (other.account_state != null)
+        return false;
+    } else if (!account_state.equals(other.account_state))
+      return false;
+    if (email == null) {
+      if (other.email != null)
+        return false;
+    } else if (!email.equals(other.email))
+      return false;
+    if (firstName == null) {
+      if (other.firstName != null)
+        return false;
+    } else if (!firstName.equals(other.firstName))
+      return false;
+    if (globalRoles == null) {
+      if (other.globalRoles != null)
+        return false;
+    } else if (!globalRoles.equals(other.globalRoles))
+      return false;
     if (id != other.id)
+      return false;
+    if (lastName == null) {
+      if (other.lastName != null)
+        return false;
+    } else if (!lastName.equals(other.lastName))
+      return false;
+    if (password == null) {
+      if (other.password != null)
+        return false;
+    } else if (!password.equals(other.password))
       return false;
     return true;
   }
 
   @Override
   public String toString() {
-    return "UserDTO [id=" + id + ", password=" + password + ", firstName=" + firstName + ", lastName=" + lastName
-        + ", email=" + email + ", account_state=" + account_state + ", globalRoles=" + globalRoles + "]";
+    return "UserDTO [id=" + id + ", email=" + email + ", account_state=" + account_state + ", globalRoles="
+        + globalRoles + ", firstName=" + firstName + ", lastName=" + lastName + "]";
   }
 
 }

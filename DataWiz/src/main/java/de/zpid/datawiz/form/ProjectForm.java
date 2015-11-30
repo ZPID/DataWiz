@@ -5,18 +5,14 @@ import java.util.List;
 
 import org.springframework.security.core.userdetails.User;
 
-import de.zpid.datawiz.dto.DataSheetDTO;
+import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
-/**
- * 
- * @author Ronny Boelter
- *
- */
+
 public class ProjectForm implements Serializable {
 
   private static final long serialVersionUID = 868777577427023558L;
   private List<ProjectDTO> projects;
-  private List<DataSheetDTO> data;
+  private List<StudyDTO> data;
   private List<User> users;
 
   public List<ProjectDTO> getProjects() {
@@ -27,11 +23,11 @@ public class ProjectForm implements Serializable {
     this.projects = project;
   }
 
-  public List<DataSheetDTO> getData() {
+  public List<StudyDTO> getData() {
     return data;
   }
 
-  public void setData(List<DataSheetDTO> data) {
+  public void setData(List<StudyDTO> data) {
     this.data = data;
   }
 

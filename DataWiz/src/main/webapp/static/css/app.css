@@ -84,3 +84,14 @@ body, #mainWrapper, .form-control {
 #mainWrapper {
 
 }
+
+.form-group .required:BEFORE { 
+   content:"*";
+   color:red;
+}
+.form-group label:AFTER { 
+   content:":";
+}
+.clean_label:AFTER{
+  content:"";
+}

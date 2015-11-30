@@ -21,21 +21,31 @@
               </p>
             </div>
           </c:if>
+          <c:if test="${param.activated != null}">
+            <div class="alert alert-success">
+              <p>
+                <s:message code="login.activated.success" htmlEscape="false" />
+              </p>
+            </div>
+          </c:if>
           <div class="input-group input-sm">
             <sf:label cssClass="input-group-addon" path="email">
-              <i class="fa fa-user"></i>
+              <i class="fa fa-envelope"></i>
             </sf:label>
-            <sf:input cssClass="form-control" path="email" placeholder="Enter Username" required="required" />
+            <s:message code="login.enter.mail" var="place_user" />
+            <sf:input cssClass="form-control" path="email" placeholder="${place_user}" required="required" />
           </div>
           <div class="input-group input-sm">
             <sf:label cssClass="input-group-addon" path="password">
               <i class="fa fa-lock"></i>
             </sf:label>
-            <sf:password cssClass="form-control" path="password" placeholder="Enter Password" required="required" />
+            <s:message code="login.enter.password" var="place_pwd" />
+            <sf:password cssClass="form-control" path="password" placeholder="${place_pwd}" required="required" />
           </div>
           <div class="input-group input-sm">
             <div class="checkbox">
-              <label><input type="checkbox" id="remember-me" name="remember-me">Remember Me</label>
+              <label><input type="checkbox" id="remember-me" name="remember-me">
+              <s:message code="login.remember.me" /></label>
             </div>
           </div>
           <div class="form-actions">
