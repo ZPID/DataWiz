@@ -1,8 +1,6 @@
 package de.zpid.datawiz.controller;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.validation.Valid;
 
@@ -79,14 +77,15 @@ public class ProjectController {
         log.warn("Project or project_role is empty for user=" + user.getEmail() + " and project=" + pid);
       } else {
         if (!user.hasRole(Roles.ADMIN) || (user.getId() != pDTO.getProjectRole().getUserId())) {
-          log.warn("User with email: " + user.getEmail() + " tries to get access to project:" + pDTO.getId() + " but has no ");
+          log.warn("User with email: " + user.getEmail() + " tries to get access to project:" + pDTO.getId()
+              + " but has no ");
         }
       }
 
     } catch (DataAccessException | SQLException e) {
       e.printStackTrace();
     }
-    List<ProjectDTO> pdto = new ArrayList<ProjectDTO>();
+    // List<ProjectDTO> pdto = new ArrayList<ProjectDTO>();
 
     model.put("ProjectForm", pForm);
     return "project";

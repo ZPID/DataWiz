@@ -1,6 +1,8 @@
 package de.zpid.datawiz.controller;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -17,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.CustomUserDetails;
-import de.zpid.datawiz.util.Roles;
 
 @Controller
 @RequestMapping(value = "/panel")
@@ -28,12 +30,11 @@ public class PanelController {
 
   @Autowired
   private ProjectDAO projectDAO;
-
   private static final Logger log = Logger.getLogger(PanelController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
   @ModelAttribute("ProjectForm")
-  public ProjectForm createAdministrationForm() {
+  public ProjectForm createProjectForm() {
     return (ProjectForm) context.getBean("ProjectForm");
   }
 
@@ -42,16 +43,24 @@ public class PanelController {
     if (log.isDebugEnabled()) {
       log.debug("execute dashboardPage()");
     }
-    ProjectForm pform = createAdministrationForm();
     UserDTO user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
         .getUser();
+    List<ProjectDTO> cpdto;
+    List<ProjectForm> cpform = new ArrayList<ProjectForm>();
     try {
-      pform.setProjects(projectDAO.getAllByUserID(user.getId()));
+      cpdto = projectDAO.getAllByUserID(user);
+      if (cpdto != null) {
+        for (ProjectDTO pdto : cpdto) {
+          ProjectForm pform = createProjectForm();
+          pform.setProject(pdto);
+          //pform.setSharedUser(sharedUser);
+          cpform.add(pform);
+        }
+      }
     } catch (SQLException e) {
       e.printStackTrace();
     }
-    model.put("project_roles", Roles.class);
-    model.put("ProjectForm", pform);
+    model.put("CProjectForm", cpform);
     return "panel";
   }
 

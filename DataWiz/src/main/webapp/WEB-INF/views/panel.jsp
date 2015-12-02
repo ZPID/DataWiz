@@ -6,19 +6,19 @@
     <div class="login-card">
       <div class="login-form">
         <c:url var="projectUrl" value="/project" />
-        <sf:form action="${projectUrl}" commandName="ProjectForm" StyleClass="form-horizontal">
+        <sf:form action="${projectUrl}" commandName="CProjectForm" StyleClass="form-horizontal">
           <div class="panel-group" id="accordion">
-            <c:forEach items="${ProjectForm.projects}" var="project" varStatus="loop">
+            <c:forEach items="${CProjectForm}" var="form" varStatus="loop">
               <div
-                class="panel <c:out value="${project.projectRole.type eq 'PROJECT_ADMIN' ? 'panel-primary' : 
-                                             project.projectRole.type eq 'PROJECT_WRITER' ? 'panel-info' : 
-                                             project.projectRole.type eq 'PROJECT_READER' ? 'panel-warning' : 'panel-danger'}"/>">
+                class="panel <c:out value="${form.project.projectRole.type eq 'PROJECT_ADMIN' ? 'panel-primary' : 
+                                             form.project.projectRole.type eq 'PROJECT_WRITER' ? 'panel-info' : 
+                                             form.project.projectRole.type eq 'PROJECT_READER' ? 'panel-warning' : 'panel-danger'}"/>">
                 <div class="panel-heading accordion-toggle" data-toggle="collapse"
                   data-target="#panel_coll_${loop.count}" data-parent="#accordion">
                   <div class="row">
                     <div class="col-xs-8">
                       <h4 class="panel-title">
-                        <c:out value="${project.name}"></c:out>
+                        <c:out value="${form.project.name}"></c:out>
                       </h4>
                       (Hans Peter Müller, Joachin Test, Klaus Meier)
                     </div>
@@ -30,16 +30,16 @@
                 </div>
                 <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
                   <div class="panel-body">
-                    <c:out value="${project.description}"></c:out>
+                    <c:out value="${form.project.description}"></c:out>
                   </div>
                 </div>
                 <div class="panel-footer">
                   <div class="row">
                     <div class="col-xs-6">
                       <span class="label label-success" data-toggle="tooltip" data-placement="top"
-                        title="<c:out value="${project.name}"></c:out>">Veröffentlicht</span> <span
+                        title="<c:out value="${form.project.name}"></c:out>">Veröffentlicht</span> <span
                         class="label label-default" data-toggle="tooltip" data-placement="top"
-                        title="<c:out value="${project.name}" />">geteilt (4)</span> <a href="project/${project.id}"
+                        title="<c:out value="${form.project.name}" />">geteilt (4)</span> <a href="project/${form.project.id}"
                         class="label
                       label-primary">Bearbeiten</a>
                     </div>

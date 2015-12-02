@@ -13,14 +13,14 @@
   }
   .login-form {
     padding: 3%;
-  }  
+  }
   /* Content */
   .content-container {
     background-color: white;
     width: 80%;
     left: 10%;
     position: absolute;
-  }  
+  }
 }
 /* Breite ab 766 pixel */
 @media ( min-width : 766px) {
@@ -82,16 +82,18 @@ body, #mainWrapper, .form-control {
 }
 
 #mainWrapper {
-
+  
 }
 
-.form-group .required:BEFORE { 
-   content:"*";
-   color:red;
+.form-group .required:BEFORE {
+  content: "*";
+  color: red;
 }
-.form-group label:AFTER { 
-   content:":";
+
+.form-group label:AFTER {
+  content: ":";
 }
-.clean_label:AFTER{
-  content:"";
+
+.clean_label:AFTER {
+  content: "";
 }

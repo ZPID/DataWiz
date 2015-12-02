@@ -24,7 +24,6 @@ import org.springframework.web.servlet.view.JstlView;
 
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.UserDAO;
-import de.zpid.datawiz.dao.VersionControlDAO;
 
 @Configuration
 @EnableWebMvc
@@ -81,12 +80,6 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "userDao")
   public UserDAO getUserDao() {
     return new UserDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "versionControlDao")
-  public VersionControlDAO getVersionControlDao() {
-    return new VersionControlDAO(getDataSource());
   }
 
   @Autowired

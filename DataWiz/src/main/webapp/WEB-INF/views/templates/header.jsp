@@ -17,6 +17,3 @@
 </head>
 <body>
   <sec:authentication var="principal" property="principal" />
-  
-  
-  

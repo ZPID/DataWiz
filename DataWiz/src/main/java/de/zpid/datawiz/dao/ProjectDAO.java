@@ -14,6 +14,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 
 public class ProjectDAO {
@@ -31,20 +32,20 @@ public class ProjectDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public List<ProjectDTO> getAllByUserID(int userId) throws SQLException {
+  public List<ProjectDTO> getAllByUserID(UserDTO user) throws SQLException {
     if (log.isDebugEnabled())
-      log.debug("execute getAllByUserID for user: " + userId);
+      log.debug("execute getAllByUserID for user: " + user.getEmail());
     String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
         + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
         + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
         + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > ?";
-    return jdbcTemplate.query(sql, new Object[] { userId, 0 }, new RowMapper<ProjectDTO>() {
+    return jdbcTemplate.query(sql, new Object[] { user.getId(), 0 }, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
         UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
         role.setRoleId(rs.getInt("role_id"));
         role.setProjectId(rs.getInt("id"));
-        role.setUserId(userId);
+        role.setUserId(user.getId());
         role.setType(rs.getString("type"));
         project.setProjectRole(role);
         project.setId(rs.getInt("id"));
