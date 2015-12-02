@@ -14,20 +14,29 @@
               </p>
             </div>
           </c:if>
-          <c:if test="${param.logout != null}">
-            <div class="alert alert-success">
-              <p>
-                <s:message code="login.logout" />
-              </p>
-            </div>
-          </c:if>
-          <c:if test="${param.activated != null}">
-            <div class="alert alert-success">
-              <p>
-                <s:message code="login.activated.success" htmlEscape="false" />
-              </p>
-            </div>
-          </c:if>
+          <c:choose>
+            <c:when test="${param.logout != null}">
+              <div class="alert alert-success">
+                <p>
+                  <s:message code="login.logout" />
+                </p>
+              </div>
+            </c:when>
+            <c:when test="${param.activated != null}">
+              <div class="alert alert-success">
+                <p>
+                  <s:message code="login.activated.success" htmlEscape="false" />
+                </p>
+              </div>
+            </c:when>
+            <c:when test="${param.activationmail != null}">
+              <div class="alert alert-success">
+                <p>
+                  <s:message code="login.activation.mail.send" htmlEscape="false" />
+                </p>
+              </div>
+            </c:when>
+          </c:choose>
           <div class="input-group input-sm">
             <sf:label cssClass="input-group-addon" path="email">
               <i class="fa fa-envelope"></i>
@@ -44,8 +53,8 @@
           </div>
           <div class="input-group input-sm">
             <div class="checkbox">
-              <label><input type="checkbox" id="remember-me" name="remember-me">
-              <s:message code="login.remember.me" /></label>
+              <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message
+                  code="login.remember.me" /></label>
             </div>
           </div>
           <div class="form-actions">

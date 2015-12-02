@@ -2,6 +2,7 @@ package de.zpid.datawiz.controller;
 
 import java.sql.SQLException;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.Roles;
 
 @Controller
@@ -59,6 +61,12 @@ public class LoginController {
     return (UserDTO) context.getBean("UserDTO");
   }
 
+  /**
+   * mapping to "/" to build content outside of the protected areas
+   * 
+   * @param model
+   * @return
+   */
   @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
   public String homePage(ModelMap model) {
     if (log.isDebugEnabled()) {
@@ -68,6 +76,13 @@ public class LoginController {
     return "welcome";
   }
 
+  /**
+   * Initialize the register form and throws errors to the view if something went wrong during the user login
+   * 
+   * @param error
+   * @param model
+   * @return
+   */
   @RequestMapping(value = "/login")
   public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model) {
     if (log.isDebugEnabled()) {
@@ -79,6 +94,11 @@ public class LoginController {
     return "login";
   }
 
+  /**
+   * Initialize the register form
+   * 
+   * @return
+   */
   @RequestMapping(value = { "/register" }, method = RequestMethod.GET)
   public String registerDataWizUser() {
     if (log.isDebugEnabled()) {
@@ -87,6 +107,15 @@ public class LoginController {
     return "register";
   }
 
+  /**
+   * Function for user registration. After the validation of the required form fields, the function saves the new user
+   * into the database and sends an email to the given emailadress to complete registration
+   * 
+   * @param person
+   * @param bindingResult
+   * @param model
+   * @return
+   */
   @RequestMapping(value = { "/register" }, method = RequestMethod.POST)
   public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult,
       ModelMap model) {
@@ -118,16 +147,38 @@ public class LoginController {
       // at this point registerform is valid
       person.setPassword(passwordEncoder.encode(person.getPassword()));
       userDao.saveOrUpdate(person, false);
+      person = userDao.findByMail(person.getEmail(), false);
     } catch (DataAccessException | SQLException e) {
-      log.warn("DBS error during user registration: " + e.getStackTrace());
-      model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
+      log.error("DBS error during user registration: " + e.getStackTrace());
+      model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
-    person.setPassword("");
-    person.setPassword_retyped("");
-    return "register_email";
+    // registration mail
+    if (person != null && person.getId() > 0) {
+      try {
+        EmailUtil.sendSSLMail(person.getEmail(),
+            messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
+            messageSource.getMessage("reg.mail.content",
+                new Object[] { request.getRequestURL(), person.getEmail(), person.getActivationCode() },
+                LocaleContextHolder.getLocale()));
+      } catch (MessagingException e) {
+        log.error("Mail error during user registration: " + e.getStackTrace());
+        model.put("errormsg", messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
+        return "error";
+      }
+    }
+    return "redirect:/login?activationmail";
   }
 
+  /**
+   * Activation endpoint which needs the email of the account which has to be activated and a random generated UUID to
+   * authenticate that mail address
+   * 
+   * @param mail
+   * @param activationCode
+   * @param model
+   * @return
+   */
   @RequestMapping(value = "/activate/{mail}/{activationCode}", method = RequestMethod.GET)
   public String activateAccount(@PathVariable String mail, @PathVariable String activationCode, ModelMap model) {
     if (log.isDebugEnabled()) {
@@ -148,6 +199,12 @@ public class LoginController {
     return "redirect:/login?activated";
   }
 
+  /**
+   * This mapping is used if unauthenticated users try to access protected areas
+   * 
+   * @param model
+   * @return
+   */
   @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
   public String accessDeniedPage(ModelMap model) {
     if (log.isDebugEnabled()) {
@@ -157,6 +214,14 @@ public class LoginController {
     return "accessDenied";
   }
 
+  /**
+   * Checks out the currently authenticated user from the Spring security SecurityContextLogoutHandler and deletes the
+   * remember-me cookie
+   * 
+   * @param request
+   * @param response
+   * @return
+   */
   @RequestMapping(value = "/logout", method = RequestMethod.GET)
   public String logout(HttpServletRequest request, HttpServletResponse response) {
     if (log.isDebugEnabled()) {
@@ -175,8 +240,9 @@ public class LoginController {
   }
 
   /**
+   * Returns the name of the currently authenticated User
    * 
-   * @return Username of authenticated User
+   * @return
    */
   private String getPrincipal() {
     String userName = null;

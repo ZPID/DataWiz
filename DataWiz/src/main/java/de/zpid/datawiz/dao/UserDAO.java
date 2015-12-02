@@ -82,22 +82,22 @@ public class UserDAO {
     });
   }
 
-  public void saveOrUpdate(UserDTO user, boolean changePWD) {
+  public int saveOrUpdate(UserDTO user, boolean changePWD) {
     if (log.isDebugEnabled())
       log.debug("execute saveOrUpdate user: " + user);
     if (user.getId() > 0) {
       if (changePWD) {
-        this.jdbcTemplate.update(
+        return this.jdbcTemplate.update(
             "UPDATE dw_user SET first_name = ?, last_name = ?, password = ?, email = ?, account_state = ? WHERE id = ?",
             user.getFirstName(), user.getLastName(), user.getPassword(), user.getEmail(), user.getAccountState(),
             user.getId());
       } else {
-        this.jdbcTemplate.update(
+        return this.jdbcTemplate.update(
             "UPDATE dw_user SET first_name = ?, last_name = ?, email = ?, account_state = ? WHERE id = ?",
             user.getFirstName(), user.getLastName(), user.getEmail(), user.getAccountState(), user.getId());
       }
     } else {
-      this.jdbcTemplate.update(
+      return this.jdbcTemplate.update(
           "INSERT INTO dw_user  (first_name, last_name, password, email, account_state, activationcode) VALUES (?,?,?,?,?,?)",
           user.getFirstName(), user.getLastName(), user.getPassword(), user.getEmail(), AccountState.LOCKED.name(),
           UUID.randomUUID().toString());
@@ -108,7 +108,7 @@ public class UserDAO {
     if (log.isDebugEnabled())
       log.debug("execute activateUserAccount user: " + user);
     this.jdbcTemplate.update("UPDATE dw_user SET account_state = ?, activationcode = ?  WHERE id = ?",
-        AccountState.ACTIVE.name(), "", user.getId());
+        AccountState.ACTIVE.name(), null, user.getId());
   }
 
   public void setRole(int userid, int projectid, int roleid) {
