@@ -1,13 +1,13 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 
 public class ProjectDTO implements Serializable {
 
   private static final long serialVersionUID = -7148120591732205800L;
   private int id;
-  private String name;
+  private String title;
   private String description;
   private Date created;
   private UserRoleDTO projectRole;
@@ -20,12 +20,12 @@ public class ProjectDTO implements Serializable {
     this.id = id;
   }
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   public String getDescription() {
@@ -54,7 +54,7 @@ public class ProjectDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "ProjectDTO [id=" + id + ", name=" + name + ", created=" + created + ", projectRole=" + projectRole + "]";
+    return "ProjectDTO [id=" + id + ", title=" + title + ", created=" + created + ", projectRole=" + projectRole + "]";
   }
 
 }

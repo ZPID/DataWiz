@@ -35,7 +35,7 @@ public class UserDAO {
     return new UserDTO();
   }
 
-  public UserDTO findByMail(String email, boolean pwd) throws SQLException, DataAccessException {
+  public UserDTO findByMail(String email, boolean pwd) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute findByMail for email: " + email);
     UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE email= ?", new Object[] { email },
@@ -65,7 +65,7 @@ public class UserDAO {
     return user;
   }
 
-  public List<UserRoleDTO> getRolesByUserID(int id) throws SQLException {
+  public List<UserRoleDTO> getRolesByUserID(int id) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getRolesByUserID for userid: " + id);
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "

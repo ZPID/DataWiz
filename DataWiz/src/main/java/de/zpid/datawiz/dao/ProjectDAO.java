@@ -2,6 +2,7 @@ package de.zpid.datawiz.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -32,7 +33,7 @@ public class ProjectDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public List<ProjectDTO> getAllByUserID(UserDTO user) throws SQLException {
+  public List<ProjectDTO> getAllByUserID(UserDTO user) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getAllByUserID for user: " + user.getEmail());
     String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
@@ -49,9 +50,9 @@ public class ProjectDAO {
         role.setType(rs.getString("type"));
         project.setProjectRole(role);
         project.setId(rs.getInt("id"));
-        project.setName(rs.getString("name"));
+        project.setTitle(rs.getString("name"));
         project.setDescription(rs.getString("description"));
-        project.setCreated(rs.getDate("created"));
+        project.setCreated(rs.getTimestamp("created"));
         return project;
       }
     });
@@ -67,7 +68,7 @@ public class ProjectDAO {
    * @throws SQLException
    * @throws DataAccessException
    */
-  public ProjectDTO findByIdWithRole(String pid, String uid) throws SQLException, DataAccessException {
+  public ProjectDTO findByIdWithRole(String pid, String uid) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute findByIdWithRole for projectID: " + pid + " UserID=" + uid);
     ProjectDTO project = jdbcTemplate.query(
@@ -87,7 +88,7 @@ public class ProjectDAO {
               role.setType(rs.getString("type"));
               project.setProjectRole(role);
               project.setId(rs.getInt("id"));
-              project.setName(rs.getString("name"));
+              project.setTitle(rs.getString("name"));
               project.setDescription(rs.getString("description"));
               project.setCreated(rs.getDate("created"));
               return project;

@@ -1,13 +1,10 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
-
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -82,7 +79,7 @@ public class ProjectController {
         }
       }
 
-    } catch (DataAccessException | SQLException e) {
+    } catch (Exception e) {
       e.printStackTrace();
     }
     // List<ProjectDTO> pdto = new ArrayList<ProjectDTO>();

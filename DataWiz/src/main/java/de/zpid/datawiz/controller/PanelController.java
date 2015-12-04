@@ -1,6 +1,5 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,8 @@ import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
@@ -30,6 +32,10 @@ public class PanelController {
 
   @Autowired
   private ProjectDAO projectDAO;
+  @Autowired
+  private StudyDAO studyDAO;
+  @Autowired
+  private MessageSource messageSource;
   private static final Logger log = Logger.getLogger(PanelController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
@@ -45,20 +51,22 @@ public class PanelController {
     }
     UserDTO user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
         .getUser();
-    List<ProjectDTO> cpdto;
     List<ProjectForm> cpform = new ArrayList<ProjectForm>();
     try {
-      cpdto = projectDAO.getAllByUserID(user);
+      List<ProjectDTO> cpdto = projectDAO.getAllByUserID(user);
       if (cpdto != null) {
         for (ProjectDTO pdto : cpdto) {
+          System.out.println(pdto.getCreated());
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
-          //pform.setSharedUser(sharedUser);
+          pform.setStudies(studyDAO.getLatestStudyVersionsByProjectID(pdto));
           cpform.add(pform);
         }
       }
-    } catch (SQLException e) {
-      e.printStackTrace();
+    } catch (Exception e) {
+      log.error("DBS error during setting Users Dashboardpage for user : " + user.getEmail() + " Message:" + e);
+      model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+      return "error";
     }
     model.put("CProjectForm", cpform);
     return "panel";

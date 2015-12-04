@@ -1,10 +1,7 @@
 package de.zpid.datawiz.service;
 
-import java.sql.SQLException;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,8 +26,8 @@ public class UserLoginService implements UserDetailsService {
     UserDTO user = null;
     try {
       user = userDao.findByMail(email, true);
-    } catch (DataAccessException | SQLException e) {
-      log.debug("DataAccessException or  SQLException: " + e.getMessage());
+    } catch (Exception e) {
+      log.error("DBS error during loadUserByUsername for email : " + email + " Message:" + e);
     }
     if (user == null)
       throw new UsernameNotFoundException("User not found email=" + email);

@@ -1,7 +1,5 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
-
 import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -148,8 +145,8 @@ public class LoginController {
       person.setPassword(passwordEncoder.encode(person.getPassword()));
       userDao.saveOrUpdate(person, false);
       person = userDao.findByMail(person.getEmail(), false);
-    } catch (DataAccessException | SQLException e) {
-      log.error("DBS error during user registration: " + e.getStackTrace());
+    } catch (Exception e) {
+      log.error("DBS error during user registration: " + e);
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
@@ -191,8 +188,8 @@ public class LoginController {
         userDao.activateUserAccount(user);
         userDao.setRole(user.getId(), 0, Roles.USER.toInt());
       }
-    } catch (DataAccessException | SQLException e) {
-      log.warn("DBS error during user registration: " + e.getStackTrace());
+    } catch (Exception e) {
+      log.warn("DBS error during user registration: " + e);
       model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
       return "error";
     }
