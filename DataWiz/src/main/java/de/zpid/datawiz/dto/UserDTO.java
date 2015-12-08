@@ -48,7 +48,7 @@ public class UserDTO implements Serializable {
   private String homepage;
   @Size(min = 0, max = 250)
   private String street;
-  @Pattern(regexp = RegexUtil.onlyDigits + RegexUtil.size0to10)
+//  @Pattern(regexp = RegexUtil.onlyDigits + RegexUtil.size0to10)
   private int zip;
   @Size(min = 0, max = 250)
   private String city;
@@ -56,7 +56,7 @@ public class UserDTO implements Serializable {
   private String state;
   @Size(min = 0, max = 250)
   private String country;
-  @Pattern(regexp = RegexUtil.regexORCID)
+//  @Pattern(regexp = RegexUtil.regexORCID)
   private String orcid;
 
   private String account_state;

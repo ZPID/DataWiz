@@ -8,17 +8,21 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 
+import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.util.AccountState;
 
 public class UserDAO {
+
+  @Autowired
+  private RoleDAO roleDAO;
 
   private static final Logger log = Logger.getLogger(UserDAO.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
@@ -58,26 +62,29 @@ public class UserDAO {
           }
         });
     if (user != null && user.getId() > 0) {
-      user.setGlobalRoles(getRolesByUserID(user.getId()));
+      user.setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
     }
     if (log.isDebugEnabled())
       log.debug("leaving findByMail user: " + user);
     return user;
   }
 
-  public List<UserRoleDTO> getRolesByUserID(int id) throws Exception {
+  public List<UserDTO> findByProject(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getRolesByUserID for userid: " + id);
-    String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
-        + "WHERE user_id  = ?";
-    return this.jdbcTemplate.query(sql, new Object[] { id }, new RowMapper<UserRoleDTO>() {
-      public UserRoleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
-        role.setRoleId(rs.getInt("id"));
-        role.setProjectId(rs.getInt("project_id"));
-        role.setUserId(rs.getInt("user_id"));
-        role.setType(rs.getString("type"));
-        return role;
+      log.debug("execute findByProject for project [id: " + project.getId() + " title:" + project.getTitle() + "]");
+    String sql = "SELECT dw_user.*, dw_roles.type FROM dw_user "
+        + "LEFT JOIN dw_user_roles ON dw_user.id = dw_user_roles.user_id "
+        + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id " + "WHERE dw_user_roles.project_id = ?";
+    return this.jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<UserDTO>() {
+      public UserDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        UserDTO contact = (UserDTO) context.getBean("UserDTO");
+        contact.setId(rs.getInt("id"));
+        contact.setFirstName(rs.getString("first_name"));
+        contact.setLastName(rs.getString("last_name"));
+        contact.setEmail(rs.getString("email"));
+        contact.setAccountState(rs.getString("account_state"));
+        contact.setActivationCode(rs.getString("activationcode"));
+        return contact;
       }
     });
   }
@@ -109,12 +116,5 @@ public class UserDAO {
       log.debug("execute activateUserAccount user: " + user);
     this.jdbcTemplate.update("UPDATE dw_user SET account_state = ?, activationcode = ?  WHERE id = ?",
         AccountState.ACTIVE.name(), null, user.getId());
-  }
-
-  public void setRole(int userid, int projectid, int roleid) {
-    if (log.isDebugEnabled())
-      log.debug("execute activateUserAccount userid: " + userid);
-    this.jdbcTemplate.update("INSERT INTO dw_user_roles (user_id, role_id, project_id) VALUES (?,?,?)", userid, roleid,
-        (projectid > 0) ? projectid : null);
   }
 }

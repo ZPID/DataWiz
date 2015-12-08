@@ -4,6 +4,7 @@ import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.util.EmailUtil;
@@ -43,6 +45,9 @@ public class LoginController {
 
   @Autowired
   private UserDAO userDao;
+
+  @Autowired
+  private RoleDAO roleDao;
 
   @Autowired
   private PasswordEncoder passwordEncoder;
@@ -186,7 +191,7 @@ public class LoginController {
       if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
           && user.getActivationCode().equals(activationCode)) {
         userDao.activateUserAccount(user);
-        userDao.setRole(user.getId(), 0, Roles.USER.toInt());
+        roleDao.setRole(user.getId(), 0, Roles.USER.toInt());
       }
     } catch (Exception e) {
       log.warn("DBS error during user registration: " + e);

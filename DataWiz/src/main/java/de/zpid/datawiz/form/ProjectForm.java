@@ -3,17 +3,24 @@ package de.zpid.datawiz.form;
 import java.io.Serializable;
 import java.util.List;
 
-import org.springframework.security.core.userdetails.User;
+import javax.validation.Valid;
 
+import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
+import de.zpid.datawiz.dto.UserDTO;
 
 public class ProjectForm implements Serializable {
 
   private static final long serialVersionUID = 868777577427023558L;
+  @Valid
   private ProjectDTO project;
-  private List<User> sharedUser;
+  @Valid
+  private List<UserDTO> sharedUser;
+  @Valid
   private List<StudyDTO> studies;
+  @Valid
+  private List<ContributorDTO> contributors;
 
   public ProjectDTO getProject() {
     return project;
@@ -23,12 +30,12 @@ public class ProjectForm implements Serializable {
     this.project = project;
   }
 
-  public List<User> getSharedUser() {
+  public List<UserDTO> getSharedUser() {
     return sharedUser;
   }
 
-  public void setSharedUser(List<User> sharedUser) {
-    this.sharedUser = sharedUser;
+  public void setSharedUser(List<UserDTO> list) {
+    this.sharedUser = list;
   }
 
   public List<StudyDTO> getStudies() {
@@ -37,6 +44,14 @@ public class ProjectForm implements Serializable {
 
   public void setStudies(List<StudyDTO> studies) {
     this.studies = studies;
+  }
+
+  public List<ContributorDTO> getContributors() {
+    return contributors;
+  }
+
+  public void setContributors(List<ContributorDTO> contributors) {
+    this.contributors = contributors;
   }
 
 }

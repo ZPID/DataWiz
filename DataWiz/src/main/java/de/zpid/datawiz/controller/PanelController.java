@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.StudyDAO;
+import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
@@ -35,7 +37,12 @@ public class PanelController {
   @Autowired
   private StudyDAO studyDAO;
   @Autowired
+  private ContributorDAO contributorDAO;
+  @Autowired
+  private UserDAO userDAO;
+  @Autowired
   private MessageSource messageSource;
+
   private static final Logger log = Logger.getLogger(PanelController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
@@ -56,10 +63,11 @@ public class PanelController {
       List<ProjectDTO> cpdto = projectDAO.getAllByUserID(user);
       if (cpdto != null) {
         for (ProjectDTO pdto : cpdto) {
-          System.out.println(pdto.getCreated());
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
           pform.setStudies(studyDAO.getLatestStudyVersionsByProjectID(pdto));
+          pform.setContributors(contributorDAO.getByProject(pdto, false));
+          pform.setSharedUser(userDAO.findByProject(pdto));
           cpform.add(pform);
         }
       }

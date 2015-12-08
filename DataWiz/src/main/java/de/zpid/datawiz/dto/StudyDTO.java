@@ -9,7 +9,7 @@ public class StudyDTO implements Serializable {
   private int id;
   private int version;
   private int projectId;
-  private String authorMail;
+  private int lastUserId;
   private boolean master;
   private Date timestamp;
   private String title;
@@ -38,12 +38,12 @@ public class StudyDTO implements Serializable {
     this.projectId = projectId;
   }
 
-  public String getAuthorMail() {
-    return authorMail;
+  public int getLastUserId() {
+    return lastUserId;
   }
 
-  public void setAuthorMail(String authorMail) {
-    this.authorMail = authorMail;
+  public void setLastUserId(int lastUserId) {
+    this.lastUserId = lastUserId;
   }
 
   public boolean isMaster() {
@@ -74,8 +74,8 @@ public class StudyDTO implements Serializable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((authorMail == null) ? 0 : authorMail.hashCode());
     result = prime * result + id;
+    result = prime * result + lastUserId;
     result = prime * result + (master ? 1231 : 1237);
     result = prime * result + projectId;
     result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
@@ -93,12 +93,9 @@ public class StudyDTO implements Serializable {
     if (getClass() != obj.getClass())
       return false;
     StudyDTO other = (StudyDTO) obj;
-    if (authorMail == null) {
-      if (other.authorMail != null)
-        return false;
-    } else if (!authorMail.equals(other.authorMail))
-      return false;
     if (id != other.id)
+      return false;
+    if (lastUserId != other.lastUserId)
       return false;
     if (master != other.master)
       return false;
@@ -121,7 +118,7 @@ public class StudyDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "StudyDTO [id=" + id + ", version=" + version + ", projectId=" + projectId + ", authorMail=" + authorMail
+    return "StudyDTO [id=" + id + ", version=" + version + ", projectId=" + projectId + ", lastUserId=" + lastUserId
         + ", master=" + master + ", timestamp=" + timestamp + ", title=" + title + "]";
   }
 

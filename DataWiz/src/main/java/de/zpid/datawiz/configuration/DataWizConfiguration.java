@@ -22,7 +22,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.UserDAO;
 
@@ -54,7 +56,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     return resolver;
   }
 
-  @Bean
+  @Bean(name = "dataSource")
   public DataSource getDataSource() {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
     dataSource.setDriverClassName("com.mysql.jdbc.Driver");
@@ -92,5 +94,17 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "studyDao")
   public StudyDAO getStudyDAO() {
     return new StudyDAO(getDataSource());
+  }
+
+  @Autowired
+  @Bean(name = "roleDao")
+  public RoleDAO getRoleDAO() {
+    return new RoleDAO(getDataSource());
+  }
+
+  @Autowired
+  @Bean(name = "contributorDao")
+  public ContributorDAO getContributorDAO() {
+    return new ContributorDAO(getDataSource());
   }
 }

@@ -34,15 +34,15 @@ public class StudyDAO {
       log.debug("execute getLatestStudyVersionsByProjectID for project [id: " + project.getId() + " name: "
           + project.getTitle() + "]");
     String sql = "SELECT * from dw_study AS study INNER JOIN "
-        + "( SELECT dw_study.id, MAX(dw_study.timestamp) max_ts FROM dw_study WHERE dw_study.project_id = ?  GROUP BY dw_study.id ) sid "
-        + "ON sid.id=study.id AND sid.max_ts=study.timestamp";
+        + "( SELECT dw_study.id, MAX(dw_study.version) max_vs FROM dw_study WHERE dw_study.project_id = ?  GROUP BY dw_study.id ) sid "
+        + "ON sid.id=study.id AND sid.max_vs=study.version ORDER BY study.timestamp DESC";
     return jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<StudyDTO>() {
       public StudyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         StudyDTO study = (StudyDTO) context.getBean("StudyDTO");
         study.setId(rs.getInt("id"));
         study.setVersion(rs.getInt("version"));
         study.setProjectId(rs.getInt("project_id"));
-        study.setAuthorMail(rs.getString("user_mail"));
+        study.setLastUserId(rs.getInt("last_user_id"));
         // study.setMaster(rs.getBoolean("master"));
         study.setTimestamp(rs.getTimestamp("timestamp"));
         study.setTitle(rs.getString("title"));
