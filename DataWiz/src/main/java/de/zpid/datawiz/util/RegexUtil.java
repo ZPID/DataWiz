@@ -23,7 +23,7 @@ public class RegexUtil {
 
   public static final String onlyDigits = "\\d";
 
-  public static final String regexORCID = "\\d{4}-\\d{4}-\\d{4}-\\d{4}";
+  public static final String regexORCID = "(^\\s*$|\\d{4}-\\d{4}-\\d{4}-\\d{4})";
 
   public static final String size0to250 = "{0,250}";
   public static final String size0to50 = "{0,50}";

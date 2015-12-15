@@ -9,6 +9,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.util.SavedState;
 
 public class ProjectForm implements Serializable {
 
@@ -21,6 +22,14 @@ public class ProjectForm implements Serializable {
   private List<StudyDTO> studies;
   @Valid
   private List<ContributorDTO> contributors;
+  @Valid
+  private ContributorDTO primaryContributor;
+
+  private List<String> tags;
+
+  // ViewHelper
+  private SavedState saveState;
+  private String saveMsg;
 
   public ProjectDTO getProject() {
     return project;
@@ -54,4 +63,35 @@ public class ProjectForm implements Serializable {
     this.contributors = contributors;
   }
 
+  public List<String> getTags() {
+    return tags;
+  }
+
+  public void setTags(List<String> tags) {
+    this.tags = tags;
+  }
+
+  public ContributorDTO getPrimaryContributor() {
+    return primaryContributor;
+  }
+
+  public void setPrimaryContributor(ContributorDTO primaryContributor) {
+    this.primaryContributor = primaryContributor;
+  }
+
+  public SavedState getSaveState() {
+    return saveState;
+  }
+
+  public void setSaveState(SavedState saveState) {
+    this.saveState = saveState;
+  }
+
+  public String getSaveMsg() {
+    return saveMsg;
+  }
+
+  public void setSaveMsg(String saveMsg) {
+    this.saveMsg = saveMsg;
+  }
 }

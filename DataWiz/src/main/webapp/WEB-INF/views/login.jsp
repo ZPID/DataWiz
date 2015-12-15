@@ -53,8 +53,7 @@
           </div>
           <div class="input-group input-sm">
             <div class="checkbox">
-              <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message
-                  code="login.remember.me" /></label>
+              <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message code="login.remember.me" /></label>
             </div>
           </div>
           <div class="form-actions">

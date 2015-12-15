@@ -66,7 +66,7 @@ public class PanelController {
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
           pform.setStudies(studyDAO.getLatestStudyVersionsByProjectID(pdto));
-          pform.setContributors(contributorDAO.getByProject(pdto, false));
+          pform.setContributors(contributorDAO.getByProject(pdto, false, true));
           pform.setSharedUser(userDAO.findByProject(pdto));
           cpform.add(pform);
         }
@@ -86,6 +86,9 @@ public class PanelController {
       log.debug("execute dashboardPage()");
     }
     if (bindingResult.hasErrors()) {
+      if (log.isInfoEnabled()) {
+        log.info("bindingResult has Errors");
+      }
       return "panel";
     }
     return "welcome";

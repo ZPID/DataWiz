@@ -4,7 +4,6 @@ import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -69,7 +68,7 @@ public class LoginController {
    * @param model
    * @return
    */
-  @RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
+  @RequestMapping(value = { "/", "/home" })
   public String homePage(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute homePage()");
@@ -207,7 +206,7 @@ public class LoginController {
    * @param model
    * @return
    */
-  @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
+  @RequestMapping(value = "/Access_Denied")
   public String accessDeniedPage(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute accessDeniedPage()");
@@ -224,7 +223,7 @@ public class LoginController {
    * @param response
    * @return
    */
-  @RequestMapping(value = "/logout", method = RequestMethod.GET)
+  @RequestMapping(value = "/logout")
   public String logout(HttpServletRequest request, HttpServletResponse response) {
     if (log.isDebugEnabled()) {
       log.debug("execute logoutPage()");

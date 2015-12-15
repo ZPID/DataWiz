@@ -3,10 +3,17 @@ package de.zpid.datawiz.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 public class ProjectDTO implements Serializable {
 
   private static final long serialVersionUID = -7148120591732205800L;
+
   private int id;
+  @NotNull
+  @NotBlank
   private String title;
   private String description;
   private Date created;

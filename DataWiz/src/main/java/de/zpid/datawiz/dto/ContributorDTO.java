@@ -28,6 +28,7 @@ public class ContributorDTO implements Serializable {
   private String department;
   @Pattern(regexp = RegexUtil.regexORCID)
   private String orcid;
+  private Boolean primaryContributor;
 
   public int getId() {
     return id;
@@ -117,6 +118,14 @@ public class ContributorDTO implements Serializable {
     this.studyVersion = studyVersion;
   }
 
+  public Boolean getPrimaryContributor() {
+    return primaryContributor;
+  }
+
+  public void setPrimaryContributor(Boolean primaryContributor) {
+    this.primaryContributor = primaryContributor;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -127,6 +136,7 @@ public class ContributorDTO implements Serializable {
     result = prime * result + ((institution == null) ? 0 : institution.hashCode());
     result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
     result = prime * result + ((orcid == null) ? 0 : orcid.hashCode());
+    result = prime * result + ((primaryContributor == null) ? 0 : primaryContributor.hashCode());
     result = prime * result + projectId;
     result = prime * result + sort;
     result = prime * result + studyId;
@@ -171,6 +181,11 @@ public class ContributorDTO implements Serializable {
         return false;
     } else if (!orcid.equals(other.orcid))
       return false;
+    if (primaryContributor == null) {
+      if (other.primaryContributor != null)
+        return false;
+    } else if (!primaryContributor.equals(other.primaryContributor))
+      return false;
     if (projectId != other.projectId)
       return false;
     if (sort != other.sort)
@@ -191,6 +206,8 @@ public class ContributorDTO implements Serializable {
   public String toString() {
     return "ContributorDTO [id=" + id + ", projectId=" + projectId + ", studyId=" + studyId + ", studyVersion="
         + studyVersion + ", sort=" + sort + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName
-        + ", institution=" + institution + ", department=" + department + ", orcid=" + orcid + "]";
+        + ", institution=" + institution + ", department=" + department + ", orcid=" + orcid + ", primaryContributor="
+        + primaryContributor + "]";
   }
+
 }

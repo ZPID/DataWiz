@@ -13,8 +13,8 @@
                 class="panel <c:out value="${form.project.projectRole.type eq 'PROJECT_ADMIN' ? 'panel-primary' : 
                                              form.project.projectRole.type eq 'PROJECT_WRITER' ? 'panel-info' : 
                                              form.project.projectRole.type eq 'PROJECT_READER' ? 'panel-warning' : 'panel-danger'}"/> ">
-                <div class="panel-heading accordion-toggle" data-toggle="collapse"
-                  data-target="#panel_coll_${loop.count}" data-parent="#accordion">
+                <div class="panel-heading accordion-toggle" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
+                  data-parent="#accordion">
                   <div class="row">
                     <div class="col-xs-8">
                       <h4 class="panel-title">
@@ -75,27 +75,25 @@
                   <div class="row">
                     <div class="col-xs-6">
                       <span class="label label-success" data-toggle="tooltip" data-placement="top"
-                        title="<c:out value="${form.project.title}"></c:out>">Veröffentlicht</span> <span
-                        class="label label-default" data-toggle="tooltip" data-placement="top"
-                        title="<c:out value="${shared}" />">geteilt (<c:out value="${form.sharedUser.size()}" />)
-                      </span> <a href="project/${form.project.id}" class="label label-primary">Bearbeiten</a>
+                        title="<c:out value="${form.project.title}"></c:out>"><s:message code="panel.published" /></span> <span
+                        class="label label-default" data-toggle="tooltip" data-placement="top" title="<c:out value="${shared}" />"><s:message
+                          code="panel.shared" /> (<c:out value="${form.sharedUser.size()}" />)</span> <a href="project/${form.project.id}"
+                        class="label label-primary"><s:message code="gen.edit" /></a>
                     </div>
                     <div class="col-xs-6">
                       <c:choose>
                         <c:when test="${not empty form.studies&& form.studies.size() > 0 }">
                           <c:forEach items="${form.sharedUser}" var="user">
                             <c:if test="${user.id eq form.studies[0].lastUserId}">
-                              <fmt:formatDate value="${form.studies[0].timestamp}" pattern="dd/MM/yyyy HH:mm"
-                                var="strDate" />
+                              <fmt:formatDate value="${form.studies[0].timestamp}" pattern="dd/MM/yyyy HH:mm" var="strDate" />
                               <c:choose>
                                 <c:when test="${not empty user.lastName && not empty user.firstName}">
-                                  <s:message code="panel.last.commit"
-                                    arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
-                                    argumentSeparator=";" />
+                                  <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"
+                                    htmlEscape="false" argumentSeparator=";" />
                                 </c:when>
                                 <c:otherwise>
-                                  <s:message code="panel.last.commit" arguments="${strDate};${user.email}"
-                                    htmlEscape="false" argumentSeparator=";" />
+                                  <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false"
+                                    argumentSeparator=";" />
                                 </c:otherwise>
                               </c:choose>
                             </c:if>
