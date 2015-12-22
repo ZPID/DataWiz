@@ -26,6 +26,7 @@ import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
+import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dao.UserDAO;
 
 @Configuration
@@ -52,7 +53,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean
   public LocaleResolver localeResolver() {
     CookieLocaleResolver resolver = new CookieLocaleResolver();
-    resolver.setDefaultLocale(new Locale("en"));
+    resolver.setDefaultLocale(new Locale("de"));
     return resolver;
   }
 
@@ -106,5 +107,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "contributorDao")
   public ContributorDAO getContributorDAO() {
     return new ContributorDAO(getDataSource());
+  }
+
+  @Autowired
+  @Bean(name = "tagDao")
+  public TagDAO getTagDAO() {
+    return new TagDAO(getDataSource());
   }
 }

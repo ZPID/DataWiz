@@ -1,7 +1,7 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,8 +15,16 @@ public class ProjectDTO implements Serializable {
   @NotNull
   @NotBlank
   private String title;
+  /**
+   * Not the database ID - this is used for documentation and is not unique!
+   */
+  private String projectIdent;
+  private String funding;
+  private String grantNumber;
+  private String thesaurusType;
+  private String copyright;
   private String description;
-  private Date created;
+  private LocalDateTime created;
   private UserRoleDTO projectRole;
 
   public int getId() {
@@ -43,11 +51,11 @@ public class ProjectDTO implements Serializable {
     this.description = description;
   }
 
-  public Date getCreated() {
+  public LocalDateTime getCreated() {
     return created;
   }
 
-  public void setCreated(Date created) {
+  public void setCreated(LocalDateTime created) {
     this.created = created;
   }
 
@@ -59,9 +67,51 @@ public class ProjectDTO implements Serializable {
     this.projectRole = projectRole;
   }
 
+  public String getProjectIdent() {
+    return projectIdent;
+  }
+
+  public void setProjectIdent(String projectIdent) {
+    this.projectIdent = projectIdent;
+  }
+
+  public String getFunding() {
+    return funding;
+  }
+
+  public void setFunding(String funding) {
+    this.funding = funding;
+  }
+
+  public String getGrantNumber() {
+    return grantNumber;
+  }
+
+  public void setGrantNumber(String grantNumber) {
+    this.grantNumber = grantNumber;
+  }
+
+  public String getThesaurusType() {
+    return thesaurusType;
+  }
+
+  public void setThesaurusType(String thesaurusType) {
+    this.thesaurusType = thesaurusType;
+  }
+
+  public String getCopyright() {
+    return copyright;
+  }
+
+  public void setCopyright(String copyright) {
+    this.copyright = copyright;
+  }
+
   @Override
   public String toString() {
-    return "ProjectDTO [id=" + id + ", title=" + title + ", created=" + created + ", projectRole=" + projectRole + "]";
+    return "ProjectDTO [id=" + id + ", title=" + title + ", projectIdent=" + projectIdent + ", funding=" + funding
+        + ", grantNumber=" + grantNumber + ", thesaurusType=" + thesaurusType + ", copyright=" + copyright
+        + ", created=" + created + ", projectRole=" + projectRole + "]";
   }
 
 }

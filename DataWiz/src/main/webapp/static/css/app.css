@@ -4,8 +4,7 @@
   .login_container {
     background-color: white;
     width: 80%;
-    left: 10%;
-    position: absolute;
+    margin: auto;
   }
   .login-card {
     width: 90%;
@@ -18,20 +17,24 @@
   .content-container {
     background-color: white;
     width: 80%;
-    left: 10%;
-    position: absolute;
+    margin: auto;
+  }
+  .content-padding {
+    padding: 1%;
+  }
+  #mainWrapper .form-group {
+    padding: 0% 1% 0% 1%;
   }
 }
 /* Breite ab 766 pixel */
-@media ( min-width : 766px) {
+@media ( min-width : 766px) and (max-width:1199px) {
   .login_container {
     background-color: white;
-    width: 60%;
-    left: 20%;
-    position: absolute;
+    width: 90%;
+    margin: auto;
   }
   .login-card {
-    width: 80%;
+    width: 60%;
     margin: auto;
   }
   .login-form {
@@ -40,9 +43,14 @@
   /* Content */
   .content-container {
     background-color: white;
-    width: 70%;
-    left: 15%;
-    position: absolute;
+    width: 90%;
+    margin: auto;
+  }
+  .content-padding {
+    padding: 4%;
+  }
+  #mainWrapper .form-group {
+    padding: 0% 1% 0% 1%;
   }
 }
 /* Breite ab 1200 pixel */
@@ -50,39 +58,49 @@
   .login_container {
     background-color: white;
     width: 40%;
-    left: 30%;
-    position: absolute;
+    margin: auto;
   }
   .login-card {
     width: 80%;
     margin: auto;
   }
-  .login-form {
-    padding: 10%;
+  .content-padding {
+    padding: 8%;
   }
   /* Content */
   .content-container {
     background-color: white;
-    width: 60%;
-    left: 20%;
-    position: absolute;
+    width: 80%;
+    margin: auto;
   }
 }
 
-html {
-  background-color: #ddd;
-}
 
 body {
-  font-family: 'PT Sans', "helvetica neue", sans-serif
+  font-family: 'PT Sans', "helvetica neue", sans-serif;
 }
 
 body, #mainWrapper {
-  background-color: #ddd;
+  background-color: #eee;
 }
 
 body, #mainWrapper, .form-control {
   font-size: 12px !important;
+}
+
+#logo {
+  margin: auto;
+  width: 300px;
+}
+
+#logo img {
+  width: 300px;
+  padding: 20px 0px 20px 0px;
+  margin: auto;
+}
+
+#mainWrapper {
+  
 }
 
 textarea {
@@ -106,7 +124,7 @@ textarea {
   cursor: pointer;
 }
 
-#studiesActiveContent, #materialsActiveContent {
+.projectContent {
   display: none;
 }
 
@@ -156,7 +174,15 @@ textarea {
   color: #FFF
 }
 
-/* Tagging Basic Style */
+/**************** START FIXED NAVBAR SETTINGS ****************/
+.goToTop {
+  position: fixed;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+}
+/**************** END FIXED NAVBAR SETTINGS ****************/
+/**************** START TAGGING STYLE ****************/
 .tagging {
   border: 1px solid #CCCCCC;
   cursor: text;
@@ -166,7 +192,7 @@ textarea {
 }
 
 .tag {
-  background: none repeat scroll 0 0 #EE7407;
+  background: none repeat scroll 0 0 #337ab7;
   border-radius: 2px;
   color: white;
   cursor: default;
@@ -178,7 +204,7 @@ textarea {
 }
 
 .tag span {
-  background: none repeat scroll 0 0 #D66806;
+  background: none repeat scroll 0 0 #286090;
   border-radius: 2px 0 0 2px;
   margin-right: 5px;
   padding: 5px 10px 5px;
@@ -213,5 +239,64 @@ textarea {
 .type-zone:focus {
   outline: none;
 }
-
-/**************** END TAGGING ****************/
+/**************** END TAGGING STYLE ****************/
+/**************** START NAVBAR CUSTOMISATION ****************/
+.navbar-default {
+  background-color: #337ab7;
+  border-color: #286090;
+}
+.navbar-default .navbar-brand {
+  color: #ffffff;
+}
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+  color: #fefeff;
+}
+.navbar-default .navbar-text {
+  color: #ffffff;
+}
+.navbar-default .navbar-nav > li > a {
+  color: #ffffff;
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  color: #fefeff;
+}
+.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+  color: #fefeff;
+  background-color: #286090;
+}
+.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+  color: #fefeff;
+  background-color: #286090;
+}
+.navbar-default .navbar-toggle {
+  border-color: #286090;
+}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+  background-color: #286090;
+}
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #ffffff;
+}
+.navbar-default .navbar-collapse,
+.navbar-default .navbar-form {
+  border-color: #ffffff;
+}
+.navbar-default .navbar-link {
+  color: #ffffff;
+}
+.navbar-default .navbar-link:hover {
+  color: #fefeff;
+}
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #ffffff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #fefeff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #fefeff;
+    background-color: #286090;
+  }
+}
+/**************** END NAVBAR CUSTOMISATION ****************/

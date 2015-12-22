@@ -211,7 +211,11 @@ public class LoginController {
     if (log.isDebugEnabled()) {
       log.debug("execute accessDeniedPage()");
     }
-    model.addAttribute("user", getPrincipal());
+    try {
+      model.addAttribute("user", getPrincipal());
+    } catch (Exception e) {
+      return "redirect:/login";
+    }
     return "accessDenied";
   }
 

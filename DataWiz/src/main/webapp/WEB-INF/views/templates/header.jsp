@@ -17,3 +17,6 @@
 </head>
 <body>
   <sec:authentication var="principal" property="principal" />
+  <div id="logo">
+    <img alt="" src="<c:url value="/static/images/dwlogo.png" />">
+  </div>

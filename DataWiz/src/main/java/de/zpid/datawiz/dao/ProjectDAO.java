@@ -51,7 +51,7 @@ public class ProjectDAO {
         project.setId(rs.getInt("id"));
         project.setTitle(rs.getString("name"));
         project.setDescription(rs.getString("description"));
-        project.setCreated(rs.getTimestamp("created"));
+        project.setCreated(rs.getTimestamp("created").toLocalDateTime());
         return project;
       }
     });
@@ -89,7 +89,7 @@ public class ProjectDAO {
               project.setId(rs.getInt("id"));
               project.setTitle(rs.getString("name"));
               project.setDescription(rs.getString("description"));
-              project.setCreated(rs.getDate("created"));
+              project.setCreated(rs.getTimestamp("created").toLocalDateTime());
               return project;
             }
             return null;

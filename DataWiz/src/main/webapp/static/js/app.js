@@ -2,12 +2,15 @@ $tag_box = null;
 (function($, window, document, undefined) {
 	$(document).ready(
 	    function() {
+		    setProjectSubmenu(null);
 		    // ***** begin Tags *****
 		    var my_custom_options = {
-		      "no-duplicate" : false,
+		      "no-duplicate" : true,
+		      "no-duplicate-callback" : false,
+		      "no-duplicate-text" : "Duplicate tags",
 		      "tags-input-name" : "taggone",
 		      "edit-on-delete" : false,
-		      "forbidden-chars" : [ "," ],
+		      "no-comma" : false,
 		    };
 		    if ($("#tagging").length) {
 			    var t = $("#tagging").tagging(my_custom_options);
@@ -29,6 +32,12 @@ $tag_box = null;
 			        $("i.indicator").not(chevState).removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
 		        });
 		    // ***** end accordion *****
+		    $(window).bind('scroll', function() {
+			    var navHeight = 100; // custom nav height
+			    ($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
+		    });
+		    $(this).scrollTop(0);
+
 	    });
 })(window.jQuery, window, document);
 
@@ -36,16 +45,35 @@ $(".projectContentClick").click(function() {
 	setProjectSubmenu($(this).attr("id"));
 });
 
+function setDelPos(pos) {
+	alert(pos);
+}
+
 $("#meta_submit").click(function() {
 	$("#tags").val($tag_box.tagging("getTags"));
 });
 
 function setProjectSubmenu(id) {
-	if (!$("#" + id).hasClass("active")) {
-		$(".projectContent").hide('slow');
+	if (id != null) {
+		if (!$("#" + id).hasClass("active")) {
+			$(".projectContent").hide();
+			$(".projectContentClick").removeClass("active");
+			$("#" + id).addClass("active");
+			$("#" + id.replace('Click', 'Content')).show();
+		}
+	} else {
+		$(".projectContent").hide();
 		$(".projectContentClick").removeClass("active");
-		$("#" + id).addClass("active");
-		$("#" + id.replace('Click', 'Content')).show("slow");
+		switch ($("#jQueryMap").val()) {
+		case "contri":
+			$("#workersActiveClick").addClass("active");
+			$("#workersActiveContent").show();
+			break;
+		default:
+			$("#metaActiveClick").addClass("active");
+			$("#metaActiveContent").show();
+			break;
+		}
 	}
 }
 
