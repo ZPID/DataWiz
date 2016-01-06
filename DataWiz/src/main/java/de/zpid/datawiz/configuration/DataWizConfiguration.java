@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -65,6 +66,13 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     dataSource.setUsername("root");
     dataSource.setPassword("");
     return dataSource;
+  }
+
+  @Bean(name = "multipartResolver")
+  public CommonsMultipartResolver multipartResolver() {
+    CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+    resolver.setDefaultEncoding("utf-8");
+    return resolver;
   }
 
   @Override

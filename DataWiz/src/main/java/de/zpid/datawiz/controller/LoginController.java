@@ -209,7 +209,7 @@ public class LoginController {
   @RequestMapping(value = "/Access_Denied")
   public String accessDeniedPage(ModelMap model) {
     if (log.isDebugEnabled()) {
-      log.debug("execute accessDeniedPage()");
+      log.debug("execute accessDeniedPage() - " + request.getHeader("referer") + " - " + request.getAuthType() + " - " + request.getPathInfo());
     }
     try {
       model.addAttribute("user", getPrincipal());

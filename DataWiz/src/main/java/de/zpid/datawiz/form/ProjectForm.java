@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -25,6 +27,7 @@ public class ProjectForm implements Serializable {
   private ContributorDTO primaryContributor;
 
   private List<String> tags;
+  private List<MultipartFile> files;
 
   // ViewHelper
   private int delPos;
@@ -83,6 +86,18 @@ public class ProjectForm implements Serializable {
 
   public void setDelPos(int delPos) {
     this.delPos = delPos;
+  }
+
+  public List<MultipartFile> getFiles() {
+    return files;
+  }
+
+  public void setFiles(List<MultipartFile> files) {
+    this.files = files;
+  }
+
+  public static long getSerialversionuid() {
+    return serialVersionUID;
   }
 
 }

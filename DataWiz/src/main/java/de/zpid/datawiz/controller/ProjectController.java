@@ -1,6 +1,10 @@
 package de.zpid.datawiz.controller;
 
+import java.io.File;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.validation.Valid;
 
@@ -9,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -17,6 +23,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
@@ -28,6 +36,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.ChecksumUtil;
 import de.zpid.datawiz.util.Roles;
 import de.zpid.datawiz.util.SavedState;
 import de.zpid.datawiz.util.UserUtil;
@@ -89,6 +98,46 @@ public class ProjectController {
   }
 
   /**
+   * 
+   * @param pid
+   * @param pForm
+   * @param model
+   * @return
+   */
+  @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
+  public String editProject(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+      RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute editProject for projectID=" + pid);
+    }
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    // create new pform!
+    try {
+      pForm = getProjectData(pid, user);
+      pForm.setFiles(new LinkedList<MultipartFile>());
+    } catch (Exception e) {
+      log.warn(e.getMessage());
+      String redirectMessage = "";
+      if (e instanceof DataWizException) {
+        redirectMessage = "project.not.available";
+      } else if (e instanceof DataWizSecurityException) {
+        redirectMessage = "project.access.denied";
+      } else {
+        redirectMessage = "dbs.sql.exception";
+      }
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    model.put("ProjectForm", pForm);
+    return "project";
+  }
+
+  /**
    * Adds a new Contributor Object to the contributor list
    * 
    * @param pForm
@@ -129,43 +178,35 @@ public class ProjectController {
     return "project";
   }
 
-  /**
-   * 
-   * @param pid
-   * @param pForm
-   * @param model
-   * @return
-   */
-  @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
-  public String editProject(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
-      RedirectAttributes redirectAttributes) {
+  @RequestMapping(value = { "/{pid}/upload" }, method = RequestMethod.POST)
+  public ResponseEntity<String> uploadFile(MultipartHttpServletRequest request) {
     if (log.isDebugEnabled()) {
-      log.debug("execute editProject for projectID=" + pid);
+      log.debug("execute uploadFile");
     }
-    UserDTO user = UserUtil.getCurrentUser();
-    if (user == null) {
-      log.warn("Auth User Object == null - redirect to login");
-      return "redirect:/login";
-    }
-    // create new pform!
     try {
-      pForm = getProjectData(pid, user);
-    } catch (Exception e) {
-      log.warn(e.getMessage());
-      String redirectMessage = "";
-      if (e instanceof DataWizException) {
-        redirectMessage = "project.not.available";
-      } else if (e instanceof DataWizSecurityException) {
-        redirectMessage = "project.access.denied";
-      } else {
-        redirectMessage = "dbs.sql.exception";
+      final MessageDigest shaDigest = MessageDigest.getInstance("SHA-1");
+      Iterator<String> itr = request.getFileNames();
+      while (itr.hasNext()) {
+        String uploadedFile = itr.next();
+        MultipartFile file = request.getFile(uploadedFile);
+        // System.out.println(file.getOriginalFilename());
+        String mimeType = file.getContentType();
+        String filename = file.getOriginalFilename();
+        byte[] bytes = file.getBytes();
+        File convFile = new File(filename);
+        file.transferTo(convFile);
+        String shaChecksum = ChecksumUtil.getFileChecksum(shaDigest, convFile);
+        System.out.println(shaChecksum);
+        // FileUpload newFile = new FileUpload(filename, bytes, mimeType);
+        //
+        // fileUploadService.uploadFile(newFile);
       }
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
-      return "redirect:/panel";
+    } catch (Exception e) {
+      log.warn("Exception during file upload: " + e.getLocalizedMessage());
+      return new ResponseEntity<String>("{\"headline\": \"resonse\", \"content\": \"error\"}",
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    model.put("ProjectForm", pForm);
-    return "project";
+    return new ResponseEntity<String>("{\"headline\": \"response\", \"content\": \"success\"}", HttpStatus.OK);
   }
 
   /**
@@ -201,4 +242,5 @@ public class ProjectController {
       return null;
     }
   }
+
 }

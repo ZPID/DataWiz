@@ -132,6 +132,10 @@ textarea {
   font-size: 3em
 }
 
+.marginTop1{
+  margin-top: 12px;
+}
+
 /**************** START TAGGING ****************/
 .blockquote-box {
   border-right: 5px solid #E6E6E6;
