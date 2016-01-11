@@ -1,9 +1,75 @@
+/**************** START DOC SETTINGS ****************/
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'PT Sans', "helvetica neue", sans-serif;
+  margin-bottom: 60px;
+}
+
+body, #mainWrapper {
+  background-color: #eee;
+}
+
+body, #mainWrapper, .form-control {
+  font-size: 12px !important;
+}
+/**************** END DOC SETTINGS ****************/
+/**************** START HEADER ****************/
+#logo {
+  margin: auto;
+  width: 300px;
+}
+
+#logo img {
+  width: 300px;
+  padding: 20px 0px 20px 0px;
+  margin: auto;
+}
+/**************** END HEADER ****************/
+/**************** START Content ****************/
+textarea {
+  resize: vertical; /* user can resize vertically, but width is fixed */
+}
+
+.form-group .required:BEFORE {
+  content: "*";
+  color: red;
+}
+
+.form-group label:AFTER {
+  content: ":";
+}
+
+.clean_label:AFTER {
+  content: "";
+}
+
+.projectContentClick {
+  cursor: pointer;
+}
+
+.projectContent {
+  display: none;
+}
+
+.glyphicon-lg {
+  font-size: 3em
+}
+
+.marginTop1 {
+  margin-top: 12px;
+}
+/**************** END CONTENT ****************/
+/**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
 @media ( max-width : 765px) {
   /* LOGIN */
   .login_container {
     background-color: white;
-    width: 80%;
+    width: 100%;
     margin: auto;
   }
   .login-card {
@@ -16,7 +82,7 @@
   /* Content */
   .content-container {
     background-color: white;
-    width: 80%;
+    width: 100%;
     margin: auto;
   }
   .content-padding {
@@ -74,110 +140,17 @@
     margin: auto;
   }
 }
-
-
-body {
-  font-family: 'PT Sans', "helvetica neue", sans-serif;
+/**************** END RESPONSIVE ****************/
+/**************** START FOOTER ****************/
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 40px;
+  background-color: #337ab7;
 }
-
-body, #mainWrapper {
-  background-color: #eee;
-}
-
-body, #mainWrapper, .form-control {
-  font-size: 12px !important;
-}
-
-#logo {
-  margin: auto;
-  width: 300px;
-}
-
-#logo img {
-  width: 300px;
-  padding: 20px 0px 20px 0px;
-  margin: auto;
-}
-
-#mainWrapper {
-  
-}
-
-textarea {
-  resize: vertical; /* user can resize vertically, but width is fixed */
-}
-
-.form-group .required:BEFORE {
-  content: "*";
-  color: red;
-}
-
-.form-group label:AFTER {
-  content: ":";
-}
-
-.clean_label:AFTER {
-  content: "";
-}
-
-.projectContentClick {
-  cursor: pointer;
-}
-
-.projectContent {
-  display: none;
-}
-
-.glyphicon-lg {
-  font-size: 3em
-}
-
-.marginTop1{
-  margin-top: 12px;
-}
-
-/**************** START TAGGING ****************/
-.blockquote-box {
-  border-right: 5px solid #E6E6E6;
-  margin-bottom: 25px
-}
-
-.blockquote-box .square {
-  width: 100px;
-  min-height: 50px;
-  margin-right: 22px;
-  text-align: center !important;
-  background-color: #E6E6E6;
-  padding: 20px 0
-}
-
-.blockquote-box.blockquote-success {
-  border-color: #4CAE4C
-}
-
-.blockquote-box.blockquote-success .square {
-  background-color: #5CB85C;
-  color: #FFF
-}
-
-.blockquote-box.blockquote-info {
-  border-color: #46B8DA
-}
-
-.blockquote-box.blockquote-info .square {
-  background-color: #5BC0DE;
-  color: #FFF
-}
-
-.blockquote-box.blockquote-warning {
-  border-color: #EEA236
-}
-
-.blockquote-box.blockquote-warning .square {
-  background-color: #F0AD4E;
-  color: #FFF
-}
-
+/**************** END FOOTER ****************/
 /**************** START FIXED NAVBAR SETTINGS ****************/
 .goToTop {
   position: fixed;
@@ -249,56 +222,73 @@ textarea {
   background-color: #337ab7;
   border-color: #286090;
 }
+
 .navbar-default .navbar-brand {
   color: #ffffff;
 }
+
 .navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
   color: #fefeff;
 }
+
 .navbar-default .navbar-text {
   color: #ffffff;
 }
-.navbar-default .navbar-nav > li > a {
+
+.navbar-default .navbar-nav>li>a {
   color: #ffffff;
 }
-.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+
+.navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
   color: #fefeff;
 }
-.navbar-default .navbar-nav > .active > a, .navbar-default .navbar-nav > .active > a:hover, .navbar-default .navbar-nav > .active > a:focus {
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus
+  {
   color: #fefeff;
   background-color: #286090;
 }
-.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .open > a:hover, .navbar-default .navbar-nav > .open > a:focus {
+
+.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus
+  {
   color: #fefeff;
   background-color: #286090;
 }
+
 .navbar-default .navbar-toggle {
   border-color: #286090;
 }
+
 .navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
   background-color: #286090;
 }
+
 .navbar-default .navbar-toggle .icon-bar {
   background-color: #ffffff;
 }
-.navbar-default .navbar-collapse,
-.navbar-default .navbar-form {
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
   border-color: #ffffff;
 }
+
 .navbar-default .navbar-link {
   color: #ffffff;
 }
+
 .navbar-default .navbar-link:hover {
   color: #fefeff;
 }
-@media (max-width: 767px) {
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+
+@media ( max-width : 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a {
     color: #ffffff;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover, .navbar-default .navbar-nav .open .dropdown-menu>li>a:focus
+    {
     color: #fefeff;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu > .active > a, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > .active > a:focus {
+  .navbar-default .navbar-nav .open .dropdown-menu>.active>a, .navbar-default .navbar-nav .open .dropdown-menu>.active>a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu>.active>a:focus {
     color: #fefeff;
     background-color: #286090;
   }

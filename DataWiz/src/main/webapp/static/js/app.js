@@ -100,7 +100,7 @@ function setProjectSubmenu(id) {
 			$("#workersActiveClick").addClass("active");
 			$("#workersActiveContent").show();
 			break;
-		case "pdata":
+		case "material":
 			$("#materialsActiveClick").addClass("active");
 			$("#materialsActiveContent").show();
 			break;
@@ -165,16 +165,12 @@ Dropzone.options.myDropzone = {
 		  // Add the button to the file preview element.
 		  file.previewElement.appendChild(removeButton);
 	  });
-	  // deletes a file from the dropzone (not from the DB) after the upload is finished
-	  this.on("success", function(file) {
-		  var _this = this;
-		  setTimeout(function() {
-			  _this.removeFile(file)
-		  }, 3000);
-	  });
 	  // shows a dialog after multiple upload finished
 	  this.on("successmultiple", function(files, serverResponse) {
-		  showInformationDialog(files, serverResponse);
+	  	// calls controller after successful multiple saving to reload the page"
+	  	setTimeout(function() {
+		  $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
+	  	}, 1000);
 	  });
   }
 };

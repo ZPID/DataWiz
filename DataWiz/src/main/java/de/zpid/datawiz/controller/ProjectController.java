@@ -1,11 +1,16 @@
 package de.zpid.datawiz.controller;
 
-import java.io.File;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
@@ -17,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,15 +34,17 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
+import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
+import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.ChecksumUtil;
+import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.Roles;
 import de.zpid.datawiz.util.SavedState;
 import de.zpid.datawiz.util.UserUtil;
@@ -50,6 +58,8 @@ public class ProjectController {
   private ProjectDAO projectDAO;
   @Autowired
   private TagDAO tagDAO;
+  @Autowired
+  private FileDAO fileDAO;
   @Autowired
   private ContributorDAO contributorDAO;
   @Autowired
@@ -118,7 +128,6 @@ public class ProjectController {
     // create new pform!
     try {
       pForm = getProjectData(pid, user);
-      pForm.setFiles(new LinkedList<MultipartFile>());
     } catch (Exception e) {
       log.warn(e.getMessage());
       String redirectMessage = "";
@@ -178,35 +187,164 @@ public class ProjectController {
     return "project";
   }
 
+  /**
+   * Multidata Upload
+   * 
+   * @param request
+   * @param pForm
+   * @return
+   */
   @RequestMapping(value = { "/{pid}/upload" }, method = RequestMethod.POST)
-  public ResponseEntity<String> uploadFile(MultipartHttpServletRequest request) {
+  public ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
+      @ModelAttribute("ProjectForm") ProjectForm pForm) {
     if (log.isDebugEnabled()) {
       log.debug("execute uploadFile");
     }
+    if (pForm == null || pForm.getProject() == null || pForm.getProject().getId() <= 0) {
+      log.warn("");
+      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
     try {
-      final MessageDigest shaDigest = MessageDigest.getInstance("SHA-1");
       Iterator<String> itr = request.getFileNames();
       while (itr.hasNext()) {
-        String uploadedFile = itr.next();
-        MultipartFile file = request.getFile(uploadedFile);
-        // System.out.println(file.getOriginalFilename());
-        String mimeType = file.getContentType();
-        String filename = file.getOriginalFilename();
-        byte[] bytes = file.getBytes();
-        File convFile = new File(filename);
-        file.transferTo(convFile);
-        String shaChecksum = ChecksumUtil.getFileChecksum(shaDigest, convFile);
-        System.out.println(shaChecksum);
-        // FileUpload newFile = new FileUpload(filename, bytes, mimeType);
-        //
-        // fileUploadService.uploadFile(newFile);
+        FileDTO file = (FileDTO) context.getBean("FileDTO");
+        MultipartFile mpf = request.getFile(itr.next());
+        if (mpf != null) {
+          file.setMultipartFile(mpf);
+          file.setMd5checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("MD5"), file.getContent()));
+          file.setSha1Checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("SHA-1"), file.getContent()));
+          // file.setSha256Checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("SHA-256"),
+          file.setProjectId(pForm.getProject().getId());
+          file.setUserId(user.getId());
+          file.setUploadDate(LocalDateTime.now());
+          fileDAO.saveFile(file);
+        }
       }
     } catch (Exception e) {
-      log.warn("Exception during file upload: " + e.getLocalizedMessage());
-      return new ResponseEntity<String>("{\"headline\": \"resonse\", \"content\": \"error\"}",
-          HttpStatus.INTERNAL_SERVER_ERROR);
+      log.warn("Exception during file upload: " + e);
+      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    return new ResponseEntity<String>("{\"headline\": \"response\", \"content\": \"success\"}", HttpStatus.OK);
+    return new ResponseEntity<String>("{}", HttpStatus.OK);
+  }
+
+  /**
+   * 
+   * @param pForm
+   * @param model
+   * @param redirectAttributes
+   * @return
+   */
+  @RequestMapping(value = "/multisaved")
+  public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+      RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute multiSaved()");
+    }
+    redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
+    redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
+    redirectAttributes.addFlashAttribute("jQueryMap", "material");
+    return "redirect:/project/" + pForm.getProject().getId();
+  }
+
+  /**
+   * 
+   * @param docId
+   * @param response
+   * @param redirectAttributes
+   * @return
+   */
+  @RequestMapping(value = { "/{pid}/download/{docId}" }, method = RequestMethod.GET)
+  public String downloadDocument(@PathVariable int pid, @PathVariable int docId, HttpServletResponse response,
+      RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute downloadDocument id=" + docId);
+    }
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    FileDTO file = null;
+    try {
+      file = fileDAO.findById(docId);
+      response.setContentType(file.getContentType());
+      response.setContentLength(file.getContent().length);
+      response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
+      FileCopyUtils.copy(file.getContent(), response.getOutputStream());
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
+    redirectAttributes.addFlashAttribute("saveStateMsg", "Downloaderror");
+    redirectAttributes.addFlashAttribute("jQueryMap", "material");
+    return "redirect:/project/" + pid;
+  }
+
+  /**
+   * 
+   * @param pid
+   * @param docId
+   * @param response
+   * @param redirectAttributes
+   * @return
+   */
+  @RequestMapping(value = { "/{pid}/delDoc/{docId}" }, method = RequestMethod.GET)
+  public String deleteDocument(@PathVariable int pid, @PathVariable int docId, HttpServletResponse response,
+      RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute deleteDocument id=" + docId);
+    }
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    try {
+      fileDAO.deleteFile(docId);
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
+    redirectAttributes.addFlashAttribute("saveStateMsg", "DELTETE");
+    redirectAttributes.addFlashAttribute("jQueryMap", "material");
+    return "redirect:/project/" + pid;
+  }
+
+  /**
+   * 
+   * @param pid
+   * @param imgId
+   * @param response
+   */
+  @RequestMapping(value = { "/{pid}/img/{imgId}" }, method = RequestMethod.GET)
+  private void setThumbnailImage(@PathVariable int pid, @PathVariable int imgId, HttpServletResponse response) {
+    FileDTO file;
+    final int thumbHeight = 98;
+    final int maxWidth = 160;
+    try {
+      file = fileDAO.findById(imgId);
+      if (file.getContentType().substring(0, 5).equalsIgnoreCase("image") && file.getContent() != null) {
+        OutputStream sos = response.getOutputStream();
+        InputStream in = new ByteArrayInputStream(file.getContent());
+        BufferedImage bImage = ImageIO.read(in);
+        int scale = bImage.getHeight() / thumbHeight;
+        BufferedImage bf = FileUtil.scaleImage(bImage,
+            (bImage.getWidth() / scale > maxWidth) ? maxWidth : bImage.getWidth() / scale, thumbHeight);
+        response.setContentType(file.getContentType());
+        ImageIO.write(bf, "jpg", sos);
+        sos.flush();
+        sos.close();
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -235,6 +373,7 @@ public class ProjectController {
       pForm.setProject(pdto);
       pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+      pForm.setFiles(fileDAO.getProjectFiles(pdto));
       pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
       return pForm;
     } else {

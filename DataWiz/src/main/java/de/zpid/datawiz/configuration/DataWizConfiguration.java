@@ -24,6 +24,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import de.zpid.datawiz.dao.ContributorDAO;
+import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
@@ -65,6 +66,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz");
     dataSource.setUsername("root");
     dataSource.setPassword("");
+    //dataSource.setPassword("A7n8xde1nck34");
     return dataSource;
   }
 
@@ -121,5 +123,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "tagDao")
   public TagDAO getTagDAO() {
     return new TagDAO(getDataSource());
+  }
+  
+  @Autowired
+  @Bean(name = "fileDao")
+  public FileDAO getFileDAO() {
+    return new FileDAO(getDataSource());
   }
 }

@@ -21,9 +21,12 @@
       <!-- Submenu -->
       <ul class="nav nav-tabs">
         <li role="presentation" id="metaActiveClick" class="projectContentClick"><a><s:message code="project.submenu.metadata" /></a></li>
-        <li role="presentation" id="workersActiveClick" class="projectContentClick"><a><s:message code="project.submenu.workers" /></a></li>
-        <li role="presentation" id="studiesActiveClick" class="projectContentClick"><a><s:message code="project.submenu.studies" /></a></li>
-        <li role="presentation" id="materialsActiveClick" class="projectContentClick"><a><s:message code="project.submenu.material" /></a></li>
+        <c:if test="${not empty ProjectForm.project.id}">
+          <li role="presentation" id="workersActiveClick" class="projectContentClick"><a><s:message code="project.submenu.workers" /></a></li>
+          <li role="presentation" id="studiesActiveClick" class="projectContentClick"><a><s:message code="project.submenu.studies" /></a></li>
+          <li role="presentation" id="materialsActiveClick" class="projectContentClick"><a><s:message
+                code="project.submenu.material" /></a></li>
+        </c:if>
       </ul>
       <c:url var="projectUrl" value="/project/${ProjectForm.project.id}" />
       <sf:form action="${projectUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
@@ -39,7 +42,7 @@
             </div>
           </div>
           <!-- Messages -->
-          <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg}">
+          <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && empty jQueryMap}">
             <div
               class="alert <c:out value="${saveState eq 'SUCCESS' ? 'alert-success' : 
                                                 saveState eq 'ERROR' ? 'alert-danger' : 
@@ -187,6 +190,16 @@
               </div>
             </div>
           </div>
+          <!-- Messages -->
+          <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && jQueryMap == 'contri'}">
+            <div
+              class="alert <c:out value="${saveState eq 'SUCCESS' ? 'alert-success' : 
+                                                saveState eq 'ERROR' ? 'alert-danger' : 
+                                                saveState eq 'INFO' ? 'alert-warning' : 'alert-info'}"/>"
+              role="alert">
+              <c:out value="${saveStateMsg}" />
+            </div>
+          </c:if>
           <ul class="list-group">
             <li class="list-group-item">
               <div class="row">
@@ -284,18 +297,107 @@
         <div class="well">
           <s:message code="project.edit.metadata.info" />
         </div>
+        <!-- Messages -->
+        <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && jQueryMap == 'material'}">
+          <div
+            class="alert <c:out value="${saveState eq 'SUCCESS' ? 'alert-success' : 
+                                                saveState eq 'ERROR' ? 'alert-danger' : 
+                                                saveState eq 'INFO' ? 'alert-warning' : 'alert-info'}"/>"
+            role="alert">
+            <c:out value="${saveStateMsg}" />
+          </div>
+        </c:if>
         <div class="well">
           <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles" type="hidden"
             value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError" type="hidden"
             value="<s:message code="upload.response.error" />" /> <input id="defaultMsg" type="hidden"
             value="<s:message code="upload.default.message" />" />
           <c:url var="uploadUrl" value="/project/${ProjectForm.project.id}/upload" />
-          <form action="${uploadUrl}" class="dropzone" method="POST" enctype="multipart/form-data" id="my-dropzone"></form>
-          <div class="">
+          <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm" role="form"
+            enctype="multipart/form-data" id="my-dropzone"></sf:form>
+          <div>
             <button class="btn btn-success" id="dz-upload-button">Upload File</button>
             <button class="btn btn-danger" id="dz-reset-button">Reset Dropzone</button>
           </div>
         </div>
+        <!-- Start list for downloadfiles -->
+        <ul class="list-group" id="file">
+          <c:forEach items="${ProjectForm.files}" var="file">
+            <c:set var="ctype" value="${fn:split(file.contentType, '/')}" />
+            <li class="list-group-item">
+              <!-- Image -->
+              <div class="form-group row">
+                <div class="col-md-2">
+                <c:choose>
+                  <c:when test="${ctype[0]=='image' || ctype[0]=='IMAGE'}">
+                    <img alt="" src="${ProjectForm.project.id}/img/${file.id}">
+                  </c:when>
+                  <c:otherwise>
+                    <img alt="" src="<c:url value="/static/images/fileformat/${ctype[fn:length(ctype)-1]}.png" />">                    
+                  </c:otherwise>
+                  </c:choose>
+                </div>
+                <div class="col-md-10">
+                  <!-- downloadicon -->
+                  <div class="row">
+                    <div class="col-md-11"></div>
+                    <div class="col-md-1">
+                      <a class="btn btn-primary btn-sm" href="${ProjectForm.project.id}/download/${file.id}"> <span
+                        class="glyphicon glyphicon-save-file" aria-hidden="true"></span></a>
+                    </div>
+                  </div>
+                  <!-- filename -->
+                  <div class="row">
+                    <label class="control-label col-md-1" for=""><s:message code="gen.file.filename" /></label>
+                    <div class="col-md-10">
+                      <c:out value="${file.fileName}"></c:out>
+                    </div>
+                  </div>
+                  <!-- filesize  and date-->
+                  <div class="row">
+                    <label class="control-label col-md-1" for=""><s:message code="gen.file.filesize" /></label>
+                    <div class="col-md-4">
+                      <c:out value="${file.fileSize}" />
+                      Byte (
+                      <c:choose>
+                        <c:when test="${file.fileSize>(1024*1024)}">
+                          <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1024/1024}" />MB
+                          </c:when>
+                        <c:otherwise>
+                          <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1024}" />KB
+                          </c:otherwise>
+                      </c:choose>
+                      )
+                    </div>
+                    <label class="control-label col-md-2" for=""><s:message code="gen.file.uploaded" /></label>
+                    <div class="col-md-5">
+                      <c:out value="${file.uploadDate}"></c:out>
+                    </div>
+                  </div>
+                  <!-- checksums -->
+                  <div class="row">
+                    <label class="control-label col-md-1" for=""><s:message code="gen.file.checksum" /></label>
+                    <div class="col-md-4">
+                      <c:out value="${file.md5checksum}"></c:out>
+                      <b>(<s:message code="gen.file.md5" />)
+                      </b>
+                    </div>
+                    <div class="col-md-6">
+                      <c:out value="${file.sha1Checksum}"></c:out>
+                      <b>(<s:message code="gen.file.sha" />)
+                      </b>
+                    </div>
+                    <!-- deleteicon -->
+                    <div class="col-md-1">
+                      <a class="btn btn-danger btn-sm" href="${ProjectForm.project.id}/delDoc/${file.id}"><span
+                        class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </c:forEach>
+        </ul>
       </div>
     </div>
   </div>

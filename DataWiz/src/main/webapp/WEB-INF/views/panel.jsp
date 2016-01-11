@@ -44,7 +44,7 @@
               <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
                 <div class="panel-body">
                   <div class="list-group">
-                    <c:forEach items="${form.studies}" var="study" varStatus="loop2">
+                    <c:forEach items="${form.studies[0]}" var="study" varStatus="loop2">
                       <div class="list-group-item ">
                         <h4 class="list-group-item-heading">
                           <c:out value="${study.title}"></c:out>
@@ -86,10 +86,10 @@
                   </div>
                   <div class="col-xs-6">
                     <c:choose>
-                      <c:when test="${not empty form.studies&& form.studies.size() > 0 }">
+                      <c:when test="${not empty form.studies[0]&& form.studies[0].size() > 0 }">
                         <c:forEach items="${form.sharedUser}" var="user">
-                          <c:if test="${user.id eq form.studies[0].lastUserId}">
-                            <fmt:formatDate value="${form.studies[0].timestamp}" pattern="dd/MM/yyyy HH:mm" var="strDate" />
+                          <c:if test="${user.id eq form.studies[0][0].lastUserId}">
+                            <fmt:formatDate value="${form.studies[0][0].timestamp}" pattern="dd/MM/yyyy HH:mm" var="strDate" />
                             <c:choose>
                               <c:when test="${not empty user.lastName && not empty user.firstName}">
                                 <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"

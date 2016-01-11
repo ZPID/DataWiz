@@ -2,6 +2,7 @@ package de.zpid.datawiz.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -29,14 +30,14 @@ public class StudyDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public List<StudyDTO> getLatestStudyVersionsByProjectID(ProjectDTO project) throws Exception {
+  public List<List<StudyDTO>> getLatestStudyVersionsByProjectID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getLatestStudyVersionsByProjectID for project [id: " + project.getId() + " name: "
           + project.getTitle() + "]");
     String sql = "SELECT * from dw_study AS study INNER JOIN "
         + "( SELECT dw_study.id, MAX(dw_study.version) max_vs FROM dw_study WHERE dw_study.project_id = ?  GROUP BY dw_study.id ) sid "
         + "ON sid.id=study.id AND sid.max_vs=study.version ORDER BY study.timestamp DESC";
-    return jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<StudyDTO>() {
+    List<StudyDTO> stud = jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<StudyDTO>() {
       public StudyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         StudyDTO study = (StudyDTO) context.getBean("StudyDTO");
         study.setId(rs.getInt("id"));
@@ -49,6 +50,12 @@ public class StudyDAO {
         return study;
       }
     });
+    List<List<StudyDTO>> cstud = new ArrayList<List<StudyDTO>>();
+    cstud.add(stud);
+    return cstud;
   }
+
+  String s1 = "SELECT dw_study.id FROM dw_study WHERE project_id = 1 GROUP BY dw_study.id";
+  String s2 = "SELECT * FROM dw_study WHERE dw_study.project_id = 1 AND id = 1 ORDER BY dw_study.timestamp DESC";
 
 }
