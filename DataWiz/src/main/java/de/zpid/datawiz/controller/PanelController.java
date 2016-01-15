@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -93,24 +92,4 @@ public class PanelController {
     }
     return "welcome";
   }
-
-  @RequestMapping(value = "/{qw}", method = RequestMethod.GET)
-  public String maptest(@PathVariable String qw) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute maptest()");
-    }
-    System.out.println(qw);
-    return "welcome";
-  }
-
-  @RequestMapping(value = "/{qw}/{wert}", method = RequestMethod.GET)
-  public String maptest2(@PathVariable String qw, @PathVariable String wert) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute maptest2()");
-    }
-    System.out.println(qw);
-    System.out.println(wert);
-    return "welcome";
-  }
-
 }

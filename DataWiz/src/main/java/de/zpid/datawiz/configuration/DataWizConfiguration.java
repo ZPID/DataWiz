@@ -66,7 +66,6 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz");
     dataSource.setUsername("root");
     dataSource.setPassword("");
-    //dataSource.setPassword("A7n8xde1nck34");
     return dataSource;
   }
 

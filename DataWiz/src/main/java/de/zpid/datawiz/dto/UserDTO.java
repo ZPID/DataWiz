@@ -267,6 +267,23 @@ public class UserDTO implements Serializable {
   public void setActivationCode(String activationCode) {
     this.activationCode = activationCode;
   }
+  
+  /**
+   * 
+   * @param role
+   * @param pid
+   * @return
+   */
+  public boolean hasProjectRole(Roles role, String pid){
+    if (this.globalRoles != null && this.globalRoles.size() > 0) {
+      for (UserRoleDTO tmp : this.globalRoles) {
+       if (tmp.getProjectId() == Integer.parseInt(pid) && tmp.getType().equals(role.name()))
+         return true;
+      }
+    }
+    return false;
+  }
+  
 
   /**
    * 

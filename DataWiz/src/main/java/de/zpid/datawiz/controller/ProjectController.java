@@ -36,6 +36,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
@@ -51,9 +52,11 @@ import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = "/project")
-@SessionAttributes({ "ProjectForm" })
+@SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class ProjectController {
 
+  @Autowired
+  private StudyDAO studyDAO;
   @Autowired
   private ProjectDAO projectDAO;
   @Autowired
@@ -68,17 +71,68 @@ public class ProjectController {
   private static final Logger log = Logger.getLogger(ProjectController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
+  /**
+   * 
+   * @return
+   */
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
     return (ProjectForm) context.getBean("ProjectForm");
+
   }
 
+  /**
+   * 
+   * @param model
+   * @return
+   */
   @RequestMapping(method = RequestMethod.GET)
   public String createProject(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute createProject - GET");
     }
+    model.put("subnaviActive", "PROJECT");
     model.put("ProjectForm", createProjectForm());
+    return "project";
+  }
+
+  /**
+   * 
+   * @param pid
+   * @param pForm
+   * @param model
+   * @return
+   */
+  @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
+  public String editProject(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+      RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute editProject for projectID=" + pid);
+    }
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    // create new pform!
+    try {
+      pForm = getProjectForm(pForm, pid, user);
+    } catch (Exception e) {
+      log.warn(e.getMessage());
+      String redirectMessage = "";
+      if (e instanceof DataWizException) {
+        redirectMessage = "project.not.available";
+      } else if (e instanceof DataWizSecurityException) {
+        redirectMessage = "project.access.denied";
+      } else {
+        redirectMessage = "dbs.sql.exception";
+      }
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    model.put("subnaviActive", "PROJECT");
+    model.put("ProjectForm", pForm);
     return "project";
   }
 
@@ -105,45 +159,6 @@ public class ProjectController {
     redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
     redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
     return "redirect:/project/" + pForm.getProject().getId();
-  }
-
-  /**
-   * 
-   * @param pid
-   * @param pForm
-   * @param model
-   * @return
-   */
-  @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
-  public String editProject(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
-      RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute editProject for projectID=" + pid);
-    }
-    UserDTO user = UserUtil.getCurrentUser();
-    if (user == null) {
-      log.warn("Auth User Object == null - redirect to login");
-      return "redirect:/login";
-    }
-    // create new pform!
-    try {
-      pForm = getProjectData(pid, user);
-    } catch (Exception e) {
-      log.warn(e.getMessage());
-      String redirectMessage = "";
-      if (e instanceof DataWizException) {
-        redirectMessage = "project.not.available";
-      } else if (e instanceof DataWizSecurityException) {
-        redirectMessage = "project.access.denied";
-      } else {
-        redirectMessage = "dbs.sql.exception";
-      }
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
-      return "redirect:/panel";
-    }
-    model.put("ProjectForm", pForm);
-    return "project";
   }
 
   /**
@@ -354,27 +369,34 @@ public class ProjectController {
    * @return
    * @throws Exception
    */
-  public ProjectForm getProjectData(String pid, UserDTO user) throws Exception {
+  public ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
     }
+    // 1st - security access check!
     if (pid != null && !pid.isEmpty() && user != null) {
+      if (!user.hasRole(Roles.ADMIN) && !user.hasProjectRole(Roles.PROJECT_READER, pid)
+          && !user.hasProjectRole(Roles.PROJECT_ADMIN, pid) && !user.hasProjectRole(Roles.PROJECT_WRITER, pid)) {
+        throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
+            + " tries to get access to project:" + pid + " without having the permissions to read");
+      }
       ProjectDTO pdto = projectDAO.findByIdWithRole(pid, String.valueOf(user.getId()));
       if (pdto == null || pdto.getId() <= 0 || pdto.getProjectRole() == null
           || pdto.getProjectRole().getUserId() <= 0) {
         throw new DataWizException(
             "Project or project_role is empty for user=" + user.getEmail() + " and project=" + pid);
       }
-      if (!user.hasRole(Roles.ADMIN) || (user.getId() != pdto.getProjectRole().getUserId())) {
+      // 2nd - security access check!
+      if (user.getId() != pdto.getProjectRole().getUserId()) {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
             + " tries to get access to project:" + pdto.getId() + " without having the permissions to read");
       }
-      ProjectForm pForm = createProjectForm();
       pForm.setProject(pdto);
       pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
       pForm.setFiles(fileDAO.getProjectFiles(pdto));
       pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
+      pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
       return pForm;
     } else {
       log.warn("ProjectID or UserDTO is empty - NULL returned!");

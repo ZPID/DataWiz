@@ -86,7 +86,7 @@ textarea {
     margin: auto;
   }
   .content-padding {
-    padding: 1%;
+    padding: 1% 0%;
   }
   #mainWrapper .form-group {
     padding: 0% 1% 0% 1%;
@@ -131,7 +131,7 @@ textarea {
     margin: auto;
   }
   .content-padding {
-    padding: 8%;
+    padding: 20px 8%;
   }
   /* Content */
   .content-container {

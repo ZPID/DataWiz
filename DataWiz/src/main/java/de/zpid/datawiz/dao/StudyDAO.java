@@ -55,7 +55,35 @@ public class StudyDAO {
     return cstud;
   }
 
-  String s1 = "SELECT dw_study.id FROM dw_study WHERE project_id = 1 GROUP BY dw_study.id";
-  String s2 = "SELECT * FROM dw_study WHERE dw_study.project_id = 1 AND id = 1 ORDER BY dw_study.timestamp DESC";
+  public List<List<StudyDTO>> getAllStudiesByProjectId(ProjectDTO project) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute getLatestStudyVersionsByProjectID for project [id: " + project.getId() + " name: "
+          + project.getTitle() + "]");
+    List<List<StudyDTO>> res = new ArrayList<List<StudyDTO>>();
+    String sql = "SELECT dw_study.id FROM dw_study WHERE project_id = ? GROUP BY dw_study.id";
+    List<Integer> cStud = jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<Integer>() {
+      public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getInt("id");
+      }
+    });
+    for (int i : cStud) {
+      String sql2 = "SELECT * FROM dw_study WHERE id = ? ORDER BY dw_study.timestamp DESC";
+      List<StudyDTO> stud = jdbcTemplate.query(sql2, new Object[] { i }, new RowMapper<StudyDTO>() {
+        public StudyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+          StudyDTO study = (StudyDTO) context.getBean("StudyDTO");
+          study.setId(rs.getInt("id"));
+          study.setVersion(rs.getInt("version"));
+          study.setProjectId(rs.getInt("project_id"));
+          study.setLastUserId(rs.getInt("last_user_id"));
+          // study.setMaster(rs.getBoolean("master"));
+          study.setTimestamp(rs.getTimestamp("timestamp"));
+          study.setTitle(rs.getString("title"));
+          return study;
+        }
+      });
+      res.add(stud);
+    }
+    return res;
+  }
 
 }

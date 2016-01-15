@@ -107,6 +107,8 @@ function setProjectSubmenu(id) {
 		default:
 			$("#metaActiveClick").addClass("active");
 			$("#metaActiveContent").show();
+			$("#administratriveActiveClick").addClass("active");
+			$("#administratriveActiveContent").show();
 			break;
 		}
 	}

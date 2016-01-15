@@ -3,13 +3,8 @@
 <div id="mainWrapper">
   <div class="content-container">
     <%@ include file="templates/breadcrump.jsp"%>
-    <div class="content-padding">
-      <ul class="nav nav-tabs nav-justified">
-        <li role="presentation" class="active"><a href="#">Projekt</a></li>
-        <li role="presentation" id="studies_active_click"><a href="#">DMP</a></li>
-        <li role="presentation"><a href="#">Sharing</a></li>
-        <li role="presentation"><a href="#">Wissensbasis</a></li>
-      </ul>
+    <%@ include file="templates/submenu.jsp"%>
+    <div class="content-padding">      
       <div class="page-header">
         <h4>
           <s:message code="project.edit.headline" />
@@ -285,6 +280,14 @@
         <div class="well">
           <s:message code="project.edit.metadata.info" />
         </div>
+        <c:forEach items="${ProjectForm.studies}" var="cstud">
+          <c:forEach items="${cstud}" var="stud">
+            <b>${stud.id} - ${stud.version} - ${stud.title}<br /></b>
+          </c:forEach>
+        </c:forEach>
+
+
+
         Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
         erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
         est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
@@ -328,13 +331,13 @@
               <!-- Image -->
               <div class="form-group row">
                 <div class="col-md-2">
-                <c:choose>
-                  <c:when test="${ctype[0]=='image' || ctype[0]=='IMAGE'}">
-                    <img alt="" src="${ProjectForm.project.id}/img/${file.id}">
-                  </c:when>
-                  <c:otherwise>
-                    <img alt="" src="<c:url value="/static/images/fileformat/${ctype[fn:length(ctype)-1]}.png" />">                    
-                  </c:otherwise>
+                  <c:choose>
+                    <c:when test="${ctype[0]=='image' || ctype[0]=='IMAGE'}">
+                      <img alt="" src="${ProjectForm.project.id}/img/${file.id}">
+                    </c:when>
+                    <c:otherwise>
+                      <img alt="" src="<c:url value="/static/images/fileformat/${ctype[fn:length(ctype)-1]}.png" />">
+                    </c:otherwise>
                   </c:choose>
                 </div>
                 <div class="col-md-10">

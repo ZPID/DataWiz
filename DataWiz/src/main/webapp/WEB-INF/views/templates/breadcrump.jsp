@@ -2,3 +2,4 @@
   <li><a href="<c:url value="/" />">Home</a></li>
   <li class="active">Login</li>
 </ol>
+<%-- ${requestScope['javax.servlet.forward.servlet_path']} --%>
