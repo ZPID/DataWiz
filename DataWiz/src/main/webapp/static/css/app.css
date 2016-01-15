@@ -62,6 +62,12 @@ textarea {
 .marginTop1 {
   margin-top: 12px;
 }
+
+.gylph-help {
+  font-size: 1.2em;
+  width: 1.4em;
+  color: #286090;
+}
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */

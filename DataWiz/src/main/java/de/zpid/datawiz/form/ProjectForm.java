@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import de.zpid.datawiz.dto.ContributorDTO;
+import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -24,6 +25,8 @@ public class ProjectForm implements Serializable {
   private List<ContributorDTO> contributors;
   @Valid
   private ContributorDTO primaryContributor;
+  @Valid
+  private DmpDTO dmp;
 
   private List<String> tags;
   private List<FileDTO> files;
@@ -98,5 +101,15 @@ public class ProjectForm implements Serializable {
   public static long getSerialversionuid() {
     return serialVersionUID;
   }
+
+  public DmpDTO getDmp() {
+    return dmp;
+  }
+
+  public void setDmp(DmpDTO dmp) {
+    this.dmp = dmp;
+  }
+  
+  
 
 }

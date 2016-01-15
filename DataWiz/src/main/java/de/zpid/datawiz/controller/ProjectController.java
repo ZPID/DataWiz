@@ -116,7 +116,8 @@ public class ProjectController {
     }
     // create new pform!
     try {
-      pForm = getProjectForm(pForm, pid, user);
+      pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
+          this.studyDAO, "PROJECT");
     } catch (Exception e) {
       log.warn(e.getMessage());
       String redirectMessage = "";
@@ -369,7 +370,8 @@ public class ProjectController {
    * @return
    * @throws Exception
    */
-  public ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user) throws Exception {
+  public static ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user, ProjectDAO projectDAO,
+      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, String call) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
     }
@@ -394,9 +396,13 @@ public class ProjectController {
       pForm.setProject(pdto);
       pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-      pForm.setFiles(fileDAO.getProjectFiles(pdto));
-      pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
-      pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
+      if (call == null || call.isEmpty() || call.equals("PROJECT")) {
+        pForm.setFiles(fileDAO.getProjectFiles(pdto));
+        pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
+        pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
+      } else if(call.equals("DMP")){
+        // TODO DMP DTO!!!
+      }
       return pForm;
     } else {
       log.warn("ProjectID or UserDTO is empty - NULL returned!");
