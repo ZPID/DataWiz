@@ -64,6 +64,12 @@ $tag_box = null;
 			    ($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
 		    });
 		    $(this).scrollTop(0);
+		    // DMP existing Data Content
+		    switchViewIfSelected("selectExistingData", 1);
+		    switchViewIfChecked('selectOtherDataTypes');
+		    
+		    
+		    
 	    });
 })(window.jQuery, window, document);
 
@@ -169,10 +175,10 @@ Dropzone.options.myDropzone = {
 	  });
 	  // shows a dialog after multiple upload finished
 	  this.on("successmultiple", function(files, serverResponse) {
-	  	// calls controller after successful multiple saving to reload the page"
-	  	setTimeout(function() {
-		  $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
-	  	}, 1000);
+		  // calls controller after successful multiple saving to reload the page"
+		  setTimeout(function() {
+			  $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
+		  }, 1000);
 	  });
   }
 };
@@ -190,4 +196,28 @@ function showInformationDialog(files, objectArray) {
 	  message : responseContent
 	});
 }
-// End DROPZONE for project-material upload!
+
+//End DROPZONE for project-material upload!
+
+/**
+ * 
+ * @param name
+ * @param show
+ */
+function switchViewIfSelected(name, show) {
+	var selected = $("#" + name).val();
+	name =  name.replace('select', 'content');	
+	$("#" + name + "").toggle(show == selected);
+}
+
+/**
+ * 
+ * @param name
+ * @param show
+ */
+function switchViewIfChecked(name) {
+	var selected = $("#" + name).is(':checked');
+	name =  name.replace('select', 'content');
+	$("#" + name + "").toggle(selected);
+}
+

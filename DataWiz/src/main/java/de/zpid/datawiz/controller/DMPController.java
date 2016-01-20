@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
+import de.zpid.datawiz.dao.DataTypeDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
@@ -31,6 +32,8 @@ public class DMPController {
   private ProjectDAO projectDAO;
   @Autowired
   private ContributorDAO contributorDAO;
+  @Autowired
+  private DataTypeDAO dataTypeDAO;
   @Autowired
   private MessageSource messageSource;
 
@@ -82,7 +85,7 @@ public class DMPController {
     // create new pform!
     try {
       pForm = ProjectController.getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, null, null, null,
-          "DMP");
+          this.dataTypeDAO, "DMP");
     } catch (Exception e) {
       log.warn(e.getMessage());
       String redirectMessage = "";

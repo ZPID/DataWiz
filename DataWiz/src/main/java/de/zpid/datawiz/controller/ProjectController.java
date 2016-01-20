@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
+import de.zpid.datawiz.dao.DataTypeDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.StudyDAO;
@@ -117,7 +118,7 @@ public class ProjectController {
     // create new pform!
     try {
       pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
-          this.studyDAO, "PROJECT");
+          this.studyDAO, null, "PROJECT");
     } catch (Exception e) {
       log.warn(e.getMessage());
       String redirectMessage = "";
@@ -371,7 +372,8 @@ public class ProjectController {
    * @throws Exception
    */
   public static ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user, ProjectDAO projectDAO,
-      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, String call) throws Exception {
+      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, DataTypeDAO dataTypeDAO,
+      String call) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
     }
@@ -400,8 +402,8 @@ public class ProjectController {
         pForm.setFiles(fileDAO.getProjectFiles(pdto));
         pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
-      } else if(call.equals("DMP")){
-        // TODO DMP DTO!!!
+      } else if (call.equals("DMP")) {
+        pForm.setDataTypes(dataTypeDAO.getAllActiv(true));
       }
       return pForm;
     } else {

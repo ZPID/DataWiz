@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
-// TODO: Auto-generated Javadoc
 /**
  * Implementation of the Data Types which are declared as DMP12 in the excel meta data sheet.
  * <P>
@@ -13,7 +12,7 @@ import javax.validation.constraints.NotNull;
  * @author Ronny Boelter
  * @version 1.0
  */
-public class DmpDataTypeDTO implements Serializable {
+public class DataTypeDTO implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 4523755361477035462L;
@@ -25,40 +24,51 @@ public class DmpDataTypeDTO implements Serializable {
   /** The project id - saved in the. */
   private int projectId;
 
-  /**  German name of the data type. */
+  /** German name of the data type. */
   @NotNull
   private String nameDE;
 
-  /**  English name of the data type. */
+  /** English name of the data type. */
   @NotNull
   private String nameEN;
 
-  /** If "other" is chosen - possibility to enter these types */
+  /** If "other" is chosen - possibility to enter these types. */
   private String otherDataTypes;
+
+  /** Delete these items is only possible if they are not used, so they can be set active or inactive */
+  private boolean active;
 
   /**
    * Instantiates a new dmpDataTypeDTO.
    */
-  public DmpDataTypeDTO() {
+  public DataTypeDTO() {
     super();
   }
 
   /**
-   * Instantiates a new dmpDataTypeDTO.
+   * Instantiates a new dataTypeDTO.
    *
-   * @param id DataTypeID
-   * @param projectId ProjectId is used in relation table 
-   * @param nameDE German name of the type of data 
-   * @param nameEN English name of the type of data 
-   * @param otherDataTypes Saved in Relation table if user has chosen "other" option
+   * @param id
+   *          the id
+   * @param projectId
+   *          the project id
+   * @param nameDE
+   *          the name de
+   * @param nameEN
+   *          the name en
+   * @param otherDataTypes
+   *          the other data types
+   * @param activ
+   *          the activ
    */
-  public DmpDataTypeDTO(int id, int projectId, String nameDE, String nameEN, String otherDataTypes) {
+  public DataTypeDTO(int id, int projectId, String nameDE, String nameEN, String otherDataTypes, boolean active) {
     super();
     this.id = id;
     this.projectId = projectId;
     this.nameDE = nameDE;
     this.nameEN = nameEN;
     this.otherDataTypes = otherDataTypes;
+    this.active = active;
   }
 
   /**
@@ -149,19 +159,42 @@ public class DmpDataTypeDTO implements Serializable {
   /**
    * Setter for {@link #otherDataTypes}.
    *
-   * @param otherDataTypes -> this.otherDataTypes
+   * @param otherDataTypes
+   *          -> this.otherDataTypes
    */
   public void setOtherDataTypes(String otherDataTypes) {
     this.otherDataTypes = otherDataTypes;
   }
 
-  /* (non-Javadoc)
+  /**
+   * Checks if is {@link #active}.
+   *
+   * @return true, if is active
+   */
+  public boolean isActive() {
+    return active;
+  }
+
+  /**
+   * Setter for {@link #active}.
+   *
+   * @param active
+   *          -> this.active
+   */
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#hashCode()
    */
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
+    result = prime * result + (active ? 1231 : 1237);
     result = prime * result + id;
     result = prime * result + ((nameDE == null) ? 0 : nameDE.hashCode());
     result = prime * result + ((nameEN == null) ? 0 : nameEN.hashCode());
@@ -170,7 +203,9 @@ public class DmpDataTypeDTO implements Serializable {
     return result;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -181,7 +216,9 @@ public class DmpDataTypeDTO implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    DmpDataTypeDTO other = (DmpDataTypeDTO) obj;
+    DataTypeDTO other = (DataTypeDTO) obj;
+    if (active != other.active)
+      return false;
     if (id != other.id)
       return false;
     if (nameDE == null) {
@@ -204,13 +241,15 @@ public class DmpDataTypeDTO implements Serializable {
     return true;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "DmpDataTypeDTO [id=" + id + ", projectId=" + projectId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
-        + ", otherDataTypes=" + otherDataTypes + "]";
+    return "DataTypeDTO [id=" + id + ", projectId=" + projectId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
+        + ", otherDataTypes=" + otherDataTypes + ", activ=" + active + "]";
   }
 
 }

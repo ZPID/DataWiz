@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
  * @author Ronny Boelter
  * @version 1.0
  */
-public class DmpCollectionModeDTO implements Serializable {
+public class CollectionModeDTO implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 4523755361477035462L;
@@ -38,14 +38,14 @@ public class DmpCollectionModeDTO implements Serializable {
   private String otherModes;
 
   /**
-   * Instantiates a new DmpCollectionModeDTO.
+   * Instantiates a new CollectionModeDTO.
    */
-  public DmpCollectionModeDTO() {
+  public CollectionModeDTO() {
     super();
   }
 
   /**
-   * Instantiates a new DmpCollectionModeDTO.
+   * Instantiates a new CollectionModeDTO.
    *
    * @param id
    *          CollectionModeID
@@ -58,7 +58,7 @@ public class DmpCollectionModeDTO implements Serializable {
    * @param otherModes
    *          Saved in Relation table if user has chosen "other" option
    */
-  public DmpCollectionModeDTO(int id, int projectId, String nameDE, String nameEN, String otherModes) {
+  public CollectionModeDTO(int id, int projectId, String nameDE, String nameEN, String otherModes) {
     super();
     this.id = id;
     this.projectId = projectId;
@@ -192,7 +192,7 @@ public class DmpCollectionModeDTO implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    DmpCollectionModeDTO other = (DmpCollectionModeDTO) obj;
+    CollectionModeDTO other = (CollectionModeDTO) obj;
     if (id != other.id)
       return false;
     if (nameDE == null) {
@@ -222,7 +222,7 @@ public class DmpCollectionModeDTO implements Serializable {
    */
   @Override
   public String toString() {
-    return "DmpDataTypeDTO [id=" + id + ", projectId=" + projectId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
+    return "DataTypeDTO [id=" + id + ", projectId=" + projectId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
         + ", otherCollectionMode=" + otherModes + "]";
   }
 
