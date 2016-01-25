@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import de.zpid.datawiz.dao.CollectionModeDAO;
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DataTypeDAO;
 import de.zpid.datawiz.dao.FileDAO;
@@ -118,7 +119,7 @@ public class ProjectController {
     // create new pform!
     try {
       pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
-          this.studyDAO, null, "PROJECT");
+          this.studyDAO, null, null, "PROJECT");
     } catch (Exception e) {
       log.warn(e.getMessage());
       String redirectMessage = "";
@@ -373,7 +374,7 @@ public class ProjectController {
    */
   public static ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user, ProjectDAO projectDAO,
       ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, DataTypeDAO dataTypeDAO,
-      String call) throws Exception {
+      CollectionModeDAO collectionModeDAO, String call) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
     }
@@ -404,6 +405,7 @@ public class ProjectController {
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
       } else if (call.equals("DMP")) {
         pForm.setDataTypes(dataTypeDAO.getAllActiv(true));
+        pForm.setCollectionModes(collectionModeDAO.getAllActiv(true));
       }
       return pForm;
     } else {

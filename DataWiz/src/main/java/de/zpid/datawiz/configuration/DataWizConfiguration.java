@@ -23,6 +23,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import de.zpid.datawiz.dao.CollectionModeDAO;
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DataTypeDAO;
 import de.zpid.datawiz.dao.FileDAO;
@@ -135,5 +136,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "dataTypeDao")
   public DataTypeDAO getDataTypeDAO() {
     return new DataTypeDAO(getDataSource());
+  }
+  
+  @Autowired
+  @Bean(name = "collectionModeDao")
+  public CollectionModeDAO getCollectionModeDAO() {
+    return new CollectionModeDAO(getDataSource());
   }
 }

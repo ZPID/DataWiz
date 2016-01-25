@@ -40,7 +40,8 @@ public class FileDAO {
   public List<FileDTO> getProjectFiles(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getProjectFiles for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
-    String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? ORDER BY dw_files.uploadDate DESC";
+    String sql = "SELECT dw_files.id, dw_files.project_id, dw_files.user_id, dw_files.name, dw_files.size, dw_files.contentType,"
+        + "dw_files.sha1, dw_files.md5, dw_files.uploadDate FROM dw_files WHERE dw_files.project_id = ? ORDER BY dw_files.uploadDate DESC";
     return jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<FileDTO>() {
       public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         FileDTO file = (FileDTO) context.getBean("FileDTO");
@@ -53,7 +54,7 @@ public class FileDAO {
         file.setSha1Checksum(rs.getString("sha1"));
         file.setMd5checksum(rs.getString("md5"));
         file.setUploadDate(rs.getTimestamp("uploadDate").toLocalDateTime());
-        file.setContent(rs.getBytes("content"));
+        // file.setContent(rs.getBytes("content"));
         return file;
       }
     });

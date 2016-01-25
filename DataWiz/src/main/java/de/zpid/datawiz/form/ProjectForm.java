@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import de.zpid.datawiz.dto.CollectionModeDTO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DataTypeDTO;
 import de.zpid.datawiz.dto.DmpDTO;
@@ -31,10 +32,11 @@ public class ProjectForm implements Serializable {
 
   private List<String> tags;
   private List<FileDTO> files;
-  
+
   /** DMP DATA */
-  
+
   private List<DataTypeDTO> dataTypes;
+  private List<CollectionModeDTO> collectionModes;
 
   // ViewHelper
   private int delPos;
@@ -122,9 +124,13 @@ public class ProjectForm implements Serializable {
   public void setDataTypes(List<DataTypeDTO> dataTypes) {
     this.dataTypes = dataTypes;
   }
-  
-  
-  
-  
+
+  public List<CollectionModeDTO> getCollectionModes() {
+    return collectionModes;
+  }
+
+  public void setCollectionModes(List<CollectionModeDTO> collectionModes) {
+    this.collectionModes = collectionModes;
+  }
 
 }

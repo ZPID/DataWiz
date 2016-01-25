@@ -43,6 +43,14 @@ textarea {
   content: ":";
 }
 
+.list-group-item .btn:AFTER {
+  content: "";
+}
+
+[type="checkbox"] ~ label:AFTER{
+  content:"";
+}
+
 .clean_label:AFTER {
   content: "";
 }

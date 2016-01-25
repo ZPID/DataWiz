@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.validation.constraints.Size;
 
-// TODO: Auto-generated Javadoc
 /**
  * Data-management-plan data transfer object: Includes all necessary information for the data-management-plan. Some DMP
  * information are saved in the Project information, such as name of the project Please read the metadata excel sheet
@@ -41,7 +40,6 @@ public class DmpDTO implements Serializable {
 
   // ***************** Research Data *****************
   /** DMP09 : 0 yes, existing data are used/ 1 no data were found/ 2 no search was carried out. */
-  @Size(min = 0, max = 1000)
   private int existingData;
 
   /** DMP10. */
@@ -66,7 +64,15 @@ public class DmpDTO implements Serializable {
 
   /** DMP14. How will the data be collected or generated? */
   /** DMP14 - Subitem DMP14, PsychData - META096 */
-  private List<CollectionModeDTO> collectionModes;
+  private List<Integer> usedCollectionModes;
+  
+  /** other Collection Modes with Invest. present*/
+  @Size(min = 0, max = 1000)
+  private String otherCMIP;
+  
+  /** other Collection Modes with Invest. not present*/
+  @Size(min = 0, max = 1000)
+  private String otherCMINP;
 
   /** Subitem DMP14, JARS - META094 Study Metadata. */
   @Size(min = 0, max = 250)
@@ -76,15 +82,16 @@ public class DmpDTO implements Serializable {
   @Size(min = 0, max = 1000)
   private String measOccasions;
 
-  /** Subitem DMP16, JARS - META131 Study Metadata. */
+  /** Subitem DMP16 */
+  /** Subitem DMP90, JARS - META131 Study Metadata. */
   @Size(min = 0, max = 1000)
   private String reliabilityTraining;
 
-  /** Subitem DMP16, JARS - META132 Study Metadata. */
+  /** Subitem DMP91, JARS - META132 Study Metadata. */
   @Size(min = 0, max = 1000)
   private String multipleMeasurements;
 
-  /** Subitem DMP16, Psychdata - META233 Study Metadata. */
+  /** Subitem DMP92, Psychdata - META233 Study Metadata. */
   @Size(min = 0, max = 1000)
   private String qualitityOther;
 
@@ -351,18 +358,17 @@ public class DmpDTO implements Serializable {
    *
    * @return collectionModes
    */
-  public List<CollectionModeDTO> getCollectionModes() {
-    return collectionModes;
+  public List<Integer> getUsedCollectionModes() {
+    return usedCollectionModes;
   }
 
   /**
    * Setter for {@link #collectionModes}.
    *
-   * @param collectionModes
-   *          -> this.collectionModes
+   * @param usedCollectionModes -> this.usedCollectionModes
    */
-  public void setCollectionModes(List<CollectionModeDTO> collectionModes) {
-    this.collectionModes = collectionModes;
+  public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
+    this.usedCollectionModes = usedCollectionModes;
   }
 
   /**
@@ -820,5 +826,43 @@ public class DmpDTO implements Serializable {
   public void setOtherDataTypes(String otherDataTypes) {
     this.otherDataTypes = otherDataTypes;
   }
+
+  /**
+   * Getter for {@link #otherCMIP}.
+   *
+   * @return otherCMIP
+   */
+  public String getOtherCMIP() {
+    return otherCMIP;
+  }
+
+  /**
+   * Setter for {@link #otherCMIP}.
+   *
+   * @param otherCMIP -> this.otherCMIP
+   */
+  public void setOtherCMIP(String otherCMIP) {
+    this.otherCMIP = otherCMIP;
+  }
+
+  /**
+   * Getter for {@link #otherCMINP}.
+   *
+   * @return otherCMINP
+   */
+  public String getOtherCMINP() {
+    return otherCMINP;
+  }
+
+  /**
+   * Setter for {@link #otherCMINP}.
+   *
+   * @param otherCMINP -> this.otherCMINP
+   */
+  public void setOtherCMINP(String otherCMINP) {
+    this.otherCMINP = otherCMINP;
+  }
+  
+  
 
 }

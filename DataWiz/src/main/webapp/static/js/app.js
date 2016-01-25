@@ -1,11 +1,3 @@
-/*
- * 
- * 
- * 
- * 
- * 
- */
-
 // the project tag_box
 $tag_box = null;
 
@@ -64,12 +56,18 @@ $tag_box = null;
 			    ($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
 		    });
 		    $(this).scrollTop(0);
+		    // checkbox style		    
 		    // DMP existing Data Content
 		    switchViewIfSelected("selectExistingData", 1);
 		    switchViewIfChecked('selectOtherDataTypes');
-		    
-		    
-		    
+		    switchViewIfChecked('selectCollectionModesIP');
+		    switchViewIfChecked('selectCollectionModesINP');
+		    switchViewIfSelected("selectStorageWC", 1);
+		    switchViewIfSelected("selectGoodScientific", 1);
+		    switchViewIfSelected("selectSubsequentUse", 1);
+		    switchViewIfSelected("selectDataRequirements", 1);
+		    switchViewIfSelected("selectDataDocumentation", 1);
+		    switchViewIfSelected("selectDataSelection", 1);
 	    });
 })(window.jQuery, window, document);
 
@@ -197,7 +195,7 @@ function showInformationDialog(files, objectArray) {
 	});
 }
 
-//End DROPZONE for project-material upload!
+// End DROPZONE for project-material upload!
 
 /**
  * 
@@ -205,8 +203,9 @@ function showInformationDialog(files, objectArray) {
  * @param show
  */
 function switchViewIfSelected(name, show) {
+	console.log(name);
 	var selected = $("#" + name).val();
-	name =  name.replace('select', 'content');	
+	name = name.replace('select', 'content');
 	$("#" + name + "").toggle(show == selected);
 }
 
@@ -216,8 +215,8 @@ function switchViewIfSelected(name, show) {
  * @param show
  */
 function switchViewIfChecked(name) {
+	console.log(name);
 	var selected = $("#" + name).is(':checked');
-	name =  name.replace('select', 'content');
+	name = name.replace('select', 'content');
 	$("#" + name + "").toggle(selected);
 }
-

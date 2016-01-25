@@ -35,8 +35,11 @@ public class DataTypeDTO implements Serializable {
   /** If "other" is chosen - possibility to enter these types. */
   private String otherDataTypes;
 
-  /** Delete these items is only possible if they are not used, so they can be set active or inactive */
+  /** Delete these items is only possible if they are not used, but they can be set active or inactive. */
   private boolean active;
+
+  /** sort the datatypes. */
+  private int sort;
 
   /**
    * Instantiates a new dmpDataTypeDTO.
@@ -58,10 +61,13 @@ public class DataTypeDTO implements Serializable {
    *          the name en
    * @param otherDataTypes
    *          the other data types
-   * @param activ
-   *          the activ
+   * @param active
+   *          the active
+   * @param sort
+   *          the sort
    */
-  public DataTypeDTO(int id, int projectId, String nameDE, String nameEN, String otherDataTypes, boolean active) {
+  public DataTypeDTO(int id, int projectId, String nameDE, String nameEN, String otherDataTypes, boolean active,
+      int sort) {
     super();
     this.id = id;
     this.projectId = projectId;
@@ -69,6 +75,7 @@ public class DataTypeDTO implements Serializable {
     this.nameEN = nameEN;
     this.otherDataTypes = otherDataTypes;
     this.active = active;
+    this.sort = sort;
   }
 
   /**
@@ -185,6 +192,25 @@ public class DataTypeDTO implements Serializable {
     this.active = active;
   }
 
+  /**
+   * Getter for {@link #sort}.
+   *
+   * @return sort
+   */
+  public int getSort() {
+    return sort;
+  }
+
+  /**
+   * Setter for {@link #sort}.
+   *
+   * @param sort
+   *          -> this.sort
+   */
+  public void setSort(int sort) {
+    this.sort = sort;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -200,6 +226,7 @@ public class DataTypeDTO implements Serializable {
     result = prime * result + ((nameEN == null) ? 0 : nameEN.hashCode());
     result = prime * result + ((otherDataTypes == null) ? 0 : otherDataTypes.hashCode());
     result = prime * result + projectId;
+    result = prime * result + sort;
     return result;
   }
 
@@ -238,6 +265,8 @@ public class DataTypeDTO implements Serializable {
       return false;
     if (projectId != other.projectId)
       return false;
+    if (sort != other.sort)
+      return false;
     return true;
   }
 
@@ -249,7 +278,7 @@ public class DataTypeDTO implements Serializable {
   @Override
   public String toString() {
     return "DataTypeDTO [id=" + id + ", projectId=" + projectId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
-        + ", otherDataTypes=" + otherDataTypes + ", activ=" + active + "]";
+        + ", otherDataTypes=" + otherDataTypes + ", active=" + active + ", sort=" + sort + "]";
   }
 
 }
