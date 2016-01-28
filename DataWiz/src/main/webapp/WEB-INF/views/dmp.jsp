@@ -43,8 +43,23 @@
         <!-- START Research Data Content -->
         <%@ include file="forms/researchdata.jsp"%>
         <!-- START Meta Data Content -->
-        <div id="metadataActiveContent" class="projectContent">789</div>
-        <div id="accessActiveContent" class="projectContent">1234</div>
+        <div id="metadataActiveContent" class="projectContent">
+          <!-- Infotxt -->
+          <div class="form-group">
+            <div class="col-sm-12">
+              <div class="well marginTop1">
+                <s:message code="project.edit.metadata.info" />
+              </div>
+            </div>
+          </div>
+          <ul class="list-group">
+            <!-- releaseObligation -->
+            <li class="list-group-item"></li>
+          </ul>
+        </div>
+        <!-- START Data Sharing Content -->
+        <%@ include file="forms/sharing.jsp"%>
+
         <div id="storageActiveContent" class="projectContent">5678</div>
         <div id="organizationActiveContent" class="projectContent">12345</div>
         <div id="ethicalActiveContent" class="projectContent">67890</div>

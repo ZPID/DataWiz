@@ -56,7 +56,7 @@ $tag_box = null;
 			    ($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
 		    });
 		    $(this).scrollTop(0);
-		    // checkbox style		    
+		    // checkbox style
 		    // DMP existing Data Content
 		    switchViewIfSelected("selectExistingData", 1);
 		    switchViewIfChecked('selectOtherDataTypes');
@@ -68,6 +68,11 @@ $tag_box = null;
 		    switchViewIfSelected("selectDataRequirements", 1);
 		    switchViewIfSelected("selectDataDocumentation", 1);
 		    switchViewIfSelected("selectDataSelection", 1);
+		    switchViewIfSelectedMulti('selectPublStrategy', 'repository,author,nopubl');
+		    switchViewIfSelected('selectNoAccessReason', 'other');
+		    switchViewIfSelected('selectAccessCosts', 1);
+		    switchViewIfSelected('selectClarifiedRights', 1);
+		    switchViewIfSelected('selectUsedPID', 'other');
 	    });
 })(window.jQuery, window, document);
 
@@ -203,7 +208,7 @@ function showInformationDialog(files, objectArray) {
  * @param show
  */
 function switchViewIfSelected(name, show) {
-	console.log(name);
+	console.log(name + " - " + show);
 	var selected = $("#" + name).val();
 	name = name.replace('select', 'content');
 	$("#" + name + "").toggle(show == selected);
@@ -214,8 +219,29 @@ function switchViewIfSelected(name, show) {
  * @param name
  * @param show
  */
+function switchViewIfSelectedMulti(name, show) {
+	var selected = $("#" + name).val().trim();
+	name = name.replace('select', 'content');
+	var showA = show.split(',');
+	var hideContainer = true;
+	for (var i = 0; i < showA.length; i++)
+		$("." + name + i).toggle(false);	
+	for (var i = 0; i < showA.length; i++) {
+		$("." + name + i).toggle(showA[i].trim() == selected);
+		if(showA[i] == selected){			
+			hideContainer = false;
+			break;
+		}
+	}
+	$("#" + name+ "").toggle(!hideContainer);
+
+}
+
+/**
+ * 
+ * @param hideContainer@param show
+ */
 function switchViewIfChecked(name) {
-	console.log(name);
 	var selected = $("#" + name).is(':checked');
 	name = name.replace('select', 'content');
 	$("#" + name + "").toggle(selected);

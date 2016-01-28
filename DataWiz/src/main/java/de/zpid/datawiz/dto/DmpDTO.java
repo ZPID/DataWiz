@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.constraints.Size;
 
+// TODO: Auto-generated Javadoc
 /**
  * Data-management-plan data transfer object: Includes all necessary information for the data-management-plan. Some DMP
  * information are saved in the Project information, such as name of the project Please read the metadata excel sheet
@@ -65,12 +66,12 @@ public class DmpDTO implements Serializable {
   /** DMP14. How will the data be collected or generated? */
   /** DMP14 - Subitem DMP14, PsychData - META096 */
   private List<Integer> usedCollectionModes;
-  
-  /** other Collection Modes with Invest. present*/
+
+  /** other Collection Modes with Invest. present */
   @Size(min = 0, max = 1000)
   private String otherCMIP;
-  
-  /** other Collection Modes with Invest. not present*/
+
+  /** other Collection Modes with Invest. not present */
   @Size(min = 0, max = 1000)
   private String otherCMINP;
 
@@ -82,7 +83,7 @@ public class DmpDTO implements Serializable {
   @Size(min = 0, max = 1000)
   private String measOccasions;
 
-  /** Subitem DMP16 */
+  /** Subitem DMP16. */
   /** Subitem DMP90, JARS - META131 Study Metadata. */
   @Size(min = 0, max = 1000)
   private String reliabilityTraining;
@@ -162,6 +163,82 @@ public class DmpDTO implements Serializable {
   /** DMP29. */
   @Size(min = 0, max = 500)
   private String deleteProcedure;
+
+  // ***************** MetaData Data *****************
+
+  // ***************** Data Sharing *****************
+
+  /** DMP39. */
+  private boolean releaseObligation;
+
+  /** DMP40. */
+  @Size(min = 0, max = 1000)
+  private String expectedGroups;
+
+  /** DMP42. */
+  private boolean searchableData;
+
+  /** DMP44. */
+  @Size(min = 0, max = 1000)
+  private String expectedUsage;
+
+  /** DMP43 (select). */
+  private String publStrategy;
+
+  /** DMP38 - if data access on demand by author. */
+  @Size(min = 0, max = 500)
+  private String accessReasonAuthor;
+
+  /** DMP38 - if data are not accessible (select). */
+  private String noAccessReason;
+
+  /** DMP38 - if data are not accessible - reason == other. */
+  @Size(min = 0, max = 500)
+  private String noAccessReasonOther;
+
+  // next fields are shown if principleRetain == repository!<
+  /** DMP45. */
+  @Size(min = 0, max = 1000)
+  private String transferTime;
+
+  /** DMP46. */
+  @Size(min = 0, max = 1000)
+  private String sensitiveData;
+
+  /** DMP47. */
+  @Size(min = 0, max = 1000)
+  private String initialUsage;
+
+  /** DMP48. */
+  @Size(min = 0, max = 500)
+  private String usageRestriction;
+
+  /** DMP49. */
+  private boolean accessCosts;
+
+  /** DMP49 - if accessCost == true. */
+  @Size(min = 0, max = 500)
+  private String accessCostsTxt;
+
+  /** DMP50. */
+  @Size(min = 0, max = 2000)
+  private String accessTermsImplementation;
+
+  /** DMP51. */
+  private boolean clarifiedRights;
+
+  /** DMP51 - if clarifiedRights == true. */
+  @Size(min = 0, max = 500)
+  private String clarifiedRightsTxt;
+
+  /** DMP52. */
+  private boolean acquisitionAgreement;
+
+  /** DMP53 (select). */
+  private String usedPID;
+
+  /** DMP53 (select)-> other selected */
+  private String usedPIDTxt;
 
   /**
    * Getter for {@link #id}.
@@ -365,7 +442,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #collectionModes}.
    *
-   * @param usedCollectionModes -> this.usedCollectionModes
+   * @param usedCollectionModes
+   *          -> this.usedCollectionModes
    */
   public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
     this.usedCollectionModes = usedCollectionModes;
@@ -839,7 +917,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #otherCMIP}.
    *
-   * @param otherCMIP -> this.otherCMIP
+   * @param otherCMIP
+   *          -> this.otherCMIP
    */
   public void setOtherCMIP(String otherCMIP) {
     this.otherCMIP = otherCMIP;
@@ -857,12 +936,369 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #otherCMINP}.
    *
-   * @param otherCMINP -> this.otherCMINP
+   * @param otherCMINP
+   *          -> this.otherCMINP
    */
   public void setOtherCMINP(String otherCMINP) {
     this.otherCMINP = otherCMINP;
   }
-  
-  
+
+  /**
+   * Checks if is {@link #releaseObligation}.
+   *
+   * @return true, if is release obligation
+   */
+  public boolean isReleaseObligation() {
+    return releaseObligation;
+  }
+
+  /**
+   * Setter for {@link #releaseObligation}.
+   *
+   * @param releaseObligation
+   *          -> this.releaseObligation
+   */
+  public void setReleaseObligation(boolean releaseObligation) {
+    this.releaseObligation = releaseObligation;
+  }
+
+  /**
+   * Getter for {@link #expectedGroups}.
+   *
+   * @return expectedGroups
+   */
+  public String getExpectedGroups() {
+    return expectedGroups;
+  }
+
+  /**
+   * Setter for {@link #expectedGroups}.
+   *
+   * @param expectedGroups
+   *          -> this.expectedGroups
+   */
+  public void setExpectedGroups(String expectedGroups) {
+    this.expectedGroups = expectedGroups;
+  }
+
+  /**
+   * Checks if is {@link #searchableData}.
+   *
+   * @return true, if is searchable data
+   */
+  public boolean isSearchableData() {
+    return searchableData;
+  }
+
+  /**
+   * Setter for {@link #searchableData}.
+   *
+   * @param searchableData
+   *          -> this.searchableData
+   */
+  public void setSearchableData(boolean searchableData) {
+    this.searchableData = searchableData;
+  }
+
+  /**
+   * Checks if is {@link #expectedUsage}.
+   *
+   * @return true, if is expected usage
+   */
+  public String getExpectedUsage() {
+    return expectedUsage;
+  }
+
+  /**
+   * Setter for {@link #expectedUsage}.
+   *
+   * @param expectedUsage
+   *          -> this.expectedUsage
+   */
+  public void setExpectedUsage(String expectedUsage) {
+    this.expectedUsage = expectedUsage;
+  }
+
+  /**
+   * Getter for {@link #accessReasonAuthor}.
+   *
+   * @return accessReasonAuthor
+   */
+  public String getAccessReasonAuthor() {
+    return accessReasonAuthor;
+  }
+
+  /**
+   * Setter for {@link #accessReasonAuthor}.
+   *
+   * @param accessReasonAuthor
+   *          -> this.accessReasonAuthor
+   */
+  public void setAccessReasonAuthor(String accessReasonAuthor) {
+    this.accessReasonAuthor = accessReasonAuthor;
+  }
+
+  /**
+   * Getter for {@link #noAccessReason}.
+   *
+   * @return noAccessReason
+   */
+  public String getNoAccessReason() {
+    return noAccessReason;
+  }
+
+  /**
+   * Setter for {@link #noAccessReason}.
+   *
+   * @param noAccessReason
+   *          -> this.noAccessReason
+   */
+  public void setNoAccessReason(String noAccessReason) {
+    this.noAccessReason = noAccessReason;
+  }
+
+  /**
+   * Getter for {@link #noAccessReasonOther}.
+   *
+   * @return noAccessReasonOther
+   */
+  public String getNoAccessReasonOther() {
+    return noAccessReasonOther;
+  }
+
+  /**
+   * Setter for {@link #noAccessReasonOther}.
+   *
+   * @param noAccessReasonOther
+   *          -> this.noAccessReasonOther
+   */
+  public void setNoAccessReasonOther(String noAccessReasonOther) {
+    this.noAccessReasonOther = noAccessReasonOther;
+  }
+
+  /**
+   * Getter for {@link #transferTime}.
+   *
+   * @return transferTime
+   */
+  public String getTransferTime() {
+    return transferTime;
+  }
+
+  /**
+   * Setter for {@link #transferTime}.
+   *
+   * @param transferTime
+   *          -> this.transferTime
+   */
+  public void setTransferTime(String transferTime) {
+    this.transferTime = transferTime;
+  }
+
+  /**
+   * Getter for {@link #sensitiveData}.
+   *
+   * @return sensitiveData
+   */
+  public String getSensitiveData() {
+    return sensitiveData;
+  }
+
+  /**
+   * Setter for {@link #sensitiveData}.
+   *
+   * @param sensitiveData
+   *          -> this.sensitiveData
+   */
+  public void setSensitiveData(String sensitiveData) {
+    this.sensitiveData = sensitiveData;
+  }
+
+  /**
+   * Getter for {@link #initialUsage}.
+   *
+   * @return initialUsage
+   */
+  public String getInitialUsage() {
+    return initialUsage;
+  }
+
+  /**
+   * Setter for {@link #initialUsage}.
+   *
+   * @param initialUsage
+   *          -> this.initialUsage
+   */
+  public void setInitialUsage(String initialUsage) {
+    this.initialUsage = initialUsage;
+  }
+
+  /**
+   * Getter for {@link #usageRestriction}.
+   *
+   * @return usageRestriction
+   */
+  public String getUsageRestriction() {
+    return usageRestriction;
+  }
+
+  /**
+   * Setter for {@link #usageRestriction}.
+   *
+   * @param usageRestriction
+   *          -> this.usageRestriction
+   */
+  public void setUsageRestriction(String usageRestriction) {
+    this.usageRestriction = usageRestriction;
+  }
+
+  /**
+   * Checks if is {@link #accessCosts}.
+   *
+   * @return true, if is access costs
+   */
+  public boolean isAccessCosts() {
+    return accessCosts;
+  }
+
+  /**
+   * Setter for {@link #accessCosts}.
+   *
+   * @param accessCosts
+   *          -> this.accessCosts
+   */
+  public void setAccessCosts(boolean accessCosts) {
+    this.accessCosts = accessCosts;
+  }
+
+  /**
+   * Getter for {@link #accessCostsTxt}.
+   *
+   * @return accessCostsTxt
+   */
+  public String getAccessCostsTxt() {
+    return accessCostsTxt;
+  }
+
+  /**
+   * Setter for {@link #accessCostsTxt}.
+   *
+   * @param accessCostsTxt
+   *          -> this.accessCostsTxt
+   */
+  public void setAccessCostsTxt(String accessCostsTxt) {
+    this.accessCostsTxt = accessCostsTxt;
+  }
+
+  /**
+   * Getter for {@link #accessTermsImplementation}.
+   *
+   * @return accessTermsImplementation
+   */
+  public String getAccessTermsImplementation() {
+    return accessTermsImplementation;
+  }
+
+  /**
+   * Setter for {@link #accessTermsImplementation}.
+   *
+   * @param accessTermsImplementation
+   *          -> this.accessTermsImplementation
+   */
+  public void setAccessTermsImplementation(String accessTermsImplementation) {
+    this.accessTermsImplementation = accessTermsImplementation;
+  }
+
+  /**
+   * Checks if is {@link #clarifiedRights}.
+   *
+   * @return true, if is clarified rights
+   */
+  public boolean isClarifiedRights() {
+    return clarifiedRights;
+  }
+
+  /**
+   * Setter for {@link #clarifiedRights}.
+   *
+   * @param clarifiedRights
+   *          -> this.clarifiedRights
+   */
+  public void setClarifiedRights(boolean clarifiedRights) {
+    this.clarifiedRights = clarifiedRights;
+  }
+
+  /**
+   * Getter for {@link #clarifiedRightsTxt}.
+   *
+   * @return clarifiedRightsTxt
+   */
+  public String getClarifiedRightsTxt() {
+    return clarifiedRightsTxt;
+  }
+
+  /**
+   * Setter for {@link #clarifiedRightsTxt}.
+   *
+   * @param clarifiedRightsTxt
+   *          -> this.clarifiedRightsTxt
+   */
+  public void setClarifiedRightsTxt(String clarifiedRightsTxt) {
+    this.clarifiedRightsTxt = clarifiedRightsTxt;
+  }
+
+  /**
+   * Checks if is {@link #acquisitionAgreement}.
+   *
+   * @return true, if is acquisition agreement
+   */
+  public boolean isAcquisitionAgreement() {
+    return acquisitionAgreement;
+  }
+
+  /**
+   * Setter for {@link #acquisitionAgreement}.
+   *
+   * @param acquisitionAgreement
+   *          -> this.acquisitionAgreement
+   */
+  public void setAcquisitionAgreement(boolean acquisitionAgreement) {
+    this.acquisitionAgreement = acquisitionAgreement;
+  }
+
+  /**
+   * Getter for {@link #usedPID}.
+   *
+   * @return usedPID
+   */
+  public String getUsedPID() {
+    return usedPID;
+  }
+
+  /**
+   * Setter for {@link #usedPID}.
+   *
+   * @param usedPID
+   *          -> this.usedPID
+   */
+  public void setUsedPID(String usedPID) {
+    this.usedPID = usedPID;
+  }
+
+  public String getPublStrategy() {
+    return publStrategy;
+  }
+
+  public void setPublStrategy(String publStrategy) {
+    this.publStrategy = publStrategy;
+  }
+
+  public String getUsedPIDTxt() {
+    return usedPIDTxt;
+  }
+
+  public void setUsedPIDTxt(String usedPIDTxt) {
+    this.usedPIDTxt = usedPIDTxt;
+  }
 
 }
