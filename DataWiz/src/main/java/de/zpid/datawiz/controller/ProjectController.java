@@ -33,9 +33,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.CollectionModeDAO;
 import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.DataTypeDAO;
+import de.zpid.datawiz.dao.DmpRelTypeDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.StudyDAO;
@@ -119,7 +118,7 @@ public class ProjectController {
     // create new pform!
     try {
       pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
-          this.studyDAO, null, null, "PROJECT");
+          this.studyDAO, null, "PROJECT");
     } catch (Exception e) {
       log.warn(e.getMessage());
       String redirectMessage = "";
@@ -373,8 +372,8 @@ public class ProjectController {
    * @throws Exception
    */
   public static ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user, ProjectDAO projectDAO,
-      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, DataTypeDAO dataTypeDAO,
-      CollectionModeDAO collectionModeDAO, String call) throws Exception {
+      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, DmpRelTypeDAO dmpRelTypeDAO,
+      String call) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
     }
@@ -394,7 +393,7 @@ public class ProjectController {
       // 2nd - security access check!
       if (user.getId() != pdto.getProjectRole().getUserId()) {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
-            + " tries to get access to project:" + pdto.getId() + " without having the permissions to read");
+            + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
       }
       pForm.setProject(pdto);
       pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
@@ -404,8 +403,9 @@ public class ProjectController {
         pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
       } else if (call.equals("DMP")) {
-        pForm.setDataTypes(dataTypeDAO.getAllActiv(true));
-        pForm.setCollectionModes(collectionModeDAO.getAllActiv(true));
+        pForm.setDataTypes(dmpRelTypeDAO.getAllActivDataTypes(true));
+        pForm.setCollectionModes(dmpRelTypeDAO.getAllActivCollectionModes(true));
+        pForm.setMetaPurposes(dmpRelTypeDAO.getAllActivMetaPurposes(true));
       }
       return pForm;
     } else {

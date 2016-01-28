@@ -57,11 +57,12 @@
           <li class="list-group-item col-sm-4"><c:choose>
               <c:when test="${dtype.id == 0}">
                 <label class="btn btn-default" style="width: 100%"><sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}"
-                    onchange="switchViewIfChecked('selectOtherDataTypes')" id="selectOtherDataTypes" /> <s:message text="${dtype.nameDE}" /></label>
+                    onchange="switchViewIfChecked('selectOtherDataTypes')" id="selectOtherDataTypes" /> <s:message
+                    text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
               </c:when>
               <c:otherwise>
                 <label class="btn btn-default" style="width: 100%"><sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}" /> <s:message
-                    text="${dtype.nameDE}" /></label>
+                    text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
               </c:otherwise>
             </c:choose></li>
         </c:forEach>
@@ -102,11 +103,12 @@
             <c:if test="${dtype.investPresent}">
               <li class="list-group-item"><c:choose>
                   <c:when test="${dtype.id == 1}">
-                    <sf:checkbox path="dmp.usedCollectionModes" label="${dtype.nameDE}" value="${dtype.id}"
-                      onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" />
+                    <sf:checkbox path="dmp.usedCollectionModes" label="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}"
+                      value="${dtype.id}" onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" />
                   </c:when>
                   <c:otherwise>
-                    <sf:checkbox path="dmp.usedCollectionModes" label="${dtype.nameDE}" value="${dtype.id}" />
+                    <sf:checkbox path="dmp.usedCollectionModes" label="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}"
+                      value="${dtype.id}" />
                   </c:otherwise>
                 </c:choose></li>
             </c:if>

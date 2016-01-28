@@ -54,7 +54,30 @@
           </div>
           <ul class="list-group">
             <!-- releaseObligation -->
-            <li class="list-group-item"></li>
+            <li class="list-group-item">
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <label for="dmp.releaseObligation"><s:message code="dmp.edit.releaseObligation" /></label>
+                  <div class="form-group">
+                    <div class="col-sm-12">
+                      <c:forEach items="${ProjectForm.metaPurposes}" var="dtype">
+                        <label class="btn btn-default col-sm-12" style="text-align: left;"><sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}" /> <s:message
+                            text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
+                      </c:forEach>
+                    </div>
+                  </div>
+                  <s:message code="dmp.edit.releaseObligation.help" var="appresmess" />
+                  <%@ include file="templates/helpblock.jsp"%>
+                </div>
+              </div>
+
+
+
+
+            </li>
+
+
+
           </ul>
         </div>
         <!-- START Data Sharing Content -->

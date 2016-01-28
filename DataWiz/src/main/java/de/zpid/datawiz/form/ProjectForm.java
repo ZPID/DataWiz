@@ -5,10 +5,9 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import de.zpid.datawiz.dto.CollectionModeDTO;
 import de.zpid.datawiz.dto.ContributorDTO;
-import de.zpid.datawiz.dto.DataTypeDTO;
 import de.zpid.datawiz.dto.DmpDTO;
+import de.zpid.datawiz.dto.DmpRelTypeDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -34,9 +33,9 @@ public class ProjectForm implements Serializable {
   private List<FileDTO> files;
 
   /** DMP DATA */
-
-  private List<DataTypeDTO> dataTypes;
-  private List<CollectionModeDTO> collectionModes;
+  private List<DmpRelTypeDTO> dataTypes;
+  private List<DmpRelTypeDTO> collectionModes;
+  private List<DmpRelTypeDTO> metaPurposes;
 
   // ViewHelper
   private int delPos;
@@ -117,20 +116,28 @@ public class ProjectForm implements Serializable {
     this.dmp = dmp;
   }
 
-  public List<DataTypeDTO> getDataTypes() {
+  public List<DmpRelTypeDTO> getDataTypes() {
     return dataTypes;
   }
 
-  public void setDataTypes(List<DataTypeDTO> dataTypes) {
+  public void setDataTypes(List<DmpRelTypeDTO> dataTypes) {
     this.dataTypes = dataTypes;
   }
 
-  public List<CollectionModeDTO> getCollectionModes() {
+  public List<DmpRelTypeDTO> getCollectionModes() {
     return collectionModes;
   }
 
-  public void setCollectionModes(List<CollectionModeDTO> collectionModes) {
+  public void setCollectionModes(List<DmpRelTypeDTO> collectionModes) {
     this.collectionModes = collectionModes;
+  }
+
+  public List<DmpRelTypeDTO> getMetaPurposes() {
+    return metaPurposes;
+  }
+
+  public void setMetaPurposes(List<DmpRelTypeDTO> metaPurposes) {
+    this.metaPurposes = metaPurposes;
   }
 
 }
