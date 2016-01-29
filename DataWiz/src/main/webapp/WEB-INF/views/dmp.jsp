@@ -39,11 +39,15 @@
           </div>
         </c:if>
         <!-- START Administration Data Content -->
-        <%@ include file="forms/admindata.jsp"%>
+        <%@ include file="forms/dmp_admindata.jsp"%>
         <!-- START Research Data Content -->
-        <%@ include file="forms/researchdata.jsp"%>
+        <%@ include file="forms/dmp_researchdata.jsp"%>
         <!-- START Meta Data Content -->
-        <div id="metadataActiveContent" class="projectContent">
+        <%@ include file="forms/dmp_metadata.jsp"%>
+        <!-- START Data Sharing Content -->
+        <%@ include file="forms/dmp_sharing.jsp"%>
+        <!-- START Storage Content -->
+        <div id="storageActiveContent" class="projectContent">
           <!-- Infotxt -->
           <div class="form-group">
             <div class="col-sm-12">
@@ -53,37 +57,50 @@
             </div>
           </div>
           <ul class="list-group">
-            <!-- releaseObligation -->
+            <!-- storageResponsible -->
             <li class="list-group-item">
-              <div class="form-group">
-                <div class="col-sm-12">
-                  <label for="dmp.releaseObligation"><s:message code="dmp.edit.releaseObligation" /></label>
-                  <div class="form-group">
-                    <div class="col-sm-12">
-                      <c:forEach items="${ProjectForm.metaPurposes}" var="dtype">
-                        <label class="btn btn-default col-sm-12" style="text-align: left;"><sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}" /> <s:message
-                            text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
-                      </c:forEach>
-                    </div>
-                  </div>
-                  <s:message code="dmp.edit.releaseObligation.help" var="appresmess" />
-                  <%@ include file="templates/helpblock.jsp"%>
-                </div>
-              </div>
-
-
-
-
+               <s:message text="storageResponsible" var="dmp_var_name" /> 
+              <%@ include file="templates/textarea.jsp"%>
             </li>
-
-
-
+            <!-- storageTechnologies -->
+            <li class="list-group-item">
+               <s:message text="storageTechnologies" var="dmp_var_name" /> 
+               <%@ include file="templates/textarea.jsp"%>
+            </li>
+            <!-- storagePlaces -->
+            <li class="list-group-item">
+              <s:message text="storagePlaces" var="dmp_var_name" /> 
+               <%@ include file="templates/textarea.jsp"%>
+            </li>
+            <!-- storageBackups -->
+            <li class="list-group-item">
+              <s:message text="storageBackups" var="dmp_var_name" /> 
+              <%@ include file="templates/textarea.jsp"%>
+            </li>
+            <!-- storageTransfer -->
+            <li class="list-group-item">
+              <s:message text="storageTransfer" var="dmp_var_name" /> 
+              <%@ include file="templates/textarea.jsp"%>
+            </li>
+            <!-- storageExpectedSize -->
+            <li class="list-group-item">
+              <s:message text="storageExpectedSize" var="dmp_var_name" /> 
+              <%@ include file="templates/textarea.jsp"%>
+            </li>
+            <!-- storageExpectedSize -->
+            <li class="list-group-item">
+              <s:message text="storageRequirements" var="dmp_var_name" />
+              <s:message text="1" var="dmp_explain_at" />  
+              <%@ include file="templates/selectYesNoWithReason.jsp"%>
+            </li>
+            <!-- storageSuccession -->
+            <li class="list-group-item">
+              <s:message text="storageSuccession" var="dmp_var_name" />
+              <s:message text="1" var="dmp_explain_at" />  
+              <%@ include file="templates/selectYesNoWithReason.jsp"%>
+            </li>
           </ul>
         </div>
-        <!-- START Data Sharing Content -->
-        <%@ include file="forms/sharing.jsp"%>
-
-        <div id="storageActiveContent" class="projectContent">5678</div>
         <div id="organizationActiveContent" class="projectContent">12345</div>
         <div id="ethicalActiveContent" class="projectContent">67890</div>
         <div id="costsActiveContent" class="projectContent">1234567890</div>

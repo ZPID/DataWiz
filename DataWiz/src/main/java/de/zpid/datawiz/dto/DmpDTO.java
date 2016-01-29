@@ -166,6 +166,29 @@ public class DmpDTO implements Serializable {
 
   // ***************** MetaData Data *****************
 
+  /** DMP31. */
+  private List<Integer> selectedMetaPurposes;
+
+  /** DMP32. */
+  @Size(min = 0, max = 1000)
+  private String metaDescription;
+
+  /** DMP33. */
+  @Size(min = 0, max = 1000)
+  private String metaFramework;
+
+  /** DMP34. */
+  @Size(min = 0, max = 1000)
+  private String metaGeneration;
+
+  /** DMP35. */
+  @Size(min = 0, max = 1000)
+  private String metaMonitor;
+
+  /** DMP36. */
+  @Size(min = 0, max = 1000)
+  private String metaFormat;
+
   // ***************** Data Sharing *****************
 
   /** DMP39. */
@@ -238,7 +261,52 @@ public class DmpDTO implements Serializable {
   private String usedPID;
 
   /** DMP53 (select)-> other selected */
+  @Size(min = 0, max = 500)
   private String usedPIDTxt;
+
+  // ***************** Storage and infrastructure *****************
+
+  /** DMP54. */
+  @Size(min = 0, max = 1000)
+  private String storageResponsible;
+
+  /** DMP55. */
+  @Size(min = 0, max = 1000)
+  private String storageTechnologies;
+
+  /** DMP56. */
+  @Size(min = 0, max = 1000)
+  private String storagePlaces;
+
+  /** DMP57. */
+  @Size(min = 0, max = 1000)
+  private String storageBackups;
+
+  /** DMP58. */
+  @Size(min = 0, max = 1000)
+  private String storageTransfer;
+
+  /** DMP59. */
+  @Size(min = 0, max = 1000)
+  private String storageExpectedSize;
+
+  /** DMP60. */
+  private boolean storageRequirements;
+
+  /** DMP60 -> if "no" selected */
+  @Size(min = 0, max = 1000)
+  private String storageRequirementsTxt;
+
+  /** DMP61. */
+  private boolean storageSuccession;
+
+  /** DMP61 -> if "yes" selected */
+  @Size(min = 0, max = 1000)
+  private String storageSuccessionTxt;
+
+  // ***************** Organization, management and policies *****************
+  
+  
 
   /**
    * Getter for {@link #id}.
@@ -1299,6 +1367,134 @@ public class DmpDTO implements Serializable {
 
   public void setUsedPIDTxt(String usedPIDTxt) {
     this.usedPIDTxt = usedPIDTxt;
+  }
+
+  public List<Integer> getSelectedMetaPurposes() {
+    return selectedMetaPurposes;
+  }
+
+  public void setSelectedMetaPurposes(List<Integer> selectedMetaPurposes) {
+    this.selectedMetaPurposes = selectedMetaPurposes;
+  }
+
+  public String getMetaDescription() {
+    return metaDescription;
+  }
+
+  public void setMetaDescription(String metaDescription) {
+    this.metaDescription = metaDescription;
+  }
+
+  public String getMetaFramework() {
+    return metaFramework;
+  }
+
+  public void setMetaFramework(String metaFramework) {
+    this.metaFramework = metaFramework;
+  }
+
+  public String getMetaGeneration() {
+    return metaGeneration;
+  }
+
+  public void setMetaGeneration(String metaGeneration) {
+    this.metaGeneration = metaGeneration;
+  }
+
+  public String getMetaMonitor() {
+    return metaMonitor;
+  }
+
+  public void setMetaMonitor(String metaMonitor) {
+    this.metaMonitor = metaMonitor;
+  }
+
+  public String getMetaFormat() {
+    return metaFormat;
+  }
+
+  public void setMetaFormat(String metaFormat) {
+    this.metaFormat = metaFormat;
+  }
+
+  public String getStorageResponsible() {
+    return storageResponsible;
+  }
+
+  public void setStorageResponsible(String storageResponsible) {
+    this.storageResponsible = storageResponsible;
+  }
+
+  public String getStorageTechnologies() {
+    return storageTechnologies;
+  }
+
+  public void setStorageTechnologies(String storageTechnologies) {
+    this.storageTechnologies = storageTechnologies;
+  }
+
+  public String getStoragePlaces() {
+    return storagePlaces;
+  }
+
+  public void setStoragePlaces(String storagePlaces) {
+    this.storagePlaces = storagePlaces;
+  }
+
+  public String getStorageBackups() {
+    return storageBackups;
+  }
+
+  public void setStorageBackups(String storageBackups) {
+    this.storageBackups = storageBackups;
+  }
+
+  public String getStorageTransfer() {
+    return storageTransfer;
+  }
+
+  public void setStorageTransfer(String storageTransfer) {
+    this.storageTransfer = storageTransfer;
+  }
+
+  public String getStorageExpectedSize() {
+    return storageExpectedSize;
+  }
+
+  public void setStorageExpectedSize(String storageExpectedSize) {
+    this.storageExpectedSize = storageExpectedSize;
+  }
+
+  public boolean isStorageRequirements() {
+    return storageRequirements;
+  }
+
+  public void setStorageRequirements(boolean storageRequirements) {
+    this.storageRequirements = storageRequirements;
+  }
+
+  public String getStorageRequirementsTxt() {
+    return storageRequirementsTxt;
+  }
+
+  public void setStorageRequirementsTxt(String storageRequirementsTxt) {
+    this.storageRequirementsTxt = storageRequirementsTxt;
+  }
+
+  public boolean isStorageSuccession() {
+    return storageSuccession;
+  }
+
+  public void setStorageSuccession(boolean storageSuccession) {
+    this.storageSuccession = storageSuccession;
+  }
+
+  public String getStorageSuccessionTxt() {
+    return storageSuccessionTxt;
+  }
+
+  public void setStorageSuccessionTxt(String storageSuccessionTxt) {
+    this.storageSuccessionTxt = storageSuccessionTxt;
   }
 
 }
