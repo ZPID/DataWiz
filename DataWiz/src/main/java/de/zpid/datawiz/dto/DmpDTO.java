@@ -260,7 +260,7 @@ public class DmpDTO implements Serializable {
   /** DMP53 (select). */
   private String usedPID;
 
-  /** DMP53 (select)-> other selected */
+  /** DMP53 (select)-> other selected. */
   @Size(min = 0, max = 500)
   private String usedPIDTxt;
 
@@ -293,20 +293,131 @@ public class DmpDTO implements Serializable {
   /** DMP60. */
   private boolean storageRequirements;
 
-  /** DMP60 -> if "no" selected */
+  /** DMP60 -> if "no" selected. */
   @Size(min = 0, max = 1000)
   private String storageRequirementsTxt;
 
   /** DMP61. */
   private boolean storageSuccession;
 
-  /** DMP61 -> if "yes" selected */
+  /** DMP61 -> if "yes" selected. */
   @Size(min = 0, max = 1000)
   private String storageSuccessionTxt;
 
   // ***************** Organization, management and policies *****************
-  
-  
+
+  /** DMP62. */
+  private String frameworkNationality;
+
+  /** DMP62 -> if international specific requirements selected. */
+  @Size(min = 0, max = 1000)
+  private String frameworkNationalityTxt;
+
+  /** DMP63. */
+  @Size(min = 0, max = 500)
+  private String responsibleUnit;
+
+  /** DMP64. */
+  @Size(min = 0, max = 1000)
+  private String involvedInstitutions;
+
+  /** DMP65. */
+  private boolean involvedInformed;
+
+  /** DMP93 -> if 65 == 1. */
+  private boolean contributionsDefined;
+
+  /** DMP93 if -> 93 == "1". */
+  @Size(min = 0, max = 1000)
+  private String contributionsDefinedTxt;
+
+  /** DMP94 -> if 65 == 1. */
+  private boolean givenConsent;
+
+  /** DMP66. */
+  private boolean managementWorkflow;
+
+  /** DMP66 if -> 66 == "1". */
+  @Size(min = 0, max = 1000)
+  private String managementWorkflowTxt;
+
+  /** DMP67. */
+  private boolean staffDescription;
+
+  /** DMP67 if -> 67 == "1". */
+  @Size(min = 0, max = 1000)
+  private String staffDescriptionTxt;
+
+  /** DMP68. */
+  @Size(min = 0, max = 2000)
+  private String funderRequirements;
+
+  /** DMP69. */
+  @Size(min = 0, max = 2000)
+  private String providerRequirements;
+
+  /** DMP70 -> if DMP43 archive or repo. */
+  @Size(min = 0, max = 1000)
+  private String repoPolicies;
+
+  /** DMP71 -> if DMP43 archive or repo. */
+  @Size(min = 0, max = 1000)
+  private String repoPoliciesResponsible;
+
+  /** DMP72. */
+  @Size(min = 0, max = 1000)
+  private String planningAdherence;
+
+  // ***************** Ethical and legal aspects *****************
+
+  /** DMP73. */
+  private boolean dataProtection;
+
+  /** DMP74. -> if DMP73 == true */
+  @Size(min = 0, max = 2000)
+  private String protectionRequirements;
+
+  /** DMP75. -> if DMP73 == true */
+  private boolean consentObtained;
+
+  /** DMP75. -> if DMP75 == true */
+  @Size(min = 0, max = 2000)
+  private String consentObtainedTxt;
+
+  /** DMP95. -> if DMP75 == true */
+  private boolean sharingConsidered;
+
+  /** DMP95. -> if DMP95 == false */
+  @Size(min = 0, max = 2000)
+  private String sharingConsideredTxt;
+
+  /**  DMP76. */
+  private boolean irbApproval;
+
+  /** DMP77. -> if DMP76 == false */
+  @Size(min = 0, max = 1000)
+  private String irbApprovalTxt;
+
+  /**  DMP78. */
+  private boolean sensitiveDataIncluded;
+
+  /** DMP96. -> if DMP76 == false */
+  @Size(min = 0, max = 1000)
+  private String sensitiveDataIncludedTxt;
+
+  /**  DMP79. */
+  private boolean externalCopyright;
+
+  /** DMP79. -> if DMP76 == false */
+  @Size(min = 0, max = 1000)
+  private String externalCopyrightTxt;
+
+  /**  DMP79. */
+  private boolean internalCopyright;
+
+  /** DMP79. -> if DMP76 == false */
+  @Size(min = 0, max = 1000)
+  private String internalCopyrightTxt;
 
   /**
    * Getter for {@link #id}.
@@ -1353,148 +1464,921 @@ public class DmpDTO implements Serializable {
     this.usedPID = usedPID;
   }
 
+  /**
+   * Getter for {@link #publStrategy}.
+   *
+   * @return publStrategy
+   */
   public String getPublStrategy() {
     return publStrategy;
   }
 
+  /**
+   * Setter for {@link #publStrategy}.
+   *
+   * @param publStrategy
+   *          -> this.publStrategy
+   */
   public void setPublStrategy(String publStrategy) {
     this.publStrategy = publStrategy;
   }
 
+  /**
+   * Getter for {@link #usedPIDTxt}.
+   *
+   * @return usedPIDTxt
+   */
   public String getUsedPIDTxt() {
     return usedPIDTxt;
   }
 
+  /**
+   * Setter for {@link #usedPIDTxt}.
+   *
+   * @param usedPIDTxt
+   *          -> this.usedPIDTxt
+   */
   public void setUsedPIDTxt(String usedPIDTxt) {
     this.usedPIDTxt = usedPIDTxt;
   }
 
+  /**
+   * Getter for {@link #selectedMetaPurposes}.
+   *
+   * @return selectedMetaPurposes
+   */
   public List<Integer> getSelectedMetaPurposes() {
     return selectedMetaPurposes;
   }
 
+  /**
+   * Setter for {@link #selectedMetaPurposes}.
+   *
+   * @param selectedMetaPurposes
+   *          -> this.selectedMetaPurposes
+   */
   public void setSelectedMetaPurposes(List<Integer> selectedMetaPurposes) {
     this.selectedMetaPurposes = selectedMetaPurposes;
   }
 
+  /**
+   * Getter for {@link #metaDescription}.
+   *
+   * @return metaDescription
+   */
   public String getMetaDescription() {
     return metaDescription;
   }
 
+  /**
+   * Setter for {@link #metaDescription}.
+   *
+   * @param metaDescription
+   *          -> this.metaDescription
+   */
   public void setMetaDescription(String metaDescription) {
     this.metaDescription = metaDescription;
   }
 
+  /**
+   * Getter for {@link #metaFramework}.
+   *
+   * @return metaFramework
+   */
   public String getMetaFramework() {
     return metaFramework;
   }
 
+  /**
+   * Setter for {@link #metaFramework}.
+   *
+   * @param metaFramework
+   *          -> this.metaFramework
+   */
   public void setMetaFramework(String metaFramework) {
     this.metaFramework = metaFramework;
   }
 
+  /**
+   * Getter for {@link #metaGeneration}.
+   *
+   * @return metaGeneration
+   */
   public String getMetaGeneration() {
     return metaGeneration;
   }
 
+  /**
+   * Setter for {@link #metaGeneration}.
+   *
+   * @param metaGeneration
+   *          -> this.metaGeneration
+   */
   public void setMetaGeneration(String metaGeneration) {
     this.metaGeneration = metaGeneration;
   }
 
+  /**
+   * Getter for {@link #metaMonitor}.
+   *
+   * @return metaMonitor
+   */
   public String getMetaMonitor() {
     return metaMonitor;
   }
 
+  /**
+   * Setter for {@link #metaMonitor}.
+   *
+   * @param metaMonitor
+   *          -> this.metaMonitor
+   */
   public void setMetaMonitor(String metaMonitor) {
     this.metaMonitor = metaMonitor;
   }
 
+  /**
+   * Getter for {@link #metaFormat}.
+   *
+   * @return metaFormat
+   */
   public String getMetaFormat() {
     return metaFormat;
   }
 
+  /**
+   * Setter for {@link #metaFormat}.
+   *
+   * @param metaFormat
+   *          -> this.metaFormat
+   */
   public void setMetaFormat(String metaFormat) {
     this.metaFormat = metaFormat;
   }
 
+  /**
+   * Getter for {@link #storageResponsible}.
+   *
+   * @return storageResponsible
+   */
   public String getStorageResponsible() {
     return storageResponsible;
   }
 
+  /**
+   * Setter for {@link #storageResponsible}.
+   *
+   * @param storageResponsible
+   *          -> this.storageResponsible
+   */
   public void setStorageResponsible(String storageResponsible) {
     this.storageResponsible = storageResponsible;
   }
 
+  /**
+   * Getter for {@link #storageTechnologies}.
+   *
+   * @return storageTechnologies
+   */
   public String getStorageTechnologies() {
     return storageTechnologies;
   }
 
+  /**
+   * Setter for {@link #storageTechnologies}.
+   *
+   * @param storageTechnologies
+   *          -> this.storageTechnologies
+   */
   public void setStorageTechnologies(String storageTechnologies) {
     this.storageTechnologies = storageTechnologies;
   }
 
+  /**
+   * Getter for {@link #storagePlaces}.
+   *
+   * @return storagePlaces
+   */
   public String getStoragePlaces() {
     return storagePlaces;
   }
 
+  /**
+   * Setter for {@link #storagePlaces}.
+   *
+   * @param storagePlaces
+   *          -> this.storagePlaces
+   */
   public void setStoragePlaces(String storagePlaces) {
     this.storagePlaces = storagePlaces;
   }
 
+  /**
+   * Getter for {@link #storageBackups}.
+   *
+   * @return storageBackups
+   */
   public String getStorageBackups() {
     return storageBackups;
   }
 
+  /**
+   * Setter for {@link #storageBackups}.
+   *
+   * @param storageBackups
+   *          -> this.storageBackups
+   */
   public void setStorageBackups(String storageBackups) {
     this.storageBackups = storageBackups;
   }
 
+  /**
+   * Getter for {@link #storageTransfer}.
+   *
+   * @return storageTransfer
+   */
   public String getStorageTransfer() {
     return storageTransfer;
   }
 
+  /**
+   * Setter for {@link #storageTransfer}.
+   *
+   * @param storageTransfer
+   *          -> this.storageTransfer
+   */
   public void setStorageTransfer(String storageTransfer) {
     this.storageTransfer = storageTransfer;
   }
 
+  /**
+   * Getter for {@link #storageExpectedSize}.
+   *
+   * @return storageExpectedSize
+   */
   public String getStorageExpectedSize() {
     return storageExpectedSize;
   }
 
+  /**
+   * Setter for {@link #storageExpectedSize}.
+   *
+   * @param storageExpectedSize
+   *          -> this.storageExpectedSize
+   */
   public void setStorageExpectedSize(String storageExpectedSize) {
     this.storageExpectedSize = storageExpectedSize;
   }
 
+  /**
+   * Checks if is {@link #storageRequirements}.
+   *
+   * @return true, if is storage requirements
+   */
   public boolean isStorageRequirements() {
     return storageRequirements;
   }
 
+  /**
+   * Setter for {@link #storageRequirements}.
+   *
+   * @param storageRequirements
+   *          -> this.storageRequirements
+   */
   public void setStorageRequirements(boolean storageRequirements) {
     this.storageRequirements = storageRequirements;
   }
 
+  /**
+   * Getter for {@link #storageRequirementsTxt}.
+   *
+   * @return storageRequirementsTxt
+   */
   public String getStorageRequirementsTxt() {
     return storageRequirementsTxt;
   }
 
+  /**
+   * Setter for {@link #storageRequirementsTxt}.
+   *
+   * @param storageRequirementsTxt
+   *          -> this.storageRequirementsTxt
+   */
   public void setStorageRequirementsTxt(String storageRequirementsTxt) {
     this.storageRequirementsTxt = storageRequirementsTxt;
   }
 
+  /**
+   * Checks if is {@link #storageSuccession}.
+   *
+   * @return true, if is storage succession
+   */
   public boolean isStorageSuccession() {
     return storageSuccession;
   }
 
+  /**
+   * Setter for {@link #storageSuccession}.
+   *
+   * @param storageSuccession
+   *          -> this.storageSuccession
+   */
   public void setStorageSuccession(boolean storageSuccession) {
     this.storageSuccession = storageSuccession;
   }
 
+  /**
+   * Getter for {@link #storageSuccessionTxt}.
+   *
+   * @return storageSuccessionTxt
+   */
   public String getStorageSuccessionTxt() {
     return storageSuccessionTxt;
   }
 
+  /**
+   * Setter for {@link #storageSuccessionTxt}.
+   *
+   * @param storageSuccessionTxt
+   *          -> this.storageSuccessionTxt
+   */
   public void setStorageSuccessionTxt(String storageSuccessionTxt) {
     this.storageSuccessionTxt = storageSuccessionTxt;
+  }
+
+  /**
+   * Getter for {@link #frameworkNationality}.
+   *
+   * @return frameworkNationality
+   */
+  public String getFrameworkNationality() {
+    return frameworkNationality;
+  }
+
+  /**
+   * Setter for {@link #frameworkNationality}.
+   *
+   * @param frameworkNationality
+   *          -> this.frameworkNationality
+   */
+  public void setFrameworkNationality(String frameworkNationality) {
+    this.frameworkNationality = frameworkNationality;
+  }
+
+  /**
+   * Getter for {@link #frameworkNationalityTxt}.
+   *
+   * @return frameworkNationalityTxt
+   */
+  public String getFrameworkNationalityTxt() {
+    return frameworkNationalityTxt;
+  }
+
+  /**
+   * Setter for {@link #frameworkNationalityTxt}.
+   *
+   * @param frameworkNationalityTxt
+   *          -> this.frameworkNationalityTxt
+   */
+  public void setFrameworkNationalityTxt(String frameworkNationalityTxt) {
+    this.frameworkNationalityTxt = frameworkNationalityTxt;
+  }
+
+  /**
+   * Getter for {@link #responsibleUnit}.
+   *
+   * @return responsibleUnit
+   */
+  public String getResponsibleUnit() {
+    return responsibleUnit;
+  }
+
+  /**
+   * Setter for {@link #responsibleUnit}.
+   *
+   * @param responsibleUnit
+   *          -> this.responsibleUnit
+   */
+  public void setResponsibleUnit(String responsibleUnit) {
+    this.responsibleUnit = responsibleUnit;
+  }
+
+  /**
+   * Getter for {@link #involvedInstitutions}.
+   *
+   * @return involvedInstitutions
+   */
+  public String getInvolvedInstitutions() {
+    return involvedInstitutions;
+  }
+
+  /**
+   * Setter for {@link #involvedInstitutions}.
+   *
+   * @param involvedInstitutions
+   *          -> this.involvedInstitutions
+   */
+  public void setInvolvedInstitutions(String involvedInstitutions) {
+    this.involvedInstitutions = involvedInstitutions;
+  }
+
+  /**
+   * Checks if is {@link #involvedInformed}.
+   *
+   * @return true, if is involved informed
+   */
+  public boolean isInvolvedInformed() {
+    return involvedInformed;
+  }
+
+  /**
+   * Setter for {@link #involvedInformed}.
+   *
+   * @param involvedInformed
+   *          -> this.involvedInformed
+   */
+  public void setInvolvedInformed(boolean involvedInformed) {
+    this.involvedInformed = involvedInformed;
+  }
+
+  /**
+   * Checks if is {@link #contributionsDefined}.
+   *
+   * @return true, if is contributions defined
+   */
+  public boolean isContributionsDefined() {
+    return contributionsDefined;
+  }
+
+  /**
+   * Setter for {@link #contributionsDefined}.
+   *
+   * @param contributionsDefined
+   *          -> this.contributionsDefined
+   */
+  public void setContributionsDefined(boolean contributionsDefined) {
+    this.contributionsDefined = contributionsDefined;
+  }
+
+  /**
+   * Getter for {@link #contributionsDefinedTxt}.
+   *
+   * @return contributionsDefinedTxt
+   */
+  public String getContributionsDefinedTxt() {
+    return contributionsDefinedTxt;
+  }
+
+  /**
+   * Setter for {@link #contributionsDefinedTxt}.
+   *
+   * @param contributionsDefinedTxt
+   *          -> this.contributionsDefinedTxt
+   */
+  public void setContributionsDefinedTxt(String contributionsDefinedTxt) {
+    this.contributionsDefinedTxt = contributionsDefinedTxt;
+  }
+
+  /**
+   * Checks if is {@link #givenConsent}.
+   *
+   * @return true, if is given consent
+   */
+  public boolean isGivenConsent() {
+    return givenConsent;
+  }
+
+  /**
+   * Setter for {@link #givenConsent}.
+   *
+   * @param givenConsent
+   *          -> this.givenConsent
+   */
+  public void setGivenConsent(boolean givenConsent) {
+    this.givenConsent = givenConsent;
+  }
+
+  /**
+   * Checks if is {@link #managementWorkflow}.
+   *
+   * @return true, if is management workflow
+   */
+  public boolean isManagementWorkflow() {
+    return managementWorkflow;
+  }
+
+  /**
+   * Setter for {@link #managementWorkflow}.
+   *
+   * @param managementWorkflow
+   *          -> this.managementWorkflow
+   */
+  public void setManagementWorkflow(boolean managementWorkflow) {
+    this.managementWorkflow = managementWorkflow;
+  }
+
+  /**
+   * Getter for {@link #managementWorkflowTxt}.
+   *
+   * @return managementWorkflowTxt
+   */
+  public String getManagementWorkflowTxt() {
+    return managementWorkflowTxt;
+  }
+
+  /**
+   * Setter for {@link #managementWorkflowTxt}.
+   *
+   * @param managementWorkflowTxt
+   *          -> this.managementWorkflowTxt
+   */
+  public void setManagementWorkflowTxt(String managementWorkflowTxt) {
+    this.managementWorkflowTxt = managementWorkflowTxt;
+  }
+
+  /**
+   * Checks if is {@link #staffDescription}.
+   *
+   * @return true, if is staff description
+   */
+  public boolean isStaffDescription() {
+    return staffDescription;
+  }
+
+  /**
+   * Setter for {@link #staffDescription}.
+   *
+   * @param staffDescription
+   *          -> this.staffDescription
+   */
+  public void setStaffDescription(boolean staffDescription) {
+    this.staffDescription = staffDescription;
+  }
+
+  /**
+   * Getter for {@link #staffDescriptionTxt}.
+   *
+   * @return staffDescriptionTxt
+   */
+  public String getStaffDescriptionTxt() {
+    return staffDescriptionTxt;
+  }
+
+  /**
+   * Setter for {@link #staffDescriptionTxt}.
+   *
+   * @param staffDescriptionTxt
+   *          -> this.staffDescriptionTxt
+   */
+  public void setStaffDescriptionTxt(String staffDescriptionTxt) {
+    this.staffDescriptionTxt = staffDescriptionTxt;
+  }
+
+  /**
+   * Getter for {@link #funderRequirements}.
+   *
+   * @return funderRequirements
+   */
+  public String getFunderRequirements() {
+    return funderRequirements;
+  }
+
+  /**
+   * Setter for {@link #funderRequirements}.
+   *
+   * @param funderRequirements
+   *          -> this.funderRequirements
+   */
+  public void setFunderRequirements(String funderRequirements) {
+    this.funderRequirements = funderRequirements;
+  }
+
+  /**
+   * Getter for {@link #providerRequirements}.
+   *
+   * @return providerRequirements
+   */
+  public String getProviderRequirements() {
+    return providerRequirements;
+  }
+
+  /**
+   * Setter for {@link #providerRequirements}.
+   *
+   * @param providerRequirements
+   *          -> this.providerRequirements
+   */
+  public void setProviderRequirements(String providerRequirements) {
+    this.providerRequirements = providerRequirements;
+  }
+
+  /**
+   * Getter for {@link #repoPolicies}.
+   *
+   * @return repoPolicies
+   */
+  public String getRepoPolicies() {
+    return repoPolicies;
+  }
+
+  /**
+   * Setter for {@link #repoPolicies}.
+   *
+   * @param repoPolicies
+   *          -> this.repoPolicies
+   */
+  public void setRepoPolicies(String repoPolicies) {
+    this.repoPolicies = repoPolicies;
+  }
+
+  /**
+   * Getter for {@link #repoPoliciesResponsible}.
+   *
+   * @return repoPoliciesResponsible
+   */
+  public String getRepoPoliciesResponsible() {
+    return repoPoliciesResponsible;
+  }
+
+  /**
+   * Setter for {@link #repoPoliciesResponsible}.
+   *
+   * @param repoPoliciesResponsible
+   *          -> this.repoPoliciesResponsible
+   */
+  public void setRepoPoliciesResponsible(String repoPoliciesResponsible) {
+    this.repoPoliciesResponsible = repoPoliciesResponsible;
+  }
+
+  /**
+   * Getter for {@link #planningAdherence}.
+   *
+   * @return planningAdherence
+   */
+  public String getPlanningAdherence() {
+    return planningAdherence;
+  }
+
+  /**
+   * Setter for {@link #planningAdherence}.
+   *
+   * @param planningAdherence
+   *          -> this.planningAdherence
+   */
+  public void setPlanningAdherence(String planningAdherence) {
+    this.planningAdherence = planningAdherence;
+  }
+
+  /**
+   * Checks if is {@link #dataProtection}.
+   *
+   * @return true, if is data protection
+   */
+  public boolean isDataProtection() {
+    return dataProtection;
+  }
+
+  /**
+   * Setter for {@link #dataProtection}.
+   *
+   * @param dataProtection -> this.dataProtection
+   */
+  public void setDataProtection(boolean dataProtection) {
+    this.dataProtection = dataProtection;
+  }
+
+  /**
+   * Getter for {@link #protectionRequirements}.
+   *
+   * @return protectionRequirements
+   */
+  public String getProtectionRequirements() {
+    return protectionRequirements;
+  }
+
+  /**
+   * Setter for {@link #protectionRequirements}.
+   *
+   * @param protectionRequirements -> this.protectionRequirements
+   */
+  public void setProtectionRequirements(String protectionRequirements) {
+    this.protectionRequirements = protectionRequirements;
+  }
+
+  /**
+   * Checks if is {@link #consentObtained}.
+   *
+   * @return true, if is consent obtained
+   */
+  public boolean isConsentObtained() {
+    return consentObtained;
+  }
+
+  /**
+   * Setter for {@link #consentObtained}.
+   *
+   * @param consentObtained -> this.consentObtained
+   */
+  public void setConsentObtained(boolean consentObtained) {
+    this.consentObtained = consentObtained;
+  }
+
+  /**
+   * Getter for {@link #consentObtainedTxt}.
+   *
+   * @return consentObtainedTxt
+   */
+  public String getConsentObtainedTxt() {
+    return consentObtainedTxt;
+  }
+
+  /**
+   * Setter for {@link #consentObtainedTxt}.
+   *
+   * @param consentObtainedTxt -> this.consentObtainedTxt
+   */
+  public void setConsentObtainedTxt(String consentObtainedTxt) {
+    this.consentObtainedTxt = consentObtainedTxt;
+  }
+
+  /**
+   * Checks if is {@link #sharingConsidered}.
+   *
+   * @return true, if is sharing considered
+   */
+  public boolean isSharingConsidered() {
+    return sharingConsidered;
+  }
+
+  /**
+   * Setter for {@link #sharingConsidered}.
+   *
+   * @param sharingConsidered -> this.sharingConsidered
+   */
+  public void setSharingConsidered(boolean sharingConsidered) {
+    this.sharingConsidered = sharingConsidered;
+  }
+
+  /**
+   * Getter for {@link #sharingConsideredTxt}.
+   *
+   * @return sharingConsideredTxt
+   */
+  public String getSharingConsideredTxt() {
+    return sharingConsideredTxt;
+  }
+
+  /**
+   * Setter for {@link #sharingConsideredTxt}.
+   *
+   * @param sharingConsideredTxt -> this.sharingConsideredTxt
+   */
+  public void setSharingConsideredTxt(String sharingConsideredTxt) {
+    this.sharingConsideredTxt = sharingConsideredTxt;
+  }
+
+  /**
+   * Checks if is {@link #irbApproval}.
+   *
+   * @return true, if is irb approval
+   */
+  public boolean isIrbApproval() {
+    return irbApproval;
+  }
+
+  /**
+   * Setter for {@link #irbApproval}.
+   *
+   * @param irbApproval -> this.irbApproval
+   */
+  public void setIrbApproval(boolean irbApproval) {
+    this.irbApproval = irbApproval;
+  }
+
+  /**
+   * Getter for {@link #irbApprovalTxt}.
+   *
+   * @return irbApprovalTxt
+   */
+  public String getIrbApprovalTxt() {
+    return irbApprovalTxt;
+  }
+
+  /**
+   * Setter for {@link #irbApprovalTxt}.
+   *
+   * @param irbApprovalTxt -> this.irbApprovalTxt
+   */
+  public void setIrbApprovalTxt(String irbApprovalTxt) {
+    this.irbApprovalTxt = irbApprovalTxt;
+  }
+
+  /**
+   * Checks if is {@link #sensitiveDataIncluded}.
+   *
+   * @return true, if is sensitive data included
+   */
+  public boolean isSensitiveDataIncluded() {
+    return sensitiveDataIncluded;
+  }
+
+  /**
+   * Setter for {@link #sensitiveDataIncluded}.
+   *
+   * @param sensitiveDataIncluded -> this.sensitiveDataIncluded
+   */
+  public void setSensitiveDataIncluded(boolean sensitiveDataIncluded) {
+    this.sensitiveDataIncluded = sensitiveDataIncluded;
+  }
+
+  /**
+   * Getter for {@link #sensitiveDataIncludedTxt}.
+   *
+   * @return sensitiveDataIncludedTxt
+   */
+  public String getSensitiveDataIncludedTxt() {
+    return sensitiveDataIncludedTxt;
+  }
+
+  /**
+   * Setter for {@link #sensitiveDataIncludedTxt}.
+   *
+   * @param sensitiveDataIncludedTxt -> this.sensitiveDataIncludedTxt
+   */
+  public void setSensitiveDataIncludedTxt(String sensitiveDataIncludedTxt) {
+    this.sensitiveDataIncludedTxt = sensitiveDataIncludedTxt;
+  }
+
+  /**
+   * Checks if is {@link #externalCopyright}.
+   *
+   * @return true, if is external copyright
+   */
+  public boolean isExternalCopyright() {
+    return externalCopyright;
+  }
+
+  /**
+   * Setter for {@link #externalCopyright}.
+   *
+   * @param externalCopyright -> this.externalCopyright
+   */
+  public void setExternalCopyright(boolean externalCopyright) {
+    this.externalCopyright = externalCopyright;
+  }
+
+  /**
+   * Getter for {@link #externalCopyrightTxt}.
+   *
+   * @return externalCopyrightTxt
+   */
+  public String getExternalCopyrightTxt() {
+    return externalCopyrightTxt;
+  }
+
+  /**
+   * Setter for {@link #externalCopyrightTxt}.
+   *
+   * @param externalCopyrightTxt -> this.externalCopyrightTxt
+   */
+  public void setExternalCopyrightTxt(String externalCopyrightTxt) {
+    this.externalCopyrightTxt = externalCopyrightTxt;
+  }
+
+  /**
+   * Checks if is {@link #internalCopyright}.
+   *
+   * @return true, if is internal copyright
+   */
+  public boolean isInternalCopyright() {
+    return internalCopyright;
+  }
+
+  /**
+   * Setter for {@link #internalCopyright}.
+   *
+   * @param internalCopyright -> this.internalCopyright
+   */
+  public void setInternalCopyright(boolean internalCopyright) {
+    this.internalCopyright = internalCopyright;
+  }
+
+  /**
+   * Getter for {@link #internalCopyrightTxt}.
+   *
+   * @return internalCopyrightTxt
+   */
+  public String getInternalCopyrightTxt() {
+    return internalCopyrightTxt;
+  }
+
+  /**
+   * Setter for {@link #internalCopyrightTxt}.
+   *
+   * @param internalCopyrightTxt -> this.internalCopyrightTxt
+   */
+  public void setInternalCopyrightTxt(String internalCopyrightTxt) {
+    this.internalCopyrightTxt = internalCopyrightTxt;
   }
 
 }

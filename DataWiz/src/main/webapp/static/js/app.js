@@ -10,70 +10,25 @@ $tag_box = null;
  * @param undefined
  */
 (function($, window, document, undefined) {
-	$(document).ready(
-	    function() {
-		    // set the project submenu after reload or refresh
-		    setProjectSubmenu(null);
-		    /**
-				 * ***** begin Tags *****
-				 */
-		    var my_custom_options = {
-		      "no-duplicate" : true,
-		      "no-duplicate-callback" : false,
-		      "no-duplicate-text" : "Duplicate tags",
-		      "tags-input-name" : "taggone",
-		      "edit-on-delete" : false,
-		      "no-comma" : false,
-		    };
-		    if ($("#tagging").length) {
-			    var t = $("#tagging").tagging(my_custom_options);
-			    $tag_box = t[0];
-			    $tag_box.addClass("form-control");
-			    // add current saved tags to taglist
-			    $tag_box.tagging("add", $("#tags").val().split(','));
-		    }
-		    /**
-				 * ***** end Tags *****
-				 */
-		    /**
-				 * ***** begin accordion *****
-				 */
-		    $('[data-toggle="tooltip"]').tooltip();
-		    $('#accordion').on('hidden.bs.collapse', function() {
-			    // do something...
-		    })
-		    $('.accordion-toggle').click(
-		        function(e) {
-			        var chevState = $(e.target).siblings("row").siblings("i.indicator").toggleClass(
-			            'glyphicon-chevron-down glyphicon-chevron-up');
-			        $("i.indicator").not(chevState).removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-		        });
-		    /**
-				 * ***** end accordion *****
-				 */
-		    $(window).bind('scroll', function() {
-			    var navHeight = 150; // custom nav height
-			    ($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
-		    });
-		    $(this).scrollTop(0);
-		    // checkbox style
-		    // DMP existing Data Content
-		    switchViewIfSelected("selectExistingData", 1);
-		    switchViewIfChecked('selectOtherDataTypes');
-		    switchViewIfChecked('selectCollectionModesIP');
-		    switchViewIfChecked('selectCollectionModesINP');
-		    switchViewIfSelected("selectStorageWC", 1);
-		    switchViewIfSelected("selectGoodScientific", 1);
-		    switchViewIfSelected("selectSubsequentUse", 1);
-		    switchViewIfSelected("selectDataRequirements", 1);
-		    switchViewIfSelected("selectDataDocumentation", 1);
-		    switchViewIfSelected("selectDataSelection", 1);
-		    switchViewIfSelectedMulti('selectPublStrategy', 'repository,author,nopubl');
-		    switchViewIfSelected('selectNoAccessReason', 'other');
-		    switchViewIfSelected('selectAccessCosts', 1);
-		    switchViewIfSelected('selectClarifiedRights', 1);
-		    switchViewIfSelected('selectUsedPID', 'other');
-	    });
+	$(document).ready(function() {
+		// set the project submenu after reload or refresh
+		setProjectSubmenu(null);
+		$(window).bind('scroll', function() {
+			var navHeight = 150; // custom nav height
+			($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
+		});
+		$(this).scrollTop(0);
+		// loading DMP Content - not nessesary on other pages!
+		if (window.location.pathname.search("/dmp/") > 0) {
+			showorHideDMPContent();
+		} // loading Project Content - not nessesary on other pages!
+		else if (window.location.pathname.search("/project/") > 0) {
+			startTagging();
+		} // loading Panel Content - not nessesary on other pages!
+		else if (window.location.pathname.search("/panel/") > 0) {
+			startAccordion();
+		}
+	});
 })(window.jQuery, window, document);
 
 $(".projectContentClick").click(function() {
@@ -137,6 +92,38 @@ function GetURLParameter(sParam) {
 		}
 	}
 }
+
+function startTagging() {
+	var my_custom_options = {
+	  "no-duplicate" : true,
+	  "no-duplicate-callback" : false,
+	  "no-duplicate-text" : "Duplicate tags",
+	  "tags-input-name" : "taggone",
+	  "edit-on-delete" : false,
+	  "no-comma" : false,
+	};
+	if ($("#tagging").length) {
+		var t = $("#tagging").tagging(my_custom_options);
+		$tag_box = t[0];
+		$tag_box.addClass("form-control");
+		// add current saved tags to taglist
+		$tag_box.tagging("add", $("#tags").val().split(','));
+	}
+}
+
+function startAccordion() {
+	$('[data-toggle="tooltip"]').tooltip();
+	$('#accordion').on('hidden.bs.collapse', function() {
+		// do something...
+	})
+	$('.accordion-toggle').click(
+	    function(e) {
+		    var chevState = $(e.target).siblings("row").siblings("i.indicator").toggleClass(
+		        'glyphicon-chevron-down glyphicon-chevron-up');
+		    $("i.indicator").not(chevState).removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+	    });
+}
+
 // Start DROPZONE for project-material upload!
 Dropzone.options.myDropzone = {
   uploadMultiple : true,
@@ -186,6 +173,31 @@ Dropzone.options.myDropzone = {
   }
 };
 
+function showorHideDMPContent() {
+	switchViewIfSelected("selectExistingData", 1);
+	switchViewIfChecked('selectOtherDataTypes');
+	switchViewIfChecked('selectCollectionModesIP');
+	switchViewIfChecked('selectCollectionModesINP');
+	switchViewIfSelected("selectStorageWC", 1);
+	switchViewIfSelected("selectGoodScientific", 1);
+	switchViewIfSelected("selectSubsequentUse", 1);
+	switchViewIfSelected("selectDataRequirements", 1);
+	switchViewIfSelected("selectDataDocumentation", 1);
+	switchViewIfSelected("selectDataSelection", 1);
+	switchViewIfSelectedMulti('selectPublStrategy', 'repository,author,nopubl');
+	switchViewIfSelected('selectNoAccessReason', 'other');
+	switchViewIfSelected('selectaccessCosts', 1);
+	switchViewIfSelected('selectclarifiedRights', 1);
+	switchViewIfSelected('selectUsedPID', 'other');
+	switchViewIfSelected('selectstorageRequirements', 1);
+	switchViewIfSelected('selectstorageSuccession', 1);
+	switchViewIfSelected('selectframeworkNationality', 'international_specific');
+	switchViewIfSelected('selectcontributionsDefined', 1);
+	switchViewIfSelected('selectinvolvedInformed', 1);
+	switchViewIfSelected('selectmanagementWorkflow', 1);
+	switchViewIfSelected('selectstaffDescription', 1);
+}
+
 /**
  * 
  * @param files
@@ -211,7 +223,9 @@ function switchViewIfSelected(name, show) {
 	console.log(name + " - " + show);
 	var selected = $("#" + name).val();
 	name = name.replace('select', 'content');
+	// TODO alles auf klasse ändern!!!!
 	$("#" + name + "").toggle(show == selected);
+	$("." + name + "").toggle(show == selected);
 }
 
 /**
@@ -225,21 +239,22 @@ function switchViewIfSelectedMulti(name, show) {
 	var showA = show.split(',');
 	var hideContainer = true;
 	for (var i = 0; i < showA.length; i++)
-		$("." + name + i).toggle(false);	
+		$("." + name + i).toggle(false);
 	for (var i = 0; i < showA.length; i++) {
 		$("." + name + i).toggle(showA[i].trim() == selected);
-		if(showA[i] == selected){			
+		if (showA[i] == selected) {
 			hideContainer = false;
 			break;
 		}
 	}
-	$("#" + name+ "").toggle(!hideContainer);
+	$("#" + name + "").toggle(!hideContainer);
 
 }
 
 /**
  * 
- * @param hideContainer@param show
+ * @param hideContainer@param
+ *          show
  */
 function switchViewIfChecked(name) {
 	var selected = $("#" + name).is(':checked');

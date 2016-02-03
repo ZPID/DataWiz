@@ -47,62 +47,30 @@
         <!-- START Data Sharing Content -->
         <%@ include file="forms/dmp_sharing.jsp"%>
         <!-- START Storage Content -->
-        <div id="storageActiveContent" class="projectContent">
+        <%@ include file="forms/dmp_storage.jsp"%>
+        <!-- START organization Content -->
+        <%@ include file="forms/dmp_organization.jsp"%>
+        <!-- START ethical Content -->
+        <div id="ethicalActiveContent" class="projectContent">
           <!-- Infotxt -->
           <div class="form-group">
             <div class="col-sm-12">
               <div class="well marginTop1">
-                <s:message code="project.edit.metadata.info" />
+                <s:message code="dmp.edit.ethical.info" />
               </div>
             </div>
           </div>
           <ul class="list-group">
-            <!-- storageResponsible -->
-            <li class="list-group-item">
-               <s:message text="storageResponsible" var="dmp_var_name" /> 
-              <%@ include file="templates/textarea.jsp"%>
-            </li>
-            <!-- storageTechnologies -->
-            <li class="list-group-item">
-               <s:message text="storageTechnologies" var="dmp_var_name" /> 
-               <%@ include file="templates/textarea.jsp"%>
-            </li>
-            <!-- storagePlaces -->
-            <li class="list-group-item">
-              <s:message text="storagePlaces" var="dmp_var_name" /> 
-               <%@ include file="templates/textarea.jsp"%>
-            </li>
-            <!-- storageBackups -->
-            <li class="list-group-item">
-              <s:message text="storageBackups" var="dmp_var_name" /> 
-              <%@ include file="templates/textarea.jsp"%>
-            </li>
-            <!-- storageTransfer -->
-            <li class="list-group-item">
-              <s:message text="storageTransfer" var="dmp_var_name" /> 
-              <%@ include file="templates/textarea.jsp"%>
-            </li>
-            <!-- storageExpectedSize -->
-            <li class="list-group-item">
-              <s:message text="storageExpectedSize" var="dmp_var_name" /> 
-              <%@ include file="templates/textarea.jsp"%>
-            </li>
-            <!-- storageExpectedSize -->
-            <li class="list-group-item">
-              <s:message text="storageRequirements" var="dmp_var_name" />
-              <s:message text="1" var="dmp_explain_at" />  
-              <%@ include file="templates/selectYesNoWithReason.jsp"%>
-            </li>
-            <!-- storageSuccession -->
-            <li class="list-group-item">
-              <s:message text="storageSuccession" var="dmp_var_name" />
-              <s:message text="1" var="dmp_explain_at" />  
-              <%@ include file="templates/selectYesNoWithReason.jsp"%>
-            </li>
+          
+          
+          
+
           </ul>
+
+
+
+
         </div>
-        <div id="organizationActiveContent" class="projectContent">12345</div>
-        <div id="ethicalActiveContent" class="projectContent">67890</div>
         <div id="costsActiveContent" class="projectContent">1234567890</div>
         <!-- Buttons -->
         <div class="form-group">

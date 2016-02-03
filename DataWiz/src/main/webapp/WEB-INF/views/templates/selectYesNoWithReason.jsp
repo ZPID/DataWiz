@@ -3,12 +3,7 @@
     <label for="dmp.${dmp_var_name}"><s:message code="dmp.edit.${dmp_var_name}" /></label>
     <sf:select class="form-control" path="dmp.${dmp_var_name}" id="select${dmp_var_name}"
       onchange="switchViewIfSelected('select${dmp_var_name}', ${dmp_explain_at});">
-      <sf:option value="0">
-        <s:message code="gen.no" />
-      </sf:option>
-      <sf:option value="1">
-        <s:message code="gen.yes" />
-      </sf:option>
+      <%@ include file="selectyesno.jsp"%>
     </sf:select>
     <s:message code="dmp.edit.${dmp_var_name}.help" var="appresmess" />
     <%@ include file="helpblock.jsp"%>

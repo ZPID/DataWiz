@@ -2,7 +2,7 @@
           <!-- Infotext -->
           <div class="form-group">
             <div class="well marginTop1">
-              <s:message code="project.edit.metadata.info" />
+              <s:message code="dmp.edit.admindata.info" />
             </div>
           </div>
           <!-- Projectname -->
