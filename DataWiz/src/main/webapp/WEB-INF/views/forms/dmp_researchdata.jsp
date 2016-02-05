@@ -1,178 +1,192 @@
+<%@ include file="../templates/includes.jsp"%>
+<c:set var="localeCode" value="${pageContext.response.locale}" />
 <div id="researchActiveContent" class="projectContent">
   <!-- Infotxt -->
   <div class="form-group">
-    <div class="well marginTop1">
-      <s:message code="dmp.edit.reserachdata.info" />
+    <div class="col-sm-12">
+      <div class="well marginTop1">
+        <s:message code="dmp.edit.reserachdata.info" />
+      </div>
     </div>
   </div>
-  <!-- START Existing Data -->
+  <!-- existingData -->
   <ul class="list-group">
-    <li class="list-group-item form-group"><label for="dmp.existingData"><s:message code="dmp.edit.existingData" /></label> <sf:select
-        path="dmp.existingData" class="form-control" id="selectExistingData" onchange="switchViewIfSelected('selectExistingData', 1);">
-        <s:message code="dmp.edit.select.option.default" var="select_opt" />
-        <sf:option value="0" label="${select_opt}" disabled="true" />
-        <s:message code="dmp.edit.select.option1" var="select_opt" />
-        <sf:option value="1" label="${select_opt}" />
-        <s:message code="dmp.edit.select.option2" var="select_opt" />
-        <sf:option value="2" label="${select_opt}" />
-        <s:message code="dmp.edit.select.option3" var="select_opt" />
-        <sf:option value="3" label="${select_opt}" />
-      </sf:select>
-      <div class="row help-block">
-        <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-        <div class="col-sm-11">
-          <s:message code="dmp.edit.existingData.help" />
-        </div>
-      </div> <!-- START contentExistingData -->
-      <div id="contentExistingData">
-        <!-- existingDataRelevance -->
-        <div class="form-group row col-sm-12">
-          <label for="dmp.existingDataRelevance"><s:message code="dmp.edit.existingDataRelevance" /></label>
-          <sf:textarea rows="5" path="dmp.existingDataRelevance" class="form-control" disabled="" />
-          <div class="row help-block">
-            <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-            <div class="col-sm-11">
-              <s:message code="dmp.edit.existingDataRelevance.help" />
-            </div>
+    <li class="list-group-item">
+      <div class="form-group">
+        <div class="col-sm-12">
+          <label for="dmp.existingData"><s:message code="dmp.edit.existingData" /></label>
+          <sf:select path="dmp.existingData" class="form-control" id="selectExistingData"
+            onchange="switchViewIfSelected('selectExistingData', 'existingUsed');">
+            <sf:option value="">
+              <s:message code="dmp.edit.select.option.default" />
+            </sf:option>
+            <sf:option value="existingUsed">
+              <s:message code="dmp.edit.existingData.option1" />
+            </sf:option>
+            <sf:option value="notFound">
+              <s:message code="dmp.edit.existingData.option2" />
+            </sf:option>
+            <sf:option value="noSearch">
+              <s:message code="dmp.edit.existingData.option2" />
+            </sf:option>
+          </sf:select>
+          <s:message code="dmp.edit.existingData.help" var="appresmess" />
+          <%@ include file="../templates/helpblock.jsp"%>
+          <!-- START contentExistingData -->
+          <div id="contentExistingData">
+            <!-- dataCitation -->
+            <s:message text="dataCitation" var="dmp_var_name" />
+            <%@ include file="../templates/textarea.jsp"%>
+            <!-- existingDataRelevance -->
+            <s:message text="existingDataRelevance" var="dmp_var_name" />
+            <%@ include file="../templates/textarea.jsp"%>
+            <!-- existingDataIntegration -->
+            <s:message text="existingDataIntegration" var="dmp_var_name" />
+            <%@ include file="../templates/textarea.jsp"%>
           </div>
         </div>
-        <!-- existingDataIntegration -->
-        <div class="form-group row col-sm-12">
-          <label for="dmp.existingDataIntegration"><s:message code="dmp.edit.existingDataIntegration" /></label>
-          <sf:textarea rows="5" path="dmp.existingDataIntegration" class="form-control" disabled="" />
-          <div class="row help-block">
-            <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-            <div class="col-sm-11">
-              <s:message code="dmp.edit.existingDataIntegration.help" />
+      </div>
+    </li>
+    <!-- usedDataTypes -->
+    <li class="list-group-item">
+      <div class="form-group">
+        <div class="col-sm-12">
+          <label for="dmp.usedDataTypes"><s:message code="dmp.edit.usedDataTypes" /></label>
+          <div class="form-group">
+            <c:forEach items="${ProjectForm.dataTypes}" var="dtype" varStatus="state">
+              <div class="col-sm-6">
+                <c:choose>
+                  <c:when test="${dtype.id == 0}">
+                    <label class="btn btn-default" style="width: 100%; text-align: left;"> <sf:checkbox path="dmp.usedDataTypes"
+                        value="${dtype.id}" onchange="switchViewIfChecked('selectOtherDataTypes')" id="selectOtherDataTypes" /> <s:message
+                        text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
+                    </label>
+                  </c:when>
+                  <c:otherwise>
+                    <label class="btn btn-default" style="width: 100%; text-align: left;"> <sf:checkbox path="dmp.usedDataTypes"
+                        value="${dtype.id}" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
+                    </label>
+                  </c:otherwise>
+                </c:choose>
+              </div>
+            </c:forEach>
+            <div class="col-sm-12">
+              <s:message code="dmp.edit.usedDataTypes.help" var="appresmess" />
+              <%@ include file="../templates/helpblock.jsp"%>
             </div>
           </div>
+          <div id="contentOtherDataTypes">
+            <!-- otherDataTypes -->
+            <s:message text="otherDataTypes" var="dmp_var_name" />
+            <%@ include file="../templates/textarea.jsp"%>
+          </div>
         </div>
-      </div></li>
-    <!-- END Existing Data -->
-    <!-- START Data Types -->
-    <li class="list-group-item form-group"><label for="dmp.usedDataTypes"><s:message code="dmp.edit.usedDataTypes" /></label>
-      <ul class="list-group col-sm-12">
-        <c:forEach items="${ProjectForm.dataTypes}" var="dtype">
-          <li class="list-group-item col-sm-4"><c:choose>
-              <c:when test="${dtype.id == 0}">
-                <label class="btn btn-default" style="width: 100%"><sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}"
-                    onchange="switchViewIfChecked('selectOtherDataTypes')" id="selectOtherDataTypes" /> <s:message
-                    text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
-              </c:when>
-              <c:otherwise>
-                <label class="btn btn-default" style="width: 100%"><sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}" /> <s:message
-                    text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
-              </c:otherwise>
-            </c:choose></li>
-        </c:forEach>
-      </ul>
-      <div class="row help-block col-sm-12">
-        <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-        <div class="col-sm-11">
-          <s:message code="dmp.edit.usedDataTypes.help" />
-        </div>
-      </div> <!-- START contentExistingData -->
-      <div id="contentOtherDataTypes">
-        <!-- existingDataRelevance -->
-        <div class="form-group row col-sm-12">
-          <label for="dmp.otherDataTypes"><s:message code="dmp.edit.otherDataTypes" /></label>
-          <sf:textarea rows="5" path="dmp.otherDataTypes" class="form-control" disabled="" />
-        </div>
-      </div></li>
-    <!-- END Data Types -->
-    <!-- START Data Reproducibility -->
-    <li class="list-group-item form-group"><label for="dmp.dataReproducibility"><s:message code="dmp.edit.dataReproducibility" /></label>
-      <sf:textarea rows="5" path="dmp.dataReproducibility" class="form-control" disabled="" />
-      <div class="row help-block">
-        <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-        <div class="col-sm-11">
-          <s:message code="dmp.edit.dataReproducibility.help" />
-        </div>
-      </div></li>
-    <!-- END Data Reproducibility -->
+      </div>
+    </li>
+    <!-- dataReproducibility -->
+    <li class="list-group-item"><s:message text="dataReproducibility" var="dmp_var_name" /> <%@ include
+        file="../templates/textarea.jsp"%></li>
     <!-- START Collecting/Generating Data -->
-    <li class="list-group-item form-group"><h6>
-        <b><s:message code="dmp.edit.collection.mode" /></b>
-      </h6>
-      <div class="form-group col-sm-12">
-        <ul class="list-group col-sm-6">
-          <li class="list-group-item"><label for="dmp.usedCollectionModes"> <s:message code="dmp.edit.collection.mode.present" />
-          </label></li>
-          <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
-            <c:if test="${dtype.investPresent}">
-              <li class="list-group-item"><c:choose>
-                  <c:when test="${dtype.id == 1}">
-                    <sf:checkbox path="dmp.usedCollectionModes" label="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}"
-                      value="${dtype.id}" onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" />
-                  </c:when>
-                  <c:otherwise>
-                    <sf:checkbox path="dmp.usedCollectionModes" label="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}"
-                      value="${dtype.id}" />
-                  </c:otherwise>
-                </c:choose></li>
-            </c:if>
-          </c:forEach>
-          <li class="list-group-item col-sm-12" id="contentCollectionModesIP">
-            <!-- existingDataRelevance -->
-            <div class="form-group">
-              <div class="col-sm-12">
-                <label for="dmp.otherDataTypes"><s:message code="dmp.edit.collection.mode.present.other" /></label>
-                <sf:textarea rows="5" path="dmp.otherCMIP" class="form-control" disabled="" />
+    <li class="list-group-item">
+      <div class="form-group">
+        <div class="col-sm-12">
+          <h6>
+            <b><s:message code="dmp.edit.usedCollectionModes" /></b>
+          </h6>
+          <div class="form-group">
+            <div class="col-sm-12">
+              <div class="col-sm-6">
+                <ul class="list-group">
+                  <li class="list-group-item">
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <label for="dmp.usedCollectionModes"> <s:message code="dmp.edit.usedCollectionModes.present" />
+                        </label>
+                        <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
+                          <c:if test="${dtype.investPresent}">
+                            <c:choose>
+                              <c:when test="${dtype.id == 1}">
+                                <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox
+                                    path="dmp.usedCollectionModes" value="${dtype.id}"
+                                    onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" /> <s:message
+                                    text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                              </c:when>
+                              <c:otherwise>
+                                <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox
+                                    path="dmp.usedCollectionModes" value="${dtype.id}" /> <s:message
+                                    text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                              </c:otherwise>
+                            </c:choose>
+                          </c:if>
+                        </c:forEach>
+                        <!-- otherCMIP -->
+                        <div id="contentCollectionModesIP">
+                          <s:message text="otherCMIP" var="dmp_var_name" /> 
+                           <%@ include file="../templates/textarea.jsp"%>
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="col-sm-6">
+                <ul class="list-group">
+                  <li class="list-group-item"><label for="dmp.usedCollectionModes"> <s:message
+                        code="dmp.edit.usedCollectionModes.not.present" />
+                  </label></li>
+                  <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
+                    <c:if test="${not dtype.investPresent}">
+                      <li class="list-group-item"><c:choose>
+                          <c:when test="${dtype.id == 2}">
+                            <sf:checkbox path="dmp.usedCollectionModes" label="${dtype.nameDE}" value="${dtype.id}"
+                              onchange="switchViewIfChecked('selectCollectionModesINP')" id="selectCollectionModesINP" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:checkbox path="dmp.usedCollectionModes" label="${dtype.nameDE}" value="${dtype.id}" />
+                          </c:otherwise>
+                        </c:choose></li>
+                    </c:if>
+                  </c:forEach>
+                  <li class="list-group-item col-sm-12" id="contentCollectionModesINP">
+                    <!-- existingDataRelevance -->
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <label for="dmp.otherDataTypes"><s:message code="dmp.edit.usedCollectionModes.not.present.other" /></label>
+                        <sf:textarea rows="5" path="dmp.otherCMINP" class="form-control" disabled="" />
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="row help-block col-sm-12">
+                <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+                <div class="col-sm-11">
+                  <s:message code="dmp.edit.usedCollectionModes.help" />
+                </div>
               </div>
             </div>
-          </li>
-        </ul>
-        <ul class="list-group col-sm-6">
-          <li class="list-group-item"><label for="dmp.usedCollectionModes"> <s:message
-                code="dmp.edit.collection.mode.not.present" />
-          </label></li>
-          <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
-            <c:if test="${not dtype.investPresent}">
-              <li class="list-group-item"><c:choose>
-                  <c:when test="${dtype.id == 2}">
-                    <sf:checkbox path="dmp.usedCollectionModes" label="${dtype.nameDE}" value="${dtype.id}"
-                      onchange="switchViewIfChecked('selectCollectionModesINP')" id="selectCollectionModesINP" />
-                  </c:when>
-                  <c:otherwise>
-                    <sf:checkbox path="dmp.usedCollectionModes" label="${dtype.nameDE}" value="${dtype.id}" />
-                  </c:otherwise>
-                </c:choose></li>
-            </c:if>
-          </c:forEach>
-          <li class="list-group-item col-sm-12" id="contentCollectionModesINP">
-            <!-- existingDataRelevance -->
-            <div class="form-group">
-              <div class="col-sm-12">
-                <label for="dmp.otherDataTypes"><s:message code="dmp.edit.collection.mode.not.present.other" /></label>
-                <sf:textarea rows="5" path="dmp.otherCMINP" class="form-control" disabled="" />
+          </div>
+          <!--  START Measurement Occasions -->
+          <div class="form-group row col-sm-12">
+            <label for="dmp.measOccasions"><s:message code="dmp.edit.meas.occasions" /></label>
+            <sf:select class="form-control" path="dmp.measOccasions">
+              <s:message code="dmp.edit.select.option.default" var="select_opt" />
+              <sf:option value="" label="${select_opt}" disabled="true" />
+              <s:message code="dmp.edit.meas.occasions.select1" var="select_opt" />
+              <sf:option value="single" label="${select_opt}" />
+              <s:message code="dmp.edit.meas.occasions.select2" var="select_opt" />
+              <sf:option value="multi" label="${select_opt}" />
+            </sf:select>
+            <div class="row help-block">
+              <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+              <div class="col-sm-11">
+                <s:message code="dmp.edit.meas.occasions.help" />
               </div>
             </div>
-          </li>
-        </ul>
-        <div class="row help-block col-sm-12">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message code="dmp.edit.collection.mode.help" />
           </div>
         </div>
-      </div> <!--  START Measurement Occasions -->
-      <div class="form-group row col-sm-12">
-        <label for="dmp.measOccasions"><s:message code="dmp.edit.meas.occasions" /></label>
-        <sf:select class="form-control" path="dmp.measOccasions">
-          <s:message code="dmp.edit.select.option.default" var="select_opt" />
-          <sf:option value="" label="${select_opt}" disabled="true" />
-          <s:message code="dmp.edit.meas.occasions.select1" var="select_opt" />
-          <sf:option value="single" label="${select_opt}" />
-          <s:message code="dmp.edit.meas.occasions.select2" var="select_opt" />
-          <sf:option value="multi" label="${select_opt}" />
-        </sf:select>
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message code="dmp.edit.meas.occasions.help" />
-          </div>
-        </div>
-      </div> <!--  END Measurement Occasions --></li>
+      </div>
+    </li>
     <!-- END Collecting/Generating Data -->
     <!-- START Data Reproducibility -->
     <li class="list-group-item form-group"><h6>

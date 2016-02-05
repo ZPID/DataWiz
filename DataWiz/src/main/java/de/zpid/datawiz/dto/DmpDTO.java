@@ -41,7 +41,11 @@ public class DmpDTO implements Serializable {
 
   // ***************** Research Data *****************
   /** DMP09 : 0 yes, existing data are used/ 1 no data were found/ 2 no search was carried out. */
-  private int existingData;
+  private String existingData;
+
+  /** DMP97. */
+  @Size(min = 0, max = 1000)
+  private String dataCitation;
 
   /** DMP10. */
   @Size(min = 0, max = 1000)
@@ -51,7 +55,6 @@ public class DmpDTO implements Serializable {
   @Size(min = 0, max = 1000)
   private String existingDataIntegration;
 
-  // ***************** Types of data *****************
   /** DMP12 META096 Study Metadata. */
   private List<Integer> usedDataTypes;
 
@@ -380,44 +383,57 @@ public class DmpDTO implements Serializable {
   /** DMP75. -> if DMP73 == true */
   private boolean consentObtained;
 
-  /** DMP75. -> if DMP75 == true */
+  /** DMP75. -> if DMP75 == false */
   @Size(min = 0, max = 2000)
   private String consentObtainedTxt;
 
   /** DMP95. -> if DMP75 == true */
   private boolean sharingConsidered;
 
-  /** DMP95. -> if DMP95 == false */
-  @Size(min = 0, max = 2000)
-  private String sharingConsideredTxt;
-
-  /**  DMP76. */
+  /** DMP76. */
   private boolean irbApproval;
 
-  /** DMP77. -> if DMP76 == false */
+  /** DMP76. -> if DMP76 == false */
   @Size(min = 0, max = 1000)
   private String irbApprovalTxt;
 
-  /**  DMP78. */
+  /** DMP78. */
   private boolean sensitiveDataIncluded;
 
-  /** DMP96. -> if DMP76 == false */
+  /** DMP96. -> if DMP78 == true */
   @Size(min = 0, max = 1000)
   private String sensitiveDataIncludedTxt;
 
-  /**  DMP79. */
+  /** DMP79. */
   private boolean externalCopyright;
 
-  /** DMP79. -> if DMP76 == false */
+  /** DMP79. -> if DMP79 == true */
   @Size(min = 0, max = 1000)
   private String externalCopyrightTxt;
 
-  /**  DMP79. */
+  /** DMP80. */
   private boolean internalCopyright;
 
-  /** DMP79. -> if DMP76 == false */
+  /** DMP80. -> if DMP80 == true */
   @Size(min = 0, max = 1000)
   private String internalCopyrightTxt;
+
+  // ***************** Costs *****************
+
+  /** DMP83. */
+  private String specificCosts;
+
+  /** DMP83. -> if DMP83 == true */
+  @Size(min = 0, max = 1000)
+  private String specificCostsTxt;
+
+  /** DMP84. -> if DMP83 == true */
+  @Size(min = 0, max = 1000)
+  private String ariseCosts;
+
+  /** DMP85. -> if DMP83 == true */
+  @Size(min = 0, max = 1000)
+  private String bearCost;
 
   /**
    * Getter for {@link #id}.
@@ -519,7 +535,7 @@ public class DmpDTO implements Serializable {
    *
    * @return existingData
    */
-  public int getExistingData() {
+  public String getExistingData() {
     return existingData;
   }
 
@@ -529,7 +545,7 @@ public class DmpDTO implements Serializable {
    * @param existingData
    *          -> this.existingData
    */
-  public void setExistingData(int existingData) {
+  public void setExistingData(String existingData) {
     this.existingData = existingData;
   }
 
@@ -550,6 +566,14 @@ public class DmpDTO implements Serializable {
    */
   public void setExistingDataRelevance(String existingDataRelevance) {
     this.existingDataRelevance = existingDataRelevance;
+  }
+
+  public String getDataCitation() {
+    return dataCitation;
+  }
+
+  public void setDataCitation(String dataCitation) {
+    this.dataCitation = dataCitation;
   }
 
   /**
@@ -2141,7 +2165,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #dataProtection}.
    *
-   * @param dataProtection -> this.dataProtection
+   * @param dataProtection
+   *          -> this.dataProtection
    */
   public void setDataProtection(boolean dataProtection) {
     this.dataProtection = dataProtection;
@@ -2159,7 +2184,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #protectionRequirements}.
    *
-   * @param protectionRequirements -> this.protectionRequirements
+   * @param protectionRequirements
+   *          -> this.protectionRequirements
    */
   public void setProtectionRequirements(String protectionRequirements) {
     this.protectionRequirements = protectionRequirements;
@@ -2177,7 +2203,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #consentObtained}.
    *
-   * @param consentObtained -> this.consentObtained
+   * @param consentObtained
+   *          -> this.consentObtained
    */
   public void setConsentObtained(boolean consentObtained) {
     this.consentObtained = consentObtained;
@@ -2195,7 +2222,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #consentObtainedTxt}.
    *
-   * @param consentObtainedTxt -> this.consentObtainedTxt
+   * @param consentObtainedTxt
+   *          -> this.consentObtainedTxt
    */
   public void setConsentObtainedTxt(String consentObtainedTxt) {
     this.consentObtainedTxt = consentObtainedTxt;
@@ -2213,28 +2241,11 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #sharingConsidered}.
    *
-   * @param sharingConsidered -> this.sharingConsidered
+   * @param sharingConsidered
+   *          -> this.sharingConsidered
    */
   public void setSharingConsidered(boolean sharingConsidered) {
     this.sharingConsidered = sharingConsidered;
-  }
-
-  /**
-   * Getter for {@link #sharingConsideredTxt}.
-   *
-   * @return sharingConsideredTxt
-   */
-  public String getSharingConsideredTxt() {
-    return sharingConsideredTxt;
-  }
-
-  /**
-   * Setter for {@link #sharingConsideredTxt}.
-   *
-   * @param sharingConsideredTxt -> this.sharingConsideredTxt
-   */
-  public void setSharingConsideredTxt(String sharingConsideredTxt) {
-    this.sharingConsideredTxt = sharingConsideredTxt;
   }
 
   /**
@@ -2249,7 +2260,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #irbApproval}.
    *
-   * @param irbApproval -> this.irbApproval
+   * @param irbApproval
+   *          -> this.irbApproval
    */
   public void setIrbApproval(boolean irbApproval) {
     this.irbApproval = irbApproval;
@@ -2267,7 +2279,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #irbApprovalTxt}.
    *
-   * @param irbApprovalTxt -> this.irbApprovalTxt
+   * @param irbApprovalTxt
+   *          -> this.irbApprovalTxt
    */
   public void setIrbApprovalTxt(String irbApprovalTxt) {
     this.irbApprovalTxt = irbApprovalTxt;
@@ -2285,7 +2298,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #sensitiveDataIncluded}.
    *
-   * @param sensitiveDataIncluded -> this.sensitiveDataIncluded
+   * @param sensitiveDataIncluded
+   *          -> this.sensitiveDataIncluded
    */
   public void setSensitiveDataIncluded(boolean sensitiveDataIncluded) {
     this.sensitiveDataIncluded = sensitiveDataIncluded;
@@ -2303,7 +2317,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #sensitiveDataIncludedTxt}.
    *
-   * @param sensitiveDataIncludedTxt -> this.sensitiveDataIncludedTxt
+   * @param sensitiveDataIncludedTxt
+   *          -> this.sensitiveDataIncludedTxt
    */
   public void setSensitiveDataIncludedTxt(String sensitiveDataIncludedTxt) {
     this.sensitiveDataIncludedTxt = sensitiveDataIncludedTxt;
@@ -2321,7 +2336,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #externalCopyright}.
    *
-   * @param externalCopyright -> this.externalCopyright
+   * @param externalCopyright
+   *          -> this.externalCopyright
    */
   public void setExternalCopyright(boolean externalCopyright) {
     this.externalCopyright = externalCopyright;
@@ -2339,7 +2355,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #externalCopyrightTxt}.
    *
-   * @param externalCopyrightTxt -> this.externalCopyrightTxt
+   * @param externalCopyrightTxt
+   *          -> this.externalCopyrightTxt
    */
   public void setExternalCopyrightTxt(String externalCopyrightTxt) {
     this.externalCopyrightTxt = externalCopyrightTxt;
@@ -2357,7 +2374,8 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #internalCopyright}.
    *
-   * @param internalCopyright -> this.internalCopyright
+   * @param internalCopyright
+   *          -> this.internalCopyright
    */
   public void setInternalCopyright(boolean internalCopyright) {
     this.internalCopyright = internalCopyright;
@@ -2375,10 +2393,87 @@ public class DmpDTO implements Serializable {
   /**
    * Setter for {@link #internalCopyrightTxt}.
    *
-   * @param internalCopyrightTxt -> this.internalCopyrightTxt
+   * @param internalCopyrightTxt
+   *          -> this.internalCopyrightTxt
    */
   public void setInternalCopyrightTxt(String internalCopyrightTxt) {
     this.internalCopyrightTxt = internalCopyrightTxt;
+  }
+
+  /**
+   * Getter for {@link #specificCosts}.
+   *
+   * @return specificCosts
+   */
+  public String getSpecificCosts() {
+    return specificCosts;
+  }
+
+  /**
+   * Setter for {@link #specificCosts}.
+   *
+   * @param specificCosts
+   *          -> this.specificCosts
+   */
+  public void setSpecificCosts(String specificCosts) {
+    this.specificCosts = specificCosts;
+  }
+
+  /**
+   * Getter for {@link #specificCostsTxt}.
+   *
+   * @return specificCostsTxt
+   */
+  public String getSpecificCostsTxt() {
+    return specificCostsTxt;
+  }
+
+  /**
+   * Setter for {@link #specificCostsTxt}.
+   *
+   * @param specificCostsTxt
+   *          -> this.specificCostsTxt
+   */
+  public void setSpecificCostsTxt(String specificCostsTxt) {
+    this.specificCostsTxt = specificCostsTxt;
+  }
+
+  /**
+   * Getter for {@link #ariseCosts}.
+   *
+   * @return ariseCosts
+   */
+  public String getAriseCosts() {
+    return ariseCosts;
+  }
+
+  /**
+   * Setter for {@link #ariseCosts}.
+   *
+   * @param ariseCosts
+   *          -> this.ariseCosts
+   */
+  public void setAriseCosts(String ariseCosts) {
+    this.ariseCosts = ariseCosts;
+  }
+
+  /**
+   * Getter for {@link #bearCost}.
+   *
+   * @return bearCost
+   */
+  public String getBearCost() {
+    return bearCost;
+  }
+
+  /**
+   * Setter for {@link #bearCost}.
+   *
+   * @param bearCost
+   *          -> this.bearCost
+   */
+  public void setBearCost(String bearCost) {
+    this.bearCost = bearCost;
   }
 
 }

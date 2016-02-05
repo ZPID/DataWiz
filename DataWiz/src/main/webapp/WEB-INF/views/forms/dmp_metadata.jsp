@@ -1,3 +1,5 @@
+<%@ include file="../templates/includes.jsp"%>
+<c:set var="localeCode" value="${pageContext.response.locale}" />
 <div id="metadataActiveContent" class="projectContent">
   <!-- Infotxt -->
   <div class="form-group">

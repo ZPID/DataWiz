@@ -1,3 +1,4 @@
+<%@ include file="../templates/includes.jsp"%>
 <div id="accessActiveContent" class="projectContent">
   <!-- Infotxt -->
   <div class="form-group">

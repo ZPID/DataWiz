@@ -10,6 +10,7 @@
   <bean id="ContributorDTO" class="de.zpid.datawiz.dto.ContributorDTO" scope="prototype" />
   <bean id="FileDTO" class="de.zpid.datawiz.dto.FileDTO" scope="prototype" />
   <bean id="DmpRelTypeDTO" class="de.zpid.datawiz.dto.DmpRelTypeDTO" scope="prototype" />
+  <bean id="DmpDTO" class="de.zpid.datawiz.dto.DmpDTO" scope="prototype" />
   <!-- FORM -->
   <bean id="ProjectForm" class="de.zpid.datawiz.form.ProjectForm" scope="prototype" /> 
 </beans>

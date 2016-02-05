@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DmpRelTypeDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
@@ -100,6 +101,8 @@ public class DMPController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
+    DmpDTO dmp = (DmpDTO) context.getBean("DmpDTO");
+    
     model.put("subnaviActive", "DMP");
     model.put("ProjectForm", pForm);
     return "dmp";
@@ -114,7 +117,8 @@ public class DMPController {
     }
     
     
-    System.out.println(pForm.getDmp().getUsedDataTypes().iterator().next());
+    System.out.println(pForm.getDmp().getFrameworkNationality());
+    System.out.println(pForm.getDmp().getFrameworkNationalityTxt());
     return "dmp";
   }
 }

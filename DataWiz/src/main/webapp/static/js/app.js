@@ -1,6 +1,5 @@
 // the project tag_box
 $tag_box = null;
-
 /**
  * Onload function
  * 
@@ -14,8 +13,12 @@ $tag_box = null;
 		// set the project submenu after reload or refresh
 		setProjectSubmenu(null);
 		$(window).bind('scroll', function() {
-			var navHeight = 150; // custom nav height
-			($(window).scrollTop() > navHeight) ? $('nav').addClass('goToTop') : $('nav').removeClass('goToTop');
+			var navHeight = 100; // custom nav height
+			($(window).scrollTop() > navHeight) ? $('.mainnavtop').addClass('goToTop') : $('.mainnavtop').removeClass('goToTop');
+			navHeight = 280;
+			($(window).scrollTop() > navHeight) ? 
+						$('.subnavtop').addClass('goToTop2').removeClass('') : 
+						$('.subnavtop').removeClass('goToTop2').addClass('');
 		});
 		$(this).scrollTop(0);
 		// loading DMP Content - not nessesary on other pages!
@@ -174,7 +177,7 @@ Dropzone.options.myDropzone = {
 };
 
 function showorHideDMPContent() {
-	switchViewIfSelected("selectExistingData", 1);
+	switchViewIfSelected("selectExistingData", 'existingUsed');
 	switchViewIfChecked('selectOtherDataTypes');
 	switchViewIfChecked('selectCollectionModesIP');
 	switchViewIfChecked('selectCollectionModesINP');
@@ -196,6 +199,13 @@ function showorHideDMPContent() {
 	switchViewIfSelected('selectinvolvedInformed', 1);
 	switchViewIfSelected('selectmanagementWorkflow', 1);
 	switchViewIfSelected('selectstaffDescription', 1);
+	switchViewIfSelected('selectdataProtection', 1);
+	switchViewIfSelectedMulti('selectconsentObtained', '0,1');
+	switchViewIfSelected('selectcontributionsDefined', 0);
+	switchViewIfSelected('selectsensitiveDataIncluded', 1);
+	switchViewIfSelected('selectexternalCopyright', 1);
+	switchViewIfSelected('selectinternalCopyright', 1);
+	switchViewIfSelectedMulti('selectspecificCosts', 'reference,lifecycle,other');
 }
 
 /**

@@ -13,7 +13,7 @@
           <s:message code="project.edit.info" />
         </div>
       </div>
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs subnavtop">
         <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message
               code="dmp.submenu.administrative" /></a></li>
         <li role="presentation" id="researchActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.research" /></a></li>
@@ -39,39 +39,23 @@
           </div>
         </c:if>
         <!-- START Administration Data Content -->
-        <%@ include file="forms/dmp_admindata.jsp"%>
+        <jsp:include page="forms/dmp_admindata.jsp" />
         <!-- START Research Data Content -->
-        <%@ include file="forms/dmp_researchdata.jsp"%>
+        <jsp:include page="forms/dmp_researchdata.jsp">
+          <jsp:param value="${localeCode}" name="localeCode"/>
+        </jsp:include>
         <!-- START Meta Data Content -->
-        <%@ include file="forms/dmp_metadata.jsp"%>
+        <jsp:include page="forms/dmp_metadata.jsp" />
         <!-- START Data Sharing Content -->
-        <%@ include file="forms/dmp_sharing.jsp"%>
+        <jsp:include page="forms/dmp_sharing.jsp" />
         <!-- START Storage Content -->
-        <%@ include file="forms/dmp_storage.jsp"%>
+        <jsp:include page="forms/dmp_storage.jsp"/>
         <!-- START organization Content -->
-        <%@ include file="forms/dmp_organization.jsp"%>
+        <jsp:include page="forms/dmp_organization.jsp"/>
         <!-- START ethical Content -->
-        <div id="ethicalActiveContent" class="projectContent">
-          <!-- Infotxt -->
-          <div class="form-group">
-            <div class="col-sm-12">
-              <div class="well marginTop1">
-                <s:message code="dmp.edit.ethical.info" />
-              </div>
-            </div>
-          </div>
-          <ul class="list-group">
-          
-          
-          
-
-          </ul>
-
-
-
-
-        </div>
-        <div id="costsActiveContent" class="projectContent">1234567890</div>
+        <jsp:include page="forms/dmp_ethical.jsp"/>
+        <!-- START costs Content -->
+        <jsp:include page="forms/dmp_costs.jsp"/>
         <!-- Buttons -->
         <div class="form-group">
           <div class="col-sm-offset-2 col-sm-10">

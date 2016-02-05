@@ -172,6 +172,18 @@ textarea {
   z-index: 1;
   width: 100%;
 }
+
+.goToTop2 {
+  position: fixed;
+  top: 51;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  background-color: white;
+  text-align: center;
+  margin: 0 auto;
+  padding-left: 15.6%
+}
 /**************** END FIXED NAVBAR SETTINGS ****************/
 /**************** START TAGGING STYLE ****************/
 .tagging {
