@@ -11,6 +11,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.validation.SmartValidator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import de.zpid.datawiz.dao.ContributorDAO;
+import de.zpid.datawiz.dao.DmpDAO;
 import de.zpid.datawiz.dao.DmpRelTypeDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
@@ -68,6 +71,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     dataSource.setUsername("root");
     dataSource.setPassword("");
     return dataSource;
+  }
+
+  @Bean(name = "validator")
+  public SmartValidator validator() {
+    return new LocalValidatorFactoryBean();
   }
 
   @Bean(name = "multipartResolver")
@@ -124,16 +132,22 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public TagDAO getTagDAO() {
     return new TagDAO(getDataSource());
   }
-  
+
   @Autowired
   @Bean(name = "fileDao")
   public FileDAO getFileDAO() {
     return new FileDAO(getDataSource());
   }
-  
+
   @Autowired
   @Bean(name = "dmpRelTypeDAO")
   public DmpRelTypeDAO getDataTypeDAO() {
     return new DmpRelTypeDAO(getDataSource());
+  }
+
+  @Autowired
+  @Bean(name = "dmpDAO")
+  public DmpDAO getDmpDAO() {
+    return new DmpDAO(getDataSource());
   }
 }

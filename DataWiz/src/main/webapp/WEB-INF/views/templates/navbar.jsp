@@ -12,7 +12,7 @@
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
         <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-        <li><a href="login">Link</a></li>
+        <li><a href="<c:url value="/login" />">Link</a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
           aria-expanded="false">Dropdown <span class="caret"></span>
         </a>
@@ -29,10 +29,10 @@
       <ul class="nav navbar-nav navbar-right">
         <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
             <c:when test="${localeCode eq 'de'}">
-              <a href="?datawiz_locale=en"><img alt="" src="<c:url value="/static/images/de.png" />"></a>
+              <a href="<c:url value="?datawiz_locale=en" />"><img alt="" src="<c:url value="/static/images/de.png" />"></a>
             </c:when>
             <c:when test="${localeCode eq 'en'}">
-              <a href="?datawiz_locale=de"><img alt="" src="<c:url value="/static/images/gb.png" />"></a>
+              <a href="<c:url value="?datawiz_locale=de" />"><img alt="" src="<c:url value="/static/images/gb.png" />"></a>
             </c:when>
           </c:choose></li>
         <sec:authorize access="isAuthenticated()">
@@ -47,8 +47,8 @@
             </ul></li>
         </sec:authorize>
         <sec:authorize access="isAnonymous()">
-          <li><a href="login">Login</a></li>
-          <li><a href="register">Register</a></li>
+          <li><a href="<c:url value="/login" />">Login</a></li>
+          <li><a href="<c:url value="/register" />">Register</a></li>
         </sec:authorize>
         <li>
           <form class="navbar-form" role="search">

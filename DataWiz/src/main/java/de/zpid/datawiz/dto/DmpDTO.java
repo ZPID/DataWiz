@@ -1,7 +1,9 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.constraints.Size;
 
@@ -20,26 +22,43 @@ public class DmpDTO implements Serializable {
   private static final long serialVersionUID = 1989300324143602401L;
 
   /** The DMP ID - Is similar to the Project ID because only 1 DMP for a project. */
-  private int id;
+  private BigInteger id;
 
   // ***************** Administrative Data *****************
+  /** checks if the fields of the Administrative Data has changed, this is used for particular saving */
+  private boolean adminChanged = false;
+
+  /**
+   * group interface for validation - see
+   * {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
+   */
+  public interface AdminVal {
+  }
+
   /** DMP02. */
-  @Size(min = 0, max = 2000)
+  @Size(min = 0, max = 2000, groups = AdminVal.class)
   private String projectAims;
 
+  /** DMP03. */
+  @Size(min = 0, max = 250, groups = AdminVal.class)
+  private String projectSponsors;
+
   /** DMP04. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = AdminVal.class)
   private String duration;
 
   /** DMP05. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = AdminVal.class)
   private String organizations;
 
   /** DMP07. */
-  @Size(min = 0, max = 2000)
+  @Size(min = 0, max = 2000, groups = AdminVal.class)
   private String planAims;
 
   // ***************** Research Data *****************
+  /** checks if the fields of the Research Data has changed, this is used for particular saving */
+  private boolean researchChanged = false;
+
   /** DMP09 : 0 yes, existing data are used/ 1 no data were found/ 2 no search was carried out. */
   private String existingData;
 
@@ -67,22 +86,18 @@ public class DmpDTO implements Serializable {
   private String dataReproducibility;
 
   /** DMP14. How will the data be collected or generated? */
-  /** DMP14 - Subitem DMP14, PsychData - META096 */
+  /** DMP14 PsychData - META096 */
   private List<Integer> usedCollectionModes;
 
-  /** other Collection Modes with Invest. present */
+  /** DMP87 other Collection Modes with Invest. present */
   @Size(min = 0, max = 1000)
   private String otherCMIP;
 
-  /** other Collection Modes with Invest. not present */
+  /** DMP87 other Collection Modes with Invest. not present */
   @Size(min = 0, max = 1000)
   private String otherCMINP;
 
-  /** Subitem DMP14, JARS - META094 Study Metadata. */
-  @Size(min = 0, max = 250)
-  private String instruments;
-
-  /** Subitem DMP14, PsychData - META097 Study Metadata. */
+  /** DMP89 Subitem DMP14, PsychData - META097 Study Metadata. */
   @Size(min = 0, max = 1000)
   private String measOccasions;
 
@@ -168,6 +183,8 @@ public class DmpDTO implements Serializable {
   private String deleteProcedure;
 
   // ***************** MetaData Data *****************
+  /** checks if the fields of the MetaData Data has changed, this is used for particular saving */
+  private boolean metaChanged = false;
 
   /** DMP31. */
   private List<Integer> selectedMetaPurposes;
@@ -193,6 +210,8 @@ public class DmpDTO implements Serializable {
   private String metaFormat;
 
   // ***************** Data Sharing *****************
+  /** checks if the fields of the Data Sharing has changed, this is used for particular saving */
+  private boolean sharingChanged = false;
 
   /** DMP39. */
   private boolean releaseObligation;
@@ -221,6 +240,10 @@ public class DmpDTO implements Serializable {
   /** DMP38 - if data are not accessible - reason == other. */
   @Size(min = 0, max = 500)
   private String noAccessReasonOther;
+
+  /** DMP98. */
+  @Size(min = 0, max = 1000)
+  private String depositName;
 
   // next fields are shown if principleRetain == repository!<
   /** DMP45. */
@@ -268,6 +291,8 @@ public class DmpDTO implements Serializable {
   private String usedPIDTxt;
 
   // ***************** Storage and infrastructure *****************
+  /** checks if the fields of the Storage has changed, this is used for particular saving */
+  private boolean storageChanged = false;
 
   /** DMP54. */
   @Size(min = 0, max = 1000)
@@ -308,7 +333,8 @@ public class DmpDTO implements Serializable {
   private String storageSuccessionTxt;
 
   // ***************** Organization, management and policies *****************
-
+  /** checks if the fields of the Organization has changed, this is used for particular saving */
+  private boolean organizationChanged = false;
   /** DMP62. */
   private String frameworkNationality;
 
@@ -372,6 +398,8 @@ public class DmpDTO implements Serializable {
   private String planningAdherence;
 
   // ***************** Ethical and legal aspects *****************
+  /** checks if the fields of the Ethical has changed, this is used for particular saving */
+  private boolean ethicalChanged = false;
 
   /** DMP73. */
   private boolean dataProtection;
@@ -419,6 +447,8 @@ public class DmpDTO implements Serializable {
   private String internalCopyrightTxt;
 
   // ***************** Costs *****************
+  /** checks if the fields of the Costs has changed, this is used for particular saving */
+  private boolean costsChanged = false;
 
   /** DMP83. */
   private String specificCosts;
@@ -435,2045 +465,1292 @@ public class DmpDTO implements Serializable {
   @Size(min = 0, max = 1000)
   private String bearCost;
 
-  /**
-   * Getter for {@link #id}.
-   *
-   * @return id
-   */
-  public int getId() {
+  public BigInteger getId() {
     return id;
   }
 
-  /**
-   * Setter for {@link #id}.
-   *
-   * @param id
-   *          -> this.id
-   */
-  public void setId(int id) {
-    this.id = id;
+  public boolean isAdminChanged() {
+    return adminChanged;
   }
 
-  /**
-   * Getter for {@link #projectAims}.
-   *
-   * @return projectAims
-   */
   public String getProjectAims() {
     return projectAims;
   }
 
-  /**
-   * Setter for {@link #projectAims}.
-   *
-   * @param projectAims
-   *          -> this.projectAims
-   */
-  public void setProjectAims(String projectAims) {
-    this.projectAims = projectAims;
+  public String getProjectSponsors() {
+    return projectSponsors;
   }
 
-  /**
-   * Getter for {@link #duration}.
-   *
-   * @return duration
-   */
   public String getDuration() {
     return duration;
   }
 
-  /**
-   * Setter for {@link #duration}.
-   *
-   * @param duration
-   *          -> this.duration
-   */
-  public void setDuration(String duration) {
-    this.duration = duration;
-  }
-
-  /**
-   * Getter for {@link #organizations}.
-   *
-   * @return organizations
-   */
   public String getOrganizations() {
     return organizations;
   }
 
-  /**
-   * Setter for {@link #organizations}.
-   *
-   * @param organizations
-   *          -> this.organizations
-   */
-  public void setOrganizations(String organizations) {
-    this.organizations = organizations;
-  }
-
-  /**
-   * Getter for {@link #planAims}.
-   *
-   * @return planAims
-   */
   public String getPlanAims() {
     return planAims;
   }
 
-  /**
-   * Setter for {@link #planAims}.
-   *
-   * @param planAims
-   *          -> this.planAims
-   */
-  public void setPlanAims(String planAims) {
-    this.planAims = planAims;
+  public boolean isResearchChanged() {
+    return researchChanged;
   }
 
-  /**
-   * Getter for {@link #existingData}.
-   *
-   * @return existingData
-   */
   public String getExistingData() {
     return existingData;
-  }
-
-  /**
-   * Setter for {@link #existingData}.
-   *
-   * @param existingData
-   *          -> this.existingData
-   */
-  public void setExistingData(String existingData) {
-    this.existingData = existingData;
-  }
-
-  /**
-   * Getter for {@link #existingDataRelevance}.
-   *
-   * @return existingDataRelevance
-   */
-  public String getExistingDataRelevance() {
-    return existingDataRelevance;
-  }
-
-  /**
-   * Setter for {@link #existingDataRelevance}.
-   *
-   * @param existingDataRelevance
-   *          -> this.existingDataRelevance
-   */
-  public void setExistingDataRelevance(String existingDataRelevance) {
-    this.existingDataRelevance = existingDataRelevance;
   }
 
   public String getDataCitation() {
     return dataCitation;
   }
 
-  public void setDataCitation(String dataCitation) {
-    this.dataCitation = dataCitation;
+  public String getExistingDataRelevance() {
+    return existingDataRelevance;
   }
 
-  /**
-   * Getter for {@link #existingDataIntegration}.
-   *
-   * @return existingDataIntegration
-   */
   public String getExistingDataIntegration() {
     return existingDataIntegration;
   }
 
-  /**
-   * Setter for {@link #existingDataIntegration}.
-   *
-   * @param existingDataIntegration
-   *          -> this.existingDataIntegration
-   */
-  public void setExistingDataIntegration(String existingDataIntegration) {
-    this.existingDataIntegration = existingDataIntegration;
-  }
-
-  /**
-   * Getter for {@link #usedDataTypes}.
-   *
-   * @return usedDataTypes
-   */
   public List<Integer> getUsedDataTypes() {
     return usedDataTypes;
   }
 
-  /**
-   * Setter for {@link #usedDataTypes}.
-   *
-   * @param usedDataTypes
-   *          -> this.usedDataTypes
-   */
-  public void setUsedDataTypes(List<Integer> usedDataTypes) {
-    this.usedDataTypes = usedDataTypes;
-  }
-
-  /**
-   * Getter for {@link #dataReproducibility}.
-   *
-   * @return dataReproducibility
-   */
-  public String getDataReproducibility() {
-    return dataReproducibility;
-  }
-
-  /**
-   * Setter for {@link #dataReproducibility}.
-   *
-   * @param dataReproducibility
-   *          -> this.dataReproducibility
-   */
-  public void setDataReproducibility(String dataReproducibility) {
-    this.dataReproducibility = dataReproducibility;
-  }
-
-  /**
-   * Getter for {@link #collectionModes}.
-   *
-   * @return collectionModes
-   */
-  public List<Integer> getUsedCollectionModes() {
-    return usedCollectionModes;
-  }
-
-  /**
-   * Setter for {@link #collectionModes}.
-   *
-   * @param usedCollectionModes
-   *          -> this.usedCollectionModes
-   */
-  public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
-    this.usedCollectionModes = usedCollectionModes;
-  }
-
-  /**
-   * Getter for {@link #instruments}.
-   *
-   * @return instruments
-   */
-  public String getInstruments() {
-    return instruments;
-  }
-
-  /**
-   * Setter for {@link #instruments}.
-   *
-   * @param instruments
-   *          -> this.instruments
-   */
-  public void setInstruments(String instruments) {
-    this.instruments = instruments;
-  }
-
-  /**
-   * Getter for {@link #measOccasions}.
-   *
-   * @return measOccasions
-   */
-  public String getMeasOccasions() {
-    return measOccasions;
-  }
-
-  /**
-   * Setter for {@link #measOccasions}.
-   *
-   * @param measOccasions
-   *          -> this.measOccasions
-   */
-  public void setMeasOccasions(String measOccasions) {
-    this.measOccasions = measOccasions;
-  }
-
-  /**
-   * Getter for {@link #reliabilityTraining}.
-   *
-   * @return reliabilityTraining
-   */
-  public String getReliabilityTraining() {
-    return reliabilityTraining;
-  }
-
-  /**
-   * Setter for {@link #reliabilityTraining}.
-   *
-   * @param reliabilityTraining
-   *          -> this.reliabilityTraining
-   */
-  public void setReliabilityTraining(String reliabilityTraining) {
-    this.reliabilityTraining = reliabilityTraining;
-  }
-
-  /**
-   * Getter for {@link #multipleMeasurements}.
-   *
-   * @return multipleMeasurements
-   */
-  public String getMultipleMeasurements() {
-    return multipleMeasurements;
-  }
-
-  /**
-   * Setter for {@link #multipleMeasurements}.
-   *
-   * @param multipleMeasurements
-   *          -> this.multipleMeasurements
-   */
-  public void setMultipleMeasurements(String multipleMeasurements) {
-    this.multipleMeasurements = multipleMeasurements;
-  }
-
-  /**
-   * Getter for {@link #qualitityOther}.
-   *
-   * @return qualitityOther
-   */
-  public String getQualitityOther() {
-    return qualitityOther;
-  }
-
-  /**
-   * Setter for {@link #qualitityOther}.
-   *
-   * @param qualitityOther
-   *          -> this.qualitityOther
-   */
-  public void setQualitityOther(String qualitityOther) {
-    this.qualitityOther = qualitityOther;
-  }
-
-  /**
-   * Getter for {@link #fileFormat}.
-   *
-   * @return fileFormat
-   */
-  public String getFileFormat() {
-    return fileFormat;
-  }
-
-  /**
-   * Setter for {@link #fileFormat}.
-   *
-   * @param fileFormat
-   *          -> this.fileFormat
-   */
-  public void setFileFormat(String fileFormat) {
-    this.fileFormat = fileFormat;
-  }
-
-  /**
-   * Checks if is {@link #workingCopy}.
-   *
-   * @return true, if is working copy
-   */
-  public boolean isWorkingCopy() {
-    return workingCopy;
-  }
-
-  /**
-   * Setter for {@link #workingCopy}.
-   *
-   * @param workingCopy
-   *          -> this.workingCopy
-   */
-  public void setWorkingCopy(boolean workingCopy) {
-    this.workingCopy = workingCopy;
-  }
-
-  /**
-   * Getter for {@link #workingCopyTxt}.
-   *
-   * @return workingCopyTxt
-   */
-  public String getWorkingCopyTxt() {
-    return workingCopyTxt;
-  }
-
-  /**
-   * Setter for {@link #workingCopyTxt}.
-   *
-   * @param workingCopyTxt
-   *          -> this.workingCopyTxt
-   */
-  public void setWorkingCopyTxt(String workingCopyTxt) {
-    this.workingCopyTxt = workingCopyTxt;
-  }
-
-  /**
-   * Checks if is {@link #goodScientific}.
-   *
-   * @return true, if is good scientific
-   */
-  public boolean isGoodScientific() {
-    return goodScientific;
-  }
-
-  /**
-   * Setter for {@link #goodScientific}.
-   *
-   * @param goodScientific
-   *          -> this.goodScientific
-   */
-  public void setGoodScientific(boolean goodScientific) {
-    this.goodScientific = goodScientific;
-  }
-
-  /**
-   * Getter for {@link #goodScientificTxt}.
-   *
-   * @return goodScientificTxt
-   */
-  public String getGoodScientificTxt() {
-    return goodScientificTxt;
-  }
-
-  /**
-   * Setter for {@link #goodScientificTxt}.
-   *
-   * @param goodScientificTxt
-   *          -> this.goodScientificTxt
-   */
-  public void setGoodScientificTxt(String goodScientificTxt) {
-    this.goodScientificTxt = goodScientificTxt;
-  }
-
-  /**
-   * Checks if is {@link #subsequentUse}.
-   *
-   * @return true, if is subsequent use
-   */
-  public boolean isSubsequentUse() {
-    return subsequentUse;
-  }
-
-  /**
-   * Setter for {@link #subsequentUse}.
-   *
-   * @param subsequentUse
-   *          -> this.subsequentUse
-   */
-  public void setSubsequentUse(boolean subsequentUse) {
-    this.subsequentUse = subsequentUse;
-  }
-
-  /**
-   * Getter for {@link #subsequentUseTxt}.
-   *
-   * @return subsequentUseTxt
-   */
-  public String getSubsequentUseTxt() {
-    return subsequentUseTxt;
-  }
-
-  /**
-   * Setter for {@link #subsequentUseTxt}.
-   *
-   * @param subsequentUseTxt
-   *          -> this.subsequentUseTxt
-   */
-  public void setSubsequentUseTxt(String subsequentUseTxt) {
-    this.subsequentUseTxt = subsequentUseTxt;
-  }
-
-  /**
-   * Checks if is {@link #requirements}.
-   *
-   * @return true, if is requirements
-   */
-  public boolean isRequirements() {
-    return requirements;
-  }
-
-  /**
-   * Setter for {@link #requirements}.
-   *
-   * @param requirements
-   *          -> this.requirements
-   */
-  public void setRequirements(boolean requirements) {
-    this.requirements = requirements;
-  }
-
-  /**
-   * Getter for {@link #requirementsTxt}.
-   *
-   * @return requirementsTxt
-   */
-  public String getRequirementsTxt() {
-    return requirementsTxt;
-  }
-
-  /**
-   * Setter for {@link #requirementsTxt}.
-   *
-   * @param requirementsTxt
-   *          -> this.requirementsTxt
-   */
-  public void setRequirementsTxt(String requirementsTxt) {
-    this.requirementsTxt = requirementsTxt;
-  }
-
-  /**
-   * Checks if is {@link #documentation}.
-   *
-   * @return true, if is documentation
-   */
-  public boolean isDocumentation() {
-    return documentation;
-  }
-
-  /**
-   * Setter for {@link #documentation}.
-   *
-   * @param documentation
-   *          -> this.documentation
-   */
-  public void setDocumentation(boolean documentation) {
-    this.documentation = documentation;
-  }
-
-  /**
-   * Getter for {@link #documentationTxt}.
-   *
-   * @return documentationTxt
-   */
-  public String getDocumentationTxt() {
-    return documentationTxt;
-  }
-
-  /**
-   * Setter for {@link #documentationTxt}.
-   *
-   * @param documentationTxt
-   *          -> this.documentationTxt
-   */
-  public void setDocumentationTxt(String documentationTxt) {
-    this.documentationTxt = documentationTxt;
-  }
-
-  /**
-   * Checks if is {@link #dataSelection}.
-   *
-   * @return true, if is data selection
-   */
-  public boolean isDataSelection() {
-    return dataSelection;
-  }
-
-  /**
-   * Setter for {@link #dataSelection}.
-   *
-   * @param dataSelection
-   *          -> this.dataSelection
-   */
-  public void setDataSelection(boolean dataSelection) {
-    this.dataSelection = dataSelection;
-  }
-
-  /**
-   * Getter for {@link #selectionTime}.
-   *
-   * @return selectionTime
-   */
-  public String getSelectionTime() {
-    return selectionTime;
-  }
-
-  /**
-   * Setter for {@link #selectionTime}.
-   *
-   * @param selectionTime
-   *          -> this.selectionTime
-   */
-  public void setSelectionTime(String selectionTime) {
-    this.selectionTime = selectionTime;
-  }
-
-  /**
-   * Getter for {@link #selectionResp}.
-   *
-   * @return selectionResp
-   */
-  public String getSelectionResp() {
-    return selectionResp;
-  }
-
-  /**
-   * Setter for {@link #selectionResp}.
-   *
-   * @param selectionResp
-   *          -> this.selectionResp
-   */
-  public void setSelectionResp(String selectionResp) {
-    this.selectionResp = selectionResp;
-  }
-
-  /**
-   * Getter for {@link #selectionSoftware}.
-   *
-   * @return selectionSoftware
-   */
-  public String getSelectionSoftware() {
-    return selectionSoftware;
-  }
-
-  /**
-   * Setter for {@link #selectionSoftware}.
-   *
-   * @param selectionSoftware
-   *          -> this.selectionSoftware
-   */
-  public void setSelectionSoftware(String selectionSoftware) {
-    this.selectionSoftware = selectionSoftware;
-  }
-
-  /**
-   * Getter for {@link #selectionCriteria}.
-   *
-   * @return selectionCriteria
-   */
-  public String getSelectionCriteria() {
-    return selectionCriteria;
-  }
-
-  /**
-   * Setter for {@link #selectionCriteria}.
-   *
-   * @param selectionCriteria
-   *          -> this.selectionCriteria
-   */
-  public void setSelectionCriteria(String selectionCriteria) {
-    this.selectionCriteria = selectionCriteria;
-  }
-
-  /**
-   * Getter for {@link #storageDuration}.
-   *
-   * @return storageDuration
-   */
-  public String getStorageDuration() {
-    return storageDuration;
-  }
-
-  /**
-   * Setter for {@link #storageDuration}.
-   *
-   * @param storageDuration
-   *          -> this.storageDuration
-   */
-  public void setStorageDuration(String storageDuration) {
-    this.storageDuration = storageDuration;
-  }
-
-  /**
-   * Getter for {@link #deleteProcedure}.
-   *
-   * @return deleteProcedure
-   */
-  public String getDeleteProcedure() {
-    return deleteProcedure;
-  }
-
-  /**
-   * Setter for {@link #deleteProcedure}.
-   *
-   * @param deleteProcedure
-   *          -> this.deleteProcedure
-   */
-  public void setDeleteProcedure(String deleteProcedure) {
-    this.deleteProcedure = deleteProcedure;
-  }
-
-  /**
-   * Getter for {@link #otherDataTypes}.
-   *
-   * @return otherDataTypes
-   */
   public String getOtherDataTypes() {
     return otherDataTypes;
   }
 
-  /**
-   * Setter for {@link #otherDataTypes}.
-   *
-   * @param otherDataTypes
-   *          -> this.otherDataTypes
-   */
-  public void setOtherDataTypes(String otherDataTypes) {
-    this.otherDataTypes = otherDataTypes;
+  public String getDataReproducibility() {
+    return dataReproducibility;
   }
 
-  /**
-   * Getter for {@link #otherCMIP}.
-   *
-   * @return otherCMIP
-   */
+  public List<Integer> getUsedCollectionModes() {
+    return usedCollectionModes;
+  }
+
   public String getOtherCMIP() {
     return otherCMIP;
   }
 
-  /**
-   * Setter for {@link #otherCMIP}.
-   *
-   * @param otherCMIP
-   *          -> this.otherCMIP
-   */
-  public void setOtherCMIP(String otherCMIP) {
-    this.otherCMIP = otherCMIP;
-  }
-
-  /**
-   * Getter for {@link #otherCMINP}.
-   *
-   * @return otherCMINP
-   */
   public String getOtherCMINP() {
     return otherCMINP;
   }
 
-  /**
-   * Setter for {@link #otherCMINP}.
-   *
-   * @param otherCMINP
-   *          -> this.otherCMINP
-   */
-  public void setOtherCMINP(String otherCMINP) {
-    this.otherCMINP = otherCMINP;
+  public String getMeasOccasions() {
+    return measOccasions;
   }
 
-  /**
-   * Checks if is {@link #releaseObligation}.
-   *
-   * @return true, if is release obligation
-   */
-  public boolean isReleaseObligation() {
-    return releaseObligation;
+  public String getReliabilityTraining() {
+    return reliabilityTraining;
   }
 
-  /**
-   * Setter for {@link #releaseObligation}.
-   *
-   * @param releaseObligation
-   *          -> this.releaseObligation
-   */
-  public void setReleaseObligation(boolean releaseObligation) {
-    this.releaseObligation = releaseObligation;
+  public String getMultipleMeasurements() {
+    return multipleMeasurements;
   }
 
-  /**
-   * Getter for {@link #expectedGroups}.
-   *
-   * @return expectedGroups
-   */
-  public String getExpectedGroups() {
-    return expectedGroups;
+  public String getQualitityOther() {
+    return qualitityOther;
   }
 
-  /**
-   * Setter for {@link #expectedGroups}.
-   *
-   * @param expectedGroups
-   *          -> this.expectedGroups
-   */
-  public void setExpectedGroups(String expectedGroups) {
-    this.expectedGroups = expectedGroups;
+  public String getFileFormat() {
+    return fileFormat;
   }
 
-  /**
-   * Checks if is {@link #searchableData}.
-   *
-   * @return true, if is searchable data
-   */
-  public boolean isSearchableData() {
-    return searchableData;
+  public boolean isWorkingCopy() {
+    return workingCopy;
   }
 
-  /**
-   * Setter for {@link #searchableData}.
-   *
-   * @param searchableData
-   *          -> this.searchableData
-   */
-  public void setSearchableData(boolean searchableData) {
-    this.searchableData = searchableData;
+  public String getWorkingCopyTxt() {
+    return workingCopyTxt;
   }
 
-  /**
-   * Checks if is {@link #expectedUsage}.
-   *
-   * @return true, if is expected usage
-   */
-  public String getExpectedUsage() {
-    return expectedUsage;
+  public boolean isGoodScientific() {
+    return goodScientific;
   }
 
-  /**
-   * Setter for {@link #expectedUsage}.
-   *
-   * @param expectedUsage
-   *          -> this.expectedUsage
-   */
-  public void setExpectedUsage(String expectedUsage) {
-    this.expectedUsage = expectedUsage;
+  public String getGoodScientificTxt() {
+    return goodScientificTxt;
   }
 
-  /**
-   * Getter for {@link #accessReasonAuthor}.
-   *
-   * @return accessReasonAuthor
-   */
-  public String getAccessReasonAuthor() {
-    return accessReasonAuthor;
+  public boolean isSubsequentUse() {
+    return subsequentUse;
   }
 
-  /**
-   * Setter for {@link #accessReasonAuthor}.
-   *
-   * @param accessReasonAuthor
-   *          -> this.accessReasonAuthor
-   */
-  public void setAccessReasonAuthor(String accessReasonAuthor) {
-    this.accessReasonAuthor = accessReasonAuthor;
+  public String getSubsequentUseTxt() {
+    return subsequentUseTxt;
   }
 
-  /**
-   * Getter for {@link #noAccessReason}.
-   *
-   * @return noAccessReason
-   */
-  public String getNoAccessReason() {
-    return noAccessReason;
+  public boolean isRequirements() {
+    return requirements;
   }
 
-  /**
-   * Setter for {@link #noAccessReason}.
-   *
-   * @param noAccessReason
-   *          -> this.noAccessReason
-   */
-  public void setNoAccessReason(String noAccessReason) {
-    this.noAccessReason = noAccessReason;
+  public String getRequirementsTxt() {
+    return requirementsTxt;
   }
 
-  /**
-   * Getter for {@link #noAccessReasonOther}.
-   *
-   * @return noAccessReasonOther
-   */
-  public String getNoAccessReasonOther() {
-    return noAccessReasonOther;
+  public boolean isDocumentation() {
+    return documentation;
   }
 
-  /**
-   * Setter for {@link #noAccessReasonOther}.
-   *
-   * @param noAccessReasonOther
-   *          -> this.noAccessReasonOther
-   */
-  public void setNoAccessReasonOther(String noAccessReasonOther) {
-    this.noAccessReasonOther = noAccessReasonOther;
+  public String getDocumentationTxt() {
+    return documentationTxt;
   }
 
-  /**
-   * Getter for {@link #transferTime}.
-   *
-   * @return transferTime
-   */
-  public String getTransferTime() {
-    return transferTime;
+  public boolean isDataSelection() {
+    return dataSelection;
   }
 
-  /**
-   * Setter for {@link #transferTime}.
-   *
-   * @param transferTime
-   *          -> this.transferTime
-   */
-  public void setTransferTime(String transferTime) {
-    this.transferTime = transferTime;
+  public String getSelectionTime() {
+    return selectionTime;
   }
 
-  /**
-   * Getter for {@link #sensitiveData}.
-   *
-   * @return sensitiveData
-   */
-  public String getSensitiveData() {
-    return sensitiveData;
+  public String getSelectionResp() {
+    return selectionResp;
   }
 
-  /**
-   * Setter for {@link #sensitiveData}.
-   *
-   * @param sensitiveData
-   *          -> this.sensitiveData
-   */
-  public void setSensitiveData(String sensitiveData) {
-    this.sensitiveData = sensitiveData;
+  public String getSelectionSoftware() {
+    return selectionSoftware;
   }
 
-  /**
-   * Getter for {@link #initialUsage}.
-   *
-   * @return initialUsage
-   */
-  public String getInitialUsage() {
-    return initialUsage;
+  public String getSelectionCriteria() {
+    return selectionCriteria;
   }
 
-  /**
-   * Setter for {@link #initialUsage}.
-   *
-   * @param initialUsage
-   *          -> this.initialUsage
-   */
-  public void setInitialUsage(String initialUsage) {
-    this.initialUsage = initialUsage;
+  public String getStorageDuration() {
+    return storageDuration;
   }
 
-  /**
-   * Getter for {@link #usageRestriction}.
-   *
-   * @return usageRestriction
-   */
-  public String getUsageRestriction() {
-    return usageRestriction;
+  public String getDeleteProcedure() {
+    return deleteProcedure;
   }
 
-  /**
-   * Setter for {@link #usageRestriction}.
-   *
-   * @param usageRestriction
-   *          -> this.usageRestriction
-   */
-  public void setUsageRestriction(String usageRestriction) {
-    this.usageRestriction = usageRestriction;
+  public boolean isMetaChanged() {
+    return metaChanged;
   }
 
-  /**
-   * Checks if is {@link #accessCosts}.
-   *
-   * @return true, if is access costs
-   */
-  public boolean isAccessCosts() {
-    return accessCosts;
-  }
-
-  /**
-   * Setter for {@link #accessCosts}.
-   *
-   * @param accessCosts
-   *          -> this.accessCosts
-   */
-  public void setAccessCosts(boolean accessCosts) {
-    this.accessCosts = accessCosts;
-  }
-
-  /**
-   * Getter for {@link #accessCostsTxt}.
-   *
-   * @return accessCostsTxt
-   */
-  public String getAccessCostsTxt() {
-    return accessCostsTxt;
-  }
-
-  /**
-   * Setter for {@link #accessCostsTxt}.
-   *
-   * @param accessCostsTxt
-   *          -> this.accessCostsTxt
-   */
-  public void setAccessCostsTxt(String accessCostsTxt) {
-    this.accessCostsTxt = accessCostsTxt;
-  }
-
-  /**
-   * Getter for {@link #accessTermsImplementation}.
-   *
-   * @return accessTermsImplementation
-   */
-  public String getAccessTermsImplementation() {
-    return accessTermsImplementation;
-  }
-
-  /**
-   * Setter for {@link #accessTermsImplementation}.
-   *
-   * @param accessTermsImplementation
-   *          -> this.accessTermsImplementation
-   */
-  public void setAccessTermsImplementation(String accessTermsImplementation) {
-    this.accessTermsImplementation = accessTermsImplementation;
-  }
-
-  /**
-   * Checks if is {@link #clarifiedRights}.
-   *
-   * @return true, if is clarified rights
-   */
-  public boolean isClarifiedRights() {
-    return clarifiedRights;
-  }
-
-  /**
-   * Setter for {@link #clarifiedRights}.
-   *
-   * @param clarifiedRights
-   *          -> this.clarifiedRights
-   */
-  public void setClarifiedRights(boolean clarifiedRights) {
-    this.clarifiedRights = clarifiedRights;
-  }
-
-  /**
-   * Getter for {@link #clarifiedRightsTxt}.
-   *
-   * @return clarifiedRightsTxt
-   */
-  public String getClarifiedRightsTxt() {
-    return clarifiedRightsTxt;
-  }
-
-  /**
-   * Setter for {@link #clarifiedRightsTxt}.
-   *
-   * @param clarifiedRightsTxt
-   *          -> this.clarifiedRightsTxt
-   */
-  public void setClarifiedRightsTxt(String clarifiedRightsTxt) {
-    this.clarifiedRightsTxt = clarifiedRightsTxt;
-  }
-
-  /**
-   * Checks if is {@link #acquisitionAgreement}.
-   *
-   * @return true, if is acquisition agreement
-   */
-  public boolean isAcquisitionAgreement() {
-    return acquisitionAgreement;
-  }
-
-  /**
-   * Setter for {@link #acquisitionAgreement}.
-   *
-   * @param acquisitionAgreement
-   *          -> this.acquisitionAgreement
-   */
-  public void setAcquisitionAgreement(boolean acquisitionAgreement) {
-    this.acquisitionAgreement = acquisitionAgreement;
-  }
-
-  /**
-   * Getter for {@link #usedPID}.
-   *
-   * @return usedPID
-   */
-  public String getUsedPID() {
-    return usedPID;
-  }
-
-  /**
-   * Setter for {@link #usedPID}.
-   *
-   * @param usedPID
-   *          -> this.usedPID
-   */
-  public void setUsedPID(String usedPID) {
-    this.usedPID = usedPID;
-  }
-
-  /**
-   * Getter for {@link #publStrategy}.
-   *
-   * @return publStrategy
-   */
-  public String getPublStrategy() {
-    return publStrategy;
-  }
-
-  /**
-   * Setter for {@link #publStrategy}.
-   *
-   * @param publStrategy
-   *          -> this.publStrategy
-   */
-  public void setPublStrategy(String publStrategy) {
-    this.publStrategy = publStrategy;
-  }
-
-  /**
-   * Getter for {@link #usedPIDTxt}.
-   *
-   * @return usedPIDTxt
-   */
-  public String getUsedPIDTxt() {
-    return usedPIDTxt;
-  }
-
-  /**
-   * Setter for {@link #usedPIDTxt}.
-   *
-   * @param usedPIDTxt
-   *          -> this.usedPIDTxt
-   */
-  public void setUsedPIDTxt(String usedPIDTxt) {
-    this.usedPIDTxt = usedPIDTxt;
-  }
-
-  /**
-   * Getter for {@link #selectedMetaPurposes}.
-   *
-   * @return selectedMetaPurposes
-   */
   public List<Integer> getSelectedMetaPurposes() {
     return selectedMetaPurposes;
   }
 
-  /**
-   * Setter for {@link #selectedMetaPurposes}.
-   *
-   * @param selectedMetaPurposes
-   *          -> this.selectedMetaPurposes
-   */
-  public void setSelectedMetaPurposes(List<Integer> selectedMetaPurposes) {
-    this.selectedMetaPurposes = selectedMetaPurposes;
-  }
-
-  /**
-   * Getter for {@link #metaDescription}.
-   *
-   * @return metaDescription
-   */
   public String getMetaDescription() {
     return metaDescription;
   }
 
-  /**
-   * Setter for {@link #metaDescription}.
-   *
-   * @param metaDescription
-   *          -> this.metaDescription
-   */
-  public void setMetaDescription(String metaDescription) {
-    this.metaDescription = metaDescription;
-  }
-
-  /**
-   * Getter for {@link #metaFramework}.
-   *
-   * @return metaFramework
-   */
   public String getMetaFramework() {
     return metaFramework;
   }
 
-  /**
-   * Setter for {@link #metaFramework}.
-   *
-   * @param metaFramework
-   *          -> this.metaFramework
-   */
-  public void setMetaFramework(String metaFramework) {
-    this.metaFramework = metaFramework;
-  }
-
-  /**
-   * Getter for {@link #metaGeneration}.
-   *
-   * @return metaGeneration
-   */
   public String getMetaGeneration() {
     return metaGeneration;
   }
 
-  /**
-   * Setter for {@link #metaGeneration}.
-   *
-   * @param metaGeneration
-   *          -> this.metaGeneration
-   */
-  public void setMetaGeneration(String metaGeneration) {
-    this.metaGeneration = metaGeneration;
-  }
-
-  /**
-   * Getter for {@link #metaMonitor}.
-   *
-   * @return metaMonitor
-   */
   public String getMetaMonitor() {
     return metaMonitor;
   }
 
-  /**
-   * Setter for {@link #metaMonitor}.
-   *
-   * @param metaMonitor
-   *          -> this.metaMonitor
-   */
-  public void setMetaMonitor(String metaMonitor) {
-    this.metaMonitor = metaMonitor;
-  }
-
-  /**
-   * Getter for {@link #metaFormat}.
-   *
-   * @return metaFormat
-   */
   public String getMetaFormat() {
     return metaFormat;
   }
 
-  /**
-   * Setter for {@link #metaFormat}.
-   *
-   * @param metaFormat
-   *          -> this.metaFormat
-   */
-  public void setMetaFormat(String metaFormat) {
-    this.metaFormat = metaFormat;
+  public boolean isSharingChanged() {
+    return sharingChanged;
   }
 
-  /**
-   * Getter for {@link #storageResponsible}.
-   *
-   * @return storageResponsible
-   */
+  public boolean isReleaseObligation() {
+    return releaseObligation;
+  }
+
+  public String getExpectedGroups() {
+    return expectedGroups;
+  }
+
+  public boolean isSearchableData() {
+    return searchableData;
+  }
+
+  public String getExpectedUsage() {
+    return expectedUsage;
+  }
+
+  public String getPublStrategy() {
+    return publStrategy;
+  }
+
+  public String getAccessReasonAuthor() {
+    return accessReasonAuthor;
+  }
+
+  public String getNoAccessReason() {
+    return noAccessReason;
+  }
+
+  public String getNoAccessReasonOther() {
+    return noAccessReasonOther;
+  }
+
+  public String getDepositName() {
+    return depositName;
+  }
+
+  public String getTransferTime() {
+    return transferTime;
+  }
+
+  public String getSensitiveData() {
+    return sensitiveData;
+  }
+
+  public String getInitialUsage() {
+    return initialUsage;
+  }
+
+  public String getUsageRestriction() {
+    return usageRestriction;
+  }
+
+  public boolean isAccessCosts() {
+    return accessCosts;
+  }
+
+  public String getAccessCostsTxt() {
+    return accessCostsTxt;
+  }
+
+  public String getAccessTermsImplementation() {
+    return accessTermsImplementation;
+  }
+
+  public boolean isClarifiedRights() {
+    return clarifiedRights;
+  }
+
+  public String getClarifiedRightsTxt() {
+    return clarifiedRightsTxt;
+  }
+
+  public boolean isAcquisitionAgreement() {
+    return acquisitionAgreement;
+  }
+
+  public String getUsedPID() {
+    return usedPID;
+  }
+
+  public String getUsedPIDTxt() {
+    return usedPIDTxt;
+  }
+
+  public boolean isStorageChanged() {
+    return storageChanged;
+  }
+
   public String getStorageResponsible() {
     return storageResponsible;
   }
 
-  /**
-   * Setter for {@link #storageResponsible}.
-   *
-   * @param storageResponsible
-   *          -> this.storageResponsible
-   */
-  public void setStorageResponsible(String storageResponsible) {
-    this.storageResponsible = storageResponsible;
-  }
-
-  /**
-   * Getter for {@link #storageTechnologies}.
-   *
-   * @return storageTechnologies
-   */
   public String getStorageTechnologies() {
     return storageTechnologies;
   }
 
-  /**
-   * Setter for {@link #storageTechnologies}.
-   *
-   * @param storageTechnologies
-   *          -> this.storageTechnologies
-   */
-  public void setStorageTechnologies(String storageTechnologies) {
-    this.storageTechnologies = storageTechnologies;
-  }
-
-  /**
-   * Getter for {@link #storagePlaces}.
-   *
-   * @return storagePlaces
-   */
   public String getStoragePlaces() {
     return storagePlaces;
   }
 
-  /**
-   * Setter for {@link #storagePlaces}.
-   *
-   * @param storagePlaces
-   *          -> this.storagePlaces
-   */
-  public void setStoragePlaces(String storagePlaces) {
-    this.storagePlaces = storagePlaces;
-  }
-
-  /**
-   * Getter for {@link #storageBackups}.
-   *
-   * @return storageBackups
-   */
   public String getStorageBackups() {
     return storageBackups;
   }
 
-  /**
-   * Setter for {@link #storageBackups}.
-   *
-   * @param storageBackups
-   *          -> this.storageBackups
-   */
-  public void setStorageBackups(String storageBackups) {
-    this.storageBackups = storageBackups;
-  }
-
-  /**
-   * Getter for {@link #storageTransfer}.
-   *
-   * @return storageTransfer
-   */
   public String getStorageTransfer() {
     return storageTransfer;
   }
 
-  /**
-   * Setter for {@link #storageTransfer}.
-   *
-   * @param storageTransfer
-   *          -> this.storageTransfer
-   */
-  public void setStorageTransfer(String storageTransfer) {
-    this.storageTransfer = storageTransfer;
-  }
-
-  /**
-   * Getter for {@link #storageExpectedSize}.
-   *
-   * @return storageExpectedSize
-   */
   public String getStorageExpectedSize() {
     return storageExpectedSize;
   }
 
-  /**
-   * Setter for {@link #storageExpectedSize}.
-   *
-   * @param storageExpectedSize
-   *          -> this.storageExpectedSize
-   */
-  public void setStorageExpectedSize(String storageExpectedSize) {
-    this.storageExpectedSize = storageExpectedSize;
-  }
-
-  /**
-   * Checks if is {@link #storageRequirements}.
-   *
-   * @return true, if is storage requirements
-   */
   public boolean isStorageRequirements() {
     return storageRequirements;
   }
 
-  /**
-   * Setter for {@link #storageRequirements}.
-   *
-   * @param storageRequirements
-   *          -> this.storageRequirements
-   */
-  public void setStorageRequirements(boolean storageRequirements) {
-    this.storageRequirements = storageRequirements;
-  }
-
-  /**
-   * Getter for {@link #storageRequirementsTxt}.
-   *
-   * @return storageRequirementsTxt
-   */
   public String getStorageRequirementsTxt() {
     return storageRequirementsTxt;
   }
 
-  /**
-   * Setter for {@link #storageRequirementsTxt}.
-   *
-   * @param storageRequirementsTxt
-   *          -> this.storageRequirementsTxt
-   */
-  public void setStorageRequirementsTxt(String storageRequirementsTxt) {
-    this.storageRequirementsTxt = storageRequirementsTxt;
-  }
-
-  /**
-   * Checks if is {@link #storageSuccession}.
-   *
-   * @return true, if is storage succession
-   */
   public boolean isStorageSuccession() {
     return storageSuccession;
   }
 
-  /**
-   * Setter for {@link #storageSuccession}.
-   *
-   * @param storageSuccession
-   *          -> this.storageSuccession
-   */
-  public void setStorageSuccession(boolean storageSuccession) {
-    this.storageSuccession = storageSuccession;
-  }
-
-  /**
-   * Getter for {@link #storageSuccessionTxt}.
-   *
-   * @return storageSuccessionTxt
-   */
   public String getStorageSuccessionTxt() {
     return storageSuccessionTxt;
   }
 
-  /**
-   * Setter for {@link #storageSuccessionTxt}.
-   *
-   * @param storageSuccessionTxt
-   *          -> this.storageSuccessionTxt
-   */
-  public void setStorageSuccessionTxt(String storageSuccessionTxt) {
-    this.storageSuccessionTxt = storageSuccessionTxt;
+  public boolean isOrganizationChanged() {
+    return organizationChanged;
   }
 
-  /**
-   * Getter for {@link #frameworkNationality}.
-   *
-   * @return frameworkNationality
-   */
   public String getFrameworkNationality() {
     return frameworkNationality;
   }
 
-  /**
-   * Setter for {@link #frameworkNationality}.
-   *
-   * @param frameworkNationality
-   *          -> this.frameworkNationality
-   */
-  public void setFrameworkNationality(String frameworkNationality) {
-    this.frameworkNationality = frameworkNationality;
-  }
-
-  /**
-   * Getter for {@link #frameworkNationalityTxt}.
-   *
-   * @return frameworkNationalityTxt
-   */
   public String getFrameworkNationalityTxt() {
     return frameworkNationalityTxt;
   }
 
-  /**
-   * Setter for {@link #frameworkNationalityTxt}.
-   *
-   * @param frameworkNationalityTxt
-   *          -> this.frameworkNationalityTxt
-   */
-  public void setFrameworkNationalityTxt(String frameworkNationalityTxt) {
-    this.frameworkNationalityTxt = frameworkNationalityTxt;
-  }
-
-  /**
-   * Getter for {@link #responsibleUnit}.
-   *
-   * @return responsibleUnit
-   */
   public String getResponsibleUnit() {
     return responsibleUnit;
   }
 
-  /**
-   * Setter for {@link #responsibleUnit}.
-   *
-   * @param responsibleUnit
-   *          -> this.responsibleUnit
-   */
-  public void setResponsibleUnit(String responsibleUnit) {
-    this.responsibleUnit = responsibleUnit;
-  }
-
-  /**
-   * Getter for {@link #involvedInstitutions}.
-   *
-   * @return involvedInstitutions
-   */
   public String getInvolvedInstitutions() {
     return involvedInstitutions;
   }
 
-  /**
-   * Setter for {@link #involvedInstitutions}.
-   *
-   * @param involvedInstitutions
-   *          -> this.involvedInstitutions
-   */
-  public void setInvolvedInstitutions(String involvedInstitutions) {
-    this.involvedInstitutions = involvedInstitutions;
-  }
-
-  /**
-   * Checks if is {@link #involvedInformed}.
-   *
-   * @return true, if is involved informed
-   */
   public boolean isInvolvedInformed() {
     return involvedInformed;
   }
 
-  /**
-   * Setter for {@link #involvedInformed}.
-   *
-   * @param involvedInformed
-   *          -> this.involvedInformed
-   */
-  public void setInvolvedInformed(boolean involvedInformed) {
-    this.involvedInformed = involvedInformed;
-  }
-
-  /**
-   * Checks if is {@link #contributionsDefined}.
-   *
-   * @return true, if is contributions defined
-   */
   public boolean isContributionsDefined() {
     return contributionsDefined;
   }
 
-  /**
-   * Setter for {@link #contributionsDefined}.
-   *
-   * @param contributionsDefined
-   *          -> this.contributionsDefined
-   */
-  public void setContributionsDefined(boolean contributionsDefined) {
-    this.contributionsDefined = contributionsDefined;
-  }
-
-  /**
-   * Getter for {@link #contributionsDefinedTxt}.
-   *
-   * @return contributionsDefinedTxt
-   */
   public String getContributionsDefinedTxt() {
     return contributionsDefinedTxt;
   }
 
-  /**
-   * Setter for {@link #contributionsDefinedTxt}.
-   *
-   * @param contributionsDefinedTxt
-   *          -> this.contributionsDefinedTxt
-   */
-  public void setContributionsDefinedTxt(String contributionsDefinedTxt) {
-    this.contributionsDefinedTxt = contributionsDefinedTxt;
-  }
-
-  /**
-   * Checks if is {@link #givenConsent}.
-   *
-   * @return true, if is given consent
-   */
   public boolean isGivenConsent() {
     return givenConsent;
   }
 
-  /**
-   * Setter for {@link #givenConsent}.
-   *
-   * @param givenConsent
-   *          -> this.givenConsent
-   */
-  public void setGivenConsent(boolean givenConsent) {
-    this.givenConsent = givenConsent;
-  }
-
-  /**
-   * Checks if is {@link #managementWorkflow}.
-   *
-   * @return true, if is management workflow
-   */
   public boolean isManagementWorkflow() {
     return managementWorkflow;
   }
 
-  /**
-   * Setter for {@link #managementWorkflow}.
-   *
-   * @param managementWorkflow
-   *          -> this.managementWorkflow
-   */
-  public void setManagementWorkflow(boolean managementWorkflow) {
-    this.managementWorkflow = managementWorkflow;
-  }
-
-  /**
-   * Getter for {@link #managementWorkflowTxt}.
-   *
-   * @return managementWorkflowTxt
-   */
   public String getManagementWorkflowTxt() {
     return managementWorkflowTxt;
   }
 
-  /**
-   * Setter for {@link #managementWorkflowTxt}.
-   *
-   * @param managementWorkflowTxt
-   *          -> this.managementWorkflowTxt
-   */
-  public void setManagementWorkflowTxt(String managementWorkflowTxt) {
-    this.managementWorkflowTxt = managementWorkflowTxt;
-  }
-
-  /**
-   * Checks if is {@link #staffDescription}.
-   *
-   * @return true, if is staff description
-   */
   public boolean isStaffDescription() {
     return staffDescription;
   }
 
-  /**
-   * Setter for {@link #staffDescription}.
-   *
-   * @param staffDescription
-   *          -> this.staffDescription
-   */
-  public void setStaffDescription(boolean staffDescription) {
-    this.staffDescription = staffDescription;
-  }
-
-  /**
-   * Getter for {@link #staffDescriptionTxt}.
-   *
-   * @return staffDescriptionTxt
-   */
   public String getStaffDescriptionTxt() {
     return staffDescriptionTxt;
   }
 
-  /**
-   * Setter for {@link #staffDescriptionTxt}.
-   *
-   * @param staffDescriptionTxt
-   *          -> this.staffDescriptionTxt
-   */
-  public void setStaffDescriptionTxt(String staffDescriptionTxt) {
-    this.staffDescriptionTxt = staffDescriptionTxt;
-  }
-
-  /**
-   * Getter for {@link #funderRequirements}.
-   *
-   * @return funderRequirements
-   */
   public String getFunderRequirements() {
     return funderRequirements;
   }
 
-  /**
-   * Setter for {@link #funderRequirements}.
-   *
-   * @param funderRequirements
-   *          -> this.funderRequirements
-   */
-  public void setFunderRequirements(String funderRequirements) {
-    this.funderRequirements = funderRequirements;
-  }
-
-  /**
-   * Getter for {@link #providerRequirements}.
-   *
-   * @return providerRequirements
-   */
   public String getProviderRequirements() {
     return providerRequirements;
   }
 
-  /**
-   * Setter for {@link #providerRequirements}.
-   *
-   * @param providerRequirements
-   *          -> this.providerRequirements
-   */
-  public void setProviderRequirements(String providerRequirements) {
-    this.providerRequirements = providerRequirements;
-  }
-
-  /**
-   * Getter for {@link #repoPolicies}.
-   *
-   * @return repoPolicies
-   */
   public String getRepoPolicies() {
     return repoPolicies;
   }
 
-  /**
-   * Setter for {@link #repoPolicies}.
-   *
-   * @param repoPolicies
-   *          -> this.repoPolicies
-   */
-  public void setRepoPolicies(String repoPolicies) {
-    this.repoPolicies = repoPolicies;
-  }
-
-  /**
-   * Getter for {@link #repoPoliciesResponsible}.
-   *
-   * @return repoPoliciesResponsible
-   */
   public String getRepoPoliciesResponsible() {
     return repoPoliciesResponsible;
   }
 
-  /**
-   * Setter for {@link #repoPoliciesResponsible}.
-   *
-   * @param repoPoliciesResponsible
-   *          -> this.repoPoliciesResponsible
-   */
-  public void setRepoPoliciesResponsible(String repoPoliciesResponsible) {
-    this.repoPoliciesResponsible = repoPoliciesResponsible;
-  }
-
-  /**
-   * Getter for {@link #planningAdherence}.
-   *
-   * @return planningAdherence
-   */
   public String getPlanningAdherence() {
     return planningAdherence;
   }
 
-  /**
-   * Setter for {@link #planningAdherence}.
-   *
-   * @param planningAdherence
-   *          -> this.planningAdherence
-   */
-  public void setPlanningAdherence(String planningAdherence) {
-    this.planningAdherence = planningAdherence;
+  public boolean isEthicalChanged() {
+    return ethicalChanged;
   }
 
-  /**
-   * Checks if is {@link #dataProtection}.
-   *
-   * @return true, if is data protection
-   */
   public boolean isDataProtection() {
     return dataProtection;
   }
 
-  /**
-   * Setter for {@link #dataProtection}.
-   *
-   * @param dataProtection
-   *          -> this.dataProtection
-   */
-  public void setDataProtection(boolean dataProtection) {
-    this.dataProtection = dataProtection;
-  }
-
-  /**
-   * Getter for {@link #protectionRequirements}.
-   *
-   * @return protectionRequirements
-   */
   public String getProtectionRequirements() {
     return protectionRequirements;
   }
 
-  /**
-   * Setter for {@link #protectionRequirements}.
-   *
-   * @param protectionRequirements
-   *          -> this.protectionRequirements
-   */
-  public void setProtectionRequirements(String protectionRequirements) {
-    this.protectionRequirements = protectionRequirements;
-  }
-
-  /**
-   * Checks if is {@link #consentObtained}.
-   *
-   * @return true, if is consent obtained
-   */
   public boolean isConsentObtained() {
     return consentObtained;
   }
 
-  /**
-   * Setter for {@link #consentObtained}.
-   *
-   * @param consentObtained
-   *          -> this.consentObtained
-   */
-  public void setConsentObtained(boolean consentObtained) {
-    this.consentObtained = consentObtained;
-  }
-
-  /**
-   * Getter for {@link #consentObtainedTxt}.
-   *
-   * @return consentObtainedTxt
-   */
   public String getConsentObtainedTxt() {
     return consentObtainedTxt;
   }
 
-  /**
-   * Setter for {@link #consentObtainedTxt}.
-   *
-   * @param consentObtainedTxt
-   *          -> this.consentObtainedTxt
-   */
-  public void setConsentObtainedTxt(String consentObtainedTxt) {
-    this.consentObtainedTxt = consentObtainedTxt;
-  }
-
-  /**
-   * Checks if is {@link #sharingConsidered}.
-   *
-   * @return true, if is sharing considered
-   */
   public boolean isSharingConsidered() {
     return sharingConsidered;
   }
 
-  /**
-   * Setter for {@link #sharingConsidered}.
-   *
-   * @param sharingConsidered
-   *          -> this.sharingConsidered
-   */
-  public void setSharingConsidered(boolean sharingConsidered) {
-    this.sharingConsidered = sharingConsidered;
-  }
-
-  /**
-   * Checks if is {@link #irbApproval}.
-   *
-   * @return true, if is irb approval
-   */
   public boolean isIrbApproval() {
     return irbApproval;
   }
 
-  /**
-   * Setter for {@link #irbApproval}.
-   *
-   * @param irbApproval
-   *          -> this.irbApproval
-   */
-  public void setIrbApproval(boolean irbApproval) {
-    this.irbApproval = irbApproval;
-  }
-
-  /**
-   * Getter for {@link #irbApprovalTxt}.
-   *
-   * @return irbApprovalTxt
-   */
   public String getIrbApprovalTxt() {
     return irbApprovalTxt;
   }
 
-  /**
-   * Setter for {@link #irbApprovalTxt}.
-   *
-   * @param irbApprovalTxt
-   *          -> this.irbApprovalTxt
-   */
-  public void setIrbApprovalTxt(String irbApprovalTxt) {
-    this.irbApprovalTxt = irbApprovalTxt;
-  }
-
-  /**
-   * Checks if is {@link #sensitiveDataIncluded}.
-   *
-   * @return true, if is sensitive data included
-   */
   public boolean isSensitiveDataIncluded() {
     return sensitiveDataIncluded;
   }
 
-  /**
-   * Setter for {@link #sensitiveDataIncluded}.
-   *
-   * @param sensitiveDataIncluded
-   *          -> this.sensitiveDataIncluded
-   */
-  public void setSensitiveDataIncluded(boolean sensitiveDataIncluded) {
-    this.sensitiveDataIncluded = sensitiveDataIncluded;
-  }
-
-  /**
-   * Getter for {@link #sensitiveDataIncludedTxt}.
-   *
-   * @return sensitiveDataIncludedTxt
-   */
   public String getSensitiveDataIncludedTxt() {
     return sensitiveDataIncludedTxt;
   }
 
-  /**
-   * Setter for {@link #sensitiveDataIncludedTxt}.
-   *
-   * @param sensitiveDataIncludedTxt
-   *          -> this.sensitiveDataIncludedTxt
-   */
-  public void setSensitiveDataIncludedTxt(String sensitiveDataIncludedTxt) {
-    this.sensitiveDataIncludedTxt = sensitiveDataIncludedTxt;
-  }
-
-  /**
-   * Checks if is {@link #externalCopyright}.
-   *
-   * @return true, if is external copyright
-   */
   public boolean isExternalCopyright() {
     return externalCopyright;
   }
 
-  /**
-   * Setter for {@link #externalCopyright}.
-   *
-   * @param externalCopyright
-   *          -> this.externalCopyright
-   */
-  public void setExternalCopyright(boolean externalCopyright) {
-    this.externalCopyright = externalCopyright;
-  }
-
-  /**
-   * Getter for {@link #externalCopyrightTxt}.
-   *
-   * @return externalCopyrightTxt
-   */
   public String getExternalCopyrightTxt() {
     return externalCopyrightTxt;
   }
 
-  /**
-   * Setter for {@link #externalCopyrightTxt}.
-   *
-   * @param externalCopyrightTxt
-   *          -> this.externalCopyrightTxt
-   */
-  public void setExternalCopyrightTxt(String externalCopyrightTxt) {
-    this.externalCopyrightTxt = externalCopyrightTxt;
-  }
-
-  /**
-   * Checks if is {@link #internalCopyright}.
-   *
-   * @return true, if is internal copyright
-   */
   public boolean isInternalCopyright() {
     return internalCopyright;
   }
 
-  /**
-   * Setter for {@link #internalCopyright}.
-   *
-   * @param internalCopyright
-   *          -> this.internalCopyright
-   */
-  public void setInternalCopyright(boolean internalCopyright) {
-    this.internalCopyright = internalCopyright;
-  }
-
-  /**
-   * Getter for {@link #internalCopyrightTxt}.
-   *
-   * @return internalCopyrightTxt
-   */
   public String getInternalCopyrightTxt() {
     return internalCopyrightTxt;
   }
 
-  /**
-   * Setter for {@link #internalCopyrightTxt}.
-   *
-   * @param internalCopyrightTxt
-   *          -> this.internalCopyrightTxt
-   */
-  public void setInternalCopyrightTxt(String internalCopyrightTxt) {
-    this.internalCopyrightTxt = internalCopyrightTxt;
+  public boolean isCostsChanged() {
+    return costsChanged;
   }
 
-  /**
-   * Getter for {@link #specificCosts}.
-   *
-   * @return specificCosts
-   */
   public String getSpecificCosts() {
     return specificCosts;
   }
 
-  /**
-   * Setter for {@link #specificCosts}.
-   *
-   * @param specificCosts
-   *          -> this.specificCosts
-   */
-  public void setSpecificCosts(String specificCosts) {
-    this.specificCosts = specificCosts;
-  }
-
-  /**
-   * Getter for {@link #specificCostsTxt}.
-   *
-   * @return specificCostsTxt
-   */
   public String getSpecificCostsTxt() {
     return specificCostsTxt;
   }
 
-  /**
-   * Setter for {@link #specificCostsTxt}.
-   *
-   * @param specificCostsTxt
-   *          -> this.specificCostsTxt
-   */
-  public void setSpecificCostsTxt(String specificCostsTxt) {
-    this.specificCostsTxt = specificCostsTxt;
-  }
-
-  /**
-   * Getter for {@link #ariseCosts}.
-   *
-   * @return ariseCosts
-   */
   public String getAriseCosts() {
     return ariseCosts;
   }
 
-  /**
-   * Setter for {@link #ariseCosts}.
-   *
-   * @param ariseCosts
-   *          -> this.ariseCosts
-   */
-  public void setAriseCosts(String ariseCosts) {
-    this.ariseCosts = ariseCosts;
-  }
-
-  /**
-   * Getter for {@link #bearCost}.
-   *
-   * @return bearCost
-   */
   public String getBearCost() {
     return bearCost;
   }
 
-  /**
-   * Setter for {@link #bearCost}.
-   *
-   * @param bearCost
-   *          -> this.bearCost
-   */
+  public void setId(BigInteger id) {
+    this.id = id;
+  }
+
+  public void setAdminChanged(boolean adminChanged) {
+    this.adminChanged = adminChanged;
+  }
+
+  public void setProjectAims(String projectAims) {
+    if (!Objects.equals(this.projectAims, projectAims)) {
+      this.projectAims = projectAims;
+      this.adminChanged = true;
+    }
+  }
+
+  public void setProjectSponsors(String projectSponsors) {
+    if (!Objects.equals(this.projectSponsors, projectSponsors)) {
+      this.projectSponsors = projectSponsors;
+      this.adminChanged = true;
+    }
+  }
+
+  public void setDuration(String duration) {
+    if (!Objects.equals(this.duration, duration)) {
+      this.duration = duration;
+      this.adminChanged = true;
+    }
+  }
+
+  public void setOrganizations(String organizations) {
+    if (!Objects.equals(this.organizations, organizations)) {
+      this.organizations = organizations;
+      this.adminChanged = true;
+    }
+  }
+
+  public void setPlanAims(String planAims) {
+    if (!Objects.equals(this.planAims, planAims)) {
+      this.planAims = planAims;
+      this.adminChanged = true;
+    }
+  }
+
+  public void setResearchChanged(boolean researchChanged) {
+    this.researchChanged = researchChanged;
+  }
+
+  public void setExistingData(String existingData) {
+    if (!(this.existingData == null && existingData == "") && this.existingData != existingData) {
+      this.existingData = existingData;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setDataCitation(String dataCitation) {
+    if (!(this.dataCitation == null && dataCitation == "") && this.dataCitation != dataCitation) {
+      this.dataCitation = dataCitation;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setExistingDataRelevance(String existingDataRelevance) {
+    if (!(this.existingDataRelevance == null && existingDataRelevance == "")
+        && this.existingDataRelevance != existingDataRelevance) {
+      this.existingDataRelevance = existingDataRelevance;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setExistingDataIntegration(String existingDataIntegration) {
+    if (!(this.existingDataIntegration == null && existingDataIntegration == "")
+        && this.existingDataIntegration != existingDataIntegration) {
+      this.existingDataIntegration = existingDataIntegration;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setUsedDataTypes(List<Integer> usedDataTypes) {
+    if (this.usedDataTypes != usedDataTypes) {
+      this.usedDataTypes = usedDataTypes;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setOtherDataTypes(String otherDataTypes) {
+    if (!(this.otherDataTypes == null && otherDataTypes == "") && this.otherDataTypes != otherDataTypes) {
+      this.otherDataTypes = otherDataTypes;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setDataReproducibility(String dataReproducibility) {
+    if (!(this.dataReproducibility == null && dataReproducibility == "")
+        && this.dataReproducibility != dataReproducibility) {
+      this.dataReproducibility = dataReproducibility;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
+    if (this.usedCollectionModes != usedCollectionModes) {
+      this.usedCollectionModes = usedCollectionModes;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setOtherCMIP(String otherCMIP) {
+    if (!(this.otherCMIP == null && otherCMIP == "") && this.otherCMIP != otherCMIP) {
+      this.otherCMIP = otherCMIP;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setOtherCMINP(String otherCMINP) {
+    if (!(this.otherCMINP == null && otherCMINP == "") && this.otherCMINP != otherCMINP) {
+      this.otherCMINP = otherCMINP;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setMeasOccasions(String measOccasions) {
+    if (!(this.measOccasions == null && measOccasions == "") && this.measOccasions != measOccasions) {
+      this.measOccasions = measOccasions;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setReliabilityTraining(String reliabilityTraining) {
+    if (!(this.reliabilityTraining == null && reliabilityTraining == "")
+        && this.reliabilityTraining != reliabilityTraining) {
+      this.reliabilityTraining = reliabilityTraining;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setMultipleMeasurements(String multipleMeasurements) {
+    if (!(this.multipleMeasurements == null && multipleMeasurements == "")
+        && this.multipleMeasurements != multipleMeasurements) {
+      this.multipleMeasurements = multipleMeasurements;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setQualitityOther(String qualitityOther) {
+    if (!(this.qualitityOther == null && qualitityOther == "") && this.qualitityOther != qualitityOther) {
+      this.qualitityOther = qualitityOther;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setFileFormat(String fileFormat) {
+    if (!(this.fileFormat == null && fileFormat == "") && this.fileFormat != fileFormat) {
+      this.fileFormat = fileFormat;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setWorkingCopy(boolean workingCopy) {
+    if (this.workingCopy != workingCopy) {
+      this.workingCopy = workingCopy;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setWorkingCopyTxt(String workingCopyTxt) {
+    if (!(this.workingCopyTxt == null && workingCopyTxt == "") && this.workingCopyTxt != workingCopyTxt) {
+      this.workingCopyTxt = workingCopyTxt;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setGoodScientific(boolean goodScientific) {
+    if (this.goodScientific != goodScientific) {
+      this.goodScientific = goodScientific;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setGoodScientificTxt(String goodScientificTxt) {
+    if (!(this.goodScientificTxt == null && goodScientificTxt == "") && this.goodScientificTxt != goodScientificTxt) {
+      this.goodScientificTxt = goodScientificTxt;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setSubsequentUse(boolean subsequentUse) {
+    if (this.subsequentUse != subsequentUse) {
+      this.subsequentUse = subsequentUse;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setSubsequentUseTxt(String subsequentUseTxt) {
+    if (!(this.subsequentUseTxt == null && subsequentUseTxt == "") && this.subsequentUseTxt != subsequentUseTxt) {
+      this.subsequentUseTxt = subsequentUseTxt;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setRequirements(boolean requirements) {
+    if (this.requirements != requirements) {
+      this.requirements = requirements;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setRequirementsTxt(String requirementsTxt) {
+    if (!(this.requirementsTxt == null && requirementsTxt == "") && this.requirementsTxt != requirementsTxt) {
+      this.requirementsTxt = requirementsTxt;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setDocumentation(boolean documentation) {
+    if (this.documentation != documentation) {
+      this.documentation = documentation;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setDocumentationTxt(String documentationTxt) {
+    if (!(this.documentationTxt == null && documentationTxt == "") && this.documentationTxt != documentationTxt) {
+      this.documentationTxt = documentationTxt;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setDataSelection(boolean dataSelection) {
+    if (this.dataSelection != dataSelection) {
+      this.dataSelection = dataSelection;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setSelectionTime(String selectionTime) {
+    if (!(this.selectionTime == null && selectionTime == "") && this.selectionTime != selectionTime) {
+      this.selectionTime = selectionTime;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setSelectionResp(String selectionResp) {
+    if (!(this.selectionResp == null && selectionResp == "") && this.selectionResp != selectionResp) {
+      this.selectionResp = selectionResp;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setSelectionSoftware(String selectionSoftware) {
+    if (!(this.selectionSoftware == null && selectionSoftware == "") && this.selectionSoftware != selectionSoftware) {
+      this.selectionSoftware = selectionSoftware;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setSelectionCriteria(String selectionCriteria) {
+    if (!(this.selectionCriteria == null && selectionCriteria == "") && this.selectionCriteria != selectionCriteria) {
+      this.selectionCriteria = selectionCriteria;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setStorageDuration(String storageDuration) {
+    if (!(this.storageDuration == null && storageDuration == "") && this.storageDuration != storageDuration) {
+      this.storageDuration = storageDuration;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setDeleteProcedure(String deleteProcedure) {
+    if (!(this.deleteProcedure == null && deleteProcedure == "") && this.deleteProcedure != deleteProcedure) {
+      this.deleteProcedure = deleteProcedure;
+      this.researchChanged = true;
+    }
+  }
+
+  public void setMetaChanged(boolean metaChanged) {
+    this.metaChanged = metaChanged;
+  }
+
+  public void setSelectedMetaPurposes(List<Integer> selectedMetaPurposes) {
+    if (this.selectedMetaPurposes != selectedMetaPurposes) {
+      this.selectedMetaPurposes = selectedMetaPurposes;
+      this.metaChanged = true;
+    }
+  }
+
+  public void setMetaDescription(String metaDescription) {
+    if (!(this.metaDescription == null && metaDescription == "") && this.metaDescription != metaDescription) {
+      this.metaDescription = metaDescription;
+      this.metaChanged = true;
+    }
+  }
+
+  public void setMetaFramework(String metaFramework) {
+    if (!(this.metaFramework == null && metaFramework == "") && this.metaFramework != metaFramework) {
+      this.metaFramework = metaFramework;
+      this.metaChanged = true;
+    }
+  }
+
+  public void setMetaGeneration(String metaGeneration) {
+    if (!(this.metaGeneration == null && metaGeneration == "") && this.metaGeneration != metaGeneration) {
+      this.metaGeneration = metaGeneration;
+      this.metaChanged = true;
+    }
+  }
+
+  public void setMetaMonitor(String metaMonitor) {
+    if (!(this.metaMonitor == null && metaMonitor == "") && this.metaMonitor != metaMonitor) {
+      this.metaMonitor = metaMonitor;
+      this.metaChanged = true;
+    }
+  }
+
+  public void setMetaFormat(String metaFormat) {
+    if (!(this.metaFormat == null && metaFormat == "") && this.metaFormat != metaFormat) {
+      this.metaFormat = metaFormat;
+      this.metaChanged = true;
+    }
+  }
+
+  public void setSharingChanged(boolean sharingChanged) {
+    this.sharingChanged = sharingChanged;
+  }
+
+  public void setReleaseObligation(boolean releaseObligation) {
+    if (this.releaseObligation != releaseObligation) {
+      this.releaseObligation = releaseObligation;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setExpectedGroups(String expectedGroups) {
+    if (!(this.expectedGroups == null && expectedGroups == "") && this.expectedGroups != expectedGroups) {
+      this.expectedGroups = expectedGroups;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setSearchableData(boolean searchableData) {
+    if (this.searchableData != searchableData) {
+      this.searchableData = searchableData;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setExpectedUsage(String expectedUsage) {
+    if (this.expectedUsage != expectedUsage) {
+      this.expectedUsage = expectedUsage;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setPublStrategy(String publStrategy) {
+    if (this.publStrategy != publStrategy) {
+      this.publStrategy = publStrategy;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setAccessReasonAuthor(String accessReasonAuthor) {
+    if (!(this.accessReasonAuthor == null && accessReasonAuthor == "")
+        && this.accessReasonAuthor != accessReasonAuthor) {
+      this.accessReasonAuthor = accessReasonAuthor;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setNoAccessReason(String noAccessReason) {
+    if (!(this.noAccessReason == null && noAccessReason == "") && this.noAccessReason != noAccessReason) {
+      this.noAccessReason = noAccessReason;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setNoAccessReasonOther(String noAccessReasonOther) {
+    if (!(this.noAccessReasonOther == null && noAccessReasonOther == "")
+        && this.noAccessReasonOther != noAccessReasonOther) {
+      this.noAccessReasonOther = noAccessReasonOther;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setDepositName(String depositName) {
+    if (!(this.depositName == null && depositName == "") && this.depositName != depositName) {
+      this.depositName = depositName;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setTransferTime(String transferTime) {
+    if (!(this.transferTime == null && transferTime == "") && this.transferTime != transferTime) {
+      this.transferTime = transferTime;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setSensitiveData(String sensitiveData) {
+    if (!(this.sensitiveData == null && sensitiveData == "") && this.sensitiveData != sensitiveData) {
+      this.sensitiveData = sensitiveData;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setInitialUsage(String initialUsage) {
+    if (!(this.initialUsage == null && initialUsage == "") && this.initialUsage != initialUsage) {
+      this.initialUsage = initialUsage;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setUsageRestriction(String usageRestriction) {
+    if (!(this.usageRestriction == null && usageRestriction == "") && this.usageRestriction != usageRestriction) {
+      this.usageRestriction = usageRestriction;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setAccessCosts(boolean accessCosts) {
+    if (this.accessCosts != accessCosts) {
+      this.accessCosts = accessCosts;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setAccessCostsTxt(String accessCostsTxt) {
+    if (this.accessCostsTxt != accessCostsTxt) {
+      this.accessCostsTxt = accessCostsTxt;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setAccessTermsImplementation(String accessTermsImplementation) {
+    if (!(this.accessTermsImplementation == null && accessTermsImplementation == "")
+        && this.accessTermsImplementation != accessTermsImplementation) {
+      this.accessTermsImplementation = accessTermsImplementation;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setClarifiedRights(boolean clarifiedRights) {
+    if (this.clarifiedRights != clarifiedRights) {
+      this.clarifiedRights = clarifiedRights;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setClarifiedRightsTxt(String clarifiedRightsTxt) {
+    if (!(this.clarifiedRightsTxt == null && clarifiedRightsTxt == "")
+        && this.clarifiedRightsTxt != clarifiedRightsTxt) {
+      this.clarifiedRightsTxt = clarifiedRightsTxt;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setAcquisitionAgreement(boolean acquisitionAgreement) {
+    if (this.acquisitionAgreement != acquisitionAgreement) {
+      this.acquisitionAgreement = acquisitionAgreement;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setUsedPID(String usedPID) {
+    if (!(this.usedPID == null && usedPID == "") && this.usedPID != usedPID) {
+      this.usedPID = usedPID;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setUsedPIDTxt(String usedPIDTxt) {
+    if (!(this.usedPIDTxt == null && usedPIDTxt == "") && this.usedPIDTxt != usedPIDTxt) {
+      this.usedPIDTxt = usedPIDTxt;
+      this.sharingChanged = true;
+    }
+  }
+
+  public void setStorageChanged(boolean storageChanged) {
+    this.storageChanged = storageChanged;
+  }
+
+  public void setStorageResponsible(String storageResponsible) {
+    if (!(this.storageResponsible == null && storageResponsible == "")
+        && this.storageResponsible != storageResponsible) {
+      this.storageResponsible = storageResponsible;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageTechnologies(String storageTechnologies) {
+    if (!(this.storageTechnologies == null && storageTechnologies == "")
+        && this.storageTechnologies != storageTechnologies) {
+      this.storageTechnologies = storageTechnologies;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStoragePlaces(String storagePlaces) {
+    if (!(this.storagePlaces == null && storagePlaces == "") && this.storagePlaces != storagePlaces) {
+      this.storagePlaces = storagePlaces;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageBackups(String storageBackups) {
+    if (!(this.storageBackups == null && storageBackups == "") && this.storageBackups != storageBackups) {
+      this.storageBackups = storageBackups;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageTransfer(String storageTransfer) {
+    if (!(this.storageTransfer == null && storageTransfer == "") && this.storageTransfer != storageTransfer) {
+      this.storageTransfer = storageTransfer;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageExpectedSize(String storageExpectedSize) {
+    if (!(this.storageExpectedSize == null && storageExpectedSize == "")
+        && this.storageExpectedSize != storageExpectedSize) {
+      this.storageExpectedSize = storageExpectedSize;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageRequirements(boolean storageRequirements) {
+    if (this.storageRequirements != storageRequirements) {
+      this.storageRequirements = storageRequirements;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageRequirementsTxt(String storageRequirementsTxt) {
+    if (!(this.storageRequirementsTxt == null && storageRequirementsTxt == "")
+        && this.storageRequirementsTxt != storageRequirementsTxt) {
+      this.storageRequirementsTxt = storageRequirementsTxt;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageSuccession(boolean storageSuccession) {
+    if (this.storageSuccession != storageSuccession) {
+      this.storageSuccession = storageSuccession;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setStorageSuccessionTxt(String storageSuccessionTxt) {
+    if (!(this.storageSuccessionTxt == null && storageSuccessionTxt == "")
+        && this.storageSuccessionTxt != storageSuccessionTxt) {
+      this.storageSuccessionTxt = storageSuccessionTxt;
+      this.storageChanged = true;
+    }
+  }
+
+  public void setOrganizationChanged(boolean organizationChanged) {
+    this.organizationChanged = organizationChanged;
+  }
+
+  public void setFrameworkNationality(String frameworkNationality) {
+    if (!(this.frameworkNationality == null && frameworkNationality == "")
+        && this.frameworkNationality != frameworkNationality) {
+      this.frameworkNationality = frameworkNationality;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setFrameworkNationalityTxt(String frameworkNationalityTxt) {
+    if (!(this.frameworkNationalityTxt == null && frameworkNationalityTxt == "")
+        && this.frameworkNationalityTxt != frameworkNationalityTxt) {
+      this.frameworkNationalityTxt = frameworkNationalityTxt;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setResponsibleUnit(String responsibleUnit) {
+    if (!(this.responsibleUnit == null && responsibleUnit == "") && this.responsibleUnit != responsibleUnit) {
+      this.responsibleUnit = responsibleUnit;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setInvolvedInstitutions(String involvedInstitutions) {
+    if (!(this.involvedInstitutions == null && involvedInstitutions == "")
+        && this.involvedInstitutions != involvedInstitutions) {
+      this.involvedInstitutions = involvedInstitutions;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setInvolvedInformed(boolean involvedInformed) {
+    if (this.involvedInformed != involvedInformed) {
+      this.involvedInformed = involvedInformed;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setContributionsDefined(boolean contributionsDefined) {
+    if (this.contributionsDefined != contributionsDefined) {
+      this.contributionsDefined = contributionsDefined;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setContributionsDefinedTxt(String contributionsDefinedTxt) {
+    if (!(this.contributionsDefinedTxt == null && contributionsDefinedTxt == "")
+        && this.contributionsDefinedTxt != contributionsDefinedTxt) {
+      this.contributionsDefinedTxt = contributionsDefinedTxt;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setGivenConsent(boolean givenConsent) {
+    if (this.givenConsent != givenConsent) {
+      this.givenConsent = givenConsent;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setManagementWorkflow(boolean managementWorkflow) {
+    if (this.managementWorkflow != managementWorkflow) {
+      this.managementWorkflow = managementWorkflow;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setManagementWorkflowTxt(String managementWorkflowTxt) {
+    if (!(this.managementWorkflowTxt == null && managementWorkflowTxt == "")
+        && this.managementWorkflowTxt != managementWorkflowTxt) {
+      this.managementWorkflowTxt = managementWorkflowTxt;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setStaffDescription(boolean staffDescription) {
+    if (this.staffDescription != staffDescription) {
+      this.staffDescription = staffDescription;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setStaffDescriptionTxt(String staffDescriptionTxt) {
+    if (!(this.staffDescriptionTxt == null && staffDescriptionTxt == "")
+        && this.staffDescriptionTxt != staffDescriptionTxt) {
+      this.staffDescriptionTxt = staffDescriptionTxt;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setFunderRequirements(String funderRequirements) {
+    if (!(this.funderRequirements == null && funderRequirements == "")
+        && this.funderRequirements != funderRequirements) {
+      this.funderRequirements = funderRequirements;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setProviderRequirements(String providerRequirements) {
+    if (!(this.providerRequirements == null && providerRequirements == "")
+        && this.providerRequirements != providerRequirements) {
+      this.providerRequirements = providerRequirements;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setRepoPolicies(String repoPolicies) {
+    if (!(this.repoPolicies == null && repoPolicies == "") && this.repoPolicies != repoPolicies) {
+      this.repoPolicies = repoPolicies;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setRepoPoliciesResponsible(String repoPoliciesResponsible) {
+    if (!(this.repoPoliciesResponsible == null && repoPoliciesResponsible == "")
+        && this.repoPoliciesResponsible != repoPoliciesResponsible) {
+      this.repoPoliciesResponsible = repoPoliciesResponsible;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setPlanningAdherence(String planningAdherence) {
+    if (!(this.planningAdherence == null && planningAdherence == "") && this.planningAdherence != planningAdherence) {
+      this.planningAdherence = planningAdherence;
+      this.organizationChanged = true;
+    }
+  }
+
+  public void setEthicalChanged(boolean ethicalChanged) {
+    this.ethicalChanged = ethicalChanged;
+  }
+
+  public void setDataProtection(boolean dataProtection) {
+    if (this.dataProtection != dataProtection) {
+      this.dataProtection = dataProtection;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setProtectionRequirements(String protectionRequirements) {
+    if (!(this.protectionRequirements == null && protectionRequirements == "")
+        && this.protectionRequirements != protectionRequirements) {
+      this.protectionRequirements = protectionRequirements;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setConsentObtained(boolean consentObtained) {
+    if (this.consentObtained != consentObtained) {
+      this.consentObtained = consentObtained;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setConsentObtainedTxt(String consentObtainedTxt) {
+    if (!(this.consentObtainedTxt == null && consentObtainedTxt == "")
+        && this.consentObtainedTxt != consentObtainedTxt) {
+      this.consentObtainedTxt = consentObtainedTxt;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setSharingConsidered(boolean sharingConsidered) {
+    if (this.sharingConsidered != sharingConsidered) {
+      this.sharingConsidered = sharingConsidered;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setIrbApproval(boolean irbApproval) {
+    if (this.irbApproval != irbApproval) {
+      this.irbApproval = irbApproval;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setIrbApprovalTxt(String irbApprovalTxt) {
+    if (!(this.irbApprovalTxt == null && irbApprovalTxt == "") && this.irbApprovalTxt != irbApprovalTxt) {
+      this.irbApprovalTxt = irbApprovalTxt;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setSensitiveDataIncluded(boolean sensitiveDataIncluded) {
+    if (this.sensitiveDataIncluded != sensitiveDataIncluded) {
+      this.sensitiveDataIncluded = sensitiveDataIncluded;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setSensitiveDataIncludedTxt(String sensitiveDataIncludedTxt) {
+    if (!(this.sensitiveDataIncludedTxt == null && sensitiveDataIncludedTxt == "")
+        && this.sensitiveDataIncludedTxt != sensitiveDataIncludedTxt) {
+      this.sensitiveDataIncludedTxt = sensitiveDataIncludedTxt;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setExternalCopyright(boolean externalCopyright) {
+    if (this.externalCopyright != externalCopyright) {
+      this.externalCopyright = externalCopyright;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setExternalCopyrightTxt(String externalCopyrightTxt) {
+    if (!(this.externalCopyrightTxt == null && externalCopyrightTxt == "")
+        && this.externalCopyrightTxt != externalCopyrightTxt) {
+      this.externalCopyrightTxt = externalCopyrightTxt;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setInternalCopyright(boolean internalCopyright) {
+    if (this.internalCopyright != internalCopyright) {
+      this.internalCopyright = internalCopyright;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setInternalCopyrightTxt(String internalCopyrightTxt) {
+    if (!(this.internalCopyrightTxt == null && internalCopyrightTxt == "")
+        && this.internalCopyrightTxt != internalCopyrightTxt) {
+      this.internalCopyrightTxt = internalCopyrightTxt;
+      this.ethicalChanged = true;
+    }
+  }
+
+  public void setCostsChanged(boolean costsChanged) {
+    this.costsChanged = costsChanged;
+  }
+
+  public void setSpecificCosts(String specificCosts) {
+    if (!(this.specificCosts == null && specificCosts == "") && this.specificCosts != specificCosts) {
+      this.specificCosts = specificCosts;
+      this.costsChanged = true;
+    }
+  }
+
+  public void setSpecificCostsTxt(String specificCostsTxt) {
+    if (!(this.specificCostsTxt == null && specificCostsTxt == "") && this.specificCostsTxt != specificCostsTxt) {
+      this.specificCostsTxt = specificCostsTxt;
+      this.costsChanged = true;
+    }
+  }
+
+  public void setAriseCosts(String ariseCosts) {
+    if (!(this.ariseCosts == null && ariseCosts == "") && this.ariseCosts != ariseCosts) {
+      this.ariseCosts = ariseCosts;
+      this.costsChanged = true;
+    }
+  }
+
   public void setBearCost(String bearCost) {
-    this.bearCost = bearCost;
+    if (!(this.bearCost == null && bearCost == "") && this.bearCost != bearCost) {
+      this.bearCost = bearCost;
+      this.costsChanged = true;
+    }
   }
 
 }

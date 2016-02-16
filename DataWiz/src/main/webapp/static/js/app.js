@@ -9,29 +9,41 @@ $tag_box = null;
  * @param undefined
  */
 (function($, window, document, undefined) {
-	$(document).ready(function() {
-		// set the project submenu after reload or refresh
-		setProjectSubmenu(null);
-		$(window).bind('scroll', function() {
-			var navHeight = 100; // custom nav height
-			($(window).scrollTop() > navHeight) ? $('.mainnavtop').addClass('goToTop') : $('.mainnavtop').removeClass('goToTop');
-			navHeight = 280;
-			($(window).scrollTop() > navHeight) ? 
-						$('.subnavtop').addClass('goToTop2').removeClass('') : 
-						$('.subnavtop').removeClass('goToTop2').addClass('');
-		});
-		$(this).scrollTop(0);
-		// loading DMP Content - not nessesary on other pages!
-		if (window.location.pathname.search("/dmp/") > 0) {
-			showorHideDMPContent();
-		} // loading Project Content - not nessesary on other pages!
-		else if (window.location.pathname.search("/project/") > 0) {
-			startTagging();
-		} // loading Panel Content - not nessesary on other pages!
-		else if (window.location.pathname.search("/panel/") > 0) {
-			startAccordion();
-		}
-	});
+	$(document).ready(
+	    function() {
+		    // set the project submenu after reload or refresh
+		    setProjectSubmenu(null);
+		    $(window).bind(
+		        'scroll',
+		        function() {
+			        var navHeight = 100; // custom nav height
+			        ($(window).scrollTop() > navHeight) ? $('.mainnavtop').addClass('goToTop') : $('.mainnavtop')
+			            .removeClass('goToTop');
+			        navHeight = 280;
+			        ($(window).scrollTop() > navHeight && $(window).width() > 1000) ? $('.subnavtop').addClass('goToTop2')
+			            .removeClass('') : $('.subnavtop').removeClass('goToTop2').addClass('');
+		        });
+		    $(this).scrollTop(0);
+		    // loading DMP Content - not nessesary on other pages!
+		    if (window.location.pathname.search("/dmp/") > 0) {
+			    showorHideDMPContent();
+			    $("#dmpForm").trackChanges();
+			    $(window).on('beforeunload', function(e) {
+				    if ($("#dmpForm").isChanged()) {
+					    var msg = 'You are about to leave the page.  Continue?';
+					    (e || window.event).returnValue = msg; // IE + Gecko
+					    return msg; // Webkit
+				    }
+			    });
+		    } // loading Project Content - not nessesary on other pages!
+		    else if (window.location.pathname.search("/project/") > 0) {
+			    startTagging();
+		    } // loading Panel Content - not nessesary on other pages!
+		    else if (window.location.pathname.search("/panel/") > 0) {
+			    startAccordion();
+		    }
+
+	    });
 })(window.jQuery, window, document);
 
 $(".projectContentClick").click(function() {
@@ -181,11 +193,11 @@ function showorHideDMPContent() {
 	switchViewIfChecked('selectOtherDataTypes');
 	switchViewIfChecked('selectCollectionModesIP');
 	switchViewIfChecked('selectCollectionModesINP');
-	switchViewIfSelected("selectStorageWC", 1);
-	switchViewIfSelected("selectGoodScientific", 1);
-	switchViewIfSelected("selectSubsequentUse", 1);
-	switchViewIfSelected("selectDataRequirements", 1);
-	switchViewIfSelected("selectDataDocumentation", 1);
+	switchViewIfSelected("selectworkingCopy", 1);
+	switchViewIfSelected("selectgoodScientific", 1);
+	switchViewIfSelected("selectsubsequentUse", 1);
+	switchViewIfSelected("selectrequirements", 1);
+	switchViewIfSelected("selectdocumentation", 1);
 	switchViewIfSelected("selectDataSelection", 1);
 	switchViewIfSelectedMulti('selectPublStrategy', 'repository,author,nopubl');
 	switchViewIfSelected('selectNoAccessReason', 'other');
@@ -267,7 +279,32 @@ function switchViewIfSelectedMulti(name, show) {
  *          show
  */
 function switchViewIfChecked(name) {
+	console.log(name);
 	var selected = $("#" + name).is(':checked');
 	name = name.replace('select', 'content');
 	$("#" + name + "").toggle(selected);
 }
+
+function countChar(val) {
+	var len = val.value.length;
+	if (len >= 3000) {
+		val.value = val.value.substring(0, 3000);
+	} else {
+		$('#charNum').text(3000 - len);
+	}
+};
+
+function checkOnSubmit() {
+	$("#dmpForm").data("changed", false);
+}
+
+$.fn.extend({
+  trackChanges : function() {
+	  $(":input", this).change(function() {
+		  $(this.form).data("changed", true);
+	  });
+  },
+  isChanged : function() {
+	  return this.data("changed");
+  }
+});

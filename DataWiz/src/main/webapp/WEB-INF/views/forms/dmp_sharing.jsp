@@ -50,6 +50,11 @@
       </div>
       <div class="form-group" id="contentPublStrategy">
         <div class="col-sm-12">
+          <!-- depositName -->
+          <div class="contentPublStrategy0">
+            <s:message text="depositName" var="dmp_var_name" /> 
+            <%@ include file="../templates/textarea.jsp"%>
+          </div>
           <!-- searchableData -->
           <div class="contentPublStrategy0 contentPublStrategy1">
             <s:message text="searchableData" var="dmp_var_name" /> 

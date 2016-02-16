@@ -9,7 +9,10 @@
     <%@ include file="helpblock.jsp"%>
     <div class="form-group" id="content${dmp_var_name}">
       <div class="col-sm-12">
-        <label for="dmp.${dmp_var_name}Txt"><s:message code="dmp.edit.${dmp_var_name}Txt" /></label>
+        <s:message code="dmp.edit.${dmp_var_name}Txt" var="chklabel" />
+        <c:if test="${not empty chklabel}">
+          <label for="dmp.${dmp_var_name}Txt"><s:message code="dmp.edit.${dmp_var_name}Txt" /></label>
+        </c:if>        
         <sf:textarea rows="5" path="dmp.${dmp_var_name}Txt" class="form-control" disabled="" />
         <s:message code="dmp.edit.${dmp_var_name}Txt.help" var="appresmess" />
         <%@ include file="helpblock.jsp"%>

@@ -5,10 +5,10 @@
       <c:choose>
         <c:when test="${status.error}">
           <img src="<c:url value="/static/images/warning.png"/>" class="error_tooltip pull-right" title="${status.errorMessage}" />
-          <sf:textarea rows="5" path="dmp.${dmp_var_name}" class="form-control" disabled="" style="border: 1px solid red;" />
+          <sf:input path="dmp.${dmp_var_name}" class="form-control" disabled="" style="border: 1px solid red;" />
         </c:when>
         <c:otherwise>
-          <sf:textarea rows="5" path="dmp.${dmp_var_name}" class="form-control" disabled="" />
+          <sf:input path="dmp.${dmp_var_name}" class="form-control" disabled="" />
         </c:otherwise>
       </c:choose>
     </s:bind>

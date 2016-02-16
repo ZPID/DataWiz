@@ -25,8 +25,8 @@
         <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.ethical" /></a></li>
         <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.costs" /></a></li>
       </ul>
-      <c:url var="projectUrl" value="/dmp/${ProjectForm.project.id}" />
-      <sf:form action="${projectUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
+      <c:url var="dmpUrl" value="/dmp/${ProjectForm.project.id}" />
+      <sf:form action="${dmpUrl}" commandName="ProjectForm" class="form-horizontal" role="form" id="dmpForm" onsubmit="checkOnSubmit();">
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <!-- Messages -->
         <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && empty jQueryMap}">
@@ -38,6 +38,7 @@
             <c:out value="${saveStateMsg}" />
           </div>
         </c:if>
+        
         <!-- START Administration Data Content -->
         <jsp:include page="forms/dmp_admindata.jsp" />
         <!-- START Research Data Content -->
@@ -62,7 +63,7 @@
             <button type="reset" class="btn btn-default">
               <s:message code="gen.reset" />
             </button>
-            <sf:button type="submit" class="btn btn-success" id="meta_submit">
+            <sf:button type="submit" class="btn btn-success">
               <s:message code="gen.submit" />
             </sf:button>
           </div>
@@ -70,5 +71,21 @@
       </sf:form>
     </div>
   </div>
+  <div class="modal fade" data-toggle="draftModal" data-target="#draftModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <div>
+                   <p>You are about to leave the deal. Would you like to save as a draft?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 <%@ include file="templates/footer.jsp"%>
