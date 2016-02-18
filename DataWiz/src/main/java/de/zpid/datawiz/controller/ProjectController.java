@@ -406,7 +406,7 @@ public class ProjectController {
       } else if (call.equals("DMP")) {
         pForm.setDataTypes(dmpRelTypeDAO.getAllByType(true, DelType.datatype));
         pForm.setCollectionModes(dmpRelTypeDAO.getAllByType(true, DelType.collectionmode));
-        pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));
+        pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));        
       }
       return pForm;
     } else {

@@ -1,5 +1,5 @@
 package de.zpid.datawiz.util;
 
 public enum DmpCategory {
-  admin, research
+  admin, research, meta
 }

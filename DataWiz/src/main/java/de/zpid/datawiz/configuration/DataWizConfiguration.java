@@ -75,7 +75,9 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @Bean(name = "validator")
   public SmartValidator validator() {
-    return new LocalValidatorFactoryBean();
+    LocalValidatorFactoryBean sm = new LocalValidatorFactoryBean();
+    sm.setValidationMessageSource(resourceBundleMessageSource());
+    return sm;
   }
 
   @Bean(name = "multipartResolver")

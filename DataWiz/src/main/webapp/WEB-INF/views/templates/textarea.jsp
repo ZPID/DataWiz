@@ -1,6 +1,9 @@
 <div class="form-group">
   <div class="col-sm-12">
-    <label for="dmp.${dmp_var_name}"><s:message code="dmp.edit.${dmp_var_name}" /></label>
+    <s:message code="dmp.edit.${dmp_var_name}" var="labelTxt" />
+    <c:if test="${not empty labelTxt}">
+      <label for="dmp.${dmp_var_name}"><c:out value="${labelTxt}" /></label>
+    </c:if>
     <s:bind path="dmp.${dmp_var_name}">
       <c:choose>
         <c:when test="${status.error}">

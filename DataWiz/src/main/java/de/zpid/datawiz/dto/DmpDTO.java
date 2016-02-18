@@ -7,8 +7,6 @@ import java.util.Objects;
 
 import javax.validation.constraints.Size;
 
-import org.springframework.util.CollectionUtils;
-
 import de.zpid.datawiz.util.ListUtil;
 
 // TODO: Auto-generated Javadoc
@@ -118,7 +116,7 @@ public class DmpDTO implements Serializable {
   private String multipleMeasurements;
 
   /** Subitem DMP92, Psychdata - META233 Study Metadata. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String qualitityOther;
 
   /** DMP17. */
@@ -193,98 +191,104 @@ public class DmpDTO implements Serializable {
   /** checks if the fields of the MetaData Data has changed, this is used for particular saving */
   private boolean metaChanged = false;
 
+  public interface MetaVal {
+  }
+
   /** DMP31. */
   private List<Integer> selectedMetaPurposes;
 
   /** DMP32. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = MetaVal.class)
   private String metaDescription;
 
   /** DMP33. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = MetaVal.class)
   private String metaFramework;
 
   /** DMP34. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = MetaVal.class)
   private String metaGeneration;
 
   /** DMP35. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = MetaVal.class)
   private String metaMonitor;
 
   /** DMP36. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = MetaVal.class)
   private String metaFormat;
 
   // ***************** Data Sharing *****************
   /** checks if the fields of the Data Sharing has changed, this is used for particular saving */
   private boolean sharingChanged = false;
 
+  public interface SharingVal {
+  }
+
   /** DMP39. */
   private boolean releaseObligation;
 
   /** DMP40. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = SharingVal.class)
   private String expectedGroups;
 
   /** DMP42. */
   private boolean searchableData;
 
   /** DMP44. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = SharingVal.class)
   private String expectedUsage;
 
   /** DMP43 (select). */
   private String publStrategy;
 
   /** DMP38 - if data access on demand by author. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = SharingVal.class)
   private String accessReasonAuthor;
 
   /** DMP38 - if data are not accessible (select). */
   private String noAccessReason;
 
   /** DMP38 - if data are not accessible - reason == other. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = SharingVal.class)
   private String noAccessReasonOther;
 
   /** DMP98. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = SharingVal.class)
   private String depositName;
 
   // next fields are shown if principleRetain == repository!<
   /** DMP45. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = SharingVal.class)
   private String transferTime;
 
   /** DMP46. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = SharingVal.class)
   private String sensitiveData;
 
   /** DMP47. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = SharingVal.class)
   private String initialUsage;
 
   /** DMP48. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = SharingVal.class)
   private String usageRestriction;
 
   /** DMP49. */
   private boolean accessCosts;
 
   /** DMP49 - if accessCost == true. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = SharingVal.class)
   private String accessCostsTxt;
 
   /** DMP50. */
-  @Size(min = 0, max = 2000)
+  @Size(min = 0, max = 2000, groups = SharingVal.class)
   private String accessTermsImplementation;
 
   /** DMP51. */
   private boolean clarifiedRights;
 
   /** DMP51 - if clarifiedRights == true. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = SharingVal.class)
   private String clarifiedRightsTxt;
 
   /** DMP52. */
@@ -294,7 +298,7 @@ public class DmpDTO implements Serializable {
   private String usedPID;
 
   /** DMP53 (select)-> other selected. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = SharingVal.class)
   private String usedPIDTxt;
 
   // ***************** Storage and infrastructure *****************
@@ -1042,11 +1046,12 @@ public class DmpDTO implements Serializable {
   }
 
   public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
-    if (!Objects.equals(this.usedCollectionModes, usedCollectionModes)) {
-      this.usedCollectionModes = usedCollectionModes;
-      this.researchChanged = true;
-    }
-
+    if ((this.usedCollectionModes != null && this.usedCollectionModes.size() > 0)
+        || (usedCollectionModes != null && usedCollectionModes.size() > 0))
+      if (!ListUtil.equalsWithoutOrder(this.usedCollectionModes, usedCollectionModes)) {
+        this.usedCollectionModes = usedCollectionModes;
+        this.researchChanged = true;
+      }
   }
 
   public void setOtherCMIP(String otherCMIP) {
@@ -1246,45 +1251,53 @@ public class DmpDTO implements Serializable {
   }
 
   public void setSelectedMetaPurposes(List<Integer> selectedMetaPurposes) {
-    if (this.selectedMetaPurposes != selectedMetaPurposes) {
-      this.selectedMetaPurposes = selectedMetaPurposes;
-      this.metaChanged = true;
-    }
+    if ((this.selectedMetaPurposes != null && this.selectedMetaPurposes.size() > 0)
+        || (selectedMetaPurposes != null && selectedMetaPurposes.size() > 0))
+      if (!ListUtil.equalsWithoutOrder(this.selectedMetaPurposes, selectedMetaPurposes)) {
+        this.selectedMetaPurposes = selectedMetaPurposes;
+        this.metaChanged = true;
+      }
+
   }
 
   public void setMetaDescription(String metaDescription) {
-    if (!(this.metaDescription == null && metaDescription == "") && this.metaDescription != metaDescription) {
+    if (!Objects.equals(this.metaDescription, metaDescription)) {
       this.metaDescription = metaDescription;
       this.metaChanged = true;
     }
+
   }
 
   public void setMetaFramework(String metaFramework) {
-    if (!(this.metaFramework == null && metaFramework == "") && this.metaFramework != metaFramework) {
+    if (!Objects.equals(this.metaFramework, metaFramework)) {
       this.metaFramework = metaFramework;
       this.metaChanged = true;
     }
+
   }
 
   public void setMetaGeneration(String metaGeneration) {
-    if (!(this.metaGeneration == null && metaGeneration == "") && this.metaGeneration != metaGeneration) {
+    if (!Objects.equals(this.metaGeneration, metaGeneration)) {
       this.metaGeneration = metaGeneration;
       this.metaChanged = true;
     }
+
   }
 
   public void setMetaMonitor(String metaMonitor) {
-    if (!(this.metaMonitor == null && metaMonitor == "") && this.metaMonitor != metaMonitor) {
+    if (!Objects.equals(this.metaMonitor, metaMonitor)) {
       this.metaMonitor = metaMonitor;
       this.metaChanged = true;
     }
+
   }
 
   public void setMetaFormat(String metaFormat) {
-    if (!(this.metaFormat == null && metaFormat == "") && this.metaFormat != metaFormat) {
+    if (!Objects.equals(this.metaFormat, metaFormat)) {
       this.metaFormat = metaFormat;
       this.metaChanged = true;
     }
+
   }
 
   public void setSharingChanged(boolean sharingChanged) {
@@ -1292,154 +1305,171 @@ public class DmpDTO implements Serializable {
   }
 
   public void setReleaseObligation(boolean releaseObligation) {
-    if (this.releaseObligation != releaseObligation) {
+    if (!Objects.equals(this.releaseObligation, releaseObligation)) {
       this.releaseObligation = releaseObligation;
       this.sharingChanged = true;
     }
+
   }
 
   public void setExpectedGroups(String expectedGroups) {
-    if (!(this.expectedGroups == null && expectedGroups == "") && this.expectedGroups != expectedGroups) {
+    if (!Objects.equals(this.expectedGroups, expectedGroups)) {
       this.expectedGroups = expectedGroups;
       this.sharingChanged = true;
     }
+
   }
 
   public void setSearchableData(boolean searchableData) {
-    if (this.searchableData != searchableData) {
+    if (!Objects.equals(this.searchableData, searchableData)) {
       this.searchableData = searchableData;
       this.sharingChanged = true;
     }
+
   }
 
   public void setExpectedUsage(String expectedUsage) {
-    if (this.expectedUsage != expectedUsage) {
+    if (!Objects.equals(this.expectedUsage, expectedUsage)) {
       this.expectedUsage = expectedUsage;
       this.sharingChanged = true;
     }
+
   }
 
   public void setPublStrategy(String publStrategy) {
-    if (this.publStrategy != publStrategy) {
+    if (!Objects.equals(this.publStrategy, publStrategy)) {
       this.publStrategy = publStrategy;
       this.sharingChanged = true;
     }
+
   }
 
   public void setAccessReasonAuthor(String accessReasonAuthor) {
-    if (!(this.accessReasonAuthor == null && accessReasonAuthor == "")
-        && this.accessReasonAuthor != accessReasonAuthor) {
+    if (!Objects.equals(this.accessReasonAuthor, accessReasonAuthor)) {
       this.accessReasonAuthor = accessReasonAuthor;
       this.sharingChanged = true;
     }
+
   }
 
   public void setNoAccessReason(String noAccessReason) {
-    if (!(this.noAccessReason == null && noAccessReason == "") && this.noAccessReason != noAccessReason) {
+    if (!Objects.equals(this.noAccessReason, noAccessReason)) {
       this.noAccessReason = noAccessReason;
       this.sharingChanged = true;
     }
+
   }
 
   public void setNoAccessReasonOther(String noAccessReasonOther) {
-    if (!(this.noAccessReasonOther == null && noAccessReasonOther == "")
-        && this.noAccessReasonOther != noAccessReasonOther) {
+    if (!Objects.equals(this.noAccessReasonOther, noAccessReasonOther)) {
       this.noAccessReasonOther = noAccessReasonOther;
       this.sharingChanged = true;
     }
+
   }
 
   public void setDepositName(String depositName) {
-    if (!(this.depositName == null && depositName == "") && this.depositName != depositName) {
+    if (!Objects.equals(this.depositName, depositName)) {
       this.depositName = depositName;
       this.sharingChanged = true;
     }
+
   }
 
   public void setTransferTime(String transferTime) {
-    if (!(this.transferTime == null && transferTime == "") && this.transferTime != transferTime) {
+    if (!Objects.equals(this.transferTime, transferTime)) {
       this.transferTime = transferTime;
       this.sharingChanged = true;
     }
+
   }
 
   public void setSensitiveData(String sensitiveData) {
-    if (!(this.sensitiveData == null && sensitiveData == "") && this.sensitiveData != sensitiveData) {
+    if (!Objects.equals(this.sensitiveData, sensitiveData)) {
       this.sensitiveData = sensitiveData;
       this.sharingChanged = true;
     }
+
   }
 
   public void setInitialUsage(String initialUsage) {
-    if (!(this.initialUsage == null && initialUsage == "") && this.initialUsage != initialUsage) {
+    if (!Objects.equals(this.initialUsage, initialUsage)) {
       this.initialUsage = initialUsage;
       this.sharingChanged = true;
     }
+
   }
 
   public void setUsageRestriction(String usageRestriction) {
-    if (!(this.usageRestriction == null && usageRestriction == "") && this.usageRestriction != usageRestriction) {
+    if (!Objects.equals(this.usageRestriction, usageRestriction)) {
       this.usageRestriction = usageRestriction;
       this.sharingChanged = true;
     }
+
   }
 
   public void setAccessCosts(boolean accessCosts) {
-    if (this.accessCosts != accessCosts) {
+    if (!Objects.equals(this.accessCosts, accessCosts)) {
       this.accessCosts = accessCosts;
       this.sharingChanged = true;
     }
+
   }
 
   public void setAccessCostsTxt(String accessCostsTxt) {
-    if (this.accessCostsTxt != accessCostsTxt) {
+    if (!Objects.equals(this.accessCostsTxt, accessCostsTxt)) {
       this.accessCostsTxt = accessCostsTxt;
       this.sharingChanged = true;
     }
+
   }
 
   public void setAccessTermsImplementation(String accessTermsImplementation) {
-    if (!(this.accessTermsImplementation == null && accessTermsImplementation == "")
-        && this.accessTermsImplementation != accessTermsImplementation) {
+    if (!Objects.equals(this.accessTermsImplementation, accessTermsImplementation)) {
       this.accessTermsImplementation = accessTermsImplementation;
       this.sharingChanged = true;
     }
+
   }
 
   public void setClarifiedRights(boolean clarifiedRights) {
-    if (this.clarifiedRights != clarifiedRights) {
+    if (!Objects.equals(this.clarifiedRights, clarifiedRights)) {
       this.clarifiedRights = clarifiedRights;
       this.sharingChanged = true;
     }
+
   }
 
   public void setClarifiedRightsTxt(String clarifiedRightsTxt) {
-    if (!(this.clarifiedRightsTxt == null && clarifiedRightsTxt == "")
-        && this.clarifiedRightsTxt != clarifiedRightsTxt) {
+    if (!Objects.equals(this.clarifiedRightsTxt, clarifiedRightsTxt)) {
       this.clarifiedRightsTxt = clarifiedRightsTxt;
       this.sharingChanged = true;
     }
+
   }
 
   public void setAcquisitionAgreement(boolean acquisitionAgreement) {
-    if (this.acquisitionAgreement != acquisitionAgreement) {
+    if (!Objects.equals(this.acquisitionAgreement, acquisitionAgreement)) {
       this.acquisitionAgreement = acquisitionAgreement;
       this.sharingChanged = true;
     }
+
   }
 
   public void setUsedPID(String usedPID) {
-    if (!(this.usedPID == null && usedPID == "") && this.usedPID != usedPID) {
+    if (!Objects.equals(this.usedPID, usedPID)) {
       this.usedPID = usedPID;
       this.sharingChanged = true;
     }
+
   }
 
   public void setUsedPIDTxt(String usedPIDTxt) {
-    if (!(this.usedPIDTxt == null && usedPIDTxt == "") && this.usedPIDTxt != usedPIDTxt) {
+    if (!Objects.equals(this.usedPIDTxt, usedPIDTxt)) {
       this.usedPIDTxt = usedPIDTxt;
       this.sharingChanged = true;
     }
+
   }
 
   public void setStorageChanged(boolean storageChanged) {

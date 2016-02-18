@@ -6,33 +6,36 @@ import java.util.List;
 
 public class ListUtil {
 
+  /**
+   * 
+   * @param fst
+   * @param snd
+   * @return
+   */
   public static boolean equalsWithoutOrder(List<?> fst, List<?> snd) {
     if (fst != null && snd != null) {
       if (fst.size() == snd.size()) {
-        // create copied lists so the original list is not modified
         List<?> cfst = new ArrayList<Object>(fst);
         List<?> csnd = new ArrayList<Object>(snd);
-
         Iterator<?> ifst = cfst.iterator();
         boolean foundEqualObject;
         while (ifst.hasNext()) {
           Iterator<?> isnd = csnd.iterator();
           foundEqualObject = false;
+          Object sndn = ifst.next();
           while (isnd.hasNext()) {
-            if (ifst.next().equals(isnd.next())) {
+            if (sndn.equals(isnd.next())) {
               ifst.remove();
               isnd.remove();
               foundEqualObject = true;
               break;
             }
           }
-
           if (!foundEqualObject) {
-            // fail early
             break;
           }
         }
-        if (cfst.isEmpty()) { // both temporary lists have the same size
+        if (cfst.isEmpty()) {
           return true;
         }
       }
@@ -41,5 +44,4 @@ public class ListUtil {
     }
     return false;
   }
-
 }

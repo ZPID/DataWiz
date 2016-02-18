@@ -60,10 +60,8 @@ public class DmpDAO {
           dmp.setDataCitation(rs.getString("dataCitation"));
           dmp.setExistingDataRelevance(rs.getString("existingDataRelevance"));
           dmp.setExistingDataIntegration(rs.getString("existingDataIntegration"));
-          // TODO usedDataTypes speichern
           dmp.setOtherDataTypes(rs.getString("otherDataTypes"));
           dmp.setDataReproducibility(rs.getString("dataReproducibility"));
-          // TODO usedCollectionModes speichern
           dmp.setOtherCMIP(rs.getString("otherCMIP"));
           dmp.setOtherCMINP(rs.getString("otherCMINP"));
           dmp.setMeasOccasions(rs.getString("measOccasions"));
@@ -89,18 +87,30 @@ public class DmpDAO {
           dmp.setStorageDuration(rs.getString("storageDuration"));
           dmp.setDeleteProcedure(rs.getString("deleteProcedure"));
           // ***************** MetaData Data *****************
+          dmp.setMetaDescription(rs.getString("metaDescription"));
+          dmp.setMetaFramework(rs.getString("metaFramework"));
+          dmp.setMetaGeneration(rs.getString("metaGeneration"));
+          dmp.setMetaMonitor(rs.getString("metaMonitor"));
+          dmp.setMetaFormat(rs.getString("metaFormat"));
+          // ***************** Data Sharing *****************
 
           return dmp;
         }
         return null;
       }
     });
-    dmp.setUsedDataTypes(getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
-    dmp.setAdminChanged(false);
-    dmp.setResearchChanged(false);
     if (log.isDebugEnabled())
       log.debug("leaving getByProject with result:" + ((dmp != null) ? dmp.getId() : "null"));
     return dmp;
+  }
+
+  public int updateAdminData(DmpDTO dmp) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateAdminData for [id: " + dmp.getId() + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET projectAims = ?, projectSponsors = ?, duration = ?, organizations = ?, planAims = ? WHERE id = ?",
+        dmp.getProjectAims(), dmp.getProjectSponsors(), dmp.getDuration(), dmp.getOrganizations(), dmp.getPlanAims(),
+        dmp.getId());
   }
 
   public int updateResearchData(DmpDTO dmp) throws Exception {
@@ -123,28 +133,51 @@ public class DmpDAO {
         dmp.getRequirementsTxt(), dmp.isDocumentation(), dmp.getDocumentationTxt(), dmp.isDataSelection(),
         dmp.getSelectionTime(), dmp.getSelectionResp(), dmp.getSelectionSoftware(), dmp.getSelectionCriteria(),
         dmp.getStorageDuration(), dmp.getDeleteProcedure(), dmp.getId());
-    List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DelType.datatype);
-    if (datatypes != null && datatypes.size() > 0) {
-      for (Integer i : datatypes)
-        deleteDMPUsedDataTypes(dmp.getId(), i);
-    }
-    if (dmp.getUsedDataTypes() != null && dmp.getUsedDataTypes().size() > 0) {
-      for (int i : dmp.getUsedDataTypes())
-        insertDMPUsedDataTypes(dmp.getId(), i);
+    if (ret > 0) {
+      List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DelType.datatype);
+      if (datatypes != null && datatypes.size() > 0) {
+        for (Integer i : datatypes)
+          deleteDMPUsedDataTypes(dmp.getId(), i);
+      }
+      if (dmp.getUsedDataTypes() != null && dmp.getUsedDataTypes().size() > 0) {
+        for (int i : dmp.getUsedDataTypes())
+          insertDMPUsedDataTypes(dmp.getId(), i);
+      }
+      List<Integer> collectionModes = getDMPUsedDataTypes(dmp.getId(), DelType.collectionmode);
+      if (collectionModes != null && collectionModes.size() > 0) {
+        for (Integer i : collectionModes)
+          deleteDMPUsedDataTypes(dmp.getId(), i);
+      }
+      if (dmp.getUsedCollectionModes() != null && dmp.getUsedCollectionModes().size() > 0) {
+        for (int i : dmp.getUsedCollectionModes())
+          insertDMPUsedDataTypes(dmp.getId(), i);
+      }
     }
     return ret;
   }
 
-  public int updateAdminData(DmpDTO dmp) throws Exception {
+  public int updateMetaData(DmpDTO dmp) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute updateAdminData for [id: " + dmp.getId() + "]");
-    return this.jdbcTemplate.update(
-        "UPDATE dw_dmp SET projectAims = ?, projectSponsors = ?, duration = ?, organizations = ?, planAims = ? WHERE id = ?",
-        dmp.getProjectAims(), dmp.getProjectSponsors(), dmp.getDuration(), dmp.getOrganizations(), dmp.getPlanAims(),
-        dmp.getId());
+      log.debug("execute updateMetaData for [id: " + dmp.getId() + "]");
+    int ret = this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET metaDescription = ?, metaFramework = ?, metaGeneration = ?, metaMonitor = ?, metaFormat = ? WHERE id = ?",
+        dmp.getMetaDescription(), dmp.getMetaFramework(), dmp.getMetaGeneration(), dmp.getMetaMonitor(),
+        dmp.getMetaFormat(), dmp.getId());
+    if (ret > 0) {
+      List<Integer> metaporpose = getDMPUsedDataTypes(dmp.getId(), DelType.metaporpose);
+      if (metaporpose != null && metaporpose.size() > 0) {
+        for (Integer i : metaporpose)
+          deleteDMPUsedDataTypes(dmp.getId(), i);
+      }
+      if (dmp.getSelectedMetaPurposes() != null && dmp.getSelectedMetaPurposes().size() > 0) {
+        for (int i : dmp.getSelectedMetaPurposes())
+          insertDMPUsedDataTypes(dmp.getId(), i);
+      }
+    }
+    return ret;
   }
 
-  private List<Integer> getDMPUsedDataTypes(BigInteger dmpid, DelType type) {
+  public List<Integer> getDMPUsedDataTypes(BigInteger dmpid, DelType type) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getDMPUsedDataTypes for dmp [id: " + dmpid + " type: " + type.toString() + "]");
     String sql = "SELECT dw_dmp_formtypes.ftid FROM dw_dmp_formtypes "

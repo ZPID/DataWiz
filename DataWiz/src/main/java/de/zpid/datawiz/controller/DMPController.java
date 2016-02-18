@@ -29,6 +29,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.DelType;
 import de.zpid.datawiz.util.DmpCategory;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -95,12 +96,19 @@ public class DMPController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
-    // create new pform!
     DmpDTO dmp;
     try {
       pForm = ProjectController.getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, null, null, null,
           this.formTypeDAO, "DMP");
       dmp = dmpDAO.getByID(pForm.getProject());
+      if (dmp != null && dmp.getId().compareTo(BigInteger.ZERO) > 0) {
+        dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
+        dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.collectionmode));
+        dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.metaporpose));
+        dmp.setAdminChanged(false);
+        dmp.setResearchChanged(false);
+        dmp.setMetaChanged(false);
+      }
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
       String redirectMessage = "";
@@ -142,6 +150,10 @@ public class DMPController {
           : false;
       unChanged = false;
     }
+    if (pForm.getDmp().isMetaChanged()) {
+      hasErrors = (saveAdminData(pForm, bRes, DmpCategory.meta, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
+      unChanged = false;
+    }
     if (hasErrors || unChanged) {
       return "dmp";
     }
@@ -152,7 +164,7 @@ public class DMPController {
     BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
     int changed = 0;
     if (log.isDebugEnabled()) {
-      log.debug("saving DMP Data for cat=" + cat);
+      log.debug("saving DMP Data for cat= " + cat);
     }
     validator.validate(pForm, bResTmp, cls);
     if (!bResTmp.hasErrors()) {
@@ -163,6 +175,9 @@ public class DMPController {
           break;
         case research:
           changed = (dmpDAO.updateResearchData(pForm.getDmp()));
+          break;
+        case meta:
+          changed = (dmpDAO.updateMetaData(pForm.getDmp()));
           break;
         default:
           break;
@@ -193,6 +208,9 @@ public class DMPController {
         break;
       case research:
         pForm.getDmp().setResearchChanged(false);
+        break;
+      case meta:
+        pForm.getDmp().setMetaChanged(false);
         break;
       default:
         break;

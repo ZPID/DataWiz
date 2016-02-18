@@ -11,8 +11,7 @@ $tag_box = null;
 (function($, window, document, undefined) {
 	$(document).ready(
 	    function() {
-		    // set the project submenu after reload or refresh
-		    
+		    // set the project submenu after reload or refresh	    	
 		    $(window).bind(
 		        'scroll',
 		        function() {
@@ -26,6 +25,7 @@ $tag_box = null;
 		    $(this).scrollTop(0);
 		    // loading DMP Content - not nessesary on other pages!
 		    if (window.location.pathname.search("/dmp/") > 0) {
+		    	$("#dmpForm :input").prop("disabled", false);
 		    	setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
 			    showorHideDMPContent();
 			    $("#dmpForm").trackChanges();

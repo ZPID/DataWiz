@@ -56,9 +56,9 @@
             <c:forEach items="${ProjectForm.dataTypes}" var="dtype" varStatus="state">
               <div class="col-sm-4">
                 <c:choose>
-                  <c:when test="${dtype.id == 0}">
+                  <c:when test="${dtype.id == 20}">
                     <label class="btn btn-default" style="width: 100%; text-align: left;"> <sf:checkbox path="dmp.usedDataTypes"
-                        value="${dtype.id}" onchange="switchViewIfChecked('selectOtherDataTypes')" id="selectOtherDataTypes" /> <s:message
+                        value="${dtype.id}" onchange="switchViewIfChecked('selectOtherDataTypes');" id="selectOtherDataTypes" /> <s:message
                         text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
                     </label>
                   </c:when>
