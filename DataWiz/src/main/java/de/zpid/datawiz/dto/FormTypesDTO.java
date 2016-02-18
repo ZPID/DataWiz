@@ -4,13 +4,15 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
+import de.zpid.datawiz.util.DelType;
+
 /**
  * Implementation of the MetaPorpose which are declared as DMP131in the excel meta data sheet.
  * 
  * @author Ronny Boelter
  * @version 1.0
  */
-public class DmpRelTypeDTO implements Serializable {
+public class FormTypesDTO implements Serializable {
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 4523755361477035462L;
@@ -42,12 +44,14 @@ public class DmpRelTypeDTO implements Serializable {
   /** true if the investor is present. */
   private boolean investPresent;
 
-  public DmpRelTypeDTO() {
+  private DelType type;
+
+  public FormTypesDTO() {
     super();
   }
 
-  public DmpRelTypeDTO(int id, int dmpId, String nameDE, String nameEN, String otherTypes, boolean active, int sort,
-      boolean investPresent) {
+  public FormTypesDTO(int id, int dmpId, String nameDE, String nameEN, String otherTypes, boolean active, int sort,
+      boolean investPresent, DelType type) {
     super();
     this.id = id;
     this.dmpId = dmpId;
@@ -57,6 +61,7 @@ public class DmpRelTypeDTO implements Serializable {
     this.active = active;
     this.sort = sort;
     this.investPresent = investPresent;
+    this.type = type;
   }
 
   public int getId() {
@@ -123,6 +128,14 @@ public class DmpRelTypeDTO implements Serializable {
     this.investPresent = investPresent;
   }
 
+  public DelType getType() {
+    return type;
+  }
+
+  public void setType(DelType type) {
+    this.type = type;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -135,6 +148,7 @@ public class DmpRelTypeDTO implements Serializable {
     result = prime * result + ((nameEN == null) ? 0 : nameEN.hashCode());
     result = prime * result + ((otherTypes == null) ? 0 : otherTypes.hashCode());
     result = prime * result + sort;
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
     return result;
   }
 
@@ -146,7 +160,7 @@ public class DmpRelTypeDTO implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    DmpRelTypeDTO other = (DmpRelTypeDTO) obj;
+    FormTypesDTO other = (FormTypesDTO) obj;
     if (active != other.active)
       return false;
     if (dmpId != other.dmpId)
@@ -172,14 +186,16 @@ public class DmpRelTypeDTO implements Serializable {
       return false;
     if (sort != other.sort)
       return false;
+    if (type != other.type)
+      return false;
     return true;
   }
 
   @Override
   public String toString() {
-    return "DmpRelTypeDTO [id=" + id + ", dmpId=" + dmpId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
+    return "FormTypesDTO [id=" + id + ", dmpId=" + dmpId + ", nameDE=" + nameDE + ", nameEN=" + nameEN
         + ", otherTypes=" + otherTypes + ", active=" + active + ", sort=" + sort + ", investPresent=" + investPresent
-        + "]";
+        + ", type=" + type + "]";
   }
 
 }

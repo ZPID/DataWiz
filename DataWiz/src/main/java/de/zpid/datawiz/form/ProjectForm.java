@@ -7,7 +7,7 @@ import javax.validation.Valid;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
-import de.zpid.datawiz.dto.DmpRelTypeDTO;
+import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -33,12 +33,13 @@ public class ProjectForm implements Serializable {
   private List<FileDTO> files;
 
   /** DMP DATA */
-  private List<DmpRelTypeDTO> dataTypes;
-  private List<DmpRelTypeDTO> collectionModes;
-  private List<DmpRelTypeDTO> metaPurposes;
+  private List<FormTypesDTO> dataTypes;
+  private List<FormTypesDTO> collectionModes;
+  private List<FormTypesDTO> metaPurposes;
 
   // ViewHelper
   private int delPos;
+  private String pagePosi;
 
   public ProjectDTO getProject() {
     return project;
@@ -116,28 +117,36 @@ public class ProjectForm implements Serializable {
     this.dmp = dmp;
   }
 
-  public List<DmpRelTypeDTO> getDataTypes() {
+  public List<FormTypesDTO> getDataTypes() {
     return dataTypes;
   }
 
-  public void setDataTypes(List<DmpRelTypeDTO> dataTypes) {
+  public void setDataTypes(List<FormTypesDTO> dataTypes) {
     this.dataTypes = dataTypes;
   }
 
-  public List<DmpRelTypeDTO> getCollectionModes() {
+  public List<FormTypesDTO> getCollectionModes() {
     return collectionModes;
   }
 
-  public void setCollectionModes(List<DmpRelTypeDTO> collectionModes) {
+  public void setCollectionModes(List<FormTypesDTO> collectionModes) {
     this.collectionModes = collectionModes;
   }
 
-  public List<DmpRelTypeDTO> getMetaPurposes() {
+  public List<FormTypesDTO> getMetaPurposes() {
     return metaPurposes;
   }
 
-  public void setMetaPurposes(List<DmpRelTypeDTO> metaPurposes) {
+  public void setMetaPurposes(List<FormTypesDTO> metaPurposes) {
     this.metaPurposes = metaPurposes;
+  }
+
+  public String getPagePosi() {
+    return pagePosi;
+  }
+
+  public void setPagePosi(String pagePosi) {
+    this.pagePosi = pagePosi;
   }
 
 }

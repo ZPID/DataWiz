@@ -27,6 +27,7 @@
       </ul>
       <c:url var="dmpUrl" value="/dmp/${ProjectForm.project.id}" />
       <sf:form action="${dmpUrl}" commandName="ProjectForm" class="form-horizontal" role="form" id="dmpForm" onsubmit="checkOnSubmit();">
+        <sf:hidden path="pagePosi" id="pagePosi"/>
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <!-- Messages -->
         <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && empty jQueryMap}">
@@ -38,7 +39,7 @@
             <c:out value="${saveStateMsg}" />
           </div>
         </c:if>
-        
+        <sf:errors element="div" class="alert alert-danger" role="alert" htmlEscape="false"/>
         <!-- START Administration Data Content -->
         <jsp:include page="forms/dmp_admindata.jsp" />
         <!-- START Research Data Content -->

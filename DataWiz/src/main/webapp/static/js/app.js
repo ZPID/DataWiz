@@ -12,7 +12,7 @@ $tag_box = null;
 	$(document).ready(
 	    function() {
 		    // set the project submenu after reload or refresh
-		    setProjectSubmenu(null);
+		    
 		    $(window).bind(
 		        'scroll',
 		        function() {
@@ -26,6 +26,7 @@ $tag_box = null;
 		    $(this).scrollTop(0);
 		    // loading DMP Content - not nessesary on other pages!
 		    if (window.location.pathname.search("/dmp/") > 0) {
+		    	setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
 			    showorHideDMPContent();
 			    $("#dmpForm").trackChanges();
 			    $(window).on('beforeunload', function(e) {
@@ -37,16 +38,17 @@ $tag_box = null;
 			    });
 		    } // loading Project Content - not nessesary on other pages!
 		    else if (window.location.pathname.search("/project/") > 0) {
+		    	setProjectSubmenu(null);
 			    startTagging();
 		    } // loading Panel Content - not nessesary on other pages!
 		    else if (window.location.pathname.search("/panel/") > 0) {
 			    startAccordion();
 		    }
-
 	    });
 })(window.jQuery, window, document);
 
 $(".projectContentClick").click(function() {
+	$("#pagePosi").val($(this).attr("id"));
 	setProjectSubmenu($(this).attr("id"));
 });
 

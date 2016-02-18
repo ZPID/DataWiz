@@ -7,6 +7,10 @@ import java.util.Objects;
 
 import javax.validation.constraints.Size;
 
+import org.springframework.util.CollectionUtils;
+
+import de.zpid.datawiz.util.ListUtil;
+
 // TODO: Auto-generated Javadoc
 /**
  * Data-management-plan data transfer object: Includes all necessary information for the data-management-plan. Some DMP
@@ -59,30 +63,33 @@ public class DmpDTO implements Serializable {
   /** checks if the fields of the Research Data has changed, this is used for particular saving */
   private boolean researchChanged = false;
 
+  public interface ResearchVal {
+  }
+
   /** DMP09 : 0 yes, existing data are used/ 1 no data were found/ 2 no search was carried out. */
   private String existingData;
 
   /** DMP97. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String dataCitation;
 
   /** DMP10. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String existingDataRelevance;
 
   /** DMP11. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String existingDataIntegration;
 
   /** DMP12 META096 Study Metadata. */
   private List<Integer> usedDataTypes;
 
   /** DMP12 -> selected == other. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String otherDataTypes;
 
   /** DMP13. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String dataReproducibility;
 
   /** DMP14. How will the data be collected or generated? */
@@ -90,24 +97,24 @@ public class DmpDTO implements Serializable {
   private List<Integer> usedCollectionModes;
 
   /** DMP87 other Collection Modes with Invest. present */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String otherCMIP;
 
   /** DMP87 other Collection Modes with Invest. not present */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String otherCMINP;
 
   /** DMP89 Subitem DMP14, PsychData - META097 Study Metadata. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String measOccasions;
 
   /** Subitem DMP16. */
   /** Subitem DMP90, JARS - META131 Study Metadata. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String reliabilityTraining;
 
   /** Subitem DMP91, JARS - META132 Study Metadata. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String multipleMeasurements;
 
   /** Subitem DMP92, Psychdata - META233 Study Metadata. */
@@ -115,7 +122,7 @@ public class DmpDTO implements Serializable {
   private String qualitityOther;
 
   /** DMP17. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String fileFormat;
 
   /** DMP18 - Why must the data be completely or partially stored?. */
@@ -123,35 +130,35 @@ public class DmpDTO implements Serializable {
   private boolean workingCopy;
 
   /** DMP19 - Antwortoption DMP18. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = ResearchVal.class)
   private String workingCopyTxt;
 
   /** DMP20 - Antwortoption DMP18. */
   private boolean goodScientific;
 
   /** DMP20 - Antwortoption DMP18. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = ResearchVal.class)
   private String goodScientificTxt;
 
   /** DMP21 - Antwortoption DMP18. */
   private boolean subsequentUse;
 
   /** DMP21 - Antwortoption DMP18. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = ResearchVal.class)
   private String subsequentUseTxt;
 
   /** DMP22 - Antwortoption DMP18. */
   private boolean requirements;
 
   /** DMP22 - Antwortoption DMP18. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = ResearchVal.class)
   private String requirementsTxt;
 
   /** DMP23 - Antwortoption DMP18. */
   private boolean documentation;
 
   /** DMP23 - Antwortoption DMP18. */
-  @Size(min = 0, max = 250)
+  @Size(min = 0, max = 250, groups = ResearchVal.class)
   private String documentationTxt;
 
   /** DMP86 - Does data selection take place?. */
@@ -159,27 +166,27 @@ public class DmpDTO implements Serializable {
 
   /** the next inputs are only important if dataselection == true. */
   /** DMP24 - DMP86 ja */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = ResearchVal.class)
   private String selectionTime;
 
   /** DMP25 - DMP86 ja. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = ResearchVal.class)
   private String selectionResp;
 
   /** DMP26 - DMP86 ja. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = ResearchVal.class)
   private String selectionSoftware;
 
   /** DMP27 - DMP86 ja. */
-  @Size(min = 0, max = 1000)
+  @Size(min = 0, max = 1000, groups = ResearchVal.class)
   private String selectionCriteria;
 
   /** DMP28. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = ResearchVal.class)
   private String storageDuration;
 
   /** DMP29. */
-  @Size(min = 0, max = 500)
+  @Size(min = 0, max = 500, groups = ResearchVal.class)
   private String deleteProcedure;
 
   // ***************** MetaData Data *****************
@@ -981,232 +988,257 @@ public class DmpDTO implements Serializable {
   }
 
   public void setExistingData(String existingData) {
-    if (!(this.existingData == null && existingData == "") && this.existingData != existingData) {
+    if (!Objects.equals(this.existingData, existingData)) {
       this.existingData = existingData;
       this.researchChanged = true;
     }
   }
 
   public void setDataCitation(String dataCitation) {
-    if (!(this.dataCitation == null && dataCitation == "") && this.dataCitation != dataCitation) {
+    if (!Objects.equals(this.dataCitation, dataCitation)) {
       this.dataCitation = dataCitation;
       this.researchChanged = true;
     }
   }
 
   public void setExistingDataRelevance(String existingDataRelevance) {
-    if (!(this.existingDataRelevance == null && existingDataRelevance == "")
-        && this.existingDataRelevance != existingDataRelevance) {
+    if (!Objects.equals(this.existingDataRelevance, existingDataRelevance)) {
       this.existingDataRelevance = existingDataRelevance;
       this.researchChanged = true;
     }
+
   }
 
   public void setExistingDataIntegration(String existingDataIntegration) {
-    if (!(this.existingDataIntegration == null && existingDataIntegration == "")
-        && this.existingDataIntegration != existingDataIntegration) {
+    if (!Objects.equals(this.existingDataIntegration, existingDataIntegration)) {
       this.existingDataIntegration = existingDataIntegration;
       this.researchChanged = true;
     }
   }
 
   public void setUsedDataTypes(List<Integer> usedDataTypes) {
-    if (this.usedDataTypes != usedDataTypes) {
-      this.usedDataTypes = usedDataTypes;
-      this.researchChanged = true;
-    }
+    if ((this.usedDataTypes != null && this.usedDataTypes.size() > 0)
+        || (usedDataTypes != null && usedDataTypes.size() > 0))
+      if (!ListUtil.equalsWithoutOrder(this.usedDataTypes, usedDataTypes)) {
+        this.usedDataTypes = usedDataTypes;
+        this.researchChanged = true;
+      }
   }
 
   public void setOtherDataTypes(String otherDataTypes) {
-    if (!(this.otherDataTypes == null && otherDataTypes == "") && this.otherDataTypes != otherDataTypes) {
+    if (!Objects.equals(this.otherDataTypes, otherDataTypes)) {
       this.otherDataTypes = otherDataTypes;
       this.researchChanged = true;
     }
+
   }
 
   public void setDataReproducibility(String dataReproducibility) {
-    if (!(this.dataReproducibility == null && dataReproducibility == "")
-        && this.dataReproducibility != dataReproducibility) {
+    if (!Objects.equals(this.dataReproducibility, dataReproducibility)) {
       this.dataReproducibility = dataReproducibility;
       this.researchChanged = true;
     }
+
   }
 
   public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
-    if (this.usedCollectionModes != usedCollectionModes) {
+    if (!Objects.equals(this.usedCollectionModes, usedCollectionModes)) {
       this.usedCollectionModes = usedCollectionModes;
       this.researchChanged = true;
     }
+
   }
 
   public void setOtherCMIP(String otherCMIP) {
-    if (!(this.otherCMIP == null && otherCMIP == "") && this.otherCMIP != otherCMIP) {
+    if (!Objects.equals(this.otherCMIP, otherCMIP)) {
       this.otherCMIP = otherCMIP;
       this.researchChanged = true;
     }
+
   }
 
   public void setOtherCMINP(String otherCMINP) {
-    if (!(this.otherCMINP == null && otherCMINP == "") && this.otherCMINP != otherCMINP) {
+    if (!Objects.equals(this.otherCMINP, otherCMINP)) {
       this.otherCMINP = otherCMINP;
       this.researchChanged = true;
     }
+
   }
 
   public void setMeasOccasions(String measOccasions) {
-    if (!(this.measOccasions == null && measOccasions == "") && this.measOccasions != measOccasions) {
+    if (!Objects.equals(this.measOccasions, measOccasions)) {
       this.measOccasions = measOccasions;
       this.researchChanged = true;
     }
+
   }
 
   public void setReliabilityTraining(String reliabilityTraining) {
-    if (!(this.reliabilityTraining == null && reliabilityTraining == "")
-        && this.reliabilityTraining != reliabilityTraining) {
+    if (!Objects.equals(this.reliabilityTraining, reliabilityTraining)) {
       this.reliabilityTraining = reliabilityTraining;
       this.researchChanged = true;
     }
+
   }
 
   public void setMultipleMeasurements(String multipleMeasurements) {
-    if (!(this.multipleMeasurements == null && multipleMeasurements == "")
-        && this.multipleMeasurements != multipleMeasurements) {
+    if (!Objects.equals(this.multipleMeasurements, multipleMeasurements)) {
       this.multipleMeasurements = multipleMeasurements;
       this.researchChanged = true;
     }
+
   }
 
   public void setQualitityOther(String qualitityOther) {
-    if (!(this.qualitityOther == null && qualitityOther == "") && this.qualitityOther != qualitityOther) {
+    if (!Objects.equals(this.qualitityOther, qualitityOther)) {
       this.qualitityOther = qualitityOther;
       this.researchChanged = true;
     }
+
   }
 
   public void setFileFormat(String fileFormat) {
-    if (!(this.fileFormat == null && fileFormat == "") && this.fileFormat != fileFormat) {
+    if (!Objects.equals(this.fileFormat, fileFormat)) {
       this.fileFormat = fileFormat;
       this.researchChanged = true;
     }
+
   }
 
   public void setWorkingCopy(boolean workingCopy) {
-    if (this.workingCopy != workingCopy) {
+    if (!Objects.equals(this.workingCopy, workingCopy)) {
       this.workingCopy = workingCopy;
       this.researchChanged = true;
     }
+
   }
 
   public void setWorkingCopyTxt(String workingCopyTxt) {
-    if (!(this.workingCopyTxt == null && workingCopyTxt == "") && this.workingCopyTxt != workingCopyTxt) {
+    if (!Objects.equals(this.workingCopyTxt, workingCopyTxt)) {
       this.workingCopyTxt = workingCopyTxt;
       this.researchChanged = true;
     }
+
   }
 
   public void setGoodScientific(boolean goodScientific) {
-    if (this.goodScientific != goodScientific) {
+    if (!Objects.equals(this.goodScientific, goodScientific)) {
       this.goodScientific = goodScientific;
       this.researchChanged = true;
     }
+
   }
 
   public void setGoodScientificTxt(String goodScientificTxt) {
-    if (!(this.goodScientificTxt == null && goodScientificTxt == "") && this.goodScientificTxt != goodScientificTxt) {
+    if (!Objects.equals(this.goodScientificTxt, goodScientificTxt)) {
       this.goodScientificTxt = goodScientificTxt;
       this.researchChanged = true;
     }
+
   }
 
   public void setSubsequentUse(boolean subsequentUse) {
-    if (this.subsequentUse != subsequentUse) {
+    if (!Objects.equals(this.subsequentUse, subsequentUse)) {
       this.subsequentUse = subsequentUse;
       this.researchChanged = true;
     }
+
   }
 
   public void setSubsequentUseTxt(String subsequentUseTxt) {
-    if (!(this.subsequentUseTxt == null && subsequentUseTxt == "") && this.subsequentUseTxt != subsequentUseTxt) {
+    if (!Objects.equals(this.subsequentUseTxt, subsequentUseTxt)) {
       this.subsequentUseTxt = subsequentUseTxt;
       this.researchChanged = true;
     }
+
   }
 
   public void setRequirements(boolean requirements) {
-    if (this.requirements != requirements) {
+    if (!Objects.equals(this.requirements, requirements)) {
       this.requirements = requirements;
       this.researchChanged = true;
     }
+
   }
 
   public void setRequirementsTxt(String requirementsTxt) {
-    if (!(this.requirementsTxt == null && requirementsTxt == "") && this.requirementsTxt != requirementsTxt) {
+    if (!Objects.equals(this.requirementsTxt, requirementsTxt)) {
       this.requirementsTxt = requirementsTxt;
       this.researchChanged = true;
     }
+
   }
 
   public void setDocumentation(boolean documentation) {
-    if (this.documentation != documentation) {
+    if (!Objects.equals(this.documentation, documentation)) {
       this.documentation = documentation;
       this.researchChanged = true;
     }
+
   }
 
   public void setDocumentationTxt(String documentationTxt) {
-    if (!(this.documentationTxt == null && documentationTxt == "") && this.documentationTxt != documentationTxt) {
+    if (!Objects.equals(this.documentationTxt, documentationTxt)) {
       this.documentationTxt = documentationTxt;
       this.researchChanged = true;
     }
+
   }
 
   public void setDataSelection(boolean dataSelection) {
-    if (this.dataSelection != dataSelection) {
+    if (!Objects.equals(this.dataSelection, dataSelection)) {
       this.dataSelection = dataSelection;
       this.researchChanged = true;
     }
+
   }
 
   public void setSelectionTime(String selectionTime) {
-    if (!(this.selectionTime == null && selectionTime == "") && this.selectionTime != selectionTime) {
+    if (!Objects.equals(this.selectionTime, selectionTime)) {
       this.selectionTime = selectionTime;
       this.researchChanged = true;
     }
+
   }
 
   public void setSelectionResp(String selectionResp) {
-    if (!(this.selectionResp == null && selectionResp == "") && this.selectionResp != selectionResp) {
+    if (!Objects.equals(this.selectionResp, selectionResp)) {
       this.selectionResp = selectionResp;
       this.researchChanged = true;
     }
+
   }
 
   public void setSelectionSoftware(String selectionSoftware) {
-    if (!(this.selectionSoftware == null && selectionSoftware == "") && this.selectionSoftware != selectionSoftware) {
+    if (!Objects.equals(this.selectionSoftware, selectionSoftware)) {
       this.selectionSoftware = selectionSoftware;
       this.researchChanged = true;
     }
+
   }
 
   public void setSelectionCriteria(String selectionCriteria) {
-    if (!(this.selectionCriteria == null && selectionCriteria == "") && this.selectionCriteria != selectionCriteria) {
+    if (!Objects.equals(this.selectionCriteria, selectionCriteria)) {
       this.selectionCriteria = selectionCriteria;
       this.researchChanged = true;
     }
+
   }
 
   public void setStorageDuration(String storageDuration) {
-    if (!(this.storageDuration == null && storageDuration == "") && this.storageDuration != storageDuration) {
+    if (!Objects.equals(this.storageDuration, storageDuration)) {
       this.storageDuration = storageDuration;
       this.researchChanged = true;
     }
+
   }
 
   public void setDeleteProcedure(String deleteProcedure) {
-    if (!(this.deleteProcedure == null && deleteProcedure == "") && this.deleteProcedure != deleteProcedure) {
+    if (!Objects.equals(this.deleteProcedure, deleteProcedure)) {
       this.deleteProcedure = deleteProcedure;
       this.researchChanged = true;
     }
+
   }
 
   public void setMetaChanged(boolean metaChanged) {

@@ -27,7 +27,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.DmpRelTypeDAO;
+import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
@@ -141,8 +141,8 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired
   @Bean(name = "dmpRelTypeDAO")
-  public DmpRelTypeDAO getDataTypeDAO() {
-    return new DmpRelTypeDAO(getDataSource());
+  public FormTypesDAO getDataTypeDAO() {
+    return new FormTypesDAO(getDataSource());
   }
 
   @Autowired

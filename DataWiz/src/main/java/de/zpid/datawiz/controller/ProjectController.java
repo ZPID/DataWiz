@@ -34,7 +34,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.DmpRelTypeDAO;
+import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.StudyDAO;
@@ -46,6 +46,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.DelType;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.Roles;
 import de.zpid.datawiz.util.SavedState;
@@ -372,7 +373,7 @@ public class ProjectController {
    * @throws Exception
    */
   public static ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user, ProjectDAO projectDAO,
-      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, DmpRelTypeDAO dmpRelTypeDAO,
+      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, FormTypesDAO dmpRelTypeDAO,
       String call) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
@@ -403,9 +404,9 @@ public class ProjectController {
         pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
       } else if (call.equals("DMP")) {
-        pForm.setDataTypes(dmpRelTypeDAO.getAllActivDataTypes(true));
-        pForm.setCollectionModes(dmpRelTypeDAO.getAllActivCollectionModes(true));
-        pForm.setMetaPurposes(dmpRelTypeDAO.getAllActivMetaPurposes(true));
+        pForm.setDataTypes(dmpRelTypeDAO.getAllByType(true, DelType.datatype));
+        pForm.setCollectionModes(dmpRelTypeDAO.getAllByType(true, DelType.collectionmode));
+        pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));
       }
       return pForm;
     } else {
