@@ -33,12 +33,6 @@ public class DmpDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  /**
-   * 
-   * @param project
-   * @return
-   * @throws Exception
-   */
   public DmpDTO getByID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getByID [id: " + project.getId() + "]");
@@ -93,7 +87,75 @@ public class DmpDAO {
           dmp.setMetaMonitor(rs.getString("metaMonitor"));
           dmp.setMetaFormat(rs.getString("metaFormat"));
           // ***************** Data Sharing *****************
-
+          dmp.setReleaseObligation(rs.getBoolean("releaseObligation"));
+          dmp.setExpectedGroups(rs.getString("expectedGroups"));
+          dmp.setSearchableData(rs.getBoolean("searchableData"));
+          dmp.setExpectedUsage(rs.getString("expectedUsage"));
+          dmp.setPublStrategy(rs.getString("publStrategy"));
+          dmp.setAccessReasonAuthor(rs.getString("accessReasonAuthor"));
+          dmp.setNoAccessReason(rs.getString("noAccessReason"));
+          dmp.setNoAccessReasonOther(rs.getString("noAccessReasonOther"));
+          dmp.setDepositName(rs.getString("depositName"));
+          dmp.setTransferTime(rs.getString("transferTime"));
+          dmp.setSensitiveData(rs.getString("sensitiveData"));
+          dmp.setInitialUsage(rs.getString("initialUsage"));
+          dmp.setUsageRestriction(rs.getString("usageRestriction"));
+          dmp.setAccessCosts(rs.getBoolean("accessCosts"));
+          dmp.setAccessCostsTxt(rs.getString("accessCostsTxt"));
+          dmp.setAccessTermsImplementation(rs.getString("accessTermsImplementation"));
+          dmp.setClarifiedRights(rs.getBoolean("clarifiedRights"));
+          dmp.setClarifiedRightsTxt(rs.getString("clarifiedRightsTxt"));
+          dmp.setAcquisitionAgreement(rs.getBoolean("acquisitionAgreement"));
+          dmp.setUsedPID(rs.getString("usedPID"));
+          dmp.setUsedPIDTxt(rs.getString("usedPIDTxt"));
+          // ***************** Storage and infrastructure *****************
+          dmp.setStorageResponsible(rs.getString("storageResponsible"));
+          dmp.setStorageTechnologies(rs.getString("storageTechnologies"));
+          dmp.setStoragePlaces(rs.getString("storagePlaces"));
+          dmp.setStorageBackups(rs.getString("storageBackups"));
+          dmp.setStorageTransfer(rs.getString("storageTransfer"));
+          dmp.setStorageExpectedSize(rs.getString("storageExpectedSize"));
+          dmp.setStorageRequirements(rs.getBoolean("storageRequirements"));
+          dmp.setStorageRequirementsTxt(rs.getString("storageRequirementsTxt"));
+          dmp.setStorageSuccession(rs.getBoolean("storageSuccession"));
+          dmp.setStorageSuccessionTxt(rs.getString("storageSuccessionTxt"));
+          // ***************** Organization, management and policies *****************
+          dmp.setFrameworkNationality(rs.getString("frameworkNationality"));
+          dmp.setFrameworkNationalityTxt(rs.getString("frameworkNationalityTxt"));
+          dmp.setResponsibleUnit(rs.getString("responsibleUnit"));
+          dmp.setInvolvedInstitutions(rs.getString("involvedInstitutions"));
+          dmp.setInvolvedInformed(rs.getBoolean("involvedInformed"));
+          dmp.setContributionsDefined(rs.getBoolean("contributionsDefined"));
+          dmp.setContributionsDefinedTxt(rs.getString("contributionsDefinedTxt"));
+          dmp.setGivenConsent(rs.getBoolean("givenConsent"));
+          dmp.setManagementWorkflow(rs.getBoolean("managementWorkflow"));
+          dmp.setManagementWorkflowTxt(rs.getString("managementWorkflowTxt"));
+          dmp.setStaffDescription(rs.getBoolean("staffDescription"));
+          dmp.setStaffDescriptionTxt(rs.getString("staffDescriptionTxt"));
+          dmp.setFunderRequirements(rs.getString("funderRequirements"));
+          dmp.setProviderRequirements(rs.getString("providerRequirements"));
+          dmp.setRepoPolicies(rs.getString("repoPolicies"));
+          dmp.setRepoPoliciesResponsible(rs.getString("repoPoliciesResponsible"));
+          dmp.setPlanningAdherence(rs.getString("planningAdherence"));
+          // ***************** Ethical and legal aspects *****************
+          dmp.setDataProtection(rs.getBoolean("dataProtection"));
+          dmp.setProtectionRequirements(rs.getString("protectionRequirements"));
+          dmp.setConsentObtained(rs.getBoolean("consentObtained"));
+          dmp.setConsentObtainedTxt(rs.getString("consentObtainedTxt"));
+          dmp.setSharingConsidered(rs.getBoolean("sharingConsidered"));
+          dmp.setIrbApproval(rs.getBoolean("irbApproval"));
+          dmp.setIrbApprovalTxt(rs.getString("irbApprovalTxt"));
+          dmp.setSensitiveDataIncluded(rs.getBoolean("sensitiveDataIncluded"));
+          dmp.setSensitiveDataIncludedTxt(rs.getString("sensitiveDataIncludedTxt"));
+          dmp.setExternalCopyright(rs.getBoolean("externalCopyright"));
+          dmp.setExternalCopyrightTxt(rs.getString("externalCopyrightTxt"));
+          dmp.setInternalCopyright(rs.getBoolean("internalCopyright"));
+          dmp.setInternalCopyrightTxt(rs.getString("internalCopyrightTxt"));
+          // ***************** Costs *****************
+          dmp.setSpecificCosts(rs.getString("specificCosts"));
+          dmp.setSpecificCostsTxt(rs.getString("specificCostsTxt"));
+          dmp.setAriseCosts(rs.getString("ariseCosts"));
+          dmp.setBearCost(rs.getString("bearCost"));
           return dmp;
         }
         return null;
@@ -175,6 +237,76 @@ public class DmpDAO {
       }
     }
     return ret;
+  }
+
+  public int updateSharingData(DmpDTO dmp) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateSharingData for [id: " + dmp.getId() + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET releaseObligation = ?, expectedGroups = ?, searchableData = ?, expectedUsage = ?, "
+            + "publStrategy = ?, accessReasonAuthor = ?, noAccessReason = ?, noAccessReasonOther = ?, "
+            + "depositName = ?, transferTime = ?, sensitiveData= ?, initialUsage = ?, "
+            + "usageRestriction = ?, accessCosts = ?, accessCostsTxt = ?, accessTermsImplementation = ?, "
+            + "clarifiedRights = ?, clarifiedRightsTxt = ?, acquisitionAgreement = ?, usedPID = ?, "
+            + "usedPIDTxt = ? WHERE id = ?",
+        dmp.isReleaseObligation(), dmp.getExpectedGroups(), dmp.isSearchableData(), dmp.getExpectedUsage(),
+        dmp.getPublStrategy(), dmp.getAccessReasonAuthor(), dmp.getNoAccessReason(), dmp.getNoAccessReasonOther(),
+        dmp.getDepositName(), dmp.getTransferTime(), dmp.getSensitiveData(), dmp.getInitialUsage(),
+        dmp.getUsageRestriction(), dmp.isAccessCosts(), dmp.getAccessCostsTxt(), dmp.getAccessTermsImplementation(),
+        dmp.isClarifiedRights(), dmp.getClarifiedRightsTxt(), dmp.isAcquisitionAgreement(), dmp.getUsedPID(),
+        dmp.getUsedPIDTxt(), dmp.getId());
+  }
+
+  public int updateStorageData(DmpDTO dmp) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateStorageData for [id: " + dmp.getId() + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET storageResponsible = ?, storageTechnologies = ?, storagePlaces = ?, storageBackups = ?, "
+            + "storageTransfer = ?, storageExpectedSize = ?, storageRequirements = ?, storageRequirementsTxt = ?, "
+            + "storageSuccession = ?, storageSuccessionTxt = ? WHERE id = ?",
+        dmp.getStorageResponsible(), dmp.getStorageTechnologies(), dmp.getStoragePlaces(), dmp.getStorageBackups(),
+        dmp.getStorageTransfer(), dmp.getStorageExpectedSize(), dmp.isStorageRequirements(),
+        dmp.getStorageRequirementsTxt(), dmp.isStorageSuccession(), dmp.getStorageSuccessionTxt(), dmp.getId());
+  }
+
+  public int updateOrganizationData(DmpDTO dmp) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateOrganizationData for [id: " + dmp.getId() + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET frameworkNationality = ?, frameworkNationalityTxt = ?, responsibleUnit = ?, "
+            + "involvedInstitutions = ?, involvedInformed = ?, contributionsDefined = ?, "
+            + "contributionsDefinedTxt = ?, givenConsent = ?, managementWorkflow = ?, "
+            + "managementWorkflowTxt = ?, staffDescription = ?, staffDescriptionTxt = ?, "
+            + "funderRequirements = ?, providerRequirements = ?, repoPolicies = ?, "
+            + "repoPoliciesResponsible = ?, planningAdherence = ? " + "WHERE id = ?",
+        dmp.getFrameworkNationality(), dmp.getFrameworkNationalityTxt(), dmp.getResponsibleUnit(),
+        dmp.getInvolvedInstitutions(), dmp.isInvolvedInformed(), dmp.isContributionsDefined(),
+        dmp.getContributionsDefinedTxt(), dmp.isGivenConsent(), dmp.isManagementWorkflow(),
+        dmp.getManagementWorkflowTxt(), dmp.isStaffDescription(), dmp.getStaffDescriptionTxt(),
+        dmp.getFunderRequirements(), dmp.getProviderRequirements(), dmp.getRepoPolicies(),
+        dmp.getRepoPoliciesResponsible(), dmp.getPlanningAdherence(), dmp.getId());
+  }
+
+  public int updateEthicalData(DmpDTO dmp) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateEthicalData for [id: " + dmp.getId() + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET dataProtection = ?, protectionRequirements = ?, consentObtained = ?, consentObtainedTxt = ?, "
+            + "sharingConsidered = ?, irbApproval = ?, irbApprovalTxt = ?, sensitiveDataIncluded = ?, "
+            + "sensitiveDataIncludedTxt = ?, externalCopyright = ?, externalCopyrightTxt = ?, "
+            + "internalCopyright = ?, internalCopyrightTxt = ? WHERE id = ?",
+        dmp.isDataProtection(), dmp.getProtectionRequirements(), dmp.isConsentObtained(), dmp.getConsentObtainedTxt(),
+        dmp.isSharingConsidered(), dmp.isIrbApproval(), dmp.getIrbApprovalTxt(), dmp.isSensitiveDataIncluded(),
+        dmp.getSensitiveDataIncludedTxt(), dmp.isExternalCopyright(), dmp.getExternalCopyrightTxt(),
+        dmp.isInternalCopyright(), dmp.getInternalCopyrightTxt(), dmp.getId());
+  }
+
+  public int updateCostsData(DmpDTO dmp) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateCostsData for [id: " + dmp.getId() + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_dmp SET specificCosts = ?, specificCostsTxt = ?, ariseCosts = ?, bearCost= ? WHERE id = ?",
+        dmp.getSpecificCosts(), dmp.getSpecificCostsTxt(), dmp.getAriseCosts(), dmp.getBearCost(), dmp.getId());
   }
 
   public List<Integer> getDMPUsedDataTypes(BigInteger dmpid, DelType type) throws Exception {

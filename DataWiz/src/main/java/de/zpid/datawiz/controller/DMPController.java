@@ -108,6 +108,11 @@ public class DMPController {
         dmp.setAdminChanged(false);
         dmp.setResearchChanged(false);
         dmp.setMetaChanged(false);
+        dmp.setSharingChanged(false);
+        dmp.setStorageChanged(false);
+        dmp.setOrganizationChanged(false);
+        dmp.setEthicalChanged(false);
+        dmp.setCostsChanged(false);
       }
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
@@ -140,18 +145,43 @@ public class DMPController {
     }
     Boolean hasErrors = false;
     Boolean unChanged = true;
-    // check is AdminData Values have changed
+    // TODO testen ob nur berechtiger nutzer speichert + semaphore falls ein nutzer schon daran arbeitet!!!
+    // TODO Projektdaten speichern bzw. neues anlegen wenn noch nicht vorhanden!!!
     if (pForm.getDmp().isAdminChanged()) {
-      hasErrors = saveAdminData(pForm, bRes, DmpCategory.admin, DmpDTO.AdminVal.class);
+      hasErrors = saveDMPDataPart(pForm, bRes, DmpCategory.admin, DmpDTO.AdminVal.class);
       unChanged = false;
     }
     if (pForm.getDmp().isResearchChanged()) {
-      hasErrors = (saveAdminData(pForm, bRes, DmpCategory.research, DmpDTO.ResearchVal.class) || hasErrors) ? true
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.research, DmpDTO.ResearchVal.class) || hasErrors) ? true
           : false;
       unChanged = false;
     }
     if (pForm.getDmp().isMetaChanged()) {
-      hasErrors = (saveAdminData(pForm, bRes, DmpCategory.meta, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.meta, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
+      unChanged = false;
+    }
+    if (pForm.getDmp().isSharingChanged()) {
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.sharing, DmpDTO.SharingVal.class) || hasErrors) ? true
+          : false;
+      unChanged = false;
+    }
+    if (pForm.getDmp().isStorageChanged()) {
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.storage, DmpDTO.StorageVal.class) || hasErrors) ? true
+          : false;
+      unChanged = false;
+    }
+    if (pForm.getDmp().isOrganizationChanged()) {
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.organization, DmpDTO.OrganizationVal.class) || hasErrors)
+          ? true : false;
+      unChanged = false;
+    }
+    if (pForm.getDmp().isEthicalChanged()) {
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ethical, DmpDTO.EthicalVal.class) || hasErrors) ? true
+          : false;
+      unChanged = false;
+    }
+    if (pForm.getDmp().isCostsChanged()) {
+      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.costs, DmpDTO.CostsVal.class) || hasErrors) ? true : false;
       unChanged = false;
     }
     if (hasErrors || unChanged) {
@@ -160,7 +190,7 @@ public class DMPController {
     return "redirect:/dmp/" + pForm.getDmp().getId();
   }
 
-  private boolean saveAdminData(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
+  private boolean saveDMPDataPart(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
     BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
     int changed = 0;
     if (log.isDebugEnabled()) {
@@ -172,17 +202,49 @@ public class DMPController {
         switch (cat) {
         case admin:
           changed = dmpDAO.updateAdminData(pForm.getDmp());
+          if (changed > 0)
+            pForm.getDmp().setAdminChanged(false);
           break;
         case research:
           changed = (dmpDAO.updateResearchData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setResearchChanged(false);
           break;
         case meta:
           changed = (dmpDAO.updateMetaData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setMetaChanged(false);
+          break;
+        case sharing:
+          changed = (dmpDAO.updateSharingData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setSharingChanged(false);
+          break;
+        case storage:
+          changed = (dmpDAO.updateStorageData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setStorageChanged(false);
+          break;
+        case organization:
+          changed = (dmpDAO.updateOrganizationData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setOrganizationChanged(false);
+          break;
+        case ethical:
+          changed = (dmpDAO.updateEthicalData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setEthicalChanged(false);
+          break;
+        case costs:
+          changed = (dmpDAO.updateCostsData(pForm.getDmp()));
+          if (changed > 0)
+            pForm.getDmp().setCostsChanged(false);
           break;
         default:
           break;
         }
       } catch (Exception e) {
+        // TODO vernünftiger ausstieg bei dbs fehler
         log.warn("DMP not saved! DBS Error: " + e.getMessage());
         return true;
       }
@@ -201,20 +263,6 @@ public class DMPController {
       bRes.reject("globalErrors", messageSource.getMessage("dmp.edit." + cat.toString() + ".globalerror.save", null,
           LocaleContextHolder.getLocale()));
       return true;
-    } else {
-      switch (cat) {
-      case admin:
-        pForm.getDmp().setAdminChanged(false);
-        break;
-      case research:
-        pForm.getDmp().setResearchChanged(false);
-        break;
-      case meta:
-        pForm.getDmp().setMetaChanged(false);
-        break;
-      default:
-        break;
-      }
     }
     return false;
   }

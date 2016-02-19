@@ -52,7 +52,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "messageSource")
   public MessageSource resourceBundleMessageSource() {
     ResourceBundleMessageSource resolver = new ResourceBundleMessageSource();
-    resolver.setBasename("de.zpid.datawiz.properties.ApplicationResources");
+    resolver.setBasenames("de.zpid.datawiz.properties.ApplicationResources", "de.zpid.datawiz.properties.DMPResources");
     return resolver;
   }
 
