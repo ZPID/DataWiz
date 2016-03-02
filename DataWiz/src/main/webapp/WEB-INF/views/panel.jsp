@@ -12,6 +12,14 @@
       <c:url var="projectUrl" value="/project" />
       <sf:form action="${projectUrl}" commandName="CProjectForm" StyleClass="form-horizontal">
         <div class="panel-group" id="accordion">
+          <div class="panel">
+            <div class="row">
+              <div class="col-xs-10"></div>
+              <div class="col-xs-2">
+                <a href="${projectUrl}/" class="btn btn-success">neues Projekt anlegen</a>
+              </div>
+            </div>
+          </div>
           <c:forEach items="${CProjectForm}" var="form" varStatus="loop">
             <div
               class="panel <c:out value="${form.project.projectRole.type eq 'PROJECT_ADMIN' ? 'panel-primary' : 
@@ -103,6 +111,11 @@
                           </c:if>
                         </c:forEach>
                       </c:when>
+                      <c:otherwise>
+                        <fmt:parseDate value="${form.project.created}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
+                        <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy" var="strDate" />
+                        <s:message code="panel.created" arguments="${strDate}" htmlEscape="false" argumentSeparator=";" />
+                      </c:otherwise>
                     </c:choose>
                   </div>
                 </div>

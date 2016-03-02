@@ -4,14 +4,26 @@
   <div class="content-container">
     <%@ include file="templates/breadcrump.jsp"%>
     <%@ include file="templates/submenu.jsp"%>
-    <div class="content-padding">      
+    <div class="content-padding">
       <div class="page-header">
-        <h4>
-          <s:message code="project.edit.headline" />
-        </h4>
-        <div>
-          <s:message code="project.edit.info" />
-        </div>
+        <c:choose>
+          <c:when test="${empty ProjectForm.project.id}">
+            <h4>
+              <s:message code="project.create.headline" />
+            </h4>
+            <div>
+              <s:message code="project.create.info" />
+            </div>
+          </c:when>
+          <c:otherwise>
+            <h4>
+              <s:message code="project.edit.headline" />
+            </h4>
+            <div>
+              <s:message code="project.edit.info" />
+            </div>
+          </c:otherwise>
+        </c:choose>
       </div>
       <!-- Submenu -->
       <ul class="nav nav-tabs">

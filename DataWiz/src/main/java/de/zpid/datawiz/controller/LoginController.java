@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.EmailUtil;
-import de.zpid.datawiz.util.Roles;
 
 @Controller
 public class LoginController {

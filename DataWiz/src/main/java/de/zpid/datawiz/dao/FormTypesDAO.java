@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import de.zpid.datawiz.dto.FormTypesDTO;
-import de.zpid.datawiz.util.DelType;
+import de.zpid.datawiz.enumeration.DelType;
 
 public class FormTypesDAO {
 
@@ -31,7 +31,7 @@ public class FormTypesDAO {
 
   public List<FormTypesDTO> getAllByType(boolean activ, DelType type) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getAllByType");
+      log.debug("execute getAllByType [type=" + type.toString() + "]");
     String sql = "SELECT * FROM dw_formtypes WHERE dw_formtypes.active = ? AND dw_formtypes.type = ? ORDER BY dw_formtypes.sort";
     return jdbcTemplate.query(sql, new Object[] { activ, type.toString() }, new RowMapper<FormTypesDTO>() {
       public FormTypesDTO mapRow(ResultSet rs, int rowNum) throws SQLException {

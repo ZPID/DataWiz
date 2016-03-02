@@ -1,7 +1,11 @@
 package de.zpid.datawiz.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -10,8 +14,11 @@ import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
@@ -98,5 +105,30 @@ public class ProjectDAO {
     if (log.isDebugEnabled())
       log.debug("leaving findByID project: " + project);
     return project;
+  }
+
+  public int updateProject(ProjectDTO project) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute updateProject: " + project);
+    return this.jdbcTemplate.update("UPDATE dw_project SET name = ?, description = ? WHERE id = ?", project.getTitle(),
+        project.getDescription(), project.getId());
+  }
+
+  public int saveProject(ProjectDTO project) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute saveProject: " + project);
+    KeyHolder holder = new GeneratedKeyHolder();
+    final String stmt = "INSERT INTO dw_project (name, description, created) VALUES (?,?,?)";
+    this.jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+        ps.setString(1, project.getTitle());
+        ps.setString(2, project.getDescription());
+        ps.setString(3, LocalDateTime.now().toString());
+        return ps;
+      }
+    }, holder);
+    return (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
   }
 }

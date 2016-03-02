@@ -68,8 +68,8 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     DriverManagerDataSource dataSource = new DriverManagerDataSource();
     dataSource.setDriverClassName("com.mysql.jdbc.Driver");
     dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz");
-    dataSource.setUsername("root");
-    dataSource.setPassword("");
+    dataSource.setUsername("datawiz");
+    dataSource.setPassword("dwpw1!");
     return dataSource;
   }
 

@@ -1,4 +1,4 @@
-package de.zpid.datawiz.util;
+package de.zpid.datawiz.enumeration;
 
 public enum Roles {
   USER(1), ADMIN(2), PROJECT_ADMIN(3), PROJECT_READER(4), PROJECT_WRITER(5);

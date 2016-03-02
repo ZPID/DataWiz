@@ -12,8 +12,12 @@ public class ProjectDTO implements Serializable {
   private static final long serialVersionUID = -7148120591732205800L;
 
   private int id;
-  @NotNull
-  @NotBlank
+
+  public interface ProjectVal {
+  }
+
+  @NotNull(groups = ProjectVal.class)
+  @NotBlank(groups = ProjectVal.class)
   private String title;
   /**
    * Not the database ID - this is used for documentation and is not unique!

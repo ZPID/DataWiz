@@ -24,7 +24,7 @@ $tag_box = null;
 		        });
 		    $(this).scrollTop(0);
 		    // loading DMP Content - not nessesary on other pages!
-		    if (window.location.pathname.search("/dmp/") > 0) {
+		    if (window.location.pathname.search("/dmp") > 0) {
 		    	$("#dmpForm :input").prop("disabled", false);
 		    	setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
 			    showorHideDMPContent();
@@ -37,11 +37,11 @@ $tag_box = null;
 				    }
 			    });
 		    } // loading Project Content - not nessesary on other pages!
-		    else if (window.location.pathname.search("/project/") > 0) {
+		    else if (window.location.pathname.search("/project") > 0) {
 		    	setProjectSubmenu(null);
 			    startTagging();
 		    } // loading Panel Content - not nessesary on other pages!
-		    else if (window.location.pathname.search("/panel/") > 0) {
+		    else if (window.location.pathname.search("/panel") > 0) {
 			    startAccordion();
 		    }
 	    });

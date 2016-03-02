@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.RegexUtil;
-import de.zpid.datawiz.util.Roles;
 
 /**
  * 

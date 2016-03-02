@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
@@ -28,28 +29,31 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.FileDAO;
+import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.DelType;
+import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.FileUtil;
-import de.zpid.datawiz.util.Roles;
-import de.zpid.datawiz.util.SavedState;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
@@ -67,6 +71,8 @@ public class ProjectController {
   private FileDAO fileDAO;
   @Autowired
   private ContributorDAO contributorDAO;
+  @Autowired
+  private RoleDAO roleDAO;
   @Autowired
   private MessageSource messageSource;
 
@@ -93,6 +99,7 @@ public class ProjectController {
     if (log.isDebugEnabled()) {
       log.debug("execute createProject - GET");
     }
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project"));
     model.put("subnaviActive", "PROJECT");
     model.put("ProjectForm", createProjectForm());
     return "project";
@@ -134,6 +141,7 @@ public class ProjectController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project"));
     model.put("subnaviActive", "PROJECT");
     model.put("ProjectForm", pForm);
     return "project";
@@ -147,7 +155,7 @@ public class ProjectController {
    * @param model
    * @return
    */
-  @RequestMapping(value = "/{pid}", method = RequestMethod.POST)
+  @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
   public String saveProject(@Valid @ModelAttribute("ProjectForm") ProjectForm pForm, BindingResult bindingResult,
       ModelMap model, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
@@ -159,9 +167,37 @@ public class ProjectController {
       }
       return "project";
     }
-    redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
-    redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
-    return "redirect:/project/" + pForm.getProject().getId();
+    boolean error = false;
+    try {
+      UserDTO user = UserUtil.getCurrentUser();
+      if (pForm != null && pForm.getProject() != null && user != null) {
+        if (pForm.getProject().getId() <= 0) {
+          int chk = projectDAO.saveProject(pForm.getProject());
+          if (chk > 0) {
+            roleDAO.setRole(user.getId(), chk, Roles.PROJECT_ADMIN.toInt());
+            pForm.getProject().setId(chk);
+          } else {
+            model.put("saveState", SavedState.ERROR.toString());
+            error = true;
+          }
+        } else {
+          projectDAO.updateProject(pForm.getProject());
+        }
+      }
+    } catch (Exception e) {
+      log.error("Project saving not sucessful error:" + e.getMessage());
+      error = true;
+    }
+    if (error) {
+      //TODO vernünftige Fehlerausgabe
+      model.put("saveState", SavedState.ERROR.toString());
+      model.put("saveStateMsg", "fehler!!!!");
+      return "project";
+    } else {
+      redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS);
+      redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
+      return "redirect:/project/" + pForm.getProject().getId();
+    }
   }
 
   /**
@@ -213,7 +249,7 @@ public class ProjectController {
    * @return
    */
   @RequestMapping(value = { "/{pid}/upload" }, method = RequestMethod.POST)
-  public ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
+  public @ResponseBody ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
       @ModelAttribute("ProjectForm") ProjectForm pForm) {
     if (log.isDebugEnabled()) {
       log.debug("execute uploadFile");
@@ -245,7 +281,7 @@ public class ProjectController {
       }
     } catch (Exception e) {
       log.warn("Exception during file upload: " + e);
-      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>("{\"test\": \"test\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return new ResponseEntity<String>("{}", HttpStatus.OK);
   }
@@ -406,7 +442,7 @@ public class ProjectController {
       } else if (call.equals("DMP")) {
         pForm.setDataTypes(dmpRelTypeDAO.getAllByType(true, DelType.datatype));
         pForm.setCollectionModes(dmpRelTypeDAO.getAllByType(true, DelType.collectionmode));
-        pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));        
+        pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));
       }
       return pForm;
     } else {

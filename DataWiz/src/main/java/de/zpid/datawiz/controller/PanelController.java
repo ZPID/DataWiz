@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
@@ -25,10 +27,12 @@ import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.CustomUserDetails;
 
 @Controller
 @RequestMapping(value = "/panel")
+@SessionAttributes({ "breadcrumpList" })
 public class PanelController {
 
   @Autowired
@@ -75,6 +79,7 @@ public class PanelController {
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("panel"));
     model.put("CProjectForm", cpform);
     return "panel";
   }

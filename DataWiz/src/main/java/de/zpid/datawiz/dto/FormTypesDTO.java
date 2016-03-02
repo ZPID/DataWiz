@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
-import de.zpid.datawiz.util.DelType;
+import de.zpid.datawiz.enumeration.DelType;
 
 /**
  * Implementation of the MetaPorpose which are declared as DMP131in the excel meta data sheet.

@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.util.DelType;
+import de.zpid.datawiz.enumeration.DelType;
 
 public class DmpDAO {
 

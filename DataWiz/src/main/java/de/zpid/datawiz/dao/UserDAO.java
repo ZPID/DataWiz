@@ -17,7 +17,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.util.AccountState;
+import de.zpid.datawiz.enumeration.AccountState;
 
 public class UserDAO {
 

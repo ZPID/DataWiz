@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +27,12 @@ import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.DelType;
-import de.zpid.datawiz.util.DmpCategory;
+import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
@@ -74,7 +76,18 @@ public class DMPController {
       log.debug("execute createDMP - GET");
     }
     model.put("subnaviActive", "DMP");
-    model.put("ProjectForm", createProjectForm());
+    ProjectForm pForm = createProjectForm();
+    try {
+      pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.datatype));
+      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.collectionmode));
+      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp"));
+    model.put("subnaviActive", "DMP");
+    model.put("ProjectForm", pForm);
     return "dmp";
   }
 
@@ -132,6 +145,7 @@ public class DMPController {
       dmp = (DmpDTO) context.getBean("DmpDTO");
     }
     pForm.setDmp(dmp);
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp"));
     model.put("subnaviActive", "DMP");
     model.put("ProjectForm", pForm);
     return "dmp";
