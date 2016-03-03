@@ -322,6 +322,12 @@ public class DmpDAO {
     });
   }
 
+  public int insertNewDMP(BigInteger dmpid) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute insertNewDMP for project [id: " + dmpid + "]");
+    return this.jdbcTemplate.update("INSERT INTO dw_dmp (id) VALUES(?)", dmpid);
+  }
+
   private int deleteDMPUsedDataTypes(BigInteger dmpid, int ftid) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute deleteDMPUsedDataTypes for [dmpid: " + dmpid + " ftid: " + ftid + "]");
@@ -330,7 +336,7 @@ public class DmpDAO {
 
   private int insertDMPUsedDataTypes(BigInteger dmpid, int ftid) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute instert DMPUsedDataTypes for [dmpid: " + dmpid + " ftid: " + ftid + "]");
+      log.debug("execute insert DMPUsedDataTypes for [dmpid: " + dmpid + " ftid: " + ftid + "]");
     return this.jdbcTemplate.update("INSERT INTO dw_dmp_formtypes (dmpid, ftid) VALUES(?,?)", dmpid, ftid);
   }
 }

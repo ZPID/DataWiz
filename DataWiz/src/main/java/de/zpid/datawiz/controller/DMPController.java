@@ -1,7 +1,6 @@
 package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
-import java.util.LinkedList;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,13 @@ import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DmpDAO;
 import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dto.DmpDTO;
+import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DelType;
 import de.zpid.datawiz.enumeration.DmpCategory;
+import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
@@ -49,9 +51,11 @@ public class DMPController {
   @Autowired
   private DmpDAO dmpDAO;
   @Autowired
+  private RoleDAO roleDAO;
+  @Autowired
   private MessageSource messageSource;
   @Autowired
-  SmartValidator validator;
+  private SmartValidator validator;
 
   private static final Logger log = Logger.getLogger(DMPController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
@@ -151,56 +155,88 @@ public class DMPController {
     return "dmp";
   }
 
-  @RequestMapping(value = "/{pid}", method = RequestMethod.POST)
-  public String saveDMP(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+  @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
+  public String saveDMP(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes) {
     if (log.isDebugEnabled()) {
       log.debug("execute saveDMP - POST");
     }
     Boolean hasErrors = false;
     Boolean unChanged = true;
+    validator.validate(pForm, bRes, ProjectDTO.ProjectVal.class);
+    if (bRes.hasErrors() || pForm.getProject() == null || pForm.getProject().getTitle().isEmpty()) {
+      if (log.isInfoEnabled()) {
+        log.info("bindingResult has Errors = ProjectName not given!");
+      }
+      hasErrors = true;
+    }
+    if (ProjectController.saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
+      bRes.reject("globalErrors",
+          messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
+      hasErrors = true;
+    }
+
+    if (pForm.getDmp() != null
+        && (pForm.getDmp().getId() == null || pForm.getDmp().getId().compareTo(BigInteger.ZERO) <= 0)) {
+      try {
+        int chk = dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
+        if (chk <= 0)
+          hasErrors = true;
+        else
+          pForm.getDmp().setId(BigInteger.valueOf(pForm.getProject().getId()));
+      } catch (Exception e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
+
     // TODO testen ob nur berechtiger nutzer speichert + semaphore falls ein nutzer schon daran arbeitet!!!
     // TODO Projektdaten speichern bzw. neues anlegen wenn noch nicht vorhanden!!!
-    if (pForm.getDmp().isAdminChanged()) {
-      hasErrors = saveDMPDataPart(pForm, bRes, DmpCategory.admin, DmpDTO.AdminVal.class);
-      unChanged = false;
-    }
-    if (pForm.getDmp().isResearchChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.research, DmpDTO.ResearchVal.class) || hasErrors) ? true
-          : false;
-      unChanged = false;
-    }
-    if (pForm.getDmp().isMetaChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.meta, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
-      unChanged = false;
-    }
-    if (pForm.getDmp().isSharingChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.sharing, DmpDTO.SharingVal.class) || hasErrors) ? true
-          : false;
-      unChanged = false;
-    }
-    if (pForm.getDmp().isStorageChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.storage, DmpDTO.StorageVal.class) || hasErrors) ? true
-          : false;
-      unChanged = false;
-    }
-    if (pForm.getDmp().isOrganizationChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.organization, DmpDTO.OrganizationVal.class) || hasErrors)
-          ? true : false;
-      unChanged = false;
-    }
-    if (pForm.getDmp().isEthicalChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ethical, DmpDTO.EthicalVal.class) || hasErrors) ? true
-          : false;
-      unChanged = false;
-    }
-    if (pForm.getDmp().isCostsChanged()) {
-      hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.costs, DmpDTO.CostsVal.class) || hasErrors) ? true : false;
-      unChanged = false;
+    if (!hasErrors) {
+      if (pForm.getDmp().isAdminChanged()) {
+        hasErrors = saveDMPDataPart(pForm, bRes, DmpCategory.admin, DmpDTO.AdminVal.class);
+        unChanged = false;
+      }
+      if (pForm.getDmp().isResearchChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.research, DmpDTO.ResearchVal.class) || hasErrors) ? true
+            : false;
+        unChanged = false;
+      }
+      if (pForm.getDmp().isMetaChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.meta, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
+        unChanged = false;
+      }
+      if (pForm.getDmp().isSharingChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.sharing, DmpDTO.SharingVal.class) || hasErrors) ? true
+            : false;
+        unChanged = false;
+      }
+      if (pForm.getDmp().isStorageChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.storage, DmpDTO.StorageVal.class) || hasErrors) ? true
+            : false;
+        unChanged = false;
+      }
+      if (pForm.getDmp().isOrganizationChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.organization, DmpDTO.OrganizationVal.class) || hasErrors)
+            ? true : false;
+        unChanged = false;
+      }
+      if (pForm.getDmp().isEthicalChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ethical, DmpDTO.EthicalVal.class) || hasErrors) ? true
+            : false;
+        unChanged = false;
+      }
+      if (pForm.getDmp().isCostsChanged()) {
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.costs, DmpDTO.CostsVal.class) || hasErrors) ? true
+            : false;
+        unChanged = false;
+      }
     }
     if (hasErrors || unChanged) {
       return "dmp";
     }
+    redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS);
+    redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
     return "redirect:/dmp/" + pForm.getDmp().getId();
   }
 

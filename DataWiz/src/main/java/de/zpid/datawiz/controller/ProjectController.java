@@ -8,11 +8,9 @@ import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,6 +74,8 @@ public class ProjectController {
   private RoleDAO roleDAO;
   @Autowired
   private MessageSource messageSource;
+  @Autowired
+  private SmartValidator validator;
 
   private static final Logger log = Logger.getLogger(ProjectController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
@@ -156,40 +157,20 @@ public class ProjectController {
    * @return
    */
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
-  public String saveProject(@Valid @ModelAttribute("ProjectForm") ProjectForm pForm, BindingResult bindingResult,
+  public String saveProject(@ModelAttribute("ProjectForm") ProjectForm pForm, BindingResult bindingResult,
       ModelMap model, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute saveProject()");
     }
+    validator.validate(pForm, bindingResult, ProjectDTO.ProjectVal.class);
     if (bindingResult.hasErrors()) {
       if (log.isInfoEnabled()) {
         log.info("bindingResult has Errors " + bindingResult.getAllErrors().toString());
       }
       return "project";
     }
-    boolean error = false;
-    try {
-      UserDTO user = UserUtil.getCurrentUser();
-      if (pForm != null && pForm.getProject() != null && user != null) {
-        if (pForm.getProject().getId() <= 0) {
-          int chk = projectDAO.saveProject(pForm.getProject());
-          if (chk > 0) {
-            roleDAO.setRole(user.getId(), chk, Roles.PROJECT_ADMIN.toInt());
-            pForm.getProject().setId(chk);
-          } else {
-            model.put("saveState", SavedState.ERROR.toString());
-            error = true;
-          }
-        } else {
-          projectDAO.updateProject(pForm.getProject());
-        }
-      }
-    } catch (Exception e) {
-      log.error("Project saving not sucessful error:" + e.getMessage());
-      error = true;
-    }
-    if (error) {
-      //TODO vernünftige Fehlerausgabe
+    if (saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
+      // TODO vernünftige Fehlerausgabe
       model.put("saveState", SavedState.ERROR.toString());
       model.put("saveStateMsg", "fehler!!!!");
       return "project";
@@ -399,6 +380,33 @@ public class ProjectController {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  public static boolean saveOrUpdateProject(ProjectForm pForm, ProjectDAO projectDAO, RoleDAO roleDAO) {
+    boolean error = false;
+    try {
+      UserDTO user = UserUtil.getCurrentUser();
+      if (pForm != null && pForm.getProject() != null && user != null) {
+        if (pForm.getProject().getId() <= 0) {
+          int chk = projectDAO.saveProject(pForm.getProject());
+          if (chk > 0) {
+            roleDAO.setRole(user.getId(), chk, Roles.PROJECT_ADMIN.toInt());
+            pForm.getProject().setId(chk);
+          } else {
+            error = true;
+          }
+        } else {
+          projectDAO.updateProject(pForm.getProject());
+        }
+      } else {
+        error = true;
+      }
+      UserUtil.getCurrentUser().setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
+    } catch (Exception e) {
+      log.error("Project saving not sucessful error:" + e.getMessage());
+      error = true;
+    }
+    return error;
   }
 
   /**
