@@ -440,17 +440,19 @@ public class ProjectController {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
             + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
       }
-      pForm.setProject(pdto);
-      pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
-      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+      pForm.setProject(pdto);      
       if (call == null || call.isEmpty() || call.equals("PROJECT")) {
         pForm.setFiles(fileDAO.getProjectFiles(pdto));
         pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
+        pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
+        pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
       } else if (call.equals("DMP")) {
         pForm.setDataTypes(dmpRelTypeDAO.getAllByType(true, DelType.datatype));
         pForm.setCollectionModes(dmpRelTypeDAO.getAllByType(true, DelType.collectionmode));
         pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));
+        pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+      } else if (call.equals("ACCESS")) {
       }
       return pForm;
     } else {

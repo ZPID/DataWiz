@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**")
-        .access("hasRole('ADMIN')").antMatchers("/panel/**", "/user/**", "/project/**" , "/dmp/**")
+        .access("hasRole('ADMIN')").antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**")
         .access("hasRole('USER') or hasRole('ADMIN')").and().csrf().and().formLogin().defaultSuccessUrl("/panel")
         .loginPage("/login").usernameParameter("email").passwordParameter("password").and().rememberMe()
         .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400)

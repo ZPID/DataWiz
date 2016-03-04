@@ -47,8 +47,8 @@ textarea {
   content: "";
 }
 
-[type="checkbox"] ~ label:AFTER{
-  content:"";
+[type="checkbox"] ~ label:AFTER {
+  content: "";
 }
 
 .clean_label:AFTER {
@@ -75,6 +75,12 @@ textarea {
   font-size: 1.2em;
   width: 1.4em;
   color: #286090;
+}
+
+.chkboxbtn {
+  text-align: left;
+  white-space: normal;
+  width: 100%;
 }
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/

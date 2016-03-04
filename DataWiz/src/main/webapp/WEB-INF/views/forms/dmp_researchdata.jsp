@@ -27,7 +27,7 @@
               <s:message code="dmp.edit.existingData.option2" />
             </sf:option>
             <sf:option value="noSearch">
-              <s:message code="dmp.edit.existingData.option2" />
+              <s:message code="dmp.edit.existingData.option3" />
             </sf:option>
           </sf:select>
           <s:message code="dmp.edit.existingData.help" var="appresmess" />
@@ -57,14 +57,14 @@
               <div class="col-sm-4">
                 <c:choose>
                   <c:when test="${dtype.id == 20}">
-                    <label class="btn btn-default" style="width: 100%; text-align: left;"> <sf:checkbox path="dmp.usedDataTypes"
-                        value="${dtype.id}" onchange="switchViewIfChecked('selectOtherDataTypes');" id="selectOtherDataTypes" /> <s:message
+                    <label class="btn btn-default chkboxbtn"> <sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}"
+                        onchange="switchViewIfChecked('selectOtherDataTypes');" id="selectOtherDataTypes" /> <s:message
                         text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
                     </label>
                   </c:when>
                   <c:otherwise>
-                    <label class="btn btn-default" style="width: 100%; text-align: left;"> <sf:checkbox path="dmp.usedDataTypes"
-                        value="${dtype.id}" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
+                    <label class="btn btn-default chkboxbtn"> <sf:checkbox path="dmp.usedDataTypes" value="${dtype.id}" /> <s:message
+                        text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
                     </label>
                   </c:otherwise>
                 </c:choose>
@@ -102,14 +102,13 @@
                     <c:if test="${dtype.investPresent}">
                       <c:choose>
                         <c:when test="${dtype.id == 1}">
-                          <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox
-                              path="dmp.usedCollectionModes" value="${dtype.id}" onchange="switchViewIfChecked('selectCollectionModesIP')"
-                              id="selectCollectionModesIP" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                          <label class="btn btn-default chkboxbtn"><sf:checkbox path="dmp.usedCollectionModes" value="${dtype.id}"
+                              onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" /> <s:message
+                              text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
                         </c:when>
                         <c:otherwise>
-                          <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox
-                              path="dmp.usedCollectionModes" value="${dtype.id}" /> <s:message
-                              text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                          <label class="btn btn-default chkboxbtn"><sf:checkbox path="dmp.usedCollectionModes" value="${dtype.id}" />
+                            <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
                         </c:otherwise>
                       </c:choose>
                     </c:if>
@@ -263,14 +262,10 @@
       </div>
     </li>
     <!-- storageDuration -->
-    <li class="list-group-item">
-      <s:message text="storageDuration" var="dmp_var_name" />
-      <%@ include file="../templates/textarea.jsp"%>    
+    <li class="list-group-item"><s:message text="storageDuration" var="dmp_var_name" /> <%@ include file="../templates/textarea.jsp"%>
     </li>
-        <!-- deleteProcedure -->
-    <li class="list-group-item">
-      <s:message text="deleteProcedure" var="dmp_var_name" />
-      <%@ include file="../templates/textarea.jsp"%>    
+    <!-- deleteProcedure -->
+    <li class="list-group-item"><s:message text="deleteProcedure" var="dmp_var_name" /> <%@ include file="../templates/textarea.jsp"%>
     </li>
   </ul>
 </div>

@@ -34,13 +34,30 @@ public class RoleDAO {
     this.jdbcTemplate.update("INSERT INTO dw_user_roles (user_id, role_id, project_id) VALUES (?,?,?)", userid, roleid,
         (projectid > 0) ? projectid : null);
   }
-  
+
   public List<UserRoleDTO> getRolesByUserID(int id) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getRolesByUserID for userid: " + id);
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
         + "WHERE user_id  = ?";
     return this.jdbcTemplate.query(sql, new Object[] { id }, new RowMapper<UserRoleDTO>() {
+      public UserRoleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
+        role.setRoleId(rs.getInt("id"));
+        role.setProjectId(rs.getInt("project_id"));
+        role.setUserId(rs.getInt("user_id"));
+        role.setType(rs.getString("type"));
+        return role;
+      }
+    });
+  }
+
+  public List<UserRoleDTO> getRolesByUserIDAndProjectID(int uid, int pid) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute getRolesByUserID for [userid: " + uid + " projectid: " + pid + "]");
+    String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
+        + "WHERE user_id  = ? AND project_id = ?";
+    return this.jdbcTemplate.query(sql, new Object[] { uid, pid }, new RowMapper<UserRoleDTO>() {
       public UserRoleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
         role.setRoleId(rs.getInt("id"));

@@ -18,7 +18,7 @@
           <div class="form-group">
             <div class="col-sm-12">
               <c:forEach items="${ProjectForm.metaPurposes}" var="dtype">
-                <label class="btn btn-default col-sm-12" style="text-align: left;"><sf:checkbox
+                <label class="btn btn-default col-sm-12 chkboxbtn" ><sf:checkbox
                     path="dmp.selectedMetaPurposes" value="${dtype.id}" /> <s:message
                     text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /></label>
               </c:forEach>
