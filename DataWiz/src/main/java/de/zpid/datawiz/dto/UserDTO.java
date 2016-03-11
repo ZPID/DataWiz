@@ -1,6 +1,7 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ public class UserDTO implements Serializable {
   private String homepage;
   @Size(min = 0, max = 250)
   private String street;
-//  @Pattern(regexp = RegexUtil.onlyDigits + RegexUtil.size0to10)
+  // @Pattern(regexp = RegexUtil.onlyDigits + RegexUtil.size0to10)
   private int zip;
   @Size(min = 0, max = 250)
   private String city;
@@ -56,7 +57,7 @@ public class UserDTO implements Serializable {
   private String state;
   @Size(min = 0, max = 250)
   private String country;
-//  @Pattern(regexp = RegexUtil.regexORCID)
+  // @Pattern(regexp = RegexUtil.regexORCID)
   private String orcid;
 
   private String account_state;
@@ -267,23 +268,22 @@ public class UserDTO implements Serializable {
   public void setActivationCode(String activationCode) {
     this.activationCode = activationCode;
   }
-  
+
   /**
    * 
    * @param role
    * @param pid
    * @return
    */
-  public boolean hasProjectRole(Roles role, String pid){
+  public boolean hasProjectRole(Roles role, String pid) {
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
       for (UserRoleDTO tmp : this.globalRoles) {
-       if (tmp.getProjectId() == Integer.parseInt(pid) && tmp.getType().equals(role.name()))
-         return true;
+        if (tmp.getProjectId().compareTo(new BigInteger(pid)) == 0 && tmp.getType().equals(role.name()))
+          return true;
       }
     }
     return false;
   }
-  
 
   /**
    * 

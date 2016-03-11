@@ -37,8 +37,7 @@ public class ContributorDAO {
       log.debug("execute getByProject for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
     String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
         + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
-        + (withStudy ? ""
-            : "dw_study_contributors.study_id IS NULL AND dw_study_contributors.study_version IS NULL AND ")
+        + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ")
         + (withPrimary ? "" : "dw_contributors.primaryContributor IS FALSE AND ")
         + "dw_study_contributors.project_id = ? ORDER BY dw_contributors.id DESC";
     List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { project.getId() },
@@ -48,7 +47,6 @@ public class ContributorDAO {
             contri.setId(rs.getInt("id"));
             contri.setProjectId(rs.getInt("project_id"));
             contri.setStudyId(rs.getInt("study_id"));
-            contri.setStudyVersion(rs.getInt("study_version"));
             contri.setTitle(rs.getString("title"));
             contri.setFirstName(rs.getString("first_name"));
             contri.setLastName(rs.getString("last_name"));
@@ -80,7 +78,6 @@ public class ContributorDAO {
               contri.setId(rs.getInt("id"));
               contri.setProjectId(rs.getInt("project_id"));
               contri.setStudyId(rs.getInt("study_id"));
-              contri.setStudyVersion(rs.getInt("study_version"));
               contri.setTitle(rs.getString("title"));
               contri.setFirstName(rs.getString("first_name"));
               contri.setLastName(rs.getString("last_name"));

@@ -293,9 +293,7 @@
           <s:message code="project.edit.metadata.info" />
         </div>
         <c:forEach items="${ProjectForm.studies}" var="cstud">
-          <c:forEach items="${cstud}" var="stud">
-            <b>${stud.id} - ${stud.version} - ${stud.title}<br /></b>
-          </c:forEach>
+            <b>${cstud.id} - ${cstud.title}<br /></b>
         </c:forEach>
 
 

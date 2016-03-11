@@ -18,9 +18,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
+import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
@@ -40,6 +40,8 @@ public class AccessController {
   private ProjectDAO projectDAO;
   @Autowired
   private RoleDAO roleDao;
+  @Autowired
+  private StudyDAO studyDAO;
 
   private static final Logger log = Logger.getLogger(AccessController.class);
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
@@ -71,9 +73,9 @@ public class AccessController {
     }
     try {
       pForm = ProjectController.getProjectForm(pForm, pid.get().toString(), user, this.projectDAO, null, null, null,
-          null, null, "ACCESS");
+          this.studyDAO, null, "ACCESS");
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
-        pForm.setSharedUser(userDAO.findByProject(pForm.getProject()));
+        pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject()));
         for (UserDTO tuser : pForm.getSharedUser()) {
           tuser.setGlobalRoles(roleDao.getRolesByUserIDAndProjectID(tuser.getId(), pid.get()));
         }

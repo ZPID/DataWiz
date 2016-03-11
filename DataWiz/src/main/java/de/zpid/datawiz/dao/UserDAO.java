@@ -69,16 +69,18 @@ public class UserDAO {
     return user;
   }
 
-  public List<UserDTO> findByProject(ProjectDTO project) throws Exception {
+  public List<UserDTO> findGroupedByProject(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute findByProject for project [id: " + project.getId() + " title:" + project.getTitle() + "]");
-    String sql = "SELECT dw_user.*, dw_roles.type FROM dw_user "
+      log.debug("execute findGroupedByProject for project [id: " + project.getId() + " title:" + project.getTitle() + "]");
+    String sql = "SELECT dw_user.* FROM dw_user "
         + "LEFT JOIN dw_user_roles ON dw_user.id = dw_user_roles.user_id "
-        + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id " + "WHERE dw_user_roles.project_id = ?";
+        + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
+        + "WHERE dw_user_roles.project_id = ? GROUP BY dw_user_roles.user_id";
     return this.jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<UserDTO>() {
       public UserDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         UserDTO contact = (UserDTO) context.getBean("UserDTO");
         contact.setId(rs.getInt("id"));
+        contact.setTitle(rs.getString("title"));
         contact.setFirstName(rs.getString("first_name"));
         contact.setLastName(rs.getString("last_name"));
         contact.setEmail(rs.getString("email"));

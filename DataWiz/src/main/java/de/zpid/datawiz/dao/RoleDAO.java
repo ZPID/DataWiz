@@ -1,5 +1,6 @@
 package de.zpid.datawiz.dao;
 
+import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -42,12 +43,7 @@ public class RoleDAO {
         + "WHERE user_id  = ?";
     return this.jdbcTemplate.query(sql, new Object[] { id }, new RowMapper<UserRoleDTO>() {
       public UserRoleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
-        role.setRoleId(rs.getInt("id"));
-        role.setProjectId(rs.getInt("project_id"));
-        role.setUserId(rs.getInt("user_id"));
-        role.setType(rs.getString("type"));
-        return role;
+        return setRole(rs);
       }
     });
   }
@@ -59,14 +55,21 @@ public class RoleDAO {
         + "WHERE user_id  = ? AND project_id = ?";
     return this.jdbcTemplate.query(sql, new Object[] { uid, pid }, new RowMapper<UserRoleDTO>() {
       public UserRoleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
-        role.setRoleId(rs.getInt("id"));
-        role.setProjectId(rs.getInt("project_id"));
-        role.setUserId(rs.getInt("user_id"));
-        role.setType(rs.getString("type"));
-        return role;
+        return setRole(rs);
       }
     });
+  }
+
+  private UserRoleDTO setRole(ResultSet rs) throws SQLException {
+    UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
+    role.setRoleId(new BigInteger(rs.getBigDecimal("id").toString()));
+    role.setStudyId(
+        rs.getBigDecimal("study_id") != null ? new BigInteger(rs.getBigDecimal("study_id").toString()) : null);
+    role.setProjectId(
+        rs.getBigDecimal("project_id") != null ? new BigInteger(rs.getBigDecimal("project_id").toString()) : null);
+    role.setUserId(new BigInteger(rs.getBigDecimal("user_id").toString()));
+    role.setType(rs.getString("type"));
+    return role;
   }
 
 }

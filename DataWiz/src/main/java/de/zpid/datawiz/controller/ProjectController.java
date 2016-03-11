@@ -430,16 +430,15 @@ public class ProjectController {
             + " tries to get access to project:" + pid + " without having the permissions to read");
       }
       ProjectDTO pdto = projectDAO.findByIdWithRole(pid, String.valueOf(user.getId()));
-      if (pdto == null || pdto.getId() <= 0 || pdto.getProjectRole() == null
-          || pdto.getProjectRole().getUserId() <= 0) {
+      if (pdto == null || pdto.getId() <= 0 ) {
         throw new DataWizException(
-            "Project or project_role is empty for user=" + user.getEmail() + " and project=" + pid);
+            "Project is empty for user=" + user.getEmail() + " and project=" + pid);
       }
       // 2nd - security access check!
-      if (user.getId() != pdto.getProjectRole().getUserId()) {
-        throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
-            + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
-      }
+      // if (user.getId() != pdto.getProjectRole().getUserId()) {
+      // throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
+      // + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
+      // }
       pForm.setProject(pdto);      
       if (call == null || call.isEmpty() || call.equals("PROJECT")) {
         pForm.setFiles(fileDAO.getProjectFiles(pdto));
@@ -453,6 +452,7 @@ public class ProjectController {
         pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));
         pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
       } else if (call.equals("ACCESS")) {
+        pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
       }
       return pForm;
     } else {

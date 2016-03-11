@@ -29,7 +29,6 @@ public class ProjectDTO implements Serializable {
   private String copyright;
   private String description;
   private LocalDateTime created;
-  private UserRoleDTO projectRole;
 
   public int getId() {
     return id;
@@ -61,14 +60,6 @@ public class ProjectDTO implements Serializable {
 
   public void setCreated(LocalDateTime created) {
     this.created = created;
-  }
-
-  public UserRoleDTO getProjectRole() {
-    return projectRole;
-  }
-
-  public void setProjectRole(UserRoleDTO projectRole) {
-    this.projectRole = projectRole;
   }
 
   public String getProjectIdent() {
@@ -115,7 +106,7 @@ public class ProjectDTO implements Serializable {
   public String toString() {
     return "ProjectDTO [id=" + id + ", title=" + title + ", projectIdent=" + projectIdent + ", funding=" + funding
         + ", grantNumber=" + grantNumber + ", thesaurusType=" + thesaurusType + ", copyright=" + copyright
-        + ", created=" + created + ", projectRole=" + projectRole + "]";
+        + ", created=" + created  + "]";
   }
 
 }

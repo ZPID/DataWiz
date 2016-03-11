@@ -14,17 +14,35 @@
         <div class="panel-group" id="accordion">
           <div class="panel">
             <div class="row">
-              <div class="col-xs-10"></div>
-              <div class="col-xs-2">
+              <div class="col-xs-9"></div>
+              <div class="col-xs-3">
                 <a href="${projectUrl}/" class="btn btn-success">neues Projekt anlegen</a>
               </div>
             </div>
           </div>
           <c:forEach items="${CProjectForm}" var="form" varStatus="loop">
-            <div
-              class="panel <c:out value="${form.project.projectRole.type eq 'PROJECT_ADMIN' ? 'panel-primary' : 
-                                             form.project.projectRole.type eq 'PROJECT_WRITER' ? 'panel-info' : 
-                                             form.project.projectRole.type eq 'PROJECT_READER' ? 'panel-warning' : 'panel-danger'}"/> ">
+            <c:set var="pRole" value="" />
+            <c:forEach items="${principal.user.globalRoles}" var="cRole">
+              <c:if test="${form.project.id eq cRole.projectId}">
+                <c:choose>
+                  <c:when
+                    test="${empty pRole && !(pRole eq 'PROJECT_ADMIN' && pRole eq 'PROJECT_WRITER' && pRole eq 'PROJECT_READER') && 
+                                (cRole.type eq 'DS_READER' || cRole.type eq 'DS_WRITER')}">
+                    <c:set var="pRole" value="panel-success" />
+                  </c:when>
+                  <c:when test="${empty pRole && cRole.type eq 'PROJECT_ADMIN'}">
+                    <c:set var="pRole" value="panel-primary" />
+                  </c:when>
+                  <c:when test="${empty pRole && cRole.type eq 'PROJECT_WRITER'}">
+                    <c:set var="pRole" value="panel-info" />
+                  </c:when>
+                  <c:when test="${empty pRole && cRole.type eq 'PROJECT_READER'}">
+                    <c:set var="pRole" value="panel-warning" />
+                  </c:when>
+                </c:choose>
+              </c:if>
+            </c:forEach>
+            <div class="panel <c:out value="${pRole}"/> ">
               <div class="panel-heading accordion-toggle" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
                 data-parent="#accordion">
                 <div class="row">
@@ -52,14 +70,12 @@
               <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
                 <div class="panel-body">
                   <div class="list-group">
-                    <c:forEach items="${form.studies[0]}" var="study" varStatus="loop2">
+                    <c:forEach items="${form.studies}" var="study" varStatus="loop2">
                       <div class="list-group-item ">
                         <h4 class="list-group-item-heading">
                           <c:out value="${study.title}"></c:out>
                         </h4>
                         <c:out value="${study.id}"></c:out>
-                        <br />
-                        <c:out value="${study.version}"></c:out>
                         <br />
                         <c:out value="${study.timestamp}"></c:out>
                       </div>
@@ -94,10 +110,10 @@
                   </div>
                   <div class="col-xs-6">
                     <c:choose>
-                      <c:when test="${not empty form.studies[0]&& form.studies[0].size() > 0 }">
+                      <c:when test="${not empty form.studies[0] && form.studies.size() > 0 }">
                         <c:forEach items="${form.sharedUser}" var="user">
-                          <c:if test="${user.id eq form.studies[0][0].lastUserId}">
-                            <fmt:formatDate value="${form.studies[0][0].timestamp}" pattern="dd/MM/yyyy HH:mm" var="strDate" />
+                          <c:if test="${user.id eq form.studies[0].lastUserId}">
+                            <fmt:formatDate value="${form.studies[0].timestamp}" pattern="dd/MM/yyyy HH:mm" var="strDate" />
                             <c:choose>
                               <c:when test="${not empty user.lastName && not empty user.firstName}">
                                 <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"

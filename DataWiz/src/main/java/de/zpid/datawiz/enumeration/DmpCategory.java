@@ -1,5 +1,5 @@
 package de.zpid.datawiz.enumeration;
 
 public enum DmpCategory {
-  admin, research, meta, sharing, storage, organization, ethical, costs
+  ADMIN, RESEARCH, META, SHARING, STORAGE, ORGANIZATION, ETHICAL, COSTS
 }

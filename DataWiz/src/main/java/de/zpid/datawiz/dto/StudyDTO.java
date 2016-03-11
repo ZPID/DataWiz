@@ -7,7 +7,6 @@ public class StudyDTO implements Serializable {
 
   private static final long serialVersionUID = -7300213401850684971L;
   private int id;
-  private int version;
   private int projectId;
   private int lastUserId;
   private boolean master;
@@ -20,14 +19,6 @@ public class StudyDTO implements Serializable {
 
   public void setId(int id) {
     this.id = id;
-  }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
   }
 
   public int getProjectId() {
@@ -80,7 +71,6 @@ public class StudyDTO implements Serializable {
     result = prime * result + projectId;
     result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
     result = prime * result + ((title == null) ? 0 : title.hashCode());
-    result = prime * result + version;
     return result;
   }
 
@@ -111,15 +101,13 @@ public class StudyDTO implements Serializable {
         return false;
     } else if (!title.equals(other.title))
       return false;
-    if (version != other.version)
-      return false;
     return true;
   }
 
   @Override
   public String toString() {
-    return "StudyDTO [id=" + id + ", version=" + version + ", projectId=" + projectId + ", lastUserId=" + lastUserId
-        + ", master=" + master + ", timestamp=" + timestamp + ", title=" + title + "]";
+    return "StudyDTO [id=" + id + ", projectId=" + projectId + ", lastUserId=" + lastUserId + ", master=" + master
+        + ", timestamp=" + timestamp + ", title=" + title + "]";
   }
 
 }

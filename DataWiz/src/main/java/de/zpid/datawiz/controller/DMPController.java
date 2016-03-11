@@ -194,40 +194,40 @@ public class DMPController {
     // TODO Projektdaten speichern bzw. neues anlegen wenn noch nicht vorhanden!!!
     if (!hasErrors) {
       if (pForm.getDmp().isAdminChanged()) {
-        hasErrors = saveDMPDataPart(pForm, bRes, DmpCategory.admin, DmpDTO.AdminVal.class);
+        hasErrors = saveDMPDataPart(pForm, bRes, DmpCategory.ADMIN, DmpDTO.AdminVal.class);
         unChanged = false;
       }
       if (pForm.getDmp().isResearchChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.research, DmpDTO.ResearchVal.class) || hasErrors) ? true
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.RESEARCH, DmpDTO.ResearchVal.class) || hasErrors) ? true
             : false;
         unChanged = false;
       }
       if (pForm.getDmp().isMetaChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.meta, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.META, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
         unChanged = false;
       }
       if (pForm.getDmp().isSharingChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.sharing, DmpDTO.SharingVal.class) || hasErrors) ? true
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.SHARING, DmpDTO.SharingVal.class) || hasErrors) ? true
             : false;
         unChanged = false;
       }
       if (pForm.getDmp().isStorageChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.storage, DmpDTO.StorageVal.class) || hasErrors) ? true
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.STORAGE, DmpDTO.StorageVal.class) || hasErrors) ? true
             : false;
         unChanged = false;
       }
       if (pForm.getDmp().isOrganizationChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.organization, DmpDTO.OrganizationVal.class) || hasErrors)
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ORGANIZATION, DmpDTO.OrganizationVal.class) || hasErrors)
             ? true : false;
         unChanged = false;
       }
       if (pForm.getDmp().isEthicalChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ethical, DmpDTO.EthicalVal.class) || hasErrors) ? true
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ETHICAL, DmpDTO.EthicalVal.class) || hasErrors) ? true
             : false;
         unChanged = false;
       }
       if (pForm.getDmp().isCostsChanged()) {
-        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.costs, DmpDTO.CostsVal.class) || hasErrors) ? true
+        hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.COSTS, DmpDTO.CostsVal.class) || hasErrors) ? true
             : false;
         unChanged = false;
       }
@@ -250,42 +250,42 @@ public class DMPController {
     if (!bResTmp.hasErrors()) {
       try {
         switch (cat) {
-        case admin:
+        case ADMIN:
           changed = dmpDAO.updateAdminData(pForm.getDmp());
           if (changed > 0)
             pForm.getDmp().setAdminChanged(false);
           break;
-        case research:
+        case RESEARCH:
           changed = (dmpDAO.updateResearchData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setResearchChanged(false);
           break;
-        case meta:
+        case META:
           changed = (dmpDAO.updateMetaData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setMetaChanged(false);
           break;
-        case sharing:
+        case SHARING:
           changed = (dmpDAO.updateSharingData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setSharingChanged(false);
           break;
-        case storage:
+        case STORAGE:
           changed = (dmpDAO.updateStorageData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setStorageChanged(false);
           break;
-        case organization:
+        case ORGANIZATION:
           changed = (dmpDAO.updateOrganizationData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setOrganizationChanged(false);
           break;
-        case ethical:
+        case ETHICAL:
           changed = (dmpDAO.updateEthicalData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setEthicalChanged(false);
           break;
-        case costs:
+        case COSTS:
           changed = (dmpDAO.updateCostsData(pForm.getDmp()));
           if (changed > 0)
             pForm.getDmp().setCostsChanged(false);

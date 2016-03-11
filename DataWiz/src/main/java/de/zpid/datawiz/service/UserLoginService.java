@@ -27,7 +27,8 @@ public class UserLoginService implements UserDetailsService {
     try {
       user = userDao.findByMail(email, true);
     } catch (Exception e) {
-      log.error("DBS error during loadUserByUsername for email : " + email + " Message:" + e);
+      log.error("DBS error during loadUserByUsername for email : " + email + " Message:" );
+      e.printStackTrace();
     }
     if (user == null)
       throw new UsernameNotFoundException("User not found email=" + email);

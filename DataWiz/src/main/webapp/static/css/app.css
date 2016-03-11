@@ -120,7 +120,7 @@ textarea {
     margin: auto;
   }
   .login-card {
-    width: 60%;
+    width: 80%;
     margin: auto;
   }
   .login-form {
@@ -129,11 +129,11 @@ textarea {
   /* Content */
   .content-container {
     background-color: white;
-    width: 90%;
+    width: 100%;
     margin: auto;
   }
   .content-padding {
-    padding: 4%;
+    padding: 2%;
   }
   #mainWrapper .form-group {
     padding: 0% 1% 0% 1%;

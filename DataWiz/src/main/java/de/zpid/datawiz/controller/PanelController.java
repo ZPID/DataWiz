@@ -68,9 +68,9 @@ public class PanelController {
         for (ProjectDTO pdto : cpdto) {
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
-          pform.setStudies(studyDAO.getLatestStudyVersionsByProjectID(pdto));
+          pform.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
           pform.setContributors(contributorDAO.getByProject(pdto, false, true));
-          pform.setSharedUser(userDAO.findByProject(pdto));
+          pform.setSharedUser(userDAO.findGroupedByProject(pdto));
           cpform.add(pform);
         }
       }

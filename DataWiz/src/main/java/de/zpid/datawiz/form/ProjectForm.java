@@ -21,7 +21,7 @@ public class ProjectForm implements Serializable {
   @Valid
   private List<UserDTO> sharedUser;
   @Valid
-  private List<List<StudyDTO>> studies;
+  private List<StudyDTO> studies;
   @Valid
   private List<ContributorDTO> contributors;
   @Valid
@@ -57,12 +57,13 @@ public class ProjectForm implements Serializable {
     this.sharedUser = list;
   }
 
-  public List<List<StudyDTO>> getStudies() {
+  public List<StudyDTO> getStudies() {
     return studies;
   }
 
-  public void setStudies(List<List<StudyDTO>> studies) {
+  public void setStudies(List<StudyDTO> studies) {
     this.studies = studies;
+
   }
 
   public List<ContributorDTO> getContributors() {
