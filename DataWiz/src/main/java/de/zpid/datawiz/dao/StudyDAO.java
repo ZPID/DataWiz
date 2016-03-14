@@ -31,8 +31,8 @@ public class StudyDAO {
 
   public List<StudyDTO> getAllStudiesByProjectId(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getLatestStudyVersionsByProjectID for project [id: " + project.getId() + " name: "
-          + project.getTitle() + "]");
+      log.debug("execute getAllStudiesByProjectId for project [id: " + project.getId() + " name: " + project.getTitle()
+          + "]");
     String sql = "SELECT * FROM dw_study WHERE dw_study.project_id = ?";
     return jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<StudyDTO>() {
       public StudyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {

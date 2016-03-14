@@ -50,8 +50,10 @@
                                     <s:message code="roles.${role.type}" arguments="${studyTitle}" />
                                   </div>
                                   <div class="col-sm-1">
-                                    <c:if test="${!(role.userId eq principal.user.id)}">
-                                      <a href="" class="label label-danger" style="vertical-align: bottom;">x</a>
+                                    <c:if
+                                      test="${!(role.userId eq principal.user.id) && principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id)}">
+                                      <a href="<c:url value="/access/${ProjectForm.project.id}/delete/${role.roleId}/${role.studyId}" />"
+                                        class="label label-danger" style="vertical-align: bottom;">x</a>
                                     </c:if>
                                   </div>
                                 </div>

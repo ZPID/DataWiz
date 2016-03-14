@@ -71,9 +71,9 @@ public class UserDAO {
 
   public List<UserDTO> findGroupedByProject(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute findGroupedByProject for project [id: " + project.getId() + " title:" + project.getTitle() + "]");
-    String sql = "SELECT dw_user.* FROM dw_user "
-        + "LEFT JOIN dw_user_roles ON dw_user.id = dw_user_roles.user_id "
+      log.debug(
+          "execute findGroupedByProject for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
+    String sql = "SELECT dw_user.* FROM dw_user " + "LEFT JOIN dw_user_roles ON dw_user.id = dw_user_roles.user_id "
         + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
         + "WHERE dw_user_roles.project_id = ? GROUP BY dw_user_roles.user_id";
     return this.jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<UserDTO>() {

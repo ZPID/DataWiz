@@ -98,4 +98,14 @@ public class AccessController {
     model.put("subnaviActive", "ACCESS");
     return "access";
   }
+
+  @RequestMapping(value = { "/{projectId}/delete/{roleId}",
+      "/{projectId}/delete/{roleId}/{studyId}" }, method = RequestMethod.GET)
+  public String deleteRole(@PathVariable int roleId, @PathVariable int projectId,
+      @PathVariable Optional<Integer> studyId, RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute deleteRole ");
+    }
+    return "redirect:/access/" + projectId;
+  }
 }

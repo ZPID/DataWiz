@@ -25,7 +25,7 @@ $tag_box = null;
 		    $(this).scrollTop(0);
 		    // loading DMP Content - not nessesary on other pages!
 		    if (window.location.pathname.search("/dmp") > 0) {
-		    	$("#dmpForm :input").prop("disabled", false);
+		    	$("#dmpForm :input").prop("disabled", true);
 		    	setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
 			    showorHideDMPContent();
 			    $("#dmpForm").trackChanges();

@@ -129,6 +129,7 @@ public class ProjectController {
       pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
           this.studyDAO, null, "PROJECT");
     } catch (Exception e) {
+      //TODO 
       log.warn(e.getMessage());
       String redirectMessage = "";
       if (e instanceof DataWizException) {

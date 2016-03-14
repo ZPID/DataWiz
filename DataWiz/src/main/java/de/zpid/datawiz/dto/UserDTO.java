@@ -275,10 +275,19 @@ public class UserDTO implements Serializable {
    * @param pid
    * @return
    */
-  public boolean hasProjectRole(Roles role, String pid) {
+  public boolean hasProjectRole(Object rol, String pid) {
+    Roles role = null;
+    if (rol instanceof Roles) {
+      role = (Roles) rol;
+    } else if (rol instanceof String) {
+      role = Roles.valueOf((String) rol);
+    } else {
+      return false;
+    }
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
       for (UserRoleDTO tmp : this.globalRoles) {
-        if (tmp.getProjectId().compareTo(new BigInteger(pid)) == 0 && tmp.getType().equals(role.name()))
+        if (tmp.getProjectId() != null && tmp.getProjectId().compareTo(new BigInteger(pid)) == 0
+            && tmp.getType().equals(role.name()))
           return true;
       }
     }
@@ -290,7 +299,15 @@ public class UserDTO implements Serializable {
    * @param role
    * @return
    */
-  public boolean hasRole(Roles role) {
+  public boolean hasRole(Object rol) {
+    Roles role = null;
+    if (rol instanceof Roles) {
+      role = (Roles) rol;
+    } else if (rol instanceof String) {
+      role = Roles.valueOf((String) rol);
+    } else {
+      return false;
+    }
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
       for (UserRoleDTO tmp : this.globalRoles) {
         if (tmp.getType().equals(role.name()))
