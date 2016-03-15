@@ -45,6 +45,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.DelType;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
@@ -129,7 +130,7 @@ public class ProjectController {
       pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
           this.studyDAO, null, "PROJECT");
     } catch (Exception e) {
-      //TODO 
+      // TODO
       log.warn(e.getMessage());
       String redirectMessage = "";
       if (e instanceof DataWizException) {
@@ -391,7 +392,9 @@ public class ProjectController {
         if (pForm.getProject().getId() <= 0) {
           int chk = projectDAO.saveProject(pForm.getProject());
           if (chk > 0) {
-            roleDAO.setRole(user.getId(), chk, Roles.PROJECT_ADMIN.toInt());
+            roleDAO.setRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
+            roleDAO.setRole(
+                new UserRoleDTO(Roles.PROJECT_ADMIN.toInt(), user.getId(), chk, 0, Roles.PROJECT_ADMIN.name()));
             pForm.getProject().setId(chk);
           } else {
             error = true;
@@ -431,16 +434,15 @@ public class ProjectController {
             + " tries to get access to project:" + pid + " without having the permissions to read");
       }
       ProjectDTO pdto = projectDAO.findByIdWithRole(pid, String.valueOf(user.getId()));
-      if (pdto == null || pdto.getId() <= 0 ) {
-        throw new DataWizException(
-            "Project is empty for user=" + user.getEmail() + " and project=" + pid);
+      if (pdto == null || pdto.getId() <= 0) {
+        throw new DataWizException("Project is empty for user=" + user.getEmail() + " and project=" + pid);
       }
       // 2nd - security access check!
       // if (user.getId() != pdto.getProjectRole().getUserId()) {
       // throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
       // + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
       // }
-      pForm.setProject(pdto);      
+      pForm.setProject(pdto);
       if (call == null || call.isEmpty() || call.equals("PROJECT")) {
         pForm.setFiles(fileDAO.getProjectFiles(pdto));
         pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));

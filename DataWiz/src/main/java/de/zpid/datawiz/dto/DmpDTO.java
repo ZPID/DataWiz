@@ -23,7 +23,7 @@ public class DmpDTO implements Serializable {
   private static final long serialVersionUID = 1989300324143602401L;
 
   /** The DMP ID - Is similar to the Project ID because only 1 DMP for a project. */
-  private BigInteger id;
+  private long id;
 
   // ***************** Administrative Data *****************
   /** checks if the fields of the Administrative Data has changed, this is used for particular saving. */
@@ -521,7 +521,7 @@ public class DmpDTO implements Serializable {
    *
    * @return id
    */
-  public BigInteger getId() {
+  public long getId() {
     return id;
   }
 
@@ -1575,7 +1575,7 @@ public class DmpDTO implements Serializable {
    * @param id
    *          -> this.id
    */
-  public void setId(BigInteger id) {
+  public void setId(long id) {
     this.id = id;
   }
 

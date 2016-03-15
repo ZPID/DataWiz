@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.EmailUtil;
 
@@ -190,7 +191,7 @@ public class LoginController {
       if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
           && user.getActivationCode().equals(activationCode)) {
         userDao.activateUserAccount(user);
-        roleDao.setRole(user.getId(), 0, Roles.USER.toInt());
+        roleDao.setRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
       }
     } catch (Exception e) {
       log.warn("DBS error during user registration: " + e);
@@ -209,7 +210,8 @@ public class LoginController {
   @RequestMapping(value = "/Access_Denied")
   public String accessDeniedPage(ModelMap model) {
     if (log.isDebugEnabled()) {
-      log.debug("execute accessDeniedPage() - " + request.getHeader("referer") + " - " + request.getAuthType() + " - " + request.getPathInfo());
+      log.debug("execute accessDeniedPage() - " + request.getHeader("referer") + " - " + request.getAuthType() + " - "
+          + request.getPathInfo());
     }
     try {
       model.addAttribute("user", getPrincipal());

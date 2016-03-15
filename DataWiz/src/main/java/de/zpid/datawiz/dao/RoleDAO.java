@@ -1,6 +1,5 @@
 package de.zpid.datawiz.dao;
 
-import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -29,14 +28,15 @@ public class RoleDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public void setRole(int userid, int projectid, int roleid) {
+  public void setRole(UserRoleDTO role) {
     if (log.isDebugEnabled())
-      log.debug("execute activateUserAccount userid: " + userid);
-    this.jdbcTemplate.update("INSERT INTO dw_user_roles (user_id, role_id, project_id) VALUES (?,?,?)", userid, roleid,
-        (projectid > 0) ? projectid : null);
+      log.debug("execute activateUserAccount userid: " + role.getUserId());
+    this.jdbcTemplate.update("INSERT INTO dw_user_roles (user_id, role_id, project_id, study_id) VALUES (?,?,?,?)",
+        role.getUserId(), role.getRoleId(), (role.getProjectId() > 0) ? role.getProjectId() : null,
+        (role.getStudyId() > 0) ? role.getStudyId() : null);
   }
 
-  public List<UserRoleDTO> getRolesByUserID(int id) throws Exception {
+  public List<UserRoleDTO> getRolesByUserID(long id) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getRolesByUserID for userid: " + id);
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
@@ -48,7 +48,18 @@ public class RoleDAO {
     });
   }
 
-  public List<UserRoleDTO> getRolesByUserIDAndProjectID(int uid, int pid) throws Exception {
+  public List<String> getAllProjectRoles() throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute getAllProjectRoles");
+    String sql = "SELECT type FROM dw_roles WHERE type != 'USER' AND type != 'ADMIN' AND type != 'REL_ROLE'";
+    return this.jdbcTemplate.query(sql, new Object[] {}, new RowMapper<String>() {
+      public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getString("type");
+      }
+    });
+  }
+
+  public List<UserRoleDTO> getRolesByUserIDAndProjectID(long uid, long pid) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getRolesByUserID for [userid: " + uid + " projectid: " + pid + "]");
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
@@ -62,12 +73,10 @@ public class RoleDAO {
 
   private UserRoleDTO setRole(ResultSet rs) throws SQLException {
     UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
-    role.setRoleId(new BigInteger(rs.getBigDecimal("id").toString()));
-    role.setStudyId(
-        rs.getBigDecimal("study_id") != null ? new BigInteger(rs.getBigDecimal("study_id").toString()) : null);
-    role.setProjectId(
-        rs.getBigDecimal("project_id") != null ? new BigInteger(rs.getBigDecimal("project_id").toString()) : null);
-    role.setUserId(new BigInteger(rs.getBigDecimal("user_id").toString()));
+    role.setRoleId(rs.getLong("id"));
+    role.setStudyId(rs.getLong("study_id"));
+    role.setProjectId(rs.getLong("project_id"));
+    role.setUserId(rs.getLong("user_id"));
     role.setType(rs.getString("type"));
     return role;
   }

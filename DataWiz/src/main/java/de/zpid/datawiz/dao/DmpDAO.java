@@ -42,7 +42,7 @@ public class DmpDAO {
       public DmpDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (rs.next()) {
           DmpDTO dmp = (DmpDTO) context.getBean("DmpDTO");
-          dmp.setId(new BigInteger(rs.getBigDecimal("id").toString()));
+          dmp.setId(rs.getLong("id"));
           // ***************** Administrative Data *****************
           dmp.setProjectAims(rs.getString("projectAims"));
           dmp.setProjectSponsors(rs.getString("projectSponsors"));
@@ -309,13 +309,13 @@ public class DmpDAO {
         dmp.getSpecificCosts(), dmp.getSpecificCostsTxt(), dmp.getAriseCosts(), dmp.getBearCost(), dmp.getId());
   }
 
-  public List<Integer> getDMPUsedDataTypes(BigInteger dmpid, DelType type) throws Exception {
+  public List<Integer> getDMPUsedDataTypes(long l, DelType type) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getDMPUsedDataTypes for dmp [id: " + dmpid + " type: " + type.toString() + "]");
+      log.debug("execute getDMPUsedDataTypes for dmp [id: " + l + " type: " + type.toString() + "]");
     String sql = "SELECT dw_dmp_formtypes.ftid FROM dw_dmp_formtypes "
         + "LEFT JOIN dw_formtypes ON dw_dmp_formtypes.ftid = dw_formtypes.id "
         + "WHERE dw_dmp_formtypes.dmpid = ? AND dw_formtypes.type = ? ";
-    return jdbcTemplate.query(sql, new Object[] { dmpid, type.toString() }, new RowMapper<Integer>() {
+    return jdbcTemplate.query(sql, new Object[] { l, type.toString() }, new RowMapper<Integer>() {
       public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getInt("ftid");
       }
@@ -328,15 +328,15 @@ public class DmpDAO {
     return this.jdbcTemplate.update("INSERT INTO dw_dmp (id) VALUES(?)", dmpid);
   }
 
-  private int deleteDMPUsedDataTypes(BigInteger dmpid, int ftid) throws Exception {
+  private int deleteDMPUsedDataTypes(long l, int ftid) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute deleteDMPUsedDataTypes for [dmpid: " + dmpid + " ftid: " + ftid + "]");
-    return this.jdbcTemplate.update("DELETE FROM dw_dmp_formtypes WHERE dmpid = ? AND ftid = ?", dmpid, ftid);
+      log.debug("execute deleteDMPUsedDataTypes for [dmpid: " + l + " ftid: " + ftid + "]");
+    return this.jdbcTemplate.update("DELETE FROM dw_dmp_formtypes WHERE dmpid = ? AND ftid = ?", l, ftid);
   }
 
-  private int insertDMPUsedDataTypes(BigInteger dmpid, int ftid) throws Exception {
+  private int insertDMPUsedDataTypes(long l, int ftid) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute insert DMPUsedDataTypes for [dmpid: " + dmpid + " ftid: " + ftid + "]");
-    return this.jdbcTemplate.update("INSERT INTO dw_dmp_formtypes (dmpid, ftid) VALUES(?,?)", dmpid, ftid);
+      log.debug("execute insert DMPUsedDataTypes for [dmpid: " + l + " ftid: " + ftid + "]");
+    return this.jdbcTemplate.update("INSERT INTO dw_dmp_formtypes (dmpid, ftid) VALUES(?,?)", l, ftid);
   }
 }

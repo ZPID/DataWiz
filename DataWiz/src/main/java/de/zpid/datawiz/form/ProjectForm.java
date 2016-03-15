@@ -7,11 +7,12 @@ import javax.validation.Valid;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
-import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.FileDTO;
+import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
 
 public class ProjectForm implements Serializable {
 
@@ -37,6 +38,9 @@ public class ProjectForm implements Serializable {
   private List<FormTypesDTO> collectionModes;
   private List<FormTypesDTO> metaPurposes;
 
+  /** ACCESS DATA */
+  private List<String> roleList;
+  private UserRoleDTO newRole;
   // ViewHelper
   private int delPos;
   private String pagePosi;
@@ -148,6 +152,24 @@ public class ProjectForm implements Serializable {
 
   public void setPagePosi(String pagePosi) {
     this.pagePosi = pagePosi;
+  }
+
+  public List<String> getRoleList() {
+    return roleList;
+  }
+
+  public void setRoleList(List<String> roleList) {
+    this.roleList = roleList;
+
+  }
+
+  public UserRoleDTO getNewRole() {
+    return newRole;
+  }
+
+  public void setNewRole(UserRoleDTO newRole) {
+    this.newRole = newRole;
+
   }
 
 }

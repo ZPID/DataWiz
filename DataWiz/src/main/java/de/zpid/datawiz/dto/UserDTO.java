@@ -21,7 +21,7 @@ public class UserDTO implements Serializable {
 
   private static final long serialVersionUID = -4743208731231501718L;
 
-  private int id;
+  private long id;
   @NotNull
   @Pattern(regexp = RegexUtil.validEmail)
   private String email;
@@ -69,11 +69,11 @@ public class UserDTO implements Serializable {
   private String password_retyped;
   private boolean checkedGTC;
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -275,8 +275,17 @@ public class UserDTO implements Serializable {
    * @param pid
    * @return
    */
-  public boolean hasProjectRole(Object rol, String pid) {
+  public boolean hasProjectRole(Object rol, String pidS) {
     Roles role = null;
+    long pid = 0;
+    if (pidS == null || pidS.isEmpty()) {
+      return false;
+    }
+    try {
+      pid = Long.parseLong(pidS);
+    } catch (Exception e) {
+      return false;
+    }
     if (rol instanceof Roles) {
       role = (Roles) rol;
     } else if (rol instanceof String) {
@@ -286,8 +295,7 @@ public class UserDTO implements Serializable {
     }
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
       for (UserRoleDTO tmp : this.globalRoles) {
-        if (tmp.getProjectId() != null && tmp.getProjectId().compareTo(new BigInteger(pid)) == 0
-            && tmp.getType().equals(role.name()))
+        if (tmp.getProjectId() > 0 && tmp.getProjectId() == pid && tmp.getType().equals(role.name()))
           return true;
       }
     }
@@ -322,6 +330,8 @@ public class UserDTO implements Serializable {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((account_state == null) ? 0 : account_state.hashCode());
+    result = prime * result + ((activationCode == null) ? 0 : activationCode.hashCode());
+    result = prime * result + (checkedGTC ? 1231 : 1237);
     result = prime * result + ((city == null) ? 0 : city.hashCode());
     result = prime * result + ((comments == null) ? 0 : comments.hashCode());
     result = prime * result + ((country == null) ? 0 : country.hashCode());
@@ -331,7 +341,7 @@ public class UserDTO implements Serializable {
     result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
     result = prime * result + ((globalRoles == null) ? 0 : globalRoles.hashCode());
     result = prime * result + ((homepage == null) ? 0 : homepage.hashCode());
-    result = prime * result + id;
+    result = prime * result + (int) (id ^ (id >>> 32));
     result = prime * result + ((institution == null) ? 0 : institution.hashCode());
     result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
     result = prime * result + ((orcid == null) ? 0 : orcid.hashCode());
@@ -359,6 +369,13 @@ public class UserDTO implements Serializable {
       if (other.account_state != null)
         return false;
     } else if (!account_state.equals(other.account_state))
+      return false;
+    if (activationCode == null) {
+      if (other.activationCode != null)
+        return false;
+    } else if (!activationCode.equals(other.activationCode))
+      return false;
+    if (checkedGTC != other.checkedGTC)
       return false;
     if (city == null) {
       if (other.city != null)

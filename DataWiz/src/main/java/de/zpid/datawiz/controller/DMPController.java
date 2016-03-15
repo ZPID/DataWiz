@@ -118,7 +118,7 @@ public class DMPController {
       pForm = ProjectController.getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, null, null, null,
           this.formTypeDAO, "DMP");
       dmp = dmpDAO.getByID(pForm.getProject());
-      if (dmp != null && dmp.getId().compareTo(BigInteger.ZERO) > 0) {
+      if (dmp != null && dmp.getId() > 0) {
         dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
         dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.collectionmode));
         dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.metaporpose));
@@ -145,7 +145,7 @@ public class DMPController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    if (dmp == null || dmp.getId() == null || dmp.getId().compareTo(BigInteger.ZERO) <= 0) {
+    if (dmp == null || dmp.getId() <= 0) {
       dmp = (DmpDTO) context.getBean("DmpDTO");
     }
     pForm.setDmp(dmp);
@@ -176,14 +176,13 @@ public class DMPController {
       hasErrors = true;
     }
 
-    if (pForm.getDmp() != null
-        && (pForm.getDmp().getId() == null || pForm.getDmp().getId().compareTo(BigInteger.ZERO) <= 0)) {
+    if (pForm.getDmp() != null && (pForm.getDmp().getId() <= 0)) {
       try {
         int chk = dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
         if (chk <= 0)
           hasErrors = true;
         else
-          pForm.getDmp().setId(BigInteger.valueOf(pForm.getProject().getId()));
+          pForm.getDmp().setId(pForm.getProject().getId());
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

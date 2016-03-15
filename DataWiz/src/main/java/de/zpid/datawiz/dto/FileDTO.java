@@ -11,9 +11,9 @@ public class FileDTO implements Serializable {
 
   private static final long serialVersionUID = 8870297487540539010L;
 
-  private int id;
-  private int projectId;
-  private int userId;
+  private long id;
+  private long projectId;
+  private long userId;
 
   private String fileName;
   private String contentType;
@@ -98,27 +98,27 @@ public class FileDTO implements Serializable {
     this.fileSize = fileSize;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
-  public int getProjectId() {
+  public long getProjectId() {
     return projectId;
   }
 
-  public void setProjectId(int projectId) {
+  public void setProjectId(long projectId) {
     this.projectId = projectId;
   }
 
-  public int getUserId() {
+  public long getUserId() {
     return userId;
   }
 
-  public void setUserId(int userId) {
+  public void setUserId(long userId) {
     this.userId = userId;
   }
 

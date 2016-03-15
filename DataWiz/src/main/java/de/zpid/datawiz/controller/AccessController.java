@@ -21,6 +21,8 @@ import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
@@ -57,8 +59,8 @@ public class AccessController {
   }
 
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
-  public String handleGETWithParam(@PathVariable Optional<Integer> pid,
-      @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model, RedirectAttributes redirectAttributes) {
+  public String handleGETWithParam(@PathVariable Optional<Integer> pid, ModelMap model,
+      RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute createProject - GET");
     }
@@ -71,11 +73,13 @@ public class AccessController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
+    ProjectForm pForm = createProjectForm();
     try {
       pForm = ProjectController.getProjectForm(pForm, pid.get().toString(), user, this.projectDAO, null, null, null,
           this.studyDAO, null, "ACCESS");
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject()));
+        pForm.setRoleList(roleDao.getAllProjectRoles());
         for (UserDTO tuser : pForm.getSharedUser()) {
           tuser.setGlobalRoles(roleDao.getRolesByUserIDAndProjectID(tuser.getId(), pid.get()));
         }
@@ -96,16 +100,70 @@ public class AccessController {
     }
     model.put("breadcrumpList", BreadCrumpUtil.generateBC("access"));
     model.put("subnaviActive", "ACCESS");
+    model.put("ProjectForm", pForm);
     return "access";
   }
 
-  @RequestMapping(value = { "/{projectId}/delete/{roleId}",
-      "/{projectId}/delete/{roleId}/{studyId}" }, method = RequestMethod.GET)
-  public String deleteRole(@PathVariable int roleId, @PathVariable int projectId,
+  @RequestMapping(value = { "/{projectId}/delete/{userId}/{roleId}",
+      "/{projectId}/delete/{userId}/{roleId}/{studyId}" })
+  public String deleteRole(@PathVariable int userId, @PathVariable int roleId, @PathVariable int projectId,
       @PathVariable Optional<Integer> studyId, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
-      log.debug("execute deleteRole ");
+      log.debug("execute deleteRole [Role:" + roleId + " User:" + userId + " Project:" + projectId + "]");
     }
+
     return "redirect:/access/" + projectId;
+  }
+
+  @RequestMapping(value = { "/{projectId}/deleteUser/{userId}" })
+  public String deleteUserfromProject(@PathVariable int userId, @PathVariable int projectId,
+      RedirectAttributes redirectAttributes) {
+    if (log.isDebugEnabled()) {
+      log.debug("execute deleteUserfromProject ");
+    }
+
+    return "redirect:/access/" + projectId;
+  }
+
+  @RequestMapping(value = { "/{pid}" }, params = { "addRole" })
+  public String addRoleToProjectUser(@PathVariable int pid, @ModelAttribute("ProjectForm") ProjectForm pForm,
+      RedirectAttributes redirectAttributes) {
+    Boolean err = false;
+    if (pForm != null && pForm.getNewRole() != null) {
+      UserRoleDTO newRole = pForm.getNewRole();
+      if (log.isDebugEnabled()) {
+        log.debug("execute addRoleToProjectUser [User:" + newRole.getUserId() + " Project:" + pid + " Type:"
+            + newRole.getType() + " Study: " + newRole.getStudyId() + "]");
+      }
+      newRole.setProjectId(pid);
+      if (newRole.getType() != null && !newRole.getType().isEmpty() && !newRole.getType().equals("0")) {
+        newRole.setRoleId(Roles.valueOf(newRole.getType()).toInt());
+      } else {
+        err = true;
+      }
+      UserDTO user = null;
+      if (newRole.getUserId() > 0) {
+        try {
+          user = userDAO.findById(newRole.getUserId());
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        if (user != null && user.getGlobalRoles() != null) {
+          for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
+            if (roleTmp.equals(newRole)) {
+              err = true;
+              break;
+            }
+          }
+        }
+      } else {
+        err = true;
+      }
+    } else {
+      err = true;
+    }
+
+    return err ? "access" : "redirect:/access/" + pid;
   }
 }

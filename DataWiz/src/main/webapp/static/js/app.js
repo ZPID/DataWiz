@@ -11,7 +11,7 @@ $tag_box = null;
 (function($, window, document, undefined) {
 	$(document).ready(
 	    function() {
-		    // set the project submenu after reload or refresh	    	
+		    // set the project submenu after reload or refresh
 		    $(window).bind(
 		        'scroll',
 		        function() {
@@ -25,8 +25,8 @@ $tag_box = null;
 		    $(this).scrollTop(0);
 		    // loading DMP Content - not nessesary on other pages!
 		    if (window.location.pathname.search("/dmp") > 0) {
-		    	$("#dmpForm :input").prop("disabled", true);
-		    	setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
+			    $("#dmpForm :input").prop("disabled", false);
+			    setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
 			    showorHideDMPContent();
 			    $("#dmpForm").trackChanges();
 			    $(window).on('beforeunload', function(e) {
@@ -38,11 +38,13 @@ $tag_box = null;
 			    });
 		    } // loading Project Content - not nessesary on other pages!
 		    else if (window.location.pathname.search("/project") > 0) {
-		    	setProjectSubmenu(null);
+			    setProjectSubmenu(null);
 			    startTagging();
 		    } // loading Panel Content - not nessesary on other pages!
 		    else if (window.location.pathname.search("/panel") > 0) {
 			    startAccordion();
+		    } else if (window.location.pathname.search("/access") > 0) {
+			    showHideNewRole();
 		    }
 	    });
 })(window.jQuery, window, document);
@@ -310,3 +312,20 @@ $.fn.extend({
 	  return this.data("changed");
   }
 });
+
+function showHideNewRole() {
+	var val = $("#accessMailChange").val();
+	if (val != 0) {
+		$("#accessChange, #accessChangeSel").prop("disabled", false);
+		var val2 = $("#accessChangeSel").val();
+		if (val2 == 0 || val2 === "PROJECT_ADMIN" || val2 === "PROJECT_READER" || val2 === "PROJECT_WRITER") {
+			$("#accessChange").val("0");
+			$("#accessChange").prop("disabled", true);
+		} else {
+			$("#accessChange").prop("disabled", false);
+		}
+	} else {
+		$("#accessChange, #accessChangeSel").prop("disabled", true);
+		$("#accessChange, #accessChangeSel").val("0");
+	}
+}

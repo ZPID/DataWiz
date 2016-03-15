@@ -35,8 +35,32 @@ public class UserDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public UserDTO findById(int id) {
-    return new UserDTO();
+  public UserDTO findById(long l) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute findById for id: " + l);
+    UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE id= ?", new Object[] { l },
+        new ResultSetExtractor<UserDTO>() {
+          @Override
+          public UserDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
+            if (rs.next()) {
+              UserDTO contact = (UserDTO) context.getBean("UserDTO");
+              contact.setId(rs.getInt("id"));
+              contact.setFirstName(rs.getString("first_name"));
+              contact.setLastName(rs.getString("last_name"));
+              contact.setEmail(rs.getString("email"));
+              contact.setAccountState(rs.getString("account_state"));
+              contact.setActivationCode(rs.getString("activationcode"));
+              return contact;
+            }
+            return null;
+          }
+        });
+    if (user != null && user.getId() > 0) {
+      user.setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
+    }
+    if (log.isDebugEnabled())
+      log.debug("leaving findById user: " + user);
+    return user;
   }
 
   public UserDTO findByMail(String email, boolean pwd) throws Exception {
