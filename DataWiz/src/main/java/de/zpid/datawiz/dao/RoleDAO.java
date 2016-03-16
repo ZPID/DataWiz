@@ -2,6 +2,7 @@ package de.zpid.datawiz.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -28,12 +29,32 @@ public class RoleDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public void setRole(UserRoleDTO role) {
+  public int setRole(UserRoleDTO role) {
     if (log.isDebugEnabled())
-      log.debug("execute activateUserAccount userid: " + role.getUserId());
-    this.jdbcTemplate.update("INSERT INTO dw_user_roles (user_id, role_id, project_id, study_id) VALUES (?,?,?,?)",
-        role.getUserId(), role.getRoleId(), (role.getProjectId() > 0) ? role.getProjectId() : null,
+      log.debug("execute setRole role: " + role);
+    return this.jdbcTemplate.update(
+        "INSERT INTO dw_user_roles (user_id, role_id, project_id, study_id) VALUES (?,?,?,?)", role.getUserId(),
+        role.getRoleId(), (role.getProjectId() > 0) ? role.getProjectId() : null,
         (role.getStudyId() > 0) ? role.getStudyId() : null);
+  }
+
+  public int deleteRole(UserRoleDTO role) {
+    List<Object> oList = new LinkedList<Object>();
+    oList.add(role.getRoleId());
+    oList.add(role.getUserId());
+    if (role.getProjectId() > 0)
+      oList.add(role.getProjectId());
+    if (role.getStudyId() > 0)
+      oList.add(role.getStudyId());
+    if (log.isDebugEnabled())
+      log.debug("execute deleteRole userid: " + role);
+    return this.jdbcTemplate
+        .update(
+            "DELETE FROM dw_user_roles WHERE dw_user_roles.role_id = ? AND dw_user_roles.user_id = ? "
+                + ((role.getProjectId() > 0) ? "AND dw_user_roles.project_id = ? "
+                    : "AND dw_user_roles.project_id IS NULL")
+                + ((role.getStudyId() > 0) ? " AND dw_user_roles.study_id = ?" : "AND dw_user_roles.study_id IS NULL"),
+            oList.toArray());
   }
 
   public List<UserRoleDTO> getRolesByUserID(long id) throws Exception {

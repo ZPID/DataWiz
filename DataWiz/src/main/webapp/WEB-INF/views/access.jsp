@@ -17,6 +17,7 @@
       <sf:form action="${accessUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
         <div class="form-group">
           <div class="col-sm-12">
+            <sf:errors element="div" class="alert alert-danger" role="alert" htmlEscape="false" />
             <ul class="list-group">
               <c:forEach items="${ProjectForm.sharedUser}" var="user" varStatus="uState">
                 <li class="list-group-item">
@@ -48,7 +49,10 @@
                                   <div class="row">
                                     <div class="col-sm-12">
                                       <div class="col-sm-11">
-                                        <s:message code="roles.${role.type}" arguments="${studyTitle}" />
+                                        <s:message code="roles.${role.type}" />
+                                        <c:if test="${role.type eq 'DS_WRITER' || role.type eq 'DS_READER'}">
+                                          &nbsp;&quot;<s:message text="${studyTitle}" />&quot;
+                                        </c:if>
                                       </div>
                                       <div class="col-sm-1">
                                         <c:if

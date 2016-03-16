@@ -9,6 +9,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -106,12 +107,13 @@ public class AccessController {
 
   @RequestMapping(value = { "/{projectId}/delete/{userId}/{roleId}",
       "/{projectId}/delete/{userId}/{roleId}/{studyId}" })
-  public String deleteRole(@PathVariable int userId, @PathVariable int roleId, @PathVariable int projectId,
-      @PathVariable Optional<Integer> studyId, RedirectAttributes redirectAttributes) {
+  public String deleteRole(@PathVariable long userId, @PathVariable long roleId, @PathVariable long projectId,
+      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute deleteRole [Role:" + roleId + " User:" + userId + " Project:" + projectId + "]");
     }
-
+    UserRoleDTO role = new UserRoleDTO(roleId, userId, projectId, studyId.get(), "");
+    roleDao.deleteRole(role);
     return "redirect:/access/" + projectId;
   }
 
@@ -125,45 +127,84 @@ public class AccessController {
     return "redirect:/access/" + projectId;
   }
 
+  /**
+   * 
+   * @param pid
+   * @param pForm
+   * @param redirectAttributes
+   * @param bRes
+   * @return
+   */
   @RequestMapping(value = { "/{pid}" }, params = { "addRole" })
-  public String addRoleToProjectUser(@PathVariable int pid, @ModelAttribute("ProjectForm") ProjectForm pForm,
-      RedirectAttributes redirectAttributes) {
-    Boolean err = false;
+  public String addRoleToProjectUser(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm,
+      RedirectAttributes redirectAttributes, BindingResult bRes) {
+    UserDTO admin = UserUtil.getCurrentUser();
+    if (admin == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    if (log.isDebugEnabled()) {
+      log.debug("execute addRoleToProjectUser for Project: " + pid);
+    }
+    if (!admin.hasProjectRole(Roles.PROJECT_ADMIN, pid)) {
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
+      log.warn("SECURITY: User with email: " + admin.getEmail() + " tries change roles for project:" + pid
+          + " without having permission");
+      return "redirect:/panel";
+    }
     if (pForm != null && pForm.getNewRole() != null) {
       UserRoleDTO newRole = pForm.getNewRole();
-      if (log.isDebugEnabled()) {
-        log.debug("execute addRoleToProjectUser [User:" + newRole.getUserId() + " Project:" + pid + " Type:"
-            + newRole.getType() + " Study: " + newRole.getStudyId() + "]");
-      }
       newRole.setProjectId(pid);
-      if (newRole.getType() != null && !newRole.getType().isEmpty() && !newRole.getType().equals("0")) {
-        newRole.setRoleId(Roles.valueOf(newRole.getType()).toInt());
-      } else {
-        err = true;
-      }
       UserDTO user = null;
       if (newRole.getUserId() > 0) {
         try {
           user = userDAO.findById(newRole.getUserId());
-        } catch (Exception e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-        if (user != null && user.getGlobalRoles() != null) {
-          for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
-            if (roleTmp.equals(newRole)) {
-              err = true;
-              break;
+          if (!bRes.hasErrors() && newRole.getType() != null && !newRole.getType().isEmpty()
+              && !newRole.getType().equals("0")) {
+            Roles role = Roles.valueOf(newRole.getType());
+            newRole.setRoleId(role.toInt());
+            if ((role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER)) && newRole.getStudyId() < 1) {
+              bRes.reject("globalErrors", "keine rolle");
             }
+          } else {
+            bRes.reject("globalErrors", "keine rolle");
           }
+          if (!bRes.hasErrors() && user != null && user.getGlobalRoles() != null) {
+            for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
+              if (roleTmp.equals(newRole)) {
+                bRes.reject("globalErrors", "rolle vorhanden");
+                break;
+              }
+            }
+            if (!bRes.hasErrors())
+              if (user.hasProjectRole(Roles.PROJECT_ADMIN, pid)) {
+                bRes.reject("globalErrors", "Projektadmin");
+              } else if (user.hasProjectRole(Roles.PROJECT_WRITER, pid)
+                  && (newRole.getType().equals(Roles.PROJECT_READER.name()) || newRole.getType().equals(Roles.DS_READER.name())
+                      || newRole.getType().equals(Roles.DS_WRITER.name()))) {
+                bRes.reject("globalErrors", "globaler Writer > glober Raeder nicht sinnvoll, abstufung nicht sinnvoll");
+              } else if (user.hasProjectRole(Roles.PROJECT_READER, pid) && newRole.getType().equals(Roles.DS_READER.name())) {
+                bRes.reject("globalErrors", "globaler READER > abstufung nicht sinnvoll");
+              }
+          } else {
+            bRes.reject("globalErrors", "benutzer nicht gefunden - wrong Pid");
+          }
+          if (!bRes.hasErrors())
+            roleDao.setRole(newRole);
+        } catch (Exception e) {
+          log.warn("ERROR: Database Error while setting Role - Exception:" + e.getMessage());
+          bRes.reject("globalErrors", "benutzer nicht gefunden");
         }
       } else {
-        err = true;
+        bRes.reject("globalErrors", "email");
       }
     } else {
-      err = true;
+      log.warn("ERROR: add Role not successful because ProjectForm or Role empty");
     }
-
-    return err ? "access" : "redirect:/access/" + pid;
+    if (bRes.hasErrors())
+      return "access";
+    else
+      return "redirect:/access/" + pid;
   }
 }

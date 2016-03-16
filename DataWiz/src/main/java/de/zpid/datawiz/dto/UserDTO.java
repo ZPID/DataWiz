@@ -1,7 +1,6 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -275,15 +274,22 @@ public class UserDTO implements Serializable {
    * @param pid
    * @return
    */
-  public boolean hasProjectRole(Object rol, String pidS) {
+  public boolean hasProjectRole(Object rol, Object projectID) {
     Roles role = null;
     long pid = 0;
-    if (pidS == null || pidS.isEmpty()) {
-      return false;
-    }
-    try {
-      pid = Long.parseLong(pidS);
-    } catch (Exception e) {
+    if (projectID instanceof String) {
+      String pidS = (String) projectID;
+      if (pidS == null || pidS.isEmpty()) {
+        return false;
+      }
+      try {
+        pid = Long.parseLong(pidS);
+      } catch (Exception e) {
+        return false;
+      }
+    } else if (projectID instanceof Number) {
+      pid = ((Number) projectID).longValue();
+    } else {
       return false;
     }
     if (rol instanceof Roles) {
