@@ -57,7 +57,7 @@ public class RoleDAO {
             oList.toArray());
   }
 
-  public List<UserRoleDTO> getRolesByUserID(long id) throws Exception {
+  public List<UserRoleDTO> findRolesByUserID(long id) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getRolesByUserID for userid: " + id);
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
@@ -69,7 +69,7 @@ public class RoleDAO {
     });
   }
 
-  public List<String> getAllProjectRoles() throws Exception {
+  public List<String> findAllProjectRoles() throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getAllProjectRoles");
     String sql = "SELECT type FROM dw_roles WHERE type != 'USER' AND type != 'ADMIN' AND type != 'REL_ROLE'";
@@ -80,7 +80,7 @@ public class RoleDAO {
     });
   }
 
-  public List<UserRoleDTO> getRolesByUserIDAndProjectID(long uid, long pid) throws Exception {
+  public List<UserRoleDTO> findRolesByUserIDAndProjectID(long uid, long pid) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getRolesByUserID for [userid: " + uid + " projectid: " + pid + "]");
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "

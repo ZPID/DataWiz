@@ -390,7 +390,7 @@ public class ProjectController {
       UserDTO user = UserUtil.getCurrentUser();
       if (pForm != null && pForm.getProject() != null && user != null) {
         if (pForm.getProject().getId() <= 0) {
-          int chk = projectDAO.saveProject(pForm.getProject());
+          int chk = projectDAO.insertProject(pForm.getProject());
           if (chk > 0) {
             roleDAO.setRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
             roleDAO.setRole(
@@ -405,7 +405,7 @@ public class ProjectController {
       } else {
         error = true;
       }
-      UserUtil.getCurrentUser().setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
+      UserUtil.getCurrentUser().setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
     } catch (Exception e) {
       log.error("Project saving not sucessful error:" + e.getMessage());
       error = true;

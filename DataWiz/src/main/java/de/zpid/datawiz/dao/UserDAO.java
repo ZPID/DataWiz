@@ -56,7 +56,7 @@ public class UserDAO {
           }
         });
     if (user != null && user.getId() > 0) {
-      user.setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
+      user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
     }
     if (log.isDebugEnabled())
       log.debug("leaving findById user: " + user);
@@ -86,7 +86,7 @@ public class UserDAO {
           }
         });
     if (user != null && user.getId() > 0) {
-      user.setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
+      user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
     }
     if (log.isDebugEnabled()) {
       if (user != null)

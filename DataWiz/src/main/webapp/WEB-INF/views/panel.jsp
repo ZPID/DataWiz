@@ -9,6 +9,11 @@
           <c:out value="${errorMSG}" />
         </div>
       </c:if>
+      <c:if test="${not empty infoMSG}">
+        <div class="alert alert-danger" role="alert">
+          <c:out value="${infoMSG}" />
+        </div>
+      </c:if>
       <c:url var="projectUrl" value="/project" />
       <sf:form action="${projectUrl}" commandName="CProjectForm" StyleClass="form-horizontal">
         <div class="panel-group" id="accordion">

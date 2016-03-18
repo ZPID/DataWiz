@@ -36,28 +36,45 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class AccessController.
+ */
 @Controller
 @RequestMapping(value = "/access")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class AccessController {
 
+  /** The user dao. */
   @Autowired
   private UserDAO userDAO;
+
+  /** The message source. */
   @Autowired
   private MessageSource messageSource;
+
+  /** The project dao. */
   @Autowired
   private ProjectDAO projectDAO;
+
+  /** The role dao. */
   @Autowired
   private RoleDAO roleDao;
+
+  /** The study dao. */
   @Autowired
   private StudyDAO studyDAO;
 
+  /** The Constant log. */
   private static final Logger log = Logger.getLogger(AccessController.class);
+
+  /** The context. */
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
   /**
-   * 
-   * @return
+   * Creates the project form.
+   *
+   * @return ProjectForm ({@link #projectForm})
    */
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
@@ -65,9 +82,20 @@ public class AccessController {
 
   }
 
+  /**
+   * Show access page.
+   *
+   * @param projectId
+   *          the project id
+   * @param model
+   *          the model
+   * @param redirectAttributes
+   *          the redirect attributes
+   * @return String ({@link #string})
+   */
   @RequestMapping(value = { "", "/{projectId}" }, method = RequestMethod.GET)
   public String showAccessPage(@PathVariable Optional<Integer> projectId, ModelMap model,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes, HttpServletRequest request) {
     if (log.isDebugEnabled()) {
       log.debug("execute showAccessPage for project [id:" + projectId.get() + "]");
     }
@@ -86,9 +114,9 @@ public class AccessController {
           this.studyDAO, null, "ACCESS");
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject()));
-        pForm.setRoleList(roleDao.getAllProjectRoles());
+        pForm.setRoleList(roleDao.findAllProjectRoles());
         for (UserDTO tuser : pForm.getSharedUser()) {
-          tuser.setGlobalRoles(roleDao.getRolesByUserIDAndProjectID(tuser.getId(), projectId.get()));
+          tuser.setGlobalRoles(roleDao.findRolesByUserIDAndProjectID(tuser.getId(), projectId.get()));
         }
       }
     } catch (Exception e) {
@@ -111,6 +139,17 @@ public class AccessController {
     return "access";
   }
 
+  /**
+   * Delete userfrom project.
+   *
+   * @param userId
+   *          the user id
+   * @param projectId
+   *          the project id
+   * @param redirectAttributes
+   *          the redirect attributes
+   * @return String ({@link #string})
+   */
   @RequestMapping(value = { "/{projectId}/deleteUser/{userId}" })
   public String deleteUserfromProject(@PathVariable int userId, @PathVariable int projectId,
       RedirectAttributes redirectAttributes) {
@@ -122,10 +161,31 @@ public class AccessController {
     if (check != null) {
       return check;
     }
-
+    UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), userId, projectId, 0, Roles.REL_ROLE.toString());
+    try {
+      roleDao.deleteRole(role);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     return "redirect:/access/" + projectId;
   }
 
+  /**
+   * Adds the user to project.
+   *
+   * @param pForm
+   *          the form
+   * @param projectId
+   *          the project id
+   * @param redirectAttributes
+   *          the redirect attributes
+   * @param bRes
+   *          the b res
+   * @param request
+   *          the request
+   * @return String ({@link #string})
+   */
   @RequestMapping(value = { "/{projectId}" }, params = { "addUser" })
   public String addUserToProject(@ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable int projectId,
       RedirectAttributes redirectAttributes, BindingResult bRes, HttpServletRequest request) {
@@ -141,8 +201,8 @@ public class AccessController {
     String linkhash = null;
     try {
       user = userDAO.findByMail(pForm.getDelMail(), false);
-      projectDAO.addUsertoProject(projectId, pForm.getDelMail());
-      linkhash = projectDAO.getInviteHash(pForm.getDelMail(), projectId);
+      projectDAO.insertInviteData(projectId, pForm.getDelMail(), admin.getEmail());
+      linkhash = projectDAO.getValFromInviteData(pForm.getDelMail(), projectId, "linkhash");
     } catch (Exception e) {
       if (e instanceof DuplicateKeyException)
         // TODO
@@ -160,11 +220,14 @@ public class AccessController {
       adminName = admin.getEmail();
     if (user != null && user.getId() > 0 && linkhash != null && !linkhash.isEmpty()) {
       try {
-        EmailUtil.sendSSLMail(user.getEmail(),
-            messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
-            messageSource.getMessage("roles.inv.dw.user.to.project", new Object[] { adminName,
-                pForm.getProject().getTitle(), request.getRequestURL(), user.getEmail(), linkhash },
-                LocaleContextHolder.getLocale()));
+        EmailUtil
+            .sendSSLMail(user.getEmail(),
+                messageSource.getMessage("inv.mail.project.subject", new Object[] { pForm.getProject().getTitle() },
+                    LocaleContextHolder
+                        .getLocale()),
+                messageSource.getMessage("inv.mail.project.content", new Object[] { adminName,
+                    pForm.getProject().getTitle(), request.getRequestURL(), user.getEmail(), linkhash },
+                    LocaleContextHolder.getLocale()));
       } catch (MessagingException e) {
         log.error("Mail error during user registration: " + e.getStackTrace());
         bRes.reject("globalErrors", "email");
@@ -177,9 +240,26 @@ public class AccessController {
     return "redirect:/access/" + projectId;
   }
 
+  /**
+   * This function is called from the invitation mail. <br />
+   * Before it saves the REL_ROLE (Relation Role), it checks the project's availability and if the calling user equals
+   * the user of the link address
+   *
+   * @param email
+   *          the email
+   * @param projectId
+   *          the project id
+   * @param linkhash
+   *          the linkhash
+   * @param redirectAttributes
+   *          the redirect attributes
+   * @param request
+   *          the request
+   * @return String
+   */
   @RequestMapping(value = { "/{projectId}/acceptInvite/{email}/{linkhash}/" })
   public String acceptInvite(@PathVariable String email, @PathVariable long projectId, @PathVariable String linkhash,
-      RedirectAttributes redirectAttributes) {
+      RedirectAttributes redirectAttributes, HttpServletRequest request) {
     if (log.isDebugEnabled()) {
       log.debug("execute accepptInvite User [email:" + email + " Project:" + projectId + "]");
     }
@@ -187,26 +267,64 @@ public class AccessController {
     if (!admin.getEmail().equals(email)) {
       log.warn("Invite acception failed because currentUser is not the invited User CurrentUser [email: "
           + admin.getEmail() + "] InvitedUser [email: " + email + "]");
-      redirectAttributes.addFlashAttribute("errorMSG", "Fehler in der Matrix!!!!");
+      redirectAttributes.addFlashAttribute("errorMSG", "angemneldeter nutzer != nutzer im link");
+      return "redirect:/panel";
     }
+    String adminMail = null;
+    ProjectDTO project = null;
     try {
-      String hash = projectDAO.getInviteHash(email, projectId);
-      if (hash != null && !hash.isEmpty() && !linkhash.isEmpty() && linkhash.trim().equals(hash.trim())) {
-        UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), admin.getId(), projectId, 0, Roles.REL_ROLE.name());
-        roleDao.setRole(role);
-        projectDAO.deleteInvitationEntree(projectId, email);
+      project = projectDAO.findById(projectId);
+      if (project != null) {
+        adminMail = projectDAO.getValFromInviteData(email, projectId, "invited_by");
+        String hash = projectDAO.getValFromInviteData(email, projectId, "linkhash");
+        if (hash != null && !hash.isEmpty() && !linkhash.isEmpty() && linkhash.trim().equals(hash.trim())) {
+          UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), admin.getId(), projectId, 0,
+              Roles.REL_ROLE.name());
+          roleDao.setRole(role);
+          projectDAO.deleteInvitationEntree(projectId, email);
+        }
+        StringBuffer url = request.getRequestURL();
+        url = url.delete(url.indexOf(request.getRequestURI()), url.length()).append(request.getContextPath());
+        EmailUtil.sendSSLMail(adminMail,
+            messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
+            messageSource.getMessage("accept.mail.admin.content",
+                new Object[] { email, project.getTitle(), url + "/access/" + project.getId() },
+                LocaleContextHolder.getLocale()));
+        redirectAttributes.addFlashAttribute("infoMSG", "hinzugefügt");
+      } else {
+        redirectAttributes.addFlashAttribute("errorMSG", "Projekt leer - möglicherweise gelöscht");
       }
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      if (e instanceof MessagingException) {
+        redirectAttributes.addFlashAttribute("errorMSG", "Fehler beim emailversand");
+      }
+      redirectAttributes.addFlashAttribute("errorMSG", "Datenbankfehler");
     }
     return "redirect:/panel";
   }
 
+  /**
+   * Delete role from a project User <br />
+   * It is not possible to delete the project owner - it's id is saved in the owner row in the dw_project table
+   *
+   * @param userId
+   *          the user id
+   * @param roleId
+   *          the role id
+   * @param projectId
+   *          the project id
+   * @param studyId
+   *          the study id
+   * @param redirectAttributes
+   *          the redirect attributes
+   * @param bRes
+   *          the b res
+   * @return String ({@link #string})
+   */
   @RequestMapping(value = { "/{projectId}/delete/{userId}/{roleId}",
       "/{projectId}/delete/{userId}/{roleId}/{studyId}" })
   public String deleteRole(@PathVariable long userId, @PathVariable long roleId, @PathVariable long projectId,
-      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes, BindingResult bRes) {
+      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute deleteRole [Role:" + roleId + " User:" + userId + " Project:" + projectId + "]");
     }
@@ -220,25 +338,30 @@ public class AccessController {
       ProjectDTO project = projectDAO.findById(projectId);
       if (project != null && project.getOwnerId() == userId) {
         log.warn(" User " + admin.getEmail() + " tries to delete the project owner: " + userId);
-        bRes.reject("globalErrors", "keine rolle");
+        //bRes.reject("globalErrors", "keine rolle");
         return "access";
       }
       roleDao.deleteRole(role);
     } catch (Exception e) {
       log.warn("ERROR: Database Error while deleting Role - Exception:" + e.getMessage());
-      bRes.reject("globalErrors", "blabla");
+      //bRes.reject("globalErrors", "blabla");
       return "access";
     }
     return "redirect:/access/" + projectId;
   }
 
   /**
-   * 
+   * Adds a role to a project user.
+   *
    * @param projectId
+   *          the project id
    * @param pForm
+   *          the form
    * @param redirectAttributes
+   *          the redirect attributes
    * @param bRes
-   * @return
+   *          the b res
+   * @return String
    */
   @RequestMapping(value = { "/{projectId}" }, params = { "addRole" })
   public String addRoleToProjectUser(@PathVariable long projectId, @ModelAttribute("ProjectForm") ProjectForm pForm,
@@ -308,6 +431,17 @@ public class AccessController {
       return "redirect:/access/" + projectId;
   }
 
+  /**
+   * Checks if the passed UserDTO has the PROJECT_ADMIN role.
+   *
+   * @param redirectAttributes
+   *          the redirect attributes
+   * @param projectId
+   *          the project id
+   * @param admin
+   *          the admin
+   * @return redirect String if role is non-existent, and null if existent
+   */
   private String checkProjectAdmin(RedirectAttributes redirectAttributes, long projectId, UserDTO admin) {
     if (admin == null) {
       log.warn("Auth User Object == null - redirect to login");

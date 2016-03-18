@@ -39,7 +39,7 @@ public class ProjectDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public List<ProjectDTO> getAllByUserID(UserDTO user) throws Exception {
+  public List<ProjectDTO> findAllByUserID(UserDTO user) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getAllByUserID for user [email: " + user.getEmail() + "]");
     String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
@@ -105,7 +105,7 @@ public class ProjectDAO {
         project.getDescription(), project.getId());
   }
 
-  public int saveProject(ProjectDTO project) throws Exception {
+  public int insertProject(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute saveProject: " + project);
     KeyHolder holder = new GeneratedKeyHolder();
@@ -123,23 +123,24 @@ public class ProjectDAO {
     return (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
   }
 
-  public int addUsertoProject(long projectId, String userMail) {
+  public int insertInviteData(long projectId, String userMail, String adminMail) {
     if (log.isDebugEnabled())
-      log.debug("execute addUsertoProject for project [id: " + projectId + "] and User [id: " + userMail + "]");
+      log.debug("execute addUsertoProject for project [id: " + projectId + "], User [id: " + userMail
+          + "] by Admin [email: " + adminMail + "]");
     return this.jdbcTemplate.update(
-        "INSERT INTO dw_project_invite (user_email, project_id, linkhash, date) VALUES (?,?,?,?)", userMail, projectId,
-        UUID.randomUUID().toString(), LocalDateTime.now().toString());
+        "INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)",
+        userMail, adminMail, projectId, UUID.randomUUID().toString(), LocalDateTime.now().toString());
   }
 
-  public String getInviteHash(String email, long projectId) throws Exception {
+  public String getValFromInviteData(String email, long projectId, String val) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getInviteHash for user [email: " + email + "]");
-    String sql = "SELECT linkhash from dw_project_invite WHERE user_email = ? AND project_id = ?";
+    String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
     return jdbcTemplate.query(sql, new Object[] { email, projectId }, new ResultSetExtractor<String>() {
       @Override
       public String extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (rs.next()) {
-          return rs.getString("linkhash");
+          return rs.getString(val);
         }
         return null;
       }

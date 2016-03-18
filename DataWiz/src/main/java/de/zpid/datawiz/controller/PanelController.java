@@ -62,7 +62,7 @@ public class PanelController {
         .getUser();
     List<ProjectForm> cpform = new ArrayList<ProjectForm>();
     try {
-      List<ProjectDTO> cpdto = projectDAO.getAllByUserID(user);
+      List<ProjectDTO> cpdto = projectDAO.findAllByUserID(user);
       if (cpdto != null) {
         for (ProjectDTO pdto : cpdto) {
           ProjectForm pform = createProjectForm();
