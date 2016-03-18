@@ -33,14 +33,16 @@ public class ProjectForm implements Serializable {
   private List<String> tags;
   private List<FileDTO> files;
 
-  /** DMP DATA */
+  // DMP DATA
   private List<FormTypesDTO> dataTypes;
   private List<FormTypesDTO> collectionModes;
   private List<FormTypesDTO> metaPurposes;
 
-  /** ACCESS DATA */
+  // ACCESS DATA
   private List<String> roleList;
   private UserRoleDTO newRole;
+  private String delMail;
+
   // ViewHelper
   private int delPos;
   private String pagePosi;
@@ -169,6 +171,15 @@ public class ProjectForm implements Serializable {
 
   public void setNewRole(UserRoleDTO newRole) {
     this.newRole = newRole;
+
+  }
+
+  public String getDelMail() {
+    return delMail;
+  }
+
+  public void setDelMail(String delMail) {
+    this.delMail = delMail;
 
   }
 

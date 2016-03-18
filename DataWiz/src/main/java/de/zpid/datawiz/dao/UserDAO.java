@@ -37,7 +37,7 @@ public class UserDAO {
 
   public UserDTO findById(long l) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute findById for id: " + l);
+      log.debug("execute findById [id: " + l + "]");
     UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE id= ?", new Object[] { l },
         new ResultSetExtractor<UserDTO>() {
           @Override
@@ -65,7 +65,7 @@ public class UserDAO {
 
   public UserDTO findByMail(String email, boolean pwd) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute findByMail for email: " + email);
+      log.debug("execute findByMail [email: " + email + "]");
     UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE email= ?", new Object[] { email },
         new ResultSetExtractor<UserDTO>() {
           @Override
@@ -88,8 +88,12 @@ public class UserDAO {
     if (user != null && user.getId() > 0) {
       user.setGlobalRoles(roleDAO.getRolesByUserID(user.getId()));
     }
-    if (log.isDebugEnabled())
-      log.debug("leaving findByMail user: " + user);
+    if (log.isDebugEnabled()) {
+      if (user != null)
+        log.debug("leaving findByMail user [id: " + user.getId() + " email: " + user.getEmail() + "]");
+      else
+        log.debug("leaving findByMail - user not found - return NULL");
+    }
     return user;
   }
 
@@ -117,7 +121,7 @@ public class UserDAO {
 
   public int saveOrUpdate(UserDTO user, boolean changePWD) {
     if (log.isDebugEnabled())
-      log.debug("execute saveOrUpdate user: " + user);
+      log.debug("execute saveOrUpdate user [id: " + user.getId() + "]");
     if (user.getId() > 0) {
       if (changePWD) {
         return this.jdbcTemplate.update(
@@ -139,7 +143,7 @@ public class UserDAO {
 
   public void activateUserAccount(UserDTO user) {
     if (log.isDebugEnabled())
-      log.debug("execute activateUserAccount user: " + user);
+      log.debug("execute activateUserAccount [id: " + user.getId() + "]");
     this.jdbcTemplate.update("UPDATE dw_user SET account_state = ?, activationcode = ?  WHERE id = ?",
         AccountState.ACTIVE.name(), null, user.getId());
   }

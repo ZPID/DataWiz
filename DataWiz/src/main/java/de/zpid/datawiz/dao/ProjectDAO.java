@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -40,7 +41,7 @@ public class ProjectDAO {
 
   public List<ProjectDTO> getAllByUserID(UserDTO user) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getAllByUserID for user: " + user.getEmail());
+      log.debug("execute getAllByUserID for user [email: " + user.getEmail() + "]");
     String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
         + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
         + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
@@ -50,6 +51,7 @@ public class ProjectDAO {
         ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
         project.setId(rs.getInt("id"));
         project.setTitle(rs.getString("name"));
+        project.setOwnerId(rs.getLong("owner_id"));
         project.setDescription(rs.getString("description"));
         project.setCreated(rs.getTimestamp("created").toLocalDateTime());
         return project;
@@ -61,21 +63,21 @@ public class ProjectDAO {
    * Returns the project and the UserRole in one turn. For that, UserID and ProjectID is important, because projects and
    * users have an mxn relationship!
    * 
-   * @param pid
-   * @param uid
+   * @param projectId
+   * @param userId
    * @return
    * @throws SQLException
    * @throws DataAccessException
    */
-  public ProjectDTO findByIdWithRole(String pid, String uid) throws Exception {
+  public ProjectDTO findById(long projectId) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute findByIdWithRole for projectID: " + pid + " UserID=" + uid);
+      log.debug("execute findByIdWithRole for project [id: " + projectId + "]");
     ProjectDTO project = jdbcTemplate.query(
         // "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_project"
         // + " LEFT JOIN dw_user_roles ON dw_project.id = dw_user_roles.project_id"
         // + " LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id"
         // + " WHERE dw_project.id = ? AND dw_user_roles.user_id = ?",
-        "SELECT dw_project.* FROM dw_project WHERE  dw_project.id = ?", new Object[] { pid},
+        "SELECT dw_project.* FROM dw_project WHERE  dw_project.id = ?", new Object[] { projectId },
         new ResultSetExtractor<ProjectDTO>() {
           @Override
           public ProjectDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -83,6 +85,7 @@ public class ProjectDAO {
               ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
               project.setId(rs.getInt("id"));
               project.setTitle(rs.getString("name"));
+              project.setOwnerId(rs.getLong("owner_id"));
               project.setDescription(rs.getString("description"));
               project.setCreated(rs.getTimestamp("created").toLocalDateTime());
               return project;
@@ -91,13 +94,13 @@ public class ProjectDAO {
           }
         });
     if (log.isDebugEnabled())
-      log.debug("leaving findByID project: " + project);
+      log.debug("leaving findByID project: " + project.getId());
     return project;
   }
 
   public int updateProject(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute updateProject: " + project);
+      log.debug("execute updateProject for project [id: " + project.getId() + "]");
     return this.jdbcTemplate.update("UPDATE dw_project SET name = ?, description = ? WHERE id = ?", project.getTitle(),
         project.getDescription(), project.getId());
   }
@@ -118,5 +121,35 @@ public class ProjectDAO {
       }
     }, holder);
     return (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
+  }
+
+  public int addUsertoProject(long projectId, String userMail) {
+    if (log.isDebugEnabled())
+      log.debug("execute addUsertoProject for project [id: " + projectId + "] and User [id: " + userMail + "]");
+    return this.jdbcTemplate.update(
+        "INSERT INTO dw_project_invite (user_email, project_id, linkhash, date) VALUES (?,?,?,?)", userMail, projectId,
+        UUID.randomUUID().toString(), LocalDateTime.now().toString());
+  }
+
+  public String getInviteHash(String email, long projectId) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute getInviteHash for user [email: " + email + "]");
+    String sql = "SELECT linkhash from dw_project_invite WHERE user_email = ? AND project_id = ?";
+    return jdbcTemplate.query(sql, new Object[] { email, projectId }, new ResultSetExtractor<String>() {
+      @Override
+      public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+        if (rs.next()) {
+          return rs.getString("linkhash");
+        }
+        return null;
+      }
+    });
+  }
+
+  public int deleteInvitationEntree(long projectId, String userMail) {
+    if (log.isDebugEnabled())
+      log.debug("execute deleteInvitationEntree for project [id: " + projectId + "] and User [id: " + userMail + "]");
+    return this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?", userMail,
+        projectId);
   }
 }

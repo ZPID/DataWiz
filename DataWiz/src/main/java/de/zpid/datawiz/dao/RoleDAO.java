@@ -29,7 +29,7 @@ public class RoleDAO {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  public int setRole(UserRoleDTO role) {
+  public int setRole(UserRoleDTO role) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute setRole role: " + role);
     return this.jdbcTemplate.update(
@@ -38,7 +38,7 @@ public class RoleDAO {
         (role.getStudyId() > 0) ? role.getStudyId() : null);
   }
 
-  public int deleteRole(UserRoleDTO role) {
+  public int deleteRole(UserRoleDTO role) throws Exception {
     List<Object> oList = new LinkedList<Object>();
     oList.add(role.getRoleId());
     oList.add(role.getUserId());

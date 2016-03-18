@@ -115,7 +115,7 @@ public class ProjectController {
    * @return
    */
   @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
-  public String editProject(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+  public String editProject(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute editProject for projectID=" + pid);
@@ -172,7 +172,7 @@ public class ProjectController {
       return "project";
     }
     if (saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
-      // TODO vernünftige Fehlerausgabe
+      // TODO vernï¿½nftige Fehlerausgabe
       model.put("saveState", SavedState.ERROR.toString());
       model.put("saveStateMsg", "fehler!!!!");
       return "project";
@@ -420,20 +420,20 @@ public class ProjectController {
    * @return
    * @throws Exception
    */
-  public static ProjectForm getProjectForm(ProjectForm pForm, String pid, UserDTO user, ProjectDAO projectDAO,
+  public static ProjectForm getProjectForm(ProjectForm pForm, long pid, UserDTO user, ProjectDAO projectDAO,
       ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, FormTypesDAO dmpRelTypeDAO,
       String call) throws Exception {
     if (log.isDebugEnabled()) {
       log.debug("execute getProjectData");
     }
     // 1st - security access check!
-    if (pid != null && !pid.isEmpty() && user != null) {
+    if (pid > 0 && user != null) {
       if (!user.hasRole(Roles.ADMIN) && !user.hasProjectRole(Roles.PROJECT_READER, pid)
           && !user.hasProjectRole(Roles.PROJECT_ADMIN, pid) && !user.hasProjectRole(Roles.PROJECT_WRITER, pid)) {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
             + " tries to get access to project:" + pid + " without having the permissions to read");
       }
-      ProjectDTO pdto = projectDAO.findByIdWithRole(pid, String.valueOf(user.getId()));
+      ProjectDTO pdto = projectDAO.findById(pid);
       if (pdto == null || pdto.getId() <= 0) {
         throw new DataWizException("Project is empty for user=" + user.getEmail() + " and project=" + pid);
       }

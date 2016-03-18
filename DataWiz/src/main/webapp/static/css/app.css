@@ -39,6 +39,11 @@ textarea {
   color: red;
 }
 
+.reddot:AFTER {
+  content: "*";
+  color: red;
+}
+
 .form-group label:AFTER {
   content: ":";
 }
@@ -81,6 +86,10 @@ textarea {
   text-align: left;
   white-space: normal;
   width: 100%;
+}
+
+.vcenter {
+    vertical-align: middle;
 }
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/

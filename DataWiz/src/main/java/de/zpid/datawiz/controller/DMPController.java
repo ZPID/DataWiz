@@ -103,7 +103,7 @@ public class DMPController {
    * @return
    */
   @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
-  public String editDMP(@PathVariable String pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+  public String editDMP(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute editDMP for projectID=" + pid);
@@ -293,7 +293,7 @@ public class DMPController {
           break;
         }
       } catch (Exception e) {
-        // TODO vernünftiger ausstieg bei dbs fehler
+        // TODO vernï¿½nftiger ausstieg bei dbs fehler
         log.warn("DMP not saved! DBS Error: " + e.getMessage());
         return true;
       }
