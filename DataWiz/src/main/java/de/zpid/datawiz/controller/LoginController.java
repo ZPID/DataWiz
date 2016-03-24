@@ -1,5 +1,7 @@
 package de.zpid.datawiz.controller;
 
+import java.util.Optional;
+
 import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -29,15 +31,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
+import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.EmailUtil;
+import de.zpid.datawiz.util.UserUtil;
 
 @Controller
+@SessionAttributes("UserDTO")
 public class LoginController {
 
   private static final Logger log = Logger.getLogger(LoginController.class);
@@ -50,6 +56,9 @@ public class LoginController {
   private RoleDAO roleDao;
 
   @Autowired
+  private ProjectDAO projectDao;
+
+  @Autowired
   private PasswordEncoder passwordEncoder;
 
   @Autowired
@@ -59,7 +68,7 @@ public class LoginController {
   private HttpServletRequest request;
 
   @ModelAttribute("UserDTO")
-  public UserDTO createAdministrationForm() {
+  public UserDTO createUserObject() {
     return (UserDTO) context.getBean("UserDTO");
   }
 
@@ -101,10 +110,26 @@ public class LoginController {
    * 
    * @return
    */
-  @RequestMapping(value = { "/register" }, method = RequestMethod.GET)
-  public String registerDataWizUser() {
+  @RequestMapping(value = { "/register", "/register/{projectId}/{email}/{linkhash}" }, method = RequestMethod.GET)
+  public String registerDataWizUser(ModelMap model, @PathVariable Optional<Long> projectId,
+      @PathVariable Optional<String> email, @PathVariable Optional<String> linkhash) {
     if (log.isDebugEnabled()) {
       log.debug("execute registerDataWizUser()- GET");
+    }
+    UserDTO admin = UserUtil.getCurrentUser();
+    if (admin != null) {
+      log.warn("Auth User Object not null - no registration needed - redirect panel");
+      return "redirect:/panel";
+    }
+    if (projectId.isPresent() && email.isPresent() && linkhash.isPresent()) {
+      UserDTO user = createUserObject();
+      user.setEmail(email.get());
+      user.setSecEmail(email.get());
+      user.setComments(String.valueOf(projectId.get()));
+      user.setActivationCode(linkhash.get());
+      model.put("UserDTO", user);
+    } else {
+      model.put("UserDTO", createUserObject());
     }
     return "register";
   }
@@ -147,6 +172,21 @@ public class LoginController {
         return "register";
       }
       // at this point registerform is valid
+      String chkmail = person.getSecEmail();
+      long projectId = 0;
+      try {
+        projectId = (person.getComments() != null && !person.getComments().isEmpty())
+            ? Long.parseLong(person.getComments()) : null;
+        person.setComments(null);
+      } catch (Exception e) {
+        log.warn("ProjectId which is temporary stored in comments is not a number");
+      }
+      if (chkmail != null && !chkmail.isEmpty() && projectId > 0) {
+        person.setSecEmail(null);
+        if (!chkmail.equals(person.getEmail())) {
+          projectDao.updateInvitationEntree(projectId, chkmail, person.getEmail());
+        }
+      }
       person.setPassword(passwordEncoder.encode(person.getPassword()));
       userDao.saveOrUpdate(person, false);
       person = userDao.findByMail(person.getEmail(), false);
@@ -230,7 +270,7 @@ public class LoginController {
    * @return
    */
   @RequestMapping(value = "/logout")
-  public String logout(HttpServletRequest request, HttpServletResponse response) {
+  public String logout(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
     if (log.isDebugEnabled()) {
       log.debug("execute logoutPage()");
     }
@@ -243,6 +283,7 @@ public class LoginController {
     if (auth != null) {
       new SecurityContextLogoutHandler().logout(request, response, auth);
     }
+    model.put("UserDTO", createUserObject());
     return "redirect:/login?logout";
   }
 

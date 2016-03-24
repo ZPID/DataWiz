@@ -51,9 +51,9 @@ public class RoleDAO {
     return this.jdbcTemplate
         .update(
             "DELETE FROM dw_user_roles WHERE dw_user_roles.role_id = ? AND dw_user_roles.user_id = ? "
-                + ((role.getProjectId() > 0) ? "AND dw_user_roles.project_id = ? "
-                    : "AND dw_user_roles.project_id IS NULL")
-                + ((role.getStudyId() > 0) ? " AND dw_user_roles.study_id = ?" : "AND dw_user_roles.study_id IS NULL"),
+                + ((role.getProjectId() > 0) ? " AND dw_user_roles.project_id = ? "
+                    : " AND dw_user_roles.project_id IS NULL")
+                + ((role.getStudyId() > 0) ? " AND dw_user_roles.study_id = ?" : " AND dw_user_roles.study_id IS NULL"),
             oList.toArray());
   }
 

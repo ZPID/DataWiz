@@ -41,7 +41,7 @@ public class ProjectDAO {
 
   public List<ProjectDTO> findAllByUserID(UserDTO user) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getAllByUserID for user [email: " + user.getEmail() + "]");
+      log.debug("execute findAllByUserID for user [email: " + user.getEmail() + "]");
     String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
         + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
         + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
@@ -123,9 +123,9 @@ public class ProjectDAO {
     return (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
   }
 
-  public int insertInviteData(long projectId, String userMail, String adminMail) {
+  public int insertInviteEntree(long projectId, String userMail, String adminMail) {
     if (log.isDebugEnabled())
-      log.debug("execute addUsertoProject for project [id: " + projectId + "], User [id: " + userMail
+      log.debug("execute instertUsertoProject for project [id: " + projectId + "], User [id: " + userMail
           + "] by Admin [email: " + adminMail + "]");
     return this.jdbcTemplate.update(
         "INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)",
@@ -147,10 +147,30 @@ public class ProjectDAO {
     });
   }
 
+  public List<String> findPendingInvitesByProjectID(long pid) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute findPendingInvitesByProjectID for project [id: " + pid + "]");
+    String sql = "SELECT user_email from dw_project_invite WHERE project_id = ?";
+    return jdbcTemplate.query(sql, new Object[] { pid }, new RowMapper<String>() {
+      public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return rs.getString("user_email");
+      }
+    });
+  }
+
   public int deleteInvitationEntree(long projectId, String userMail) {
     if (log.isDebugEnabled())
       log.debug("execute deleteInvitationEntree for project [id: " + projectId + "] and User [id: " + userMail + "]");
     return this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?", userMail,
         projectId);
+  }
+
+  public int updateInvitationEntree(long projectId, String userMailOld, String userEmailNew) {
+    if (log.isDebugEnabled())
+      log.debug("execute updateInvitationEntree for project [id: " + projectId + "] and User [old email: " + userMailOld
+          + "new email: " + userEmailNew + "]");
+    return this.jdbcTemplate.update(
+        "UPDATE dw_project_invite SET user_email = ? WHERE user_email = ? AND project_id = ?", userEmailNew,
+        userMailOld, projectId);
   }
 }

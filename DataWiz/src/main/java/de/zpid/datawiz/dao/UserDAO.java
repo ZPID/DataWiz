@@ -137,7 +137,8 @@ public class UserDAO {
       return this.jdbcTemplate.update(
           "INSERT INTO dw_user  (first_name, last_name, password, email, account_state, activationcode) VALUES (?,?,?,?,?,?)",
           user.getFirstName(), user.getLastName(), user.getPassword(), user.getEmail(), AccountState.LOCKED.name(),
-          UUID.randomUUID().toString());
+          (user.getActivationCode() != null && !user.getActivationCode().isEmpty()) ? user.getActivationCode()
+              : UUID.randomUUID().toString());
     }
   }
 

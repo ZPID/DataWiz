@@ -40,6 +40,7 @@ public class ProjectForm implements Serializable {
 
   // ACCESS DATA
   private List<String> roleList;
+  private List<String> pendingMails;
   private UserRoleDTO newRole;
   private String delMail;
 
@@ -180,6 +181,15 @@ public class ProjectForm implements Serializable {
 
   public void setDelMail(String delMail) {
     this.delMail = delMail;
+
+  }
+
+  public List<String> getPendingMails() {
+    return pendingMails;
+  }
+
+  public void setPendingMails(List<String> pendingMails) {
+    this.pendingMails = pendingMails;
 
   }
 

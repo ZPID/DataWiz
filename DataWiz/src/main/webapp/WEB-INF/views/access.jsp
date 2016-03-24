@@ -16,8 +16,8 @@
       <c:url var="accessUrl" value="/access/${ProjectForm.project.id}" />
       <sf:form action="${accessUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
         <div class="form-group">
-          <div class="col-sm-10">
-            <sf:errors element="div" class="alert alert-danger" role="alert" htmlEscape="false" />
+          <div class="col-sm-12">
+            <%@ include file="templates/message.jsp"%>
             <ul class="list-group">
               <c:forEach items="${ProjectForm.sharedUser}" var="user" varStatus="uState">
                 <li class="list-group-item">
@@ -83,7 +83,9 @@
               <!--  -->
               <c:if test="${principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id)}">
                 <!-- add role to excisting user -->
-                <li class="list-group-item">
+                <li class="list-group-item"><sf:label path="delMail">
+                    <s:message code="roles.add.role.label" />
+                  </sf:label>
                   <div class="row">
                     <div class="col-sm-3">
                       <sf:select path="newRole.userId" class="form-control" id="accessMailChange" onchange="showHideNewRole();">
@@ -121,18 +123,45 @@
                         </sf:button>
                       </c:if>
                     </div>
-                  </div>
-                </li>
+                  </div></li>
                 <!-- add new user to project -->
-                <li class="list-group-item">
+                <li class="list-group-item"><sf:label path="delMail">
+                    <s:message code="roles.add.user" />
+                  </sf:label>
                   <div class="input-group">
                     <sf:input path="delMail" class="form-control" placeholder="Enter Email" />
                     <span class="input-group-btn"> <sf:button class="btn btn-success" type="submit" name="addUser">
                         <s:message code="gen.invite" />
                       </sf:button>
                     </span>
-                  </div>
-                </li>
+                  </div></li>
+                <!-- pending Invites -->
+                <c:if test="${fn:length(ProjectForm.pendingMails) gt 0}">
+                  <li class="list-group-item"><sf:label path="delMail">
+                    pending invites
+                  </sf:label>
+                    <div class="row">
+                      <div class="col-sm-12">
+                        <ul class="list-group">
+                          <c:forEach items="${ProjectForm.pendingMails}" var="pendingMail">
+                            <li class="list-group-item">
+                              <div class="row">
+                                <div class="col-sm-9">
+                                  <s:message text="${pendingMail}" />
+                                </div>
+                                <div class="col-sm-3">
+                                  <a class="btn btn-success btn-xs"
+                                    href="<c:url value="/access/${ProjectForm.project.id}/resendInvite/${pendingMail}" />"> resend
+                                    Invite </a> <a class="btn btn-danger btn-xs"
+                                    href="<c:url value="/access/${ProjectForm.project.id}/deleteInvite/${pendingMail}" />"> del Invite </a>
+                                </div>
+                              </div>
+                            </li>
+                          </c:forEach>
+                        </ul>
+                      </div>
+                    </div></li>
+                </c:if>
               </c:if>
             </ul>
           </div>

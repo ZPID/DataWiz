@@ -18,6 +18,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
@@ -27,8 +28,8 @@ import org.springframework.web.servlet.view.JstlView;
 
 import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.FileDAO;
+import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
@@ -99,6 +100,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+  }
+  
+  @Override
+  public void configurePathMatch(PathMatchConfigurer matcher) {
+      matcher.setUseRegisteredSuffixPatternMatch(true);
   }
 
   @Autowired
