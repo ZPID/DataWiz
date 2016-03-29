@@ -94,7 +94,7 @@ public class ProjectDAO {
           }
         });
     if (log.isDebugEnabled())
-      log.debug("leaving findByID project: " + project.getId());
+      log.debug("leaving findByID project: " + ((project != null) ? project.getId() : "null"));
     return project;
   }
 

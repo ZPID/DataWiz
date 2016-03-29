@@ -48,6 +48,11 @@ textarea {
   content: ":";
 }
 
+.form-group-clean label:AFTER {
+  content: "";
+}
+
+
 .list-group-item .btn:AFTER {
   content: "";
 }

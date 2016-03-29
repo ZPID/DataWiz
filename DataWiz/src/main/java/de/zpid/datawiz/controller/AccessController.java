@@ -250,7 +250,6 @@ public class AccessController {
     if (log.isInfoEnabled()) {
       log.info("execute addUserToProject for project [id:" + projectId + "]");
     }
-    // TODO RESEND request hierher umleiten und resent bool nutzen!
     UserDTO admin = UserUtil.getCurrentUser();
     String check = checkProjectAdmin(redirectAttributes, projectId, admin);
     if (check != null) {
@@ -275,14 +274,13 @@ public class AccessController {
     } catch (Exception e) {
       if (e instanceof DuplicateKeyException) {
         bRes.reject("globalErrors", "doublette");
-        return "access";
       }
       e.printStackTrace();
     }
     String subject = null;
     String content = null;
     String url = null;
-    if (linkhash != null && !linkhash.isEmpty()) {
+    if (!bRes.hasErrors() && linkhash != null && !linkhash.isEmpty()) {
       if (user != null && user.getId() > 0) {
         if (log.isDebugEnabled()) {
           log.debug("User [email:" + user.getEmail()
@@ -310,9 +308,9 @@ public class AccessController {
               messageSource.getMessage(content, new Object[] { adminName, pForm.getProject().getTitle(), url },
                   LocaleContextHolder.getLocale()));
         } catch (MessagingException e) {
-          log.error("Mail error during user registration: " + e.getStackTrace());
+          // TODO
+          log.error("Mail error during user registration: " + e);
           bRes.reject("globalErrors", "email");
-          return "access";
         }
       } else {
         // TODO URL ERROR
@@ -320,25 +318,24 @@ public class AccessController {
     } else {
       // TODO linkhash error
     }
+    if (bRes.hasErrors())
+      return "access";
     return "redirect:/access/" + projectId;
   }
 
   /**
    * This function is called from the invitation mail. <br />
    * Before it saves the REL_ROLE (Relation Role), it checks the project's availability and if the calling user equals
-   * the user of the link address
+   * the user of the link address <br />
+   * If the invitation is successful, a mail is sent to the inviting administrator, to remember him to add access rights
+   * to the new project user
    *
    * @param email
-   *          the email
    * @param projectId
-   *          the project id
    * @param linkhash
-   *          the linkhash
    * @param redirectAttributes
-   *          the redirect attributes
    * @param request
-   *          the request
-   * @return String
+   * @return redirect to the panel, because the user has no rights to read or write yet
    */
   @RequestMapping(value = { "/{projectId}/acceptInvite/{email}/{linkhash}" })
   public String acceptInvite(@PathVariable String email, @PathVariable long projectId, @PathVariable String linkhash,
@@ -388,26 +385,20 @@ public class AccessController {
 
   /**
    * Delete role from a project User <br />
-   * It is not possible to delete the project owner - it's id is saved in the owner row in the dw_project table
+   * It is not possible to delete the project owner - its identifier is saved in the owner row in the dw_project table
    *
    * @param userId
-   *          the user id
    * @param roleId
-   *          the role id
    * @param projectId
-   *          the project id
    * @param studyId
-   *          the study id
    * @param redirectAttributes
-   *          the redirect attributes
    * @param bRes
-   *          the b res
-   * @return String ({@link #string})
+   * @return String redirect to access/{projectID} with redirectAttributes for the different success or error states
    */
   @RequestMapping(value = { "/{projectId}/delete/{userId}/{roleId}",
       "/{projectId}/delete/{userId}/{roleId}/{studyId}" })
   public String deleteRole(@PathVariable long userId, @PathVariable long roleId, @PathVariable long projectId,
-      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes) {
+      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes, ModelMap model) {
     if (log.isInfoEnabled()) {
       log.info("execute deleteRole [Role:" + roleId + " User:" + userId + " Project:" + projectId + "]");
     }
@@ -417,31 +408,41 @@ public class AccessController {
     if (check != null) {
       return check;
     }
+    String msgType, msgTxt = "";
     try {
-      // TODO nicht selber löschen
       ProjectDTO project = projectDAO.findById(projectId);
-      if (project != null && project.getOwnerId() == userId) {
-        // TODO ausstieg
-        redirectAttributes.addFlashAttribute("errorMSG",
-            messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
+      if (project == null) {
+        msgType = "errorMSG";
+        msgTxt = "project.access.denied";
+        log.warn(
+            "Delete role not successful - no project found for id: " + projectId + " and user: " + admin.getEmail());
+      } else if (admin.getId() == userId) {
+        msgType = "errorMSG";
+        msgTxt = "roles.error.self.delete";
+        log.warn(" User " + admin.getEmail() + " tries to delete its own role");
+      } else if (project.getOwnerId() == userId) {
+        msgType = "errorMSG";
+        msgTxt = "roles.error.owner.delete";
         log.warn(" User " + admin.getEmail() + " tries to delete the project owner: " + userId);
+      } else {
+        msgType = "infoMSG";
+        msgTxt = "roles.success.del.role";
+        roleDao.deleteRole(role);
       }
-      roleDao.deleteRole(role);
     } catch (Exception e) {
-      // TODO meldung an view
-      log.warn("ERROR: Database Error while deleting Role - Exception:" + e.getMessage());
+      msgType = "errorMSG";
+      msgTxt = "project.access.denied";
+      log.error("ERROR: Database Error while deleting Role - Exception:", e);
+      model.put("errorMSG", messageSource.getMessage("roles.error.db", null, LocaleContextHolder.getLocale()));
       return "access";
     }
-    // TODO meldung bei erfolg -> fehler abfangen
-    redirectAttributes.addFlashAttribute("infoMSG",
-        messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
+    redirectAttributes.addFlashAttribute(msgType,
+        messageSource.getMessage(msgTxt, null, LocaleContextHolder.getLocale()));
     return "redirect:/access/" + projectId;
   }
 
   /**
    * Adds a role to a project user
-   * 
-   * 
    *
    * @param projectId
    * @param pForm
@@ -531,7 +532,7 @@ public class AccessController {
               }
           }
         } catch (Exception e) {
-          log.warn("ERROR: Database Error while setting Role - Exception:" + e.getMessage());
+          log.error("ERROR: Database Error while setting Role - Exception:", e);
           bRes.reject("globalErrors",
               messageSource.getMessage("roles.error.db", null, LocaleContextHolder.getLocale()));
         }
@@ -539,7 +540,7 @@ public class AccessController {
         bRes.reject("globalErrors", "email");
       }
     } else {
-      log.warn("ERROR: add Role not successful because ProjectForm or Role empty");
+      log.error("ERROR: add Role not successful because ProjectForm or Role empty");
       bRes.reject("globalErrors",
           messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
     }
@@ -565,6 +566,7 @@ public class AccessController {
     try {
       admin.setGlobalRoles(roleDao.findRolesByUserID(admin.getId()));
     } catch (Exception e) {
+      // TODO
       e.printStackTrace();
     }
     if (!admin.hasProjectRole(Roles.PROJECT_ADMIN, projectId) && !admin.hasRole(Roles.ADMIN)) {
