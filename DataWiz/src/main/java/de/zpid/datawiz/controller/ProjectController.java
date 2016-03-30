@@ -13,17 +13,13 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,19 +30,13 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.FileDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.StudyDAO;
-import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.DelType;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
@@ -59,27 +49,7 @@ import de.zpid.datawiz.util.UserUtil;
 @Controller
 @RequestMapping(value = "/project")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
-public class ProjectController {
-
-  @Autowired
-  private StudyDAO studyDAO;
-  @Autowired
-  private ProjectDAO projectDAO;
-  @Autowired
-  private TagDAO tagDAO;
-  @Autowired
-  private FileDAO fileDAO;
-  @Autowired
-  private ContributorDAO contributorDAO;
-  @Autowired
-  private RoleDAO roleDAO;
-  @Autowired
-  private MessageSource messageSource;
-  @Autowired
-  private SmartValidator validator;
-
-  private static final Logger log = Logger.getLogger(ProjectController.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+public class ProjectController extends SuperController {
 
   /**
    * 
@@ -127,8 +97,7 @@ public class ProjectController {
     }
     // create new pform!
     try {
-      pForm = getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, this.fileDAO, this.tagDAO,
-          this.studyDAO, null, "PROJECT");
+      pForm = getProjectForm(pForm, pid, user, "PROJECT");
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());
@@ -381,86 +350,6 @@ public class ProjectController {
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
-  }
-
-  public static boolean saveOrUpdateProject(ProjectForm pForm, ProjectDAO projectDAO, RoleDAO roleDAO) {
-    boolean error = false;
-    try {
-      UserDTO user = UserUtil.getCurrentUser();
-      if (pForm != null && pForm.getProject() != null && user != null) {
-        if (pForm.getProject().getId() <= 0) {
-          int chk = projectDAO.insertProject(pForm.getProject());
-          if (chk > 0) {
-            roleDAO.setRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
-            roleDAO.setRole(
-                new UserRoleDTO(Roles.PROJECT_ADMIN.toInt(), user.getId(), chk, 0, Roles.PROJECT_ADMIN.name()));
-            pForm.getProject().setId(chk);
-          } else {
-            error = true;
-          }
-        } else {
-          projectDAO.updateProject(pForm.getProject());
-        }
-      } else {
-        error = true;
-      }
-      UserUtil.getCurrentUser().setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
-    } catch (Exception e) {
-      log.error("Project saving not sucessful error:" + e.getMessage());
-      error = true;
-    }
-    return error;
-  }
-
-  /**
-   * 
-   * @param pid
-   * @param user
-   * @return
-   * @throws Exception
-   */
-  public static ProjectForm getProjectForm(ProjectForm pForm, long pid, UserDTO user, ProjectDAO projectDAO,
-      ContributorDAO contributorDAO, FileDAO fileDAO, TagDAO tagDAO, StudyDAO studyDAO, FormTypesDAO dmpRelTypeDAO,
-      String call) throws Exception {
-    if (log.isDebugEnabled()) {
-      log.debug("execute getProjectData");
-    }
-    // 1st - security access check!
-    if (pid > 0 && user != null) {
-      if (!user.hasRole(Roles.ADMIN) && !user.hasProjectRole(Roles.PROJECT_READER, pid)
-          && !user.hasProjectRole(Roles.PROJECT_ADMIN, pid) && !user.hasProjectRole(Roles.PROJECT_WRITER, pid)) {
-        throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
-            + " tries to get access to project:" + pid + " without having the permissions to read");
-      }
-      ProjectDTO pdto = projectDAO.findById(pid);
-      if (pdto == null || pdto.getId() <= 0) {
-        throw new DataWizException("Project is empty for user=" + user.getEmail() + " and project=" + pid);
-      }
-      // 2nd - security access check!
-      // if (user.getId() != pdto.getProjectRole().getUserId()) {
-      // throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
-      // + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
-      // }
-      pForm.setProject(pdto);
-      if (call == null || call.isEmpty() || call.equals("PROJECT")) {
-        pForm.setFiles(fileDAO.getProjectFiles(pdto));
-        pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
-        pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
-        pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
-        pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-      } else if (call.equals("DMP")) {
-        pForm.setDataTypes(dmpRelTypeDAO.getAllByType(true, DelType.datatype));
-        pForm.setCollectionModes(dmpRelTypeDAO.getAllByType(true, DelType.collectionmode));
-        pForm.setMetaPurposes(dmpRelTypeDAO.getAllByType(true, DelType.metaporpose));
-        pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-      } else if (call.equals("ACCESS")) {
-        pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
-      }
-      return pForm;
-    } else {
-      log.warn("ProjectID or UserDTO is empty - NULL returned!");
-      return null;
     }
   }
 

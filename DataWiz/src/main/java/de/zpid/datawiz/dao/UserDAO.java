@@ -5,35 +5,23 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.AccountState;
 
-public class UserDAO {
+@Service
+@Scope("singleton")
+public class UserDAO extends SuperDAO {
 
   @Autowired
   private RoleDAO roleDAO;
-
-  private static final Logger log = Logger.getLogger(UserDAO.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-  private JdbcTemplate jdbcTemplate;
-
-  public UserDAO() {
-  }
-
-  public UserDAO(DataSource dataSource) {
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
 
   public UserDTO findById(long l) throws Exception {
     if (log.isDebugEnabled())

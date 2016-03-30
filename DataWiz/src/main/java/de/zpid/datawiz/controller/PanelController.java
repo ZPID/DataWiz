@@ -5,11 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,10 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.StudyDAO;
-import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
@@ -32,21 +24,7 @@ import de.zpid.datawiz.util.CustomUserDetails;
 @Controller
 @RequestMapping(value = "/panel")
 @SessionAttributes({ "breadcrumpList" })
-public class PanelController {
-
-  @Autowired
-  private ProjectDAO projectDAO;
-  @Autowired
-  private StudyDAO studyDAO;
-  @Autowired
-  private ContributorDAO contributorDAO;
-  @Autowired
-  private UserDAO userDAO;
-  @Autowired
-  private MessageSource messageSource;
-
-  private static final Logger log = Logger.getLogger(PanelController.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+public class PanelController extends SuperController {
 
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {

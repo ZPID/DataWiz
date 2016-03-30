@@ -1,7 +1,6 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 

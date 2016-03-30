@@ -2,17 +2,12 @@ package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
@@ -40,25 +30,7 @@ import de.zpid.datawiz.util.UserUtil;
 @Controller
 @RequestMapping(value = "/dmp")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
-public class DMPController {
-
-  @Autowired
-  private ProjectDAO projectDAO;
-  @Autowired
-  private ContributorDAO contributorDAO;
-  @Autowired
-  private FormTypesDAO formTypeDAO;
-  @Autowired
-  private DmpDAO dmpDAO;
-  @Autowired
-  private RoleDAO roleDAO;
-  @Autowired
-  private MessageSource messageSource;
-  @Autowired
-  private SmartValidator validator;
-
-  private static final Logger log = Logger.getLogger(DMPController.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+public class DMPController extends SuperController {
 
   /**
    * 
@@ -115,8 +87,7 @@ public class DMPController {
     }
     DmpDTO dmp;
     try {
-      pForm = ProjectController.getProjectForm(pForm, pid, user, this.projectDAO, this.contributorDAO, null, null, null,
-          this.formTypeDAO, "DMP");
+      pForm = getProjectForm(pForm, pid, user, "DMP");
       dmp = dmpDAO.getByID(pForm.getProject());
       if (dmp != null && dmp.getId() > 0) {
         dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
@@ -170,7 +141,7 @@ public class DMPController {
       }
       hasErrors = true;
     }
-    if (ProjectController.saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
+    if (saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;

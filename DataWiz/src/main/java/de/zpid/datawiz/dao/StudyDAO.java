@@ -4,30 +4,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 
-public class StudyDAO {
-
-  private static final Logger log = Logger.getLogger(StudyDAO.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-  private JdbcTemplate jdbcTemplate;
-
-  public StudyDAO() {
-    super();
-  }
-
-  public StudyDAO(DataSource dataSource) {
-    super();
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
+@Service
+@Scope("singleton")
+public class StudyDAO extends SuperDAO {
 
   public List<StudyDTO> getAllStudiesByProjectId(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())

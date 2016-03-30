@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,20 +25,20 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.FileDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.StudyDAO;
-import de.zpid.datawiz.dao.TagDAO;
-import de.zpid.datawiz.dao.UserDAO;
-
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "de.zpid.datawiz")
 public class DataWizConfiguration extends WebMvcConfigurerAdapter {
+
+  @Bean(name = "dataSource")
+  public DataSource getDataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+    dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz");
+    dataSource.setUsername("datawiz");
+    dataSource.setPassword("dwpw1!");
+    return dataSource;
+  }
 
   @Bean(name = "DataWiz")
   public ViewResolver viewResolver() {
@@ -64,16 +63,6 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     CookieLocaleResolver resolver = new CookieLocaleResolver();
     resolver.setDefaultLocale(new Locale("de"));
     return resolver;
-  }
-
-  @Bean(name = "dataSource")
-  public DataSource getDataSource() {
-    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz");
-    dataSource.setUsername("datawiz");
-    dataSource.setPassword("dwpw1!");
-    return dataSource;
   }
 
   @Bean(name = "validator")
@@ -101,63 +90,9 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     registry.addResourceHandler("/static/**").addResourceLocations("/static/");
   }
-  
+
   @Override
   public void configurePathMatch(PathMatchConfigurer matcher) {
-      matcher.setUseRegisteredSuffixPatternMatch(true);
-  }
-
-  @Autowired
-  @Bean(name = "userDao")
-  public UserDAO getUserDao() {
-    return new UserDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "projectDao")
-  public ProjectDAO getProjectDao() {
-    return new ProjectDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "studyDao")
-  public StudyDAO getStudyDAO() {
-    return new StudyDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "roleDao")
-  public RoleDAO getRoleDAO() {
-    return new RoleDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "contributorDao")
-  public ContributorDAO getContributorDAO() {
-    return new ContributorDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "tagDao")
-  public TagDAO getTagDAO() {
-    return new TagDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "fileDao")
-  public FileDAO getFileDAO() {
-    return new FileDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "dmpRelTypeDAO")
-  public FormTypesDAO getDataTypeDAO() {
-    return new FormTypesDAO(getDataSource());
-  }
-
-  @Autowired
-  @Bean(name = "dmpDAO")
-  public DmpDAO getDmpDAO() {
-    return new DmpDAO(getDataSource());
+    matcher.setUseRegisteredSuffixPatternMatch(true);
   }
 }

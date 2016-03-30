@@ -1,35 +1,22 @@
 package de.zpid.datawiz.dao;
 
 import java.sql.ResultSet;
+
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 
-public class ContributorDAO {
-
-  private static final Logger log = Logger.getLogger(ContributorDAO.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-  private JdbcTemplate jdbcTemplate;
-
-  public ContributorDAO() {
-    super();
-  }
-
-  public ContributorDAO(DataSource dataSource) {
-    super();
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
+@Service
+@Scope("singleton")
+public class ContributorDAO extends SuperDAO {
 
   public List<ContributorDTO> getByProject(ProjectDTO project, boolean withStudy, boolean withPrimary)
       throws Exception {

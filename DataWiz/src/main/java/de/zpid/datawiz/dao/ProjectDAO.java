@@ -9,35 +9,21 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 
-public class ProjectDAO {
-
-  private static final Logger log = Logger.getLogger(ProjectDAO.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-  private JdbcTemplate jdbcTemplate;
-
-  public ProjectDAO() {
-    super();
-  }
-
-  public ProjectDAO(DataSource dataSource) {
-    super();
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
+@Service
+@Scope("singleton")
+public class ProjectDAO extends SuperDAO {
 
   public List<ProjectDTO> findAllByUserID(UserDTO user) throws Exception {
     if (log.isDebugEnabled())

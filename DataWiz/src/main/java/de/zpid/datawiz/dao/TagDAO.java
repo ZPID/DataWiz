@@ -5,26 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
-import org.apache.log4j.Logger;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 
-public class TagDAO {
-
-  private static final Logger log = Logger.getLogger(TagDAO.class);
-  private JdbcTemplate jdbcTemplate;
-
-  public TagDAO() {
-    super();
-  }
-
-  public TagDAO(DataSource dataSource) {
-    super();
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
-  }
+@Service
+@Scope("singleton")
+public class TagDAO extends SuperDAO {
 
   public HashMap<String, String> getTagsByProjectID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())

@@ -4,15 +4,11 @@ import java.util.Optional;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -33,9 +29,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
@@ -44,28 +37,10 @@ import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @SessionAttributes("UserDTO")
-public class LoginController {
-
-  private static final Logger log = Logger.getLogger(LoginController.class);
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-
-  @Autowired
-  private UserDAO userDao;
-
-  @Autowired
-  private RoleDAO roleDao;
-
-  @Autowired
-  private ProjectDAO projectDao;
+public class LoginController extends SuperController {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-
-  @Autowired
-  private MessageSource messageSource;
-
-  @Autowired
-  private HttpServletRequest request;
 
   @ModelAttribute("UserDTO")
   public UserDTO createUserObject() {
@@ -162,7 +137,7 @@ public class LoginController {
           log.debug("Email is already used for an account email:" + person.getEmail());
       }
       // Email exists check
-      if (userDao.findByMail(person.getEmail(), false) != null) {
+      if (userDAO.findByMail(person.getEmail(), false) != null) {
         bindingResult.rejectValue("email", "email.already.exists");
         if (log.isDebugEnabled())
           log.debug("Email is already used for an account email:" + person.getEmail());
@@ -184,12 +159,12 @@ public class LoginController {
       if (chkmail != null && !chkmail.isEmpty() && projectId > 0) {
         person.setSecEmail(null);
         if (!chkmail.equals(person.getEmail())) {
-          projectDao.updateInvitationEntree(projectId, chkmail, person.getEmail());
+          projectDAO.updateInvitationEntree(projectId, chkmail, person.getEmail());
         }
       }
       person.setPassword(passwordEncoder.encode(person.getPassword()));
-      userDao.saveOrUpdate(person, false);
-      person = userDao.findByMail(person.getEmail(), false);
+      userDAO.saveOrUpdate(person, false);
+      person = userDAO.findByMail(person.getEmail(), false);
     } catch (Exception e) {
       log.error("DBS error during user registration: " + e);
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
@@ -227,11 +202,11 @@ public class LoginController {
       log.debug("execute activateAccount email: " + mail + " code: " + activationCode);
     }
     try {
-      UserDTO user = userDao.findByMail(mail, false);
+      UserDTO user = userDAO.findByMail(mail, false);
       if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
           && user.getActivationCode().equals(activationCode)) {
-        userDao.activateUserAccount(user);
-        roleDao.setRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
+        userDAO.activateUserAccount(user);
+        roleDAO.setRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
       }
     } catch (Exception e) {
       log.warn("DBS error during user registration: " + e);
@@ -270,7 +245,7 @@ public class LoginController {
    * @return
    */
   @RequestMapping(value = "/logout")
-  public String logout(ModelMap model, HttpServletRequest request, HttpServletResponse response) {
+  public String logout(ModelMap model, HttpServletResponse response) {
     if (log.isDebugEnabled()) {
       log.debug("execute logoutPage()");
     }
