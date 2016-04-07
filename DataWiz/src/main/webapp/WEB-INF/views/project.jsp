@@ -284,6 +284,17 @@
               </li>
             </c:forEach>
           </ul>
+          <!-- Buttons -->
+          <div class="form-group">
+            <div class="col-sm-offset-0 col-sm-12">
+              <button type="reset" class="btn btn-default">
+                <s:message code="gen.reset" />
+              </button>
+              <sf:button type="submit" class="btn btn-success" id="worker_submit">
+                <s:message code="gen.submit" />
+              </sf:button>
+            </div>
+          </div>
         </div>
         <!-- End Page Contributor -->
       </sf:form>
@@ -293,7 +304,7 @@
           <s:message code="project.edit.metadata.info" />
         </div>
         <c:forEach items="${ProjectForm.studies}" var="cstud">
-            <b>${cstud.id} - ${cstud.title}<br /></b>
+          <b>${cstud.id} - ${cstud.title}<br /></b>
         </c:forEach>
 
 

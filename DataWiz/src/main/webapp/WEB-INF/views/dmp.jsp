@@ -72,7 +72,7 @@
         <jsp:include page="forms/dmp_costs.jsp" />
         <!-- Buttons -->
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-sm-offset-0 col-md-12">
             <button type="reset" class="btn btn-default">
               <s:message code="gen.reset" />
             </button>
@@ -82,22 +82,6 @@
           </div>
         </div>
       </sf:form>
-    </div>
-  </div>
-  <div class="modal fade" data-toggle="draftModal" data-target="#draftModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-          <div>
-            <p>You are about to leave the deal. Would you like to save as a draft?</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>

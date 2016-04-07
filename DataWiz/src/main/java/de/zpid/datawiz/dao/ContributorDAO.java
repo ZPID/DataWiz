@@ -18,6 +18,12 @@ import de.zpid.datawiz.dto.ProjectDTO;
 @Scope("singleton")
 public class ContributorDAO extends SuperDAO {
 
+  public ContributorDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading ContributorDAO as Singleton and Service");
+  }
+
   public List<ContributorDTO> getByProject(ProjectDTO project, boolean withStudy, boolean withPrimary)
       throws Exception {
     if (log.isDebugEnabled())

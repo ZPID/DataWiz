@@ -13,6 +13,12 @@ import de.zpid.datawiz.dto.ProjectDTO;
 @Service
 @Scope("singleton")
 public class TagDAO extends SuperDAO {
+  
+  public TagDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading TagDAO as Singleton and Service");
+  }
 
   public HashMap<String, String> getTagsByProjectID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())

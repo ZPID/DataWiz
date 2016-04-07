@@ -39,6 +39,12 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes("UserDTO")
 public class LoginController extends SuperController {
 
+  public LoginController() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading LoginUserController for mapping /login");
+  }
+
   @Autowired
   private PasswordEncoder passwordEncoder;
 

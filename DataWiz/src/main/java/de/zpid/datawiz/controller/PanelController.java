@@ -26,6 +26,12 @@ import de.zpid.datawiz.util.CustomUserDetails;
 @SessionAttributes({ "breadcrumpList" })
 public class PanelController extends SuperController {
 
+  public PanelController() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading PanelController for mapping /panel");
+  }
+
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
     return (ProjectForm) context.getBean("ProjectForm");

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import javax.mail.MessagingException;
 
+import org.apache.log4j.Level;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,6 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AccessController.
  */
@@ -37,10 +37,16 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class AccessController extends SuperController {
 
+  public AccessController() {
+    super();
+    if (log.isEnabledFor(Level.INFO))
+      log.info("Loading AccessController for mapping /access");
+  }
+
   /**
    * Creates the project form.
    *
-   * @return ProjectForm ({@link #projectForm})
+   * @return ProjectForm
    */
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
@@ -51,21 +57,19 @@ public class AccessController extends SuperController {
    * Show access page.
    *
    * @param projectId
-   *          the project id
    * @param model
-   *          the model
-   * @param redirectAttributes
-   *          the redirect attributes
-   * @return String ({@link #string})
+   * @param reAtt
+   * @return String 
    */
   @RequestMapping(value = { "", "/{projectId}" }, method = RequestMethod.GET)
-  public String showAccessPage(@PathVariable Optional<Long> projectId, ModelMap model,
-      RedirectAttributes redirectAttributes) {
-    if (log.isInfoEnabled()) {
-      log.info("Entering showAccessPage for project [id:" + projectId.get() + "]");
+  public String showAccessPage(@PathVariable final Optional<Long> projectId, final ModelMap model,
+      final RedirectAttributes reAtt) {
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Entering showAccessPage for project [id:" + projectId.get() + "]");
     }
     if (!projectId.isPresent()) {
-      // TODO ausstieg wenn kein Projekt angelegt!!!!
+      reAtt.addFlashAttribute("errorMSG",
+          messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
     UserDTO user = UserUtil.getCurrentUser();
@@ -82,44 +86,54 @@ public class AccessController extends SuperController {
         }
       }
     } catch (Exception e) {
-      log.warn(e.getMessage());
       String redirectMessage = "";
       if (e instanceof DataWizException) {
         redirectMessage = "project.not.available";
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: No Project available for user [email: " + user.getEmail() + "] and project [id: " + projectId
+              + "]");
       } else if (e instanceof DataWizSecurityException) {
         redirectMessage = "project.access.denied";
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: user [email: " + user.getEmail() + "] tried to get access to project [id: " + projectId
+              + "] without having a role");
       } else {
         redirectMessage = "dbs.sql.exception";
+        if (log.isEnabledFor(Level.ERROR))
+          log.error("ERROR: Database error during database transaction, showAccessPage aborted - Exception:", e);
       }
-      redirectAttributes.addFlashAttribute("errorMSG",
+      reAtt.addFlashAttribute("errorMSG",
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
     model.put("breadcrumpList", BreadCrumpUtil.generateBC("access"));
     model.put("subnaviActive", "ACCESS");
     model.put("ProjectForm", pForm);
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Method showAccessPage successfully completed");
+    }
     return "access";
   }
 
   /**
-   * Delete userfrom project.
+   * Delete user from project.
    *
    * @param userId
    *          the user id
    * @param projectId
    *          the project id
-   * @param redirectAttributes
+   * @param reAtt
    *          the redirect attributes
    * @return String ({@link #string})
    */
   @RequestMapping(value = { "/{projectId}/deleteUser/{userId}" })
-  public String deleteUserfromProject(@PathVariable long userId, @PathVariable long projectId,
-      RedirectAttributes redirectAttributes) {
-    if (log.isInfoEnabled()) {
-      log.info("Entering deleteUserfromProject [id:" + projectId + " userid:" + userId + "]");
+  public String deleteUserfromProject(@PathVariable final long userId, @PathVariable final long projectId,
+      final RedirectAttributes reAtt, final ModelMap model) {
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Entering deleteUserfromProject [id:" + projectId + " userid:" + userId + "]");
     }
     UserDTO admin = UserUtil.getCurrentUser();
-    String check = checkProjectAdmin(redirectAttributes, projectId, admin);
+    String check = checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -127,89 +141,110 @@ public class AccessController extends SuperController {
     try {
       roleDAO.deleteRole(role);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      if (log.isEnabledFor(Level.ERROR))
+        log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
+      model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+      return "access";
+    }
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Method deleteUserfromProject successfully completed");
     }
     return "redirect:/access/" + projectId;
   }
 
   /**
+   * Deletes an open project invitation
    * 
    * @param model
    * @param projectId
    * @param mail
-   * @param redirectAttributes
+   * @param reAtt
    * @param request
    * @param resend
-   * @return
+   * @return redirect to access/{projectId} if successful and to access.jsp if an error has occurred
    */
   @RequestMapping(value = { "/{projectId}/deleteInvite/{mail}" }, method = RequestMethod.GET)
-  public String deleteInvite(ModelMap model, @PathVariable long projectId, @PathVariable String mail,
-      RedirectAttributes redirectAttributes, boolean resend) {
-    if (log.isInfoEnabled()) {
-      log.info("Entering deleteInvite project [id:" + projectId + "] and user [mail:" + mail + "] ");
+  public String deleteInvite(final ModelMap model, @PathVariable long projectId, @PathVariable final String mail,
+      final RedirectAttributes reAtt, final boolean resend) {
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Entering deleteInvite project [id:" + projectId + "] and user [mail:" + mail + "] ");
     }
     try {
       projectDAO.deleteInvitationEntree(projectId, mail);
     } catch (Exception e) {
-      // TODO
-      model.put("errorMSG", "error DBS");
+      if (log.isEnabledFor(Level.ERROR))
+        log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
+      model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "access";
+    }
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Method deleteInvite successfully completed");
     }
     return "redirect:/access/" + projectId;
   }
 
   /**
+   * Resends an invitation email to the submitted email For sending, the addUserToProject Method is used
    * 
    * @param model
    * @param projectId
    * @param mail
-   * @param redirectAttributes
-   * @param request
+   * @param reAtt
    * @param resend
-   * @return
+   * @return addUserToProject Method
    */
   @RequestMapping(value = { "/{projectId}/resendInvite/{mail}" }, method = RequestMethod.GET)
-  public String resendInvite(ModelMap model, @PathVariable long projectId, @PathVariable String mail,
-      RedirectAttributes redirectAttributes, boolean resend) {
-    if (log.isInfoEnabled()) {
-      log.info("Entering resendInvitefor project [id:" + projectId + "] and user [mail:" + mail + "] ");
+  public String resendInvite(final ModelMap model, @PathVariable final long projectId, @PathVariable final String mail,
+      final RedirectAttributes reAtt, final boolean resend) {
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Entering resendInvite for project [id:" + projectId + "] and user [mail:" + mail + "] ");
     }
     ProjectForm pForm = createProjectForm();
     try {
       ProjectDTO project = projectDAO.findById(projectId);
       if (project == null) {
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: no project found for id:" + projectId);
+        model.put("errorMSG",
+            messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
         model.put("errorMSG", "empty project");
         return "access";
       }
       pForm.setProject(project);
       pForm.setDelMail(mail);
     } catch (Exception e) {
-      model.put("errorMSG", "error DBS");
+      if (log.isEnabledFor(Level.ERROR))
+        log.error("ERROR: Database error during database transaction, resendInvite aborted - Exception:", e);
+      model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "access";
     }
-    return addUserToProject(pForm, projectId, redirectAttributes, new BeanPropertyBindingResult(pForm, "ProjectForm"),
-        true);
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Method resendInvite successfully completed");
+    }
+    return addUserToProject(pForm, projectId, reAtt, new BeanPropertyBindingResult(pForm, "ProjectForm"), true);
   }
 
   /**
-   * Adds the user to project.
+   * Adds a user to project or sending a reminder mail if boolean resend is true. Checks if an user exists for the
+   * submitted mail address: if yes, a project invitation is send to the user, if no, a datawiz invitation is sent to
+   * the submitted email
    *
    * @param pForm
    * @param projectId
-   * @param redirectAttributes
+   * @param reAtt
    * @param bRes
-   * @param request
-   * @return String
+   * @param resend
+   * @return redirect to access/{projectId} if successful and to access.jsp if an error has occurred
    */
   @RequestMapping(value = { "/{projectId}" }, params = { "addUser" })
-  public String addUserToProject(@ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable long projectId,
-      RedirectAttributes redirectAttributes, BindingResult bRes, boolean resend) {
-    if (log.isDebugEnabled()) {
+  public String addUserToProject(@ModelAttribute("ProjectForm") final ProjectForm pForm,
+      @PathVariable final long projectId, final RedirectAttributes reAtt, final BindingResult bRes,
+      final boolean resend) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Entering addUserToProject for project [id:" + projectId + "]");
     }
     UserDTO admin = UserUtil.getCurrentUser();
-    String check = checkProjectAdmin(redirectAttributes, projectId, admin);
+    String check = checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -231,10 +266,13 @@ public class AccessController extends SuperController {
       linkhash = projectDAO.getValFromInviteData(pForm.getDelMail(), projectId, "linkhash");
     } catch (Exception e) {
       if (e instanceof DuplicateKeyException) {
-        // TODO
-        bRes.reject("globalErrors", "doublette");
+        bRes.reject("globalErrors",
+            messageSource.getMessage("roles.error.doublet", null, LocaleContextHolder.getLocale()));
       }
-      e.printStackTrace();
+      if (log.isEnabledFor(Level.ERROR))
+        log.error("ERROR: Database error during database transaction, addUserToProject aborted - Exception:", e);
+      reAtt.addFlashAttribute("errorMSG",
+          messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
     }
     String subject = null;
     String content = null;
@@ -242,7 +280,7 @@ public class AccessController extends SuperController {
     if (!bRes.hasErrors()) {
       if (linkhash != null && !linkhash.isEmpty()) {
         if (user != null && user.getId() > 0) {
-          if (log.isDebugEnabled()) {
+          if (log.isEnabledFor(Level.DEBUG)) {
             log.debug("User [email:" + user.getEmail()
                 + "] has an active datawiz account - sending project invitation to primary email");
           }
@@ -251,7 +289,7 @@ public class AccessController extends SuperController {
           url = request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()
               + "/access/" + projectId + "/acceptInvite/" + pForm.getDelMail() + "/" + linkhash);
         } else {
-          if (log.isDebugEnabled()) {
+          if (log.isEnabledFor(Level.DEBUG)) {
             log.debug("User [email:" + pForm.getDelMail()
                 + "] hasn't an active datawiz account - sending datawiz invitation to email");
           }
@@ -268,28 +306,31 @@ public class AccessController extends SuperController {
                 messageSource.getMessage(content, new Object[] { adminName, pForm.getProject().getTitle(), url },
                     LocaleContextHolder.getLocale()));
           } catch (MessagingException e) {
-            log.error("ERROR: Mail error, Mail was not sent - Exception:", e);
+            if (log.isEnabledFor(Level.ERROR))
+              log.error("ERROR: Mail error, Mail was not sent - Exception:", e);
             bRes.reject("globalErrors",
                 messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
           }
         } else {
-          log.warn("WARN: add User not successful something went wrot with the requestURL url:" + url);
+          if (log.isEnabledFor(Level.WARN))
+            log.warn("WARN: add User not successful something went wrot with the requestURL url:" + url);
           bRes.reject("globalErrors",
               messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
         }
       } else {
-        log.warn("WARN: add User not successful because the hashcode is empty");
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: add User not successful because the hashcode is empty");
         bRes.reject("globalErrors",
             messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
       }
     }
     if (bRes.hasErrors()) {
-      if (log.isDebugEnabled()) {
+      if (log.isEnabledFor(Level.DEBUG)) {
         log.debug("Method addUserToProject completed with errors - return to access.jsp");
       }
       return "access";
     }
-    if (log.isDebugEnabled()) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Method addUserToProject successfully completed");
     }
     return "redirect:/access/" + projectId;
@@ -305,62 +346,72 @@ public class AccessController extends SuperController {
    * @param email
    * @param projectId
    * @param linkhash
-   * @param redirectAttributes
+   * @param reAtt
    * @param request
    * @return redirect to the panel, because the user has no rights to read or write yet
    */
   @RequestMapping(value = { "/{projectId}/acceptInvite/{email}/{linkhash}" })
-  public String acceptInvite(@PathVariable String email, @PathVariable long projectId, @PathVariable String linkhash,
-      RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
+  public String acceptInvite(@PathVariable final String email, @PathVariable final long projectId,
+      @PathVariable final String linkhash, final RedirectAttributes reAtt) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Entering accepptInvite User [email:" + email + " Project:" + projectId + "]");
     }
     UserDTO admin = UserUtil.getCurrentUser();
     if (!admin.getEmail().equals(email)) {
-      log.warn("WARN: Invite acception failed because currentUser is not the invited User - CurrentUser: [email: "
-          + admin.getEmail() + "] InvitedUser: [email: " + email + "]");
-      redirectAttributes.addFlashAttribute("errorMSG",
+      if (log.isEnabledFor(Level.WARN))
+        log.warn("WARN: Invite acception failed because currentUser is not the invited User - CurrentUser: [email: "
+            + admin.getEmail() + "] InvitedUser: [email: " + email + "]");
+      reAtt.addFlashAttribute("errorMSG",
           messageSource.getMessage("roles.wrong.account", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    String adminMail = null;
-    ProjectDTO project = null;
+    String adminMail;
+    ProjectDTO project;
     try {
       project = projectDAO.findById(projectId);
       if (project != null) {
         adminMail = projectDAO.getValFromInviteData(email, projectId, "invited_by");
-        String hash = projectDAO.getValFromInviteData(email, projectId, "linkhash");
-        if (hash != null && !hash.isEmpty() && !linkhash.isEmpty() && linkhash.trim().equals(hash.trim())) {
-          UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), admin.getId(), projectId, 0,
-              Roles.REL_ROLE.name());
-          roleDAO.setRole(role);
-          projectDAO.deleteInvitationEntree(projectId, email);
+        if (adminMail != null && !adminMail.isEmpty()) {
+          String hash = projectDAO.getValFromInviteData(email, projectId, "linkhash");
+          if (hash != null && !hash.isEmpty() && !linkhash.isEmpty() && linkhash.trim().equals(hash.trim())) {
+            UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), admin.getId(), projectId, 0,
+                Roles.REL_ROLE.name());
+            roleDAO.setRole(role);
+            projectDAO.deleteInvitationEntree(projectId, email);
+          }
+          StringBuffer url = request.getRequestURL();
+          url = url.delete(url.indexOf(request.getRequestURI()), url.length()).append(request.getContextPath());
+          EmailUtil.sendSSLMail(adminMail,
+              messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
+              messageSource.getMessage("accept.mail.admin.content",
+                  new Object[] { email, project.getTitle(), url + "/access/" + project.getId() },
+                  LocaleContextHolder.getLocale()));
+          reAtt.addFlashAttribute("infoMSG",
+              messageSource.getMessage("roles.success.accept", null, LocaleContextHolder.getLocale()));
+        } else {
+          reAtt.addFlashAttribute("infoMSG",
+              messageSource.getMessage("roles.error.accept", null, LocaleContextHolder.getLocale()));
         }
-        StringBuffer url = request.getRequestURL();
-        url = url.delete(url.indexOf(request.getRequestURI()), url.length()).append(request.getContextPath());
-        EmailUtil.sendSSLMail(adminMail,
-            messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
-            messageSource.getMessage("accept.mail.admin.content",
-                new Object[] { email, project.getTitle(), url + "/access/" + project.getId() },
-                LocaleContextHolder.getLocale()));
-        redirectAttributes.addFlashAttribute("infoMSG",
-            messageSource.getMessage("roles.success.accept", null, LocaleContextHolder.getLocale()));
       } else {
-        log.warn("WARN: ProjectDTO is empty for [id: " + projectId + "]");
-        redirectAttributes.addFlashAttribute("errorMSG",
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: ProjectDTO is empty for [id: " + projectId + "]");
+        reAtt.addFlashAttribute("errorMSG",
             messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
       }
     } catch (Exception e) {
       if (e instanceof MessagingException) {
-        log.error("ERROR: Mail error, Mail was not sent - Exception:", e);
-        redirectAttributes.addFlashAttribute("errorMSG",
+        if (log.isEnabledFor(Level.ERROR))
+          log.error("ERROR: Mail error, Mail was not sent - Exception:", e);
+        reAtt.addFlashAttribute("errorMSG",
             messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
+      } else {
+        if (log.isEnabledFor(Level.ERROR))
+          log.error("ERROR: Database error during database transaction, acceptInvite aborted - Exception:", e);
+        reAtt.addFlashAttribute("errorMSG",
+            messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       }
-      log.error("ERROR: Database error during database transaction, acceptInvite aborted - Exception:", e);
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
     }
-    if (log.isDebugEnabled()) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Method acceptInvite successfully completed");
     }
     return "redirect:/panel";
@@ -374,39 +425,44 @@ public class AccessController extends SuperController {
    * @param roleId
    * @param projectId
    * @param studyId
-   * @param redirectAttributes
+   * @param reAtt
    * @param bRes
-   * @return String redirect to access/{projectID} with redirectAttributes for the different success or error states
+   * @return String redirect to access/{projectID} with reAtt for the different success or error states
    */
   @RequestMapping(value = { "/{projectId}/delete/{userId}/{roleId}",
       "/{projectId}/delete/{userId}/{roleId}/{studyId}" })
-  public String deleteRole(@PathVariable long userId, @PathVariable long roleId, @PathVariable long projectId,
-      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes, ModelMap model) {
-    if (log.isDebugEnabled()) {
+  public String deleteRole(@PathVariable final long userId, @PathVariable final long roleId,
+      @PathVariable final long projectId, @PathVariable final Optional<Long> studyId, final RedirectAttributes reAtt,
+      final ModelMap model) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Entering deleteRole [Role:" + roleId + " User:" + userId + " Project:" + projectId + "]");
     }
     UserRoleDTO role = new UserRoleDTO(roleId, userId, projectId, studyId.isPresent() ? studyId.get() : 1, "");
     UserDTO admin = UserUtil.getCurrentUser();
-    String check = checkProjectAdmin(redirectAttributes, projectId, admin);
+    String check = checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
-    String msgType, msgTxt = "";
+    String msgType;
+    String msgTxt;
     try {
       ProjectDTO project = projectDAO.findById(projectId);
       if (project == null) {
         msgType = "errorMSG";
         msgTxt = "project.access.denied";
-        log.warn("WARN: Delete role not successful - no project found for id: " + projectId + " and user: "
-            + admin.getEmail());
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: Delete role not successful - no project found for id: " + projectId + " and user: "
+              + admin.getEmail());
       } else if (admin.getId() == userId) {
         msgType = "errorMSG";
         msgTxt = "roles.error.self.delete";
-        log.warn("WARN: User " + admin.getEmail() + " tries to delete its own role");
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: User " + admin.getEmail() + " tries to delete its own role");
       } else if (project.getOwnerId() == userId) {
         msgType = "errorMSG";
         msgTxt = "roles.error.owner.delete";
-        log.warn("WARN: User " + admin.getEmail() + " tries to delete the project owner: " + userId);
+        if (log.isEnabledFor(Level.WARN))
+          log.warn("WARN: User " + admin.getEmail() + " tries to delete the project owner: " + userId);
       } else {
         msgType = "infoMSG";
         msgTxt = "roles.success.del.role";
@@ -415,13 +471,13 @@ public class AccessController extends SuperController {
     } catch (Exception e) {
       msgType = "errorMSG";
       msgTxt = "project.access.denied";
-      log.error("ERROR: Database error during database transaction, role not deleted - Exception:", e);
+      if (log.isEnabledFor(Level.ERROR))
+        log.error("ERROR: Database error during database transaction, role not deleted - Exception:", e);
       model.put("errorMSG", messageSource.getMessage("roles.error.db", null, LocaleContextHolder.getLocale()));
       return "access";
     }
-    redirectAttributes.addFlashAttribute(msgType,
-        messageSource.getMessage(msgTxt, null, LocaleContextHolder.getLocale()));
-    if (log.isDebugEnabled()) {
+    reAtt.addFlashAttribute(msgType, messageSource.getMessage(msgTxt, null, LocaleContextHolder.getLocale()));
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Method deleteRole successfully completed");
     }
     return "redirect:/access/" + projectId;
@@ -432,25 +488,27 @@ public class AccessController extends SuperController {
    *
    * @param projectId
    * @param pForm
-   * @param redirectAttributes
+   * @param reAtt
    * @param bRes
    * @return String
    */
   @RequestMapping(value = { "/{projectId}" }, params = { "addRole" })
-  public String addRoleToProjectUser(@PathVariable long projectId, @ModelAttribute("ProjectForm") ProjectForm pForm,
-      RedirectAttributes redirectAttributes, BindingResult bRes) {
-    if (log.isDebugEnabled()) {
+  public String addRoleToProjectUser(@PathVariable final long projectId,
+      @ModelAttribute("ProjectForm") final ProjectForm pForm, final RedirectAttributes reAtt,
+      final BindingResult bRes) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Entering addRoleToProjectUser for Project [id:" + projectId + "]");
     }
     UserDTO admin = UserUtil.getCurrentUser();
-    String check = checkProjectAdmin(redirectAttributes, projectId, admin);
+    String check = checkProjectAdmin(reAtt, projectId, admin);
+    UserDTO user = null;
     if (check != null) {
       return check;
     }
     if (pForm != null && pForm.getNewRole() != null) {
       UserRoleDTO newRole = pForm.getNewRole();
       newRole.setProjectId(projectId);
-      UserDTO user = null;
+
       if (newRole.getUserId() > 0) {
         try {
           user = userDAO.findById(newRole.getUserId());
@@ -490,16 +548,17 @@ public class AccessController extends SuperController {
                     messageSource.getMessage("roles.error.global.read", null, LocaleContextHolder.getLocale()));
               }
           } else {
-            if (!bRes.hasErrors())
-              if (log.isDebugEnabled())
+            if (!bRes.hasErrors()) {
+              if (log.isEnabledFor(Level.WARN))
                 log.warn("WARN: no user found for userId: " + newRole.getUserId());
-            bRes.reject("globalErrors",
-                messageSource.getMessage("roles.error.user.not.found", null, LocaleContextHolder.getLocale()));
+              bRes.reject("globalErrors",
+                  messageSource.getMessage("roles.error.user.not.found", null, LocaleContextHolder.getLocale()));
+            }
           }
           if (!bRes.hasErrors()) {
             int chk = roleDAO.setRole(newRole);
             // cleanup roles
-            if (chk > 0 && user.getGlobalRoles() != null)
+            if (chk > 0 && user.getGlobalRoles() != null) {
               for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
                 if (newRole.getType().equals(Roles.PROJECT_ADMIN.name())
                     && !roleTmp.getType().equals(Roles.REL_ROLE.name()) && roleTmp.getProjectId() > 0) {
@@ -518,31 +577,38 @@ public class AccessController extends SuperController {
                   roleDAO.deleteRole(roleTmp);
                 }
               }
+            }
           }
         } catch (Exception e) {
-          log.error("ERROR: Database error during database transaction, role not saved - Exception:", e);
+          if (log.isEnabledFor(Level.ERROR))
+            log.error("ERROR: Database error during database transaction, role not saved - Exception:", e);
           bRes.reject("globalErrors",
               messageSource.getMessage("roles.error.db", null, LocaleContextHolder.getLocale()));
         }
       } else {
-        log.warn("WARN: add Role not successful because role has no userid - role:" + newRole);
+        if (log.isEnabledFor(Level.WARN)) {
+          log.warn("WARN: add Role not successful because role has no userid - role:" + newRole);
+        }
         bRes.reject("globalErrors",
             messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
       }
     } else {
-      log.warn("WARN: add Role not successful because ProjectForm is empty Projectform: " + pForm);
+      if (log.isEnabledFor(Level.WARN))
+        log.warn("WARN: add Role not successful because ProjectForm is empty Projectform: " + pForm);
       bRes.reject("globalErrors",
           messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
     }
     if (bRes.hasErrors()) {
-      if (log.isDebugEnabled()) {
+      if (log.isEnabledFor(Level.DEBUG)) {
         log.debug("Method addRoleToProjectUser completed with errors - return to access.jsp");
       }
       return "access";
     }
-    if (log.isDebugEnabled()) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("Method addRoleToProjectUser successfully completed");
     }
+    reAtt.addFlashAttribute("infoMSG", messageSource.getMessage("roles.success.add.role", new Object[] { user.getEmail() },
+        LocaleContextHolder.getLocale()));
     return "redirect:/access/" + projectId;
   }
 }

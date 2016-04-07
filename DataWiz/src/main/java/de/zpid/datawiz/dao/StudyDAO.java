@@ -15,6 +15,12 @@ import de.zpid.datawiz.dto.StudyDTO;
 @Scope("singleton")
 public class StudyDAO extends SuperDAO {
 
+  public StudyDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading StudyDAO as Singleton and Service");
+  }
+
   public List<StudyDTO> getAllStudiesByProjectId(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getAllStudiesByProjectId for project [id: " + project.getId() + " name: " + project.getTitle()

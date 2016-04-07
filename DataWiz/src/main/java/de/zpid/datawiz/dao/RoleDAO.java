@@ -15,6 +15,12 @@ import de.zpid.datawiz.dto.UserRoleDTO;
 @Scope("singleton")
 public class RoleDAO extends SuperDAO {
 
+  public RoleDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading RoleDAO as Singleton and Service");
+  }
+
   public int setRole(UserRoleDTO role) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute setRole role: " + role);

@@ -15,7 +15,7 @@ $tag_box = null;
 		    $(window).bind(
 		        'scroll',
 		        function() {
-			        var navHeight = 100; // custom nav height
+			        var navHeight = 150; // custom nav height
 			        ($(window).scrollTop() > navHeight) ? $('.mainnavtop').addClass('goToTop') : $('.mainnavtop')
 			            .removeClass('goToTop');
 			        navHeight = 280;

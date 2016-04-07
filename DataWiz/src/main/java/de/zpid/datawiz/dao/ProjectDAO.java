@@ -25,6 +25,12 @@ import de.zpid.datawiz.dto.UserDTO;
 @Scope("singleton")
 public class ProjectDAO extends SuperDAO {
 
+  public ProjectDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading ProjectDAO as Singleton and Service");
+  }
+
   public List<ProjectDTO> findAllByUserID(UserDTO user) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute findAllByUserID for user [email: " + user.getEmail() + "]");

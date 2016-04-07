@@ -2,6 +2,7 @@ package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
 
+import org.apache.log4j.Level;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -32,6 +33,12 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class DMPController extends SuperController {
 
+  public DMPController() {
+    super();
+    if (log.isEnabledFor(Level.INFO))
+      log.info("Loading DMPController for mapping /dmp");
+  }
+
   /**
    * 
    * @return
@@ -48,8 +55,8 @@ public class DMPController extends SuperController {
    */
   @RequestMapping(method = RequestMethod.GET)
   public String createDMP(ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute createDMP - GET");
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("execute createDMP RequestMethod.GET");
     }
     model.put("subnaviActive", "DMP");
     ProjectForm pForm = createProjectForm();
@@ -58,12 +65,17 @@ public class DMPController extends SuperController {
       pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.collectionmode));
       pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      if (log.isEnabledFor(Level.ERROR))
+        log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
+      model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
     }
     model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp"));
     model.put("subnaviActive", "DMP");
     model.put("ProjectForm", pForm);
+    if (log.isEnabledFor(Level.DEBUG)) {
+      log.debug("Method createDMP successfully completed");
+    }
     return "dmp";
   }
 
@@ -77,7 +89,7 @@ public class DMPController extends SuperController {
   @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
   public String editDMP(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("execute editDMP for projectID=" + pid);
     }
     UserDTO user = UserUtil.getCurrentUser();
@@ -129,14 +141,14 @@ public class DMPController extends SuperController {
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
   public String saveDMP(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes) {
-    if (log.isDebugEnabled()) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("execute saveDMP - POST");
     }
     Boolean hasErrors = false;
     Boolean unChanged = true;
     validator.validate(pForm, bRes, ProjectDTO.ProjectVal.class);
     if (bRes.hasErrors() || pForm.getProject() == null || pForm.getProject().getTitle().isEmpty()) {
-      if (log.isInfoEnabled()) {
+      if (log.isEnabledFor(Level.INFO)) {
         log.info("bindingResult has Errors = ProjectName not given!");
       }
       hasErrors = true;
@@ -213,7 +225,7 @@ public class DMPController extends SuperController {
   private boolean saveDMPDataPart(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
     BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
     int changed = 0;
-    if (log.isDebugEnabled()) {
+    if (log.isEnabledFor(Level.DEBUG)) {
       log.debug("saving DMP Data for cat= " + cat);
     }
     validator.validate(pForm, bResTmp, cls);
@@ -264,15 +276,15 @@ public class DMPController extends SuperController {
           break;
         }
       } catch (Exception e) {
-        // TODO vern�nftiger ausstieg bei dbs fehler
-        log.warn("DMP not saved! DBS Error: " + e.getMessage());
+        if (log.isEnabledFor(Level.ERROR))
+          log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
         return true;
       }
     } else {
       for (ObjectError error : bResTmp.getAllErrors()) {
         bRes.addError(error);
       }
-      if (log.isInfoEnabled()) {
+      if (log.isEnabledFor(Level.INFO)) {
         log.info("Validation Errors for cat: " + cat.toString());
         bRes.reject("globalErrors", messageSource.getMessage("dmp.edit." + cat.toString() + ".globalerror.valid", null,
             LocaleContextHolder.getLocale()));

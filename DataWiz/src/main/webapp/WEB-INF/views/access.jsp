@@ -153,46 +153,54 @@
                   <s:message code="roles.add.user.head" />
                 </div>
                 <div class="panel-body">
-                  <div class="input-group">
-                    <div class="col-md-6 col-xs-12">
-                      <sf:label path="delMail">
-                        <s:message code="roles.add.user" />
-                      </sf:label>
-                      <div class="input-group">
-                        <sf:input path="delMail" class="form-control" placeholder="Enter Email" />
-                        <span class="input-group-btn"> <sf:button class="btn btn-success" type="submit" name="addUser">
-                            <s:message code="gen.invite" />
-                          </sf:button>
-                        </span>
+                  <div class="row">
+                    <div class="col-md-12 col-xs-12">
+                      <div class="col-md-6 col-xs-12">
+                        <sf:label path="delMail">
+                          <s:message code="roles.add.user" />
+                        </sf:label>
+                        <div class="input-group">
+                          <sf:input path="delMail" class="form-control" placeholder="Enter Email" />
+                          <span class="input-group-btn"> <sf:button class="btn btn-success" type="submit" name="addUser">
+                              <s:message code="gen.invite" />
+                            </sf:button>
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <!-- pending Invites -->
-                    <div class="col-md-6 col-xs-12">
-                      <sf:label path="delMail">
-                        <s:message code="roles.add.pending" />
-                      </sf:label>
-                      <ul class="list-group">
-                        <c:if test="${fn:length(ProjectForm.pendingMails) gt 0}">
-                          <c:forEach items="${ProjectForm.pendingMails}" var="pendingMail">
-                            <li class="list-group-item">
-                              <div class="row">
-                                <div class="col-md-5">
-                                  <s:message text="${pendingMail}" />
+                      <!-- pending Invites -->
+                      <div class="col-md-6 col-xs-12">
+                        <sf:label path="delMail">
+                          <s:message code="roles.add.pending" />
+                        </sf:label>
+                        <ul class="list-group">
+                          <c:if test="${fn:length(ProjectForm.pendingMails) gt 0}">
+                            <c:forEach items="${ProjectForm.pendingMails}" var="pendingMail">
+                              <li class="list-group-item">
+                                <div class="row">
+                                  <div class="col-md-5">
+                                    <s:message text="${pendingMail}" />
+                                  </div>
+                                  <div class="col-md-4">
+                                    <a class="btn btn-success btn-xs"
+                                      href="<c:url value="/access/${ProjectForm.project.id}/resendInvite/${pendingMail}" />"><s:message
+                                        code="roles.add.resend" /></a>
+                                  </div>
+                                  <div class="col-md-3">
+                                    <a class="btn btn-danger btn-xs"
+                                      href="<c:url value="/access/${ProjectForm.project.id}/deleteInvite/${pendingMail}" />"><s:message
+                                        code="roles.add.delete" /></a>
+                                  </div>
                                 </div>
-                                <div class="col-md-7">
-                                  <a class="btn btn-success btn-xs"
-                                    href="<c:url value="/access/${ProjectForm.project.id}/resendInvite/${pendingMail}" />"><s:message
-                                      code="roles.add.resend" /></a><a class="btn btn-danger btn-xs"
-                                    href="<c:url value="/access/${ProjectForm.project.id}/deleteInvite/${pendingMail}" />"><s:message
-                                      code="roles.add.delete" /></a>
-                                </div>
-                              </div>
-                            </li>
-                          </c:forEach>
-                        </c:if>
-                      </ul>
+                              </li>
+                            </c:forEach>
+                          </c:if>
+                          <c:if test="${fn:length(ProjectForm.pendingMails) eq 0}">
+                            <li class="list-group-item"><s:message code="roles.no.entry" /></li>
+                          </c:if>
+                        </ul>
+                      </div>
+                      <s:message code="roles.add.user.help" var="appresmess" /><%@ include file="templates/helpblock.jsp"%>
                     </div>
-                    <s:message code="roles.add.user.help" var="appresmess" /><%@ include file="templates/helpblock.jsp"%>
                   </div>
                 </div>
               </div>

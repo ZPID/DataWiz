@@ -8,6 +8,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class AdminController extends SuperController {
 
+  public AdminController() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading AdminController for mapping /admin");
+  }
+
   @RequestMapping(value = "/admin", method = RequestMethod.GET)
   public String adminPage(ModelMap model) {
     if (log.isDebugEnabled()) {

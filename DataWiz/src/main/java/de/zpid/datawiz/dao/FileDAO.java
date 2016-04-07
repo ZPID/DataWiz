@@ -17,6 +17,12 @@ import de.zpid.datawiz.dto.ProjectDTO;
 @Scope("singleton")
 public class FileDAO extends SuperDAO {
 
+  public FileDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading FileDAO as Singleton and Service");
+  }
+
   /**
    * 
    * @param project

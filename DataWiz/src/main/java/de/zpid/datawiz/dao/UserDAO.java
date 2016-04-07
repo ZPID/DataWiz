@@ -20,6 +20,12 @@ import de.zpid.datawiz.enumeration.AccountState;
 @Scope("singleton")
 public class UserDAO extends SuperDAO {
 
+  public UserDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading UserDAO as Singleton and Service");
+  }
+
   @Autowired
   private RoleDAO roleDAO;
 

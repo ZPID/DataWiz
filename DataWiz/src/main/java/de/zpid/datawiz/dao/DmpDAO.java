@@ -19,6 +19,12 @@ import de.zpid.datawiz.enumeration.DelType;
 @Scope("singleton")
 public class DmpDAO extends SuperDAO {
 
+  public DmpDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading DmpDAO as Singleton and Service");
+  }
+
   public DmpDTO getByID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getByID [id: " + project.getId() + "]");

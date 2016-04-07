@@ -12,7 +12,6 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,14 +29,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
@@ -50,6 +45,12 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/project")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class ProjectController extends SuperController {
+
+  public ProjectController() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading ProjectController for mapping /project");
+  }
 
   /**
    * 

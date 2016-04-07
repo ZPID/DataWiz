@@ -15,6 +15,12 @@ import de.zpid.datawiz.enumeration.DelType;
 @Scope("singleton")
 public class FormTypesDAO extends SuperDAO {
 
+  public FormTypesDAO() {
+    super();
+    if (log.isInfoEnabled())
+      log.info("Loading FormTypesDAO as Singleton and Service");
+  }
+
   public List<FormTypesDTO> getAllByType(boolean activ, DelType type) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getAllByType [type=" + type.toString() + "]");
