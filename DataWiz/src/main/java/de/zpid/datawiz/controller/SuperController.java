@@ -4,7 +4,8 @@ import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -60,7 +61,7 @@ public class SuperController {
 
   protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
-  protected Logger log = Logger.getLogger(getClass());
+  protected Logger log = LogManager.getLogger(getClass());
 
   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.
@@ -70,28 +71,30 @@ public class SuperController {
    * @param admin
    * @return String with redirect entry if role is non-existent, and null if existent
    */
-  protected String checkProjectAdmin(RedirectAttributes redirectAttributes, long projectId, UserDTO admin) {
-    if (log.isDebugEnabled()) {
-      log.debug("Entering checkProjectAdmin for Project [id:" + projectId + "] an User [email: " + admin + "]");
-    }
+  protected String checkProjectAdmin(final RedirectAttributes redirectAttributes, final long projectId,
+      final UserDTO admin) {
+    log.trace("Entering checkProjectAdmin for project [id: {}] and user [mail: {}] ", () -> projectId,
+        () -> admin.getEmail());
     if (admin == null) {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
+    String ret = null;
     try {
       admin.setGlobalRoles(roleDAO.findRolesByUserID(admin.getId()));
+      if (!admin.hasProjectRole(Roles.PROJECT_ADMIN, projectId) && !admin.hasRole(Roles.ADMIN)) {
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("roles.access.denied", null, LocaleContextHolder.getLocale()));
+        log.warn("SECURITY: User with email: " + admin.getEmail() + " tries change roles for project:" + projectId
+            + " without having permission");
+        ret = "redirect:/access/" + projectId;
+      }
     } catch (Exception e) {
-      log.fatal("ERROR: Database Error while getting roles - Exception:", e);
-      return "redirect:/access/" + projectId;
+      log.error("ERROR: Database Error while getting roles - Exception:", e);
+      ret = "redirect:/access/" + projectId;
     }
-    if (!admin.hasProjectRole(Roles.PROJECT_ADMIN, projectId) && !admin.hasRole(Roles.ADMIN)) {
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage("roles.access.denied", null, LocaleContextHolder.getLocale()));
-      log.warn("SECURITY: User with email: " + admin.getEmail() + " tries change roles for project:" + projectId
-          + " without having permission");
-      return "redirect:/access/" + projectId;
-    }
-    return null;
+    log.trace("Method checkProjectAdmin completed");
+    return ret;
   }
 
   /**
@@ -101,10 +104,9 @@ public class SuperController {
    * @return
    * @throws Exception
    */
-  protected ProjectForm getProjectForm(ProjectForm pForm, long pid, UserDTO user, String call) throws Exception {
-    if (log.isDebugEnabled()) {
-      log.debug("execute getProjectData");
-    }
+  protected void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final String call)
+      throws Exception {
+    log.trace("Entering getProjectData for project [id: {}] and user [mail: {}] ", () -> pid, () -> user.getEmail());
     // 1st - security access check!
     if (pid > 0 && user != null) {
       if (!user.hasRole(Roles.ADMIN) && !user.hasProjectRole(Roles.PROJECT_READER, pid)
@@ -112,7 +114,7 @@ public class SuperController {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
             + " tries to get access to project:" + pid + " without having the permissions to read");
       }
-      ProjectDTO pdto = projectDAO.findById(pid);
+      final ProjectDTO pdto = projectDAO.findById(pid);
       if (pdto == null || pdto.getId() <= 0) {
         throw new DataWizException("Project is empty for user=" + user.getEmail() + " and project=" + pid);
       }
@@ -136,10 +138,10 @@ public class SuperController {
       } else if (call.equals("ACCESS")) {
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
       }
-      return pForm;
+      log.trace("Method getProjectData successfully completed");
     } else {
       log.warn("ProjectID or UserDTO is empty - NULL returned!");
-      return null;
+      throw new DataWizException("ProjectID or UserDTO is empty - getProjectForm aborted!");
     }
   }
 
@@ -166,7 +168,7 @@ public class SuperController {
       }
       UserUtil.getCurrentUser().setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
     } catch (Exception e) {
-      log.error("Project saving not sucessful error:" + e.getMessage());
+      log.error("Project saving not sucessful error:", e);
       error = true;
     }
     return error;

@@ -98,7 +98,7 @@ public class ProjectController extends SuperController {
     }
     // create new pform!
     try {
-      pForm = getProjectForm(pForm, pid, user, "PROJECT");
+      getProjectForm(pForm, pid, user, "PROJECT");
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());

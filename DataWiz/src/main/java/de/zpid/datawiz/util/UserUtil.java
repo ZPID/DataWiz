@@ -1,13 +1,14 @@
 package de.zpid.datawiz.util;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import de.zpid.datawiz.dto.UserDTO;
 
 public class UserUtil {
 
-  private static final Logger log = Logger.getLogger(UserUtil.class);
+  private static final Logger log = LogManager.getLogger(UserUtil.class);
 
   public static UserDTO getCurrentUser() {
     UserDTO user = null;

@@ -2,8 +2,10 @@ package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -35,7 +37,7 @@ public class DMPController extends SuperController {
 
   public DMPController() {
     super();
-    if (log.isEnabledFor(Level.INFO))
+    if (log.isEnabled(Level.INFO))
       log.info("Loading DMPController for mapping /dmp");
   }
 
@@ -55,7 +57,7 @@ public class DMPController extends SuperController {
    */
   @RequestMapping(method = RequestMethod.GET)
   public String createDMP(ModelMap model) {
-    if (log.isEnabledFor(Level.DEBUG)) {
+    if (log.isEnabled(Level.DEBUG)) {
       log.debug("execute createDMP RequestMethod.GET");
     }
     model.put("subnaviActive", "DMP");
@@ -65,7 +67,7 @@ public class DMPController extends SuperController {
       pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.collectionmode));
       pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
     } catch (Exception e) {
-      if (log.isEnabledFor(Level.ERROR))
+      if (log.isEnabled(Level.ERROR))
         log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
       model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
@@ -73,7 +75,7 @@ public class DMPController extends SuperController {
     model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp"));
     model.put("subnaviActive", "DMP");
     model.put("ProjectForm", pForm);
-    if (log.isEnabledFor(Level.DEBUG)) {
+    if (log.isEnabled(Level.DEBUG)) {
       log.debug("Method createDMP successfully completed");
     }
     return "dmp";
@@ -89,7 +91,7 @@ public class DMPController extends SuperController {
   @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
   public String editDMP(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
-    if (log.isEnabledFor(Level.DEBUG)) {
+    if (log.isEnabled(Level.DEBUG)) {
       log.debug("execute editDMP for projectID=" + pid);
     }
     UserDTO user = UserUtil.getCurrentUser();
@@ -99,7 +101,7 @@ public class DMPController extends SuperController {
     }
     DmpDTO dmp;
     try {
-      pForm = getProjectForm(pForm, pid, user, "DMP");
+      getProjectForm(pForm, pid, user, "DMP");
       dmp = dmpDAO.getByID(pForm.getProject());
       if (dmp != null && dmp.getId() > 0) {
         dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
@@ -141,14 +143,14 @@ public class DMPController extends SuperController {
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
   public String saveDMP(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes) {
-    if (log.isEnabledFor(Level.DEBUG)) {
+    if (log.isEnabled(Level.DEBUG)) {
       log.debug("execute saveDMP - POST");
     }
     Boolean hasErrors = false;
     Boolean unChanged = true;
     validator.validate(pForm, bRes, ProjectDTO.ProjectVal.class);
     if (bRes.hasErrors() || pForm.getProject() == null || pForm.getProject().getTitle().isEmpty()) {
-      if (log.isEnabledFor(Level.INFO)) {
+      if (log.isEnabled(Level.INFO)) {
         log.info("bindingResult has Errors = ProjectName not given!");
       }
       hasErrors = true;
@@ -225,7 +227,7 @@ public class DMPController extends SuperController {
   private boolean saveDMPDataPart(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
     BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
     int changed = 0;
-    if (log.isEnabledFor(Level.DEBUG)) {
+    if (log.isEnabled(Level.DEBUG)) {
       log.debug("saving DMP Data for cat= " + cat);
     }
     validator.validate(pForm, bResTmp, cls);
@@ -276,7 +278,7 @@ public class DMPController extends SuperController {
           break;
         }
       } catch (Exception e) {
-        if (log.isEnabledFor(Level.ERROR))
+        if (log.isEnabled(Level.ERROR))
           log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
         return true;
       }
@@ -284,7 +286,7 @@ public class DMPController extends SuperController {
       for (ObjectError error : bResTmp.getAllErrors()) {
         bRes.addError(error);
       }
-      if (log.isEnabledFor(Level.INFO)) {
+      if (log.isEnabled(Level.INFO)) {
         log.info("Validation Errors for cat: " + cat.toString());
         bRes.reject("globalErrors", messageSource.getMessage("dmp.edit." + cat.toString() + ".globalerror.valid", null,
             LocaleContextHolder.getLocale()));
@@ -297,5 +299,11 @@ public class DMPController extends SuperController {
       return true;
     }
     return false;
+  }
+
+  @RequestMapping(value = { "/checkConnection" })
+  public ResponseEntity<Object> checkConnection() {
+    log.trace("checkConnection");
+    return new ResponseEntity<Object>(HttpStatus.OK);
   }
 }
