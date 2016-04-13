@@ -4,11 +4,14 @@ import java.util.Locale;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -28,17 +31,11 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "de.zpid.datawiz")
+@PropertySource("classpath:datawiz.properties")
 public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
-  @Bean(name = "dataSource")
-  public DataSource getDataSource() {
-    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-    dataSource.setUrl("jdbc:mysql://localhost:3306/datawiz?useSSL=false");
-    dataSource.setUsername("datawiz");
-    dataSource.setPassword("dwpw1!");
-    return dataSource;
-  }
+  @Autowired
+  private Environment env;
 
   @Bean(name = "DataWiz")
   public ViewResolver viewResolver() {
@@ -53,7 +50,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public MessageSource resourceBundleMessageSource() {
     ResourceBundleMessageSource resolver = new ResourceBundleMessageSource();
     resolver.setBasenames("de.zpid.datawiz.properties.ApplicationResources", "de.zpid.datawiz.properties.DMPResources",
-        "de.zpid.datawiz.properties.EmailResources");
+        "de.zpid.datawiz.properties.EmailResources","datawiz.properties");
     resolver.setDefaultEncoding("UTF-8");
     return resolver;
   }
@@ -77,6 +74,16 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     CommonsMultipartResolver resolver = new CommonsMultipartResolver();
     resolver.setDefaultEncoding("utf-8");
     return resolver;
+  }
+
+  @Bean(name = "dataSource")
+  public DataSource getDataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName"));
+    dataSource.setUrl(env.getRequiredProperty("dataSource.url"));
+    dataSource.setUsername(env.getRequiredProperty("dataSource.username"));
+    dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
+    return dataSource;
   }
 
   @Override

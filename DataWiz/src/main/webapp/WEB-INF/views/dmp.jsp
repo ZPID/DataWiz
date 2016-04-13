@@ -25,7 +25,7 @@
           </c:otherwise>
         </c:choose>
       </div>
-      <ul class="nav nav-tabs subnavtop">
+      <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="350">
         <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message
               code="dmp.submenu.administrative" /></a></li>
         <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message code="dmp.submenu.research" /></a></li>

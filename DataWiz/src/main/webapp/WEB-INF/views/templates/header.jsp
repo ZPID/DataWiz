@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <sec:csrfMetaTags />
-<title>ZPID - DataWiz</title>
+<title><s:eval expression="@environment.getProperty('application.name')" /></title>
 <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet"></link>
 <link rel="stylesheet" type="text/css" href="<c:url value='/static/css/font-awesome.css' />" />
@@ -12,5 +12,6 @@
 <body>
   <sec:authentication var="principal" property="principal" />
   <div id="logo">
-    <img alt="" src="<c:url value="/static/images/dwlogo.png" />">
+    <s:eval expression="@environment.getProperty('application.logo.url')" var="urlUri" />
+    <img alt="" src="<c:url value="${urlUri}" />">
   </div>

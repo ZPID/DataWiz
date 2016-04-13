@@ -179,12 +179,13 @@ public class LoginController extends SuperController {
     // registration mail
     if (person != null && person.getId() > 0) {
       try {
-        EmailUtil.sendSSLMail(person.getEmail(),
+        EmailUtil mail = new EmailUtil(env);
+        mail.sendSSLMail(person.getEmail(),
             messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
             messageSource.getMessage("reg.mail.content",
                 new Object[] { request.getRequestURL(), person.getEmail(), person.getActivationCode() },
                 LocaleContextHolder.getLocale()));
-      } catch (MessagingException e) {
+      } catch (Exception e) {
         log.error("Mail error during user registration: " + e.getStackTrace());
         model.put("errormsg", messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
         return "error";

@@ -1,4 +1,4 @@
-package de.zpid.datawiz.service;
+package de.zpid.datawiz.util;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,12 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.util.CustomUserDetails;
 
-@Service("userLoginService")
-public class UserLoginService implements UserDetailsService {
+@Service("userLogin")
+public class UserLogin implements UserDetailsService {
 
-	final Logger log = LogManager.getLogger(UserLoginService.class);
+	final Logger log = LogManager.getLogger(UserLogin.class);
 	@Autowired
 	private UserDAO userDao;
 

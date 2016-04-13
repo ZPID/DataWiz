@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.validation.SmartValidator;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -58,12 +59,14 @@ public class SuperController {
   protected SmartValidator validator;
   @Autowired
   protected HttpServletRequest request;
+  @Autowired
+  protected Environment env;
 
   protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
   protected Logger log = LogManager.getLogger(getClass());
 
-  /**
+   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.
    *
    * @param redirectAttributes
@@ -128,7 +131,7 @@ public class SuperController {
         pForm.setFiles(fileDAO.getProjectFiles(pdto));
         pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
         pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
-        pForm.setContributors(contributorDAO.getByProject(pdto, false, false));
+        pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
         pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
       } else if (call.equals("DMP")) {
         pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.datatype));

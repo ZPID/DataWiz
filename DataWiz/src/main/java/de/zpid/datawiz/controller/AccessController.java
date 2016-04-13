@@ -51,7 +51,6 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/access")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class AccessController extends SuperController {
-
   public AccessController() {
     super();
     if (log.isEnabled(Level.INFO))
@@ -86,6 +85,10 @@ public class AccessController extends SuperController {
       return "redirect:/panel";
     }
     final UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
     final ProjectForm pForm = createProjectForm();
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
@@ -132,16 +135,20 @@ public class AccessController extends SuperController {
    *          the project id
    * @param reAtt
    *          the redirect attributes
-   * @return String 
+   * @return String
    */
   @RequestMapping(value = { "/{projectId}/deleteUser/{userId}" })
   public String deleteUserfromProject(@PathVariable final long userId, @PathVariable final long projectId,
       final RedirectAttributes reAtt, final ModelMap model) {
     log.trace("Entering deleteUserfromProject [id: {}; userid: {}]", () -> projectId, () -> userId);
-    UserDTO admin = UserUtil.getCurrentUser();
-    String check = checkProjectAdmin(reAtt, projectId, admin);
+    final UserDTO admin = UserUtil.getCurrentUser();
+    final String check = checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
+    }
+    if (userId == admin.getId()) {
+      log.warn("WARN: User {} tries to delete itself from project", () -> admin.getEmail());
+      return "access";
     }
     UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), userId, projectId, 0, Roles.REL_ROLE.toString());
     try {
@@ -170,6 +177,11 @@ public class AccessController extends SuperController {
   public String deleteInvite(final ModelMap model, @PathVariable long projectId, @PathVariable final String mail,
       final RedirectAttributes reAtt, final boolean resend) {
     log.trace("Entering deleteInvite project [id: {}] and user [mail: {}] ", () -> projectId, () -> mail);
+    final UserDTO admin = UserUtil.getCurrentUser();
+    final String check = checkProjectAdmin(reAtt, projectId, admin);
+    if (check != null) {
+      return check;
+    }
     try {
       projectDAO.deleteInvitationEntree(projectId, mail);
     } catch (Exception e) {
@@ -195,6 +207,11 @@ public class AccessController extends SuperController {
   public String resendInvite(final ModelMap model, @PathVariable final long projectId, @PathVariable final String mail,
       final RedirectAttributes reAtt, final boolean resend) {
     log.trace("Entering resendInvite for project [id: {}] and user [mail: {}] ", () -> projectId, () -> mail);
+    final UserDTO admin = UserUtil.getCurrentUser();
+    final String check = checkProjectAdmin(reAtt, projectId, admin);
+    if (check != null) {
+      return check;
+    }
     ProjectForm pForm = createProjectForm();
     try {
       ProjectDTO project = projectDAO.findById(projectId);
@@ -233,8 +250,8 @@ public class AccessController extends SuperController {
       @PathVariable final long projectId, final RedirectAttributes reAtt, final BindingResult bRes,
       final boolean resend) {
     log.trace("Entering addUserToProject for project [id: {}]", () -> projectId);
-    UserDTO admin = UserUtil.getCurrentUser();
-    String check = checkProjectAdmin(reAtt, projectId, admin);
+    final UserDTO admin = UserUtil.getCurrentUser();
+    final String check = checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -289,12 +306,14 @@ public class AccessController extends SuperController {
         }
         if (subject != null && content != null && url != null) {
           try {
-            EmailUtil.sendSSLMail(pForm.getDelMail(),
+            System.out.println("------------------------- " + env.getRequiredProperty("mail.smtp.host"));
+            EmailUtil mail = new EmailUtil(env);
+            mail.sendSSLMail(pForm.getDelMail(),
                 messageSource.getMessage(subject, new Object[] { pForm.getProject().getTitle() },
                     LocaleContextHolder.getLocale()),
                 messageSource.getMessage(content, new Object[] { adminName, pForm.getProject().getTitle(), url },
                     LocaleContextHolder.getLocale()));
-          } catch (MessagingException e) {
+          } catch (Exception e) {
             log.error("ERROR: Mail error, Mail was not sent - Exception:", e);
             bRes.reject("globalErrors",
                 messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
@@ -361,7 +380,8 @@ public class AccessController extends SuperController {
           }
           StringBuffer url = request.getRequestURL();
           url = url.delete(url.indexOf(request.getRequestURI()), url.length()).append(request.getContextPath());
-          EmailUtil.sendSSLMail(adminMail,
+          EmailUtil mail = new EmailUtil(env);
+          mail.sendSSLMail(adminMail,
               messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
               messageSource.getMessage("accept.mail.admin.content",
                   new Object[] { email, project.getTitle(), url + "/access/" + project.getId() },
@@ -466,10 +486,10 @@ public class AccessController extends SuperController {
     log.trace("Entering addRoleToProjectUser for Project [id:" + projectId + "]");
     final UserDTO admin = UserUtil.getCurrentUser();
     final String check = checkProjectAdmin(reAtt, projectId, admin);
-    UserDTO user = null;
     if (check != null) {
       return check;
     }
+    UserDTO user = null;
     if (pForm != null && pForm.getNewRole() != null) {
       UserRoleDTO newRole = pForm.getNewRole();
       newRole.setProjectId(projectId);

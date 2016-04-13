@@ -299,7 +299,7 @@
         focusInput: function() {
             // console.log( 'focusInput' );
 
-            return this.$type_zone.focus();
+            //return this.$type_zone.focus();
         },
 
         /**

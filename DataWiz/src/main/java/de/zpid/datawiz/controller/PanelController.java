@@ -6,7 +6,6 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -19,7 +18,7 @@ import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
-import de.zpid.datawiz.util.CustomUserDetails;
+import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = "/panel")
@@ -42,8 +41,7 @@ public class PanelController extends SuperController {
     if (log.isDebugEnabled()) {
       log.debug("execute dashboardPage()");
     }
-    UserDTO user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal())
-        .getUser();
+    UserDTO user = UserUtil.getCurrentUser();
     List<ProjectForm> cpform = new ArrayList<ProjectForm>();
     try {
       List<ProjectDTO> cpdto = projectDAO.findAllByUserID(user);
@@ -52,7 +50,7 @@ public class PanelController extends SuperController {
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
           pform.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
-          pform.setContributors(contributorDAO.getByProject(pdto, false, true));
+          pform.setContributors(contributorDAO.findByProject(pdto, false, true));
           pform.setSharedUser(userDAO.findGroupedByProject(pdto));
           cpform.add(pform);
         }

@@ -24,8 +24,8 @@ public class ContributorDAO extends SuperDAO {
       log.info("Loading ContributorDAO as Singleton and Service");
   }
 
-  public List<ContributorDTO> getByProject(ProjectDTO project, boolean withStudy, boolean withPrimary)
-      throws Exception {
+  public List<ContributorDTO> findByProject(final ProjectDTO project, final boolean withStudy,
+      final boolean withPrimary) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getByProject for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
     String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
