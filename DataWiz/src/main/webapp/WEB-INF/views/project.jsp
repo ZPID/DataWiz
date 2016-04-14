@@ -27,10 +27,13 @@
       </div>
       <!-- Submenu -->
       <ul class="nav nav-tabs">
-        <li role="presentation" id="metaActiveClick" class="projectContentClick"><a><s:message code="project.submenu.metadata" /></a></li>
+        <li role="presentation" id="metaActiveClick" class="projectContentClick"><a><s:message
+              code="project.submenu.metadata" /></a></li>
         <c:if test="${not empty ProjectForm.project.id}">
-          <li role="presentation" id="workersActiveClick" class="projectContentClick"><a><s:message code="project.submenu.workers" /></a></li>
-          <li role="presentation" id="studiesActiveClick" class="projectContentClick"><a><s:message code="project.submenu.studies" /></a></li>
+          <li role="presentation" id="workersActiveClick" class="projectContentClick"><a><s:message
+                code="project.submenu.workers" /></a></li>
+          <li role="presentation" id="studiesActiveClick" class="projectContentClick"><a><s:message
+                code="project.submenu.studies" /></a></li>
           <li role="presentation" id="materialsActiveClick" class="projectContentClick"><a><s:message
                 code="project.submenu.material" /></a></li>
         </c:if>
@@ -60,7 +63,8 @@
           </c:if>
           <!-- Projectname -->
           <div class="form-group">
-            <label class="control-label col-sm-2 required" for="project.title"><s:message code="project.edit.title" /></label>
+            <label class="control-label col-sm-2 required" for="project.title"><s:message
+                code="project.edit.title" /></label>
             <div class="col-sm-10">
               <s:message code="project.edit.title.ph" var="reg_first" />
               <sf:input path="project.title" class="form-control" placeholder="${reg_first}" />
@@ -69,7 +73,8 @@
           </div>
           <!-- Projectident -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="project.projectIdent"><s:message code="project.edit.projectIdent" /></label>
+            <label class="control-label col-sm-2" for="project.projectIdent"><s:message
+                code="project.edit.projectIdent" /></label>
             <div class="col-sm-10">
               <s:message code="project.edit.projectIdent.ph" var="reg_first" />
               <sf:input path="project.projectIdent" class="form-control" placeholder="${reg_first}" />
@@ -78,7 +83,8 @@
           </div>
           <!-- PrimaryContributor -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="project.title"><s:message code="project.edit.primaryContributors" /></label>
+            <label class="control-label col-sm-2" for="project.title"><s:message
+                code="project.edit.primaryContributors" /></label>
             <div class="col-sm-10">
               <ul class="list-group">
                 <li class="list-group-item">
@@ -149,7 +155,8 @@
           </div>
           <!-- grant number -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="project.grantNumber"><s:message code="project.edit.grantNumber" /></label>
+            <label class="control-label col-sm-2" for="project.grantNumber"><s:message
+                code="project.edit.grantNumber" /></label>
             <div class="col-sm-10">
               <s:message code="project.edit.grantNumber.ph" var="reg_first" />
               <sf:input path="project.grantNumber" class="form-control" placeholder="${reg_first}" />
@@ -158,7 +165,8 @@
           </div>
           <!-- Description -->
           <div class="form-group">
-            <label class="control-label col-sm-2" for="project.description"><s:message code="project.edit.description" /></label>
+            <label class="control-label col-sm-2" for="project.description"><s:message
+                code="project.edit.description" /></label>
             <div class="col-sm-10">
               <s:message code="project.edit.description.ph" var="reg_first" />
               <sf:textarea rows="5" path="project.description" class="form-control" placeholder="${reg_first}" />
@@ -239,13 +247,16 @@
                     <label for="inputKey" class="col-md-2 control-label">Titel</label>
                     <div class="col-md-4">
                       <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].title" class="form-control" placeholder="${reg_first}" />
+                      <sf:input path="contributors[${coloop.count-1}].title" class="form-control"
+                        placeholder="${reg_first}" />
                     </div>
                     <label for="inputKey" class="col-md-1 control-label">ORCID</label>
                     <div class="col-md-4">
                       <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control" placeholder="${reg_first}" />
-                      <sf:errors path="contributors[${coloop.count-1}].orcid" cssClass="alert alert-danger" element="div" htmlEscape="false" />
+                      <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control"
+                        placeholder="${reg_first}" />
+                      <sf:errors path="contributors[${coloop.count-1}].orcid" cssClass="alert alert-danger"
+                        element="div" htmlEscape="false" />
                     </div>
                   </div>
                 </div> <!-- Contributors first and lastname-->
@@ -254,12 +265,14 @@
                     <label for="inputKey" class="col-md-2 control-label">Vorname</label>
                     <div class="col-md-4">
                       <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control" placeholder="${reg_first}" />
+                      <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control"
+                        placeholder="${reg_first}" />
                     </div>
                     <label for="inputValue" class="col-md-1 control-label">Nachname</label>
                     <div class="col-md-4">
                       <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control" placeholder="${reg_first}" />
+                      <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control"
+                        placeholder="${reg_first}" />
                     </div>
                   </div>
                 </div> <!-- Contributors institution-->
@@ -268,7 +281,8 @@
                     <label for="inputKey" class="col-md-2 control-label">Institut</label>
                     <div class="col-md-9">
                       <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].institution" class="form-control" placeholder="${reg_first}" />
+                      <sf:input path="contributors[${coloop.count-1}].institution" class="form-control"
+                        placeholder="${reg_first}" />
                     </div>
                   </div>
                 </div> <!-- Contributors department-->
@@ -277,7 +291,8 @@
                     <label for="inputKey" class="col-md-2 control-label">Abteilung</label>
                     <div class="col-md-9">
                       <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].department" class="form-control" placeholder="${reg_first}" />
+                      <sf:input path="contributors[${coloop.count-1}].department" class="form-control"
+                        placeholder="${reg_first}" />
                     </div>
                   </div>
                 </div>
@@ -304,16 +319,16 @@
           <s:message code="project.edit.metadata.info" />
         </div>
         <c:forEach items="${ProjectForm.studies}" var="cstud">
-          <b>${cstud.id} - ${cstud.title}<br /></b>
+          <a href="<c:url value="${ProjectForm.project.id}/study/${cstud.id}" />"><b>${cstud.id} -
+              ${cstud.title}</b></a>
+          <br />
         </c:forEach>
-
-
-
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-        erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus
-        est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-        labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd
-        gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+        dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
+        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
+        consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
+        diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
+        takimata sanctus est Lorem ipsum dolor sit amet.
       </div>
       <!-- End Page Studies -->
       <!-- Start Page Material -->
@@ -332,13 +347,13 @@
           </div>
         </c:if>
         <div class="well">
-          <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles" type="hidden"
-            value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError" type="hidden"
-            value="<s:message code="upload.response.error" />" /> <input id="defaultMsg" type="hidden"
+          <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles"
+            type="hidden" value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError"
+            type="hidden" value="<s:message code="upload.response.error" />" /> <input id="defaultMsg" type="hidden"
             value="<s:message code="upload.default.message" />" />
           <c:url var="uploadUrl" value="/project/${ProjectForm.project.id}/upload" />
-          <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm" role="form"
-            enctype="multipart/form-data" id="my-dropzone"></sf:form>
+          <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
+            role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
           <div>
             <button class="btn btn-success" id="dz-upload-button">Upload File</button>
             <button class="btn btn-danger" id="dz-reset-button">Reset Dropzone</button>

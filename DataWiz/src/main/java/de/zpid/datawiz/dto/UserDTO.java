@@ -3,6 +3,7 @@ package de.zpid.datawiz.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -268,29 +269,33 @@ public class UserDTO implements Serializable {
     this.activationCode = activationCode;
   }
 
-  /**
-   * 
-   * @param role
-   * @param pid
-   * @return
-   */
-  public boolean hasProjectRole(Object rol, Object projectID) {
+  public boolean hasRole(Object rol) {
+    return hasRole(rol, Optional.empty(), false);
+  }
+
+  public boolean hasRole(Object rol, Object id, boolean isStudy) {
+    return hasRole(rol, (id == null) ? Optional.empty() : Optional.of(id), isStudy);
+  }
+
+  public boolean hasRole(final Object rol, final Optional<Object> id, final boolean isStudy) {
     Roles role = null;
     long pid = 0;
-    if (projectID instanceof String) {
-      String pidS = (String) projectID;
-      if (pidS == null || pidS.isEmpty()) {
+    if (id.isPresent()) {
+      if (id.get() instanceof String) {
+        String pidS = (String) id.get();
+        if (pidS == null || pidS.isEmpty()) {
+          return false;
+        }
+        try {
+          pid = Long.parseLong(pidS);
+        } catch (Exception e) {
+          return false;
+        }
+      } else if (id.get() instanceof Number) {
+        pid = ((Number) id.get()).longValue();
+      } else {
         return false;
       }
-      try {
-        pid = Long.parseLong(pidS);
-      } catch (Exception e) {
-        return false;
-      }
-    } else if (projectID instanceof Number) {
-      pid = ((Number) projectID).longValue();
-    } else {
-      return false;
     }
     if (rol instanceof Roles) {
       role = (Roles) rol;
@@ -301,8 +306,18 @@ public class UserDTO implements Serializable {
     }
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
       for (UserRoleDTO tmp : this.globalRoles) {
-        if (tmp.getProjectId() > 0 && tmp.getProjectId() == pid && tmp.getType().equals(role.name()))
-          return true;
+        if (id.isPresent()) {
+          if (!isStudy) {
+            if (tmp.getProjectId() > 0 && tmp.getProjectId() == pid && tmp.getType().equals(role.name()))
+              return true;
+          } else {
+            if (tmp.getStudyId() > 0 && tmp.getStudyId() == pid && tmp.getType().equals(role.name()))
+              return true;
+          }
+        } else {
+          if (tmp.getType().equals(role.name()))
+            return true;
+        }
       }
     }
     return false;
@@ -313,23 +328,6 @@ public class UserDTO implements Serializable {
    * @param role
    * @return
    */
-  public boolean hasRole(Object rol) {
-    Roles role = null;
-    if (rol instanceof Roles) {
-      role = (Roles) rol;
-    } else if (rol instanceof String) {
-      role = Roles.valueOf((String) rol);
-    } else {
-      return false;
-    }
-    if (this.globalRoles != null && this.globalRoles.size() > 0) {
-      for (UserRoleDTO tmp : this.globalRoles) {
-        if (tmp.getType().equals(role.name()))
-          return true;
-      }
-    }
-    return false;
-  }
 
   @Override
   public int hashCode() {

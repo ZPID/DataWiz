@@ -2,7 +2,7 @@
   <div class="col-sm-12">
     <s:message code="dmp.edit.${dmp_var_name}" var="labelTxt" />
     <c:if test="${not empty labelTxt}">
-      <label for="dmp.${dmp_var_name}"><c:out value="${labelTxt}" /></label>
+      <label for="dmp.${dmp_var_name}"><s:message text="${labelTxt}" /></label>
     </c:if>
     <s:bind path="dmp.${dmp_var_name}">
       <c:choose>

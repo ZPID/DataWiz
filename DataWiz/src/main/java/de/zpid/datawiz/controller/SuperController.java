@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,6 +24,7 @@ import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
@@ -66,7 +68,7 @@ public class SuperController {
 
   protected Logger log = LogManager.getLogger(getClass());
 
-   /**
+  /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.
    *
    * @param redirectAttributes
@@ -85,7 +87,7 @@ public class SuperController {
     String ret = null;
     try {
       admin.setGlobalRoles(roleDAO.findRolesByUserID(admin.getId()));
-      if (!admin.hasProjectRole(Roles.PROJECT_ADMIN, projectId) && !admin.hasRole(Roles.ADMIN)) {
+      if (!admin.hasRole(Roles.PROJECT_ADMIN, Optional.of(projectId), false) && !admin.hasRole(Roles.ADMIN)) {
         redirectAttributes.addFlashAttribute("errorMSG",
             messageSource.getMessage("roles.access.denied", null, LocaleContextHolder.getLocale()));
         log.warn("SECURITY: User with email: " + admin.getEmail() + " tries change roles for project:" + projectId
@@ -110,10 +112,9 @@ public class SuperController {
   protected void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final String call)
       throws Exception {
     log.trace("Entering getProjectData for project [id: {}] and user [mail: {}] ", () -> pid, () -> user.getEmail());
-    // 1st - security access check!
+    // security access check!
     if (pid > 0 && user != null) {
-      if (!user.hasRole(Roles.ADMIN) && !user.hasProjectRole(Roles.PROJECT_READER, pid)
-          && !user.hasProjectRole(Roles.PROJECT_ADMIN, pid) && !user.hasProjectRole(Roles.PROJECT_WRITER, pid)) {
+      if (!checkProjectRoles(user, pid, false, true)) {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
             + " tries to get access to project:" + pid + " without having the permissions to read");
       }
@@ -121,25 +122,44 @@ public class SuperController {
       if (pdto == null || pdto.getId() <= 0) {
         throw new DataWizException("Project is empty for user=" + user.getEmail() + " and project=" + pid);
       }
-      // 2nd - security access check!
-      // if (user.getId() != pdto.getProjectRole().getUserId()) {
-      // throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
-      // + " tries to get access to project:" + pdto.getId() + " without having permissions to read");
-      // }
       pForm.setProject(pdto);
-      if (call == null || call.isEmpty() || call.equals("PROJECT")) {
-        pForm.setFiles(fileDAO.getProjectFiles(pdto));
-        pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
-        pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
-        pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
-        pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-      } else if (call.equals("DMP")) {
-        pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.datatype));
-        pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.collectionmode));
-        pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
-        pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-      } else if (call.equals("ACCESS")) {
-        pForm.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
+      // load all data if user has full project rights
+      if (checkProjectRoles(user, pid, false, false)) {
+        // load /project data
+        if (call == null || call.isEmpty() || call.equals("PROJECT")) {
+          pForm.setFiles(fileDAO.getProjectFiles(pdto));
+          pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
+          pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+          pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
+          pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+        } // load /dmp data
+        else if (call.equals("DMP")) {
+          DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
+          if (dmp != null && dmp.getId() > 0) {
+            dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
+            dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.collectionmode));
+            dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.metaporpose));
+            dmp.setAdminChanged(false);
+            dmp.setResearchChanged(false);
+            dmp.setMetaChanged(false);
+            dmp.setSharingChanged(false);
+            dmp.setStorageChanged(false);
+            dmp.setOrganizationChanged(false);
+            dmp.setEthicalChanged(false);
+            dmp.setCostsChanged(false);
+          }
+          if (dmp == null || dmp.getId() <= 0) {
+            dmp = (DmpDTO) context.getBean("DmpDTO");
+          }
+          pForm.setDmp(dmp);
+          pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.datatype));
+          pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.collectionmode));
+          pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
+          pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+        } // load /access data
+        else if (call.equals("ACCESS")) {
+          pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+        }
       }
       log.trace("Method getProjectData successfully completed");
     } else {
@@ -148,12 +168,13 @@ public class SuperController {
     }
   }
 
-  public boolean saveOrUpdateProject(ProjectForm pForm, ProjectDAO projectDAO, RoleDAO roleDAO) {
+  protected boolean saveOrUpdateProject(ProjectForm pForm, ProjectDAO projectDAO, RoleDAO roleDAO) {
     boolean error = false;
     try {
       UserDTO user = UserUtil.getCurrentUser();
       if (pForm != null && pForm.getProject() != null && user != null) {
         if (pForm.getProject().getId() <= 0) {
+          pForm.getProject().setOwnerId(user.getId());
           int chk = projectDAO.insertProject(pForm.getProject());
           if (chk > 0) {
             roleDAO.setRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
@@ -175,6 +196,30 @@ public class SuperController {
       error = true;
     }
     return error;
+  }
+
+  protected boolean checkProjectRoles(final UserDTO user, final long pid, final boolean onlyWrite,
+      final boolean withDSRights) {
+    if (user.hasRole(Roles.ADMIN)) {
+      log.debug("User {} is DataWiz Admin");
+      return true;
+    } else if (user.hasRole(Roles.PROJECT_ADMIN, Optional.of(pid), false)) {
+      log.debug("User {} has PROJECT_ADMIN role for project [id: {}]", () -> user.getEmail(), () -> pid);
+      return true;
+    } else if (user.hasRole(Roles.PROJECT_WRITER, Optional.of(pid), false)) {
+      log.debug("User {} has PROJECT_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+      return true;
+    } else if (!onlyWrite && user.hasRole(Roles.PROJECT_READER, Optional.of(pid), false)) {
+      log.debug("User {} has PROJECT_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+      return true;
+    } else if (withDSRights && user.hasRole(Roles.DS_WRITER, Optional.of(pid), false)) {
+      log.debug("User {} has DS_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+      return true;
+    } else if (!onlyWrite && withDSRights && user.hasRole(Roles.DS_READER, Optional.of(pid), false)) {
+      log.debug("User {} has DS_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+      return true;
+    }
+    return false;
   }
 
 }

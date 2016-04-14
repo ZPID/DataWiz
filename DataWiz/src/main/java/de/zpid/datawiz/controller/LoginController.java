@@ -2,7 +2,6 @@ package de.zpid.datawiz.controller;
 
 import java.util.Optional;
 
-import javax.mail.MessagingException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;

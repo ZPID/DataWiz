@@ -48,8 +48,7 @@ public class ProjectController extends SuperController {
 
   public ProjectController() {
     super();
-    if (log.isInfoEnabled())
-      log.info("Loading ProjectController for mapping /project");
+    log.info("Loading ProjectController for mapping /project");
   }
 
   /**
@@ -72,7 +71,7 @@ public class ProjectController extends SuperController {
     if (log.isDebugEnabled()) {
       log.debug("execute createProject - GET");
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project"));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project", null, 0));
     model.put("subnaviActive", "PROJECT");
     model.put("ProjectForm", createProjectForm());
     return "project";
@@ -114,7 +113,7 @@ public class ProjectController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project"));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project", null, 0));
     model.put("subnaviActive", "PROJECT");
     model.put("ProjectForm", pForm);
     return "project";

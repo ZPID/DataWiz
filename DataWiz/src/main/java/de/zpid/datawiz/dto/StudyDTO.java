@@ -6,34 +6,34 @@ import java.util.Date;
 public class StudyDTO implements Serializable {
 
   private static final long serialVersionUID = -7300213401850684971L;
-  private int id;
-  private int projectId;
-  private int lastUserId;
+  private long id;
+  private long projectId;
+  private long lastUserId;
   private boolean master;
   private Date timestamp;
   private String title;
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
-  public int getProjectId() {
+  public long getProjectId() {
     return projectId;
   }
 
-  public void setProjectId(int projectId) {
+  public void setProjectId(long projectId) {
     this.projectId = projectId;
   }
 
-  public int getLastUserId() {
+  public long getLastUserId() {
     return lastUserId;
   }
 
-  public void setLastUserId(int lastUserId) {
+  public void setLastUserId(long lastUserId) {
     this.lastUserId = lastUserId;
   }
 
@@ -65,10 +65,10 @@ public class StudyDTO implements Serializable {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + id;
-    result = prime * result + lastUserId;
+    result = prime * result + (int) (id ^ (id >>> 32));
+    result = prime * result + (int) (lastUserId ^ (lastUserId >>> 32));
     result = prime * result + (master ? 1231 : 1237);
-    result = prime * result + projectId;
+    result = prime * result + (int) (projectId ^ (projectId >>> 32));
     result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
     result = prime * result + ((title == null) ? 0 : title.hashCode());
     return result;

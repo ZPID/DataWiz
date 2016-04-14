@@ -51,10 +51,10 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/access")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class AccessController extends SuperController {
+
   public AccessController() {
     super();
-    if (log.isEnabled(Level.INFO))
-      log.info("Loading AccessController for mapping /access");
+    log.info("Loading AccessController for mapping /access");
   }
 
   /**
@@ -119,7 +119,7 @@ public class AccessController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("access"));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("access", null, 0));
     model.put("subnaviActive", "ACCESS");
     model.put("ProjectForm", pForm);
     log.trace("Method showAccessPage successfully completed");
@@ -519,11 +519,11 @@ public class AccessController extends SuperController {
               }
             }
             if (!bRes.hasErrors())
-              if (user.hasProjectRole(Roles.PROJECT_ADMIN, projectId)) {
+              if (user.hasRole(Roles.PROJECT_ADMIN, Optional.of(projectId), false)) {
                 bRes.reject("globalErrors",
                     messageSource.getMessage("roles.error.global.admin", null, LocaleContextHolder.getLocale()));
                 log.debug("Role allocation aborted because user has Role {}", () -> Roles.PROJECT_ADMIN.name());
-              } else if (user.hasProjectRole(Roles.PROJECT_WRITER, projectId)
+              } else if (user.hasRole(Roles.PROJECT_WRITER, Optional.of(projectId), false)
                   && (newRole.getType().equals(Roles.PROJECT_READER.name())
                       || newRole.getType().equals(Roles.DS_READER.name())
                       || newRole.getType().equals(Roles.DS_WRITER.name()))) {
@@ -531,7 +531,7 @@ public class AccessController extends SuperController {
                     messageSource.getMessage("roles.error.global.write", null, LocaleContextHolder.getLocale()));
                 log.debug("Role allocation aborted because user has Role {} and doesn't need {}",
                     () -> Roles.PROJECT_WRITER.name(), () -> newRole);
-              } else if (user.hasProjectRole(Roles.PROJECT_READER, projectId)
+              } else if (user.hasRole(Roles.PROJECT_READER, Optional.of(projectId), false)
                   && newRole.getType().equals(Roles.DS_READER.name())) {
                 bRes.reject("globalErrors",
                     messageSource.getMessage("roles.error.global.read", null, LocaleContextHolder.getLocale()));

@@ -49,7 +49,7 @@ public class PanelController extends SuperController {
         for (ProjectDTO pdto : cpdto) {
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
-          pform.setStudies(studyDAO.getAllStudiesByProjectId(pdto));
+          pform.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
           pform.setContributors(contributorDAO.findByProject(pdto, false, true));
           pform.setSharedUser(userDAO.findGroupedByProject(pdto));
           cpform.add(pform);
@@ -60,7 +60,7 @@ public class PanelController extends SuperController {
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("panel"));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("panel", null, 0));
     model.put("CProjectForm", cpform);
     return "panel";
   }

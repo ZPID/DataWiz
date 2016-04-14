@@ -27,8 +27,7 @@ public class ProjectDAO extends SuperDAO {
 
   public ProjectDAO() {
     super();
-    if (log.isInfoEnabled())
-      log.info("Loading ProjectDAO as Singleton and Service");
+    log.info("Loading ProjectDAO as Singleton and Service");
   }
 
   public List<ProjectDTO> findAllByUserID(UserDTO user) throws Exception {
@@ -101,7 +100,7 @@ public class ProjectDAO extends SuperDAO {
     if (log.isDebugEnabled())
       log.debug("execute saveProject: " + project);
     KeyHolder holder = new GeneratedKeyHolder();
-    final String stmt = "INSERT INTO dw_project (name, description, created) VALUES (?,?,?)";
+    final String stmt = "INSERT INTO dw_project (name, description, created, owner_id) VALUES (?,?,?,?)";
     this.jdbcTemplate.update(new PreparedStatementCreator() {
       @Override
       public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -109,6 +108,7 @@ public class ProjectDAO extends SuperDAO {
         ps.setString(1, project.getTitle());
         ps.setString(2, project.getDescription());
         ps.setString(3, LocalDateTime.now().toString());
+        ps.setLong(4, project.getOwnerId());
         return ps;
       }
     }, holder);

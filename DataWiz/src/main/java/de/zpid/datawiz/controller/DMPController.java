@@ -72,7 +72,7 @@ public class DMPController extends SuperController {
       model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp"));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp", null, 0));
     model.put("subnaviActive", "DMP");
     model.put("ProjectForm", pForm);
     if (log.isEnabled(Level.DEBUG)) {
@@ -99,23 +99,8 @@ public class DMPController extends SuperController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
-    DmpDTO dmp;
     try {
       getProjectForm(pForm, pid, user, "DMP");
-      dmp = dmpDAO.getByID(pForm.getProject());
-      if (dmp != null && dmp.getId() > 0) {
-        dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
-        dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.collectionmode));
-        dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.metaporpose));
-        dmp.setAdminChanged(false);
-        dmp.setResearchChanged(false);
-        dmp.setMetaChanged(false);
-        dmp.setSharingChanged(false);
-        dmp.setStorageChanged(false);
-        dmp.setOrganizationChanged(false);
-        dmp.setEthicalChanged(false);
-        dmp.setCostsChanged(false);
-      }
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
       String redirectMessage = "";
@@ -130,11 +115,7 @@ public class DMPController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    if (dmp == null || dmp.getId() <= 0) {
-      dmp = (DmpDTO) context.getBean("DmpDTO");
-    }
-    pForm.setDmp(dmp);
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp"));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp", null, 0));
     model.put("subnaviActive", "DMP");
     model.put("ProjectForm", pForm);
     return "dmp";
@@ -146,6 +127,7 @@ public class DMPController extends SuperController {
     if (log.isEnabled(Level.DEBUG)) {
       log.debug("execute saveDMP - POST");
     }
+    UserDTO user = UserUtil.getCurrentUser();
     Boolean hasErrors = false;
     Boolean unChanged = true;
     validator.validate(pForm, bRes, ProjectDTO.ProjectVal.class);

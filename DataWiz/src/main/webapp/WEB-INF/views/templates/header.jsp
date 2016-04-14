@@ -8,10 +8,13 @@
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet"></link>
 <link rel="stylesheet" type="text/css" href="<c:url value='/static/css/font-awesome.css' />" />
 <link href="<c:url value='/static/css/app.css' />" rel="stylesheet"></link>
+<s:eval expression="@environment.getProperty('application.favicon.url')" var="faviconUri" />
+<link rel="icon" href="${faviconUri}" type="image/x-icon">
+<link rel="shortcut icon" href="${faviconUri}" type="image/x-icon">
 </head>
 <body>
   <sec:authentication var="principal" property="principal" />
   <div id="logo">
-    <s:eval expression="@environment.getProperty('application.logo.url')" var="urlUri" />
-    <img alt="" src="<c:url value="${urlUri}" />">
+    <s:eval expression="@environment.getProperty('application.logo.url')" var="logoUri" />
+    <img alt="" src="<c:url value="${logoUri}" />">
   </div>

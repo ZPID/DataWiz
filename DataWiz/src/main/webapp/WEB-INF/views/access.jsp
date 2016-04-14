@@ -50,7 +50,7 @@
                         </div>
                         <div class="col-md-8 col-xs-12">
                           <c:if
-                            test="${user.id eq principal.user.id || principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id)}">
+                            test="${user.id eq principal.user.id || principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)}">
                             <ul class="list-group">
                               <!-- user roles -->
                               <c:forEach items="${user.globalRoles}" var="role" varStatus="rState">
@@ -73,7 +73,7 @@
                                         <div class="col-md-2 col-xs-2">
                                           <c:if
                                             test="${!(user.id eq ProjectForm.project.ownerId) &&!(user.id eq principal.user.id) 
-                                                    && principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id)}">
+                                                    && principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)}">
                                             <a
                                               href="<c:url value="/access/${ProjectForm.project.id}/delete/${user.id}/${role.roleId}/${role.studyId}" />"
                                               class="btn btn-danger btn-xs" style="vertical-align: bottom;"> <s:message
@@ -100,7 +100,7 @@
                   </c:forEach>
                   <!--  -->
                   <c:if
-                    test="${principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id) || principal.user.hasRole('ADMIN')}">
+                    test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) || principal.user.hasRole('ADMIN')}">
                     <!-- add role to existing user -->
                     <li class="list-group-item"><sf:label path="delMail">
                         <s:message code="roles.add.role.label" />
@@ -138,7 +138,7 @@
                         </div>
                         <div class="col-md-3">
                           <c:if
-                            test="${!(user.id eq principal.user.id) && principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id)}">
+                            test="${!(user.id eq principal.user.id) && principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)}">
                             <sf:button type="submit" name="addRole" class="btn btn-success">
                               <s:message code="roles.add.role" />
                             </sf:button>
@@ -151,7 +151,7 @@
               </div>
             </div>
             <c:if
-              test="${principal.user.hasProjectRole('PROJECT_ADMIN', ProjectForm.project.id) || principal.user.hasRole('ADMIN')}">
+              test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) || principal.user.hasRole('ADMIN')}">
               <!-- add new user to project -->
               <div class="panel panel-default">
                 <div class="panel-heading">
