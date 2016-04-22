@@ -33,6 +33,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
@@ -58,7 +59,6 @@ public class ProjectController extends SuperController {
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
     return (ProjectForm) context.getBean("ProjectForm");
-
   }
 
   /**
@@ -96,8 +96,10 @@ public class ProjectController extends SuperController {
       return "redirect:/login";
     }
     // create new pform!
+    Roles role = null;
     try {
-      getProjectForm(pForm, pid, user, "PROJECT");
+      role = checkProjectRoles(user, pid, false, true);
+      getProjectForm(pForm, pid, user, "PROJECT", role);
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());
@@ -113,6 +115,12 @@ public class ProjectController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
+    if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
+        && !role.equals(Roles.PROJECT_WRITER)) && role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER)) {
+      model.put("jQueryMap", "study");
+      model.put("hideMenu", true);
+    }
+
     model.put("breadcrumpList", BreadCrumpUtil.generateBC("project", null, 0));
     model.put("subnaviActive", "PROJECT");
     model.put("ProjectForm", pForm);
@@ -140,7 +148,7 @@ public class ProjectController extends SuperController {
       }
       return "project";
     }
-    if (saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
+    if (!saveOrUpdateProject(pForm)) {
       // TODO vern�nftige Fehlerausgabe
       model.put("saveState", SavedState.ERROR.toString());
       model.put("saveStateMsg", "fehler!!!!");

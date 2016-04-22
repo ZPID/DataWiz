@@ -92,7 +92,7 @@ public class AccessController extends SuperController {
     final ProjectForm pForm = createProjectForm();
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
-      getProjectForm(pForm, projectId.get(), user, "ACCESS");
+      getProjectForm(pForm, projectId.get(), user, "ACCESS", checkProjectRoles(user, projectId.get(), false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject()));
         pForm.setRoleList(roleDAO.findAllProjectRoles());

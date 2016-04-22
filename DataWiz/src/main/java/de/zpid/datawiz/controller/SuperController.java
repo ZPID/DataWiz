@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.DelType;
@@ -109,12 +111,12 @@ public class SuperController {
    * @return
    * @throws Exception
    */
-  protected void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final String call)
-      throws Exception {
+  protected void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final String call,
+      Roles userRole) throws Exception {
     log.trace("Entering getProjectData for project [id: {}] and user [mail: {}] ", () -> pid, () -> user.getEmail());
     // security access check!
     if (pid > 0 && user != null) {
-      if (!checkProjectRoles(user, pid, false, true)) {
+      if (userRole == null) {
         throw new DataWizSecurityException("SECURITY: User with email: " + user.getEmail()
             + " tries to get access to project:" + pid + " without having the permissions to read");
       }
@@ -124,7 +126,8 @@ public class SuperController {
       }
       pForm.setProject(pdto);
       // load all data if user has full project rights
-      if (checkProjectRoles(user, pid, false, false)) {
+      if (userRole.equals(Roles.ADMIN) || userRole.equals(Roles.PROJECT_ADMIN) || userRole.equals(Roles.PROJECT_READER)
+          || userRole.equals(Roles.PROJECT_WRITER)) {
         // load /project data
         if (call == null || call.isEmpty() || call.equals("PROJECT")) {
           pForm.setFiles(fileDAO.getProjectFiles(pdto));
@@ -160,6 +163,16 @@ public class SuperController {
         else if (call.equals("ACCESS")) {
           pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
         }
+      } else if (userRole.equals(Roles.DS_READER) || userRole.equals(Roles.DS_WRITER)) {
+        List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
+        List<StudyDTO> cStud = new ArrayList<StudyDTO>();
+        for (UserRoleDTO role : userRoles) {
+          Roles uRole = Roles.valueOf(role.getType());
+          if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
+            cStud.add(studyDAO.findById(role.getStudyId()));
+          }
+        }
+        pForm.setStudies(cStud);
       }
       log.trace("Method getProjectData successfully completed");
     } else {
@@ -168,8 +181,8 @@ public class SuperController {
     }
   }
 
-  protected boolean saveOrUpdateProject(ProjectForm pForm, ProjectDAO projectDAO, RoleDAO roleDAO) {
-    boolean error = false;
+  protected boolean saveOrUpdateProject(ProjectForm pForm) {
+    boolean success = true;
     try {
       UserDTO user = UserUtil.getCurrentUser();
       if (pForm != null && pForm.getProject() != null && user != null) {
@@ -182,44 +195,57 @@ public class SuperController {
                 new UserRoleDTO(Roles.PROJECT_ADMIN.toInt(), user.getId(), chk, 0, Roles.PROJECT_ADMIN.name()));
             pForm.getProject().setId(chk);
           } else {
-            error = true;
+            success = false;
           }
         } else {
           projectDAO.updateProject(pForm.getProject());
         }
       } else {
-        error = true;
+        success = false;
       }
       UserUtil.getCurrentUser().setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
     } catch (Exception e) {
       log.error("Project saving not sucessful error:", e);
-      error = true;
+      success = false;
     }
-    return error;
+    return success;
   }
 
-  protected boolean checkProjectRoles(final UserDTO user, final long pid, final boolean onlyWrite,
+  protected Roles checkProjectRoles(final UserDTO user, final long pid, final boolean onlyWrite,
       final boolean withDSRights) {
-    if (user.hasRole(Roles.ADMIN)) {
-      log.debug("User {} is DataWiz Admin");
-      return true;
-    } else if (user.hasRole(Roles.PROJECT_ADMIN, Optional.of(pid), false)) {
-      log.debug("User {} has PROJECT_ADMIN role for project [id: {}]", () -> user.getEmail(), () -> pid);
-      return true;
-    } else if (user.hasRole(Roles.PROJECT_WRITER, Optional.of(pid), false)) {
-      log.debug("User {} has PROJECT_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
-      return true;
-    } else if (!onlyWrite && user.hasRole(Roles.PROJECT_READER, Optional.of(pid), false)) {
-      log.debug("User {} has PROJECT_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
-      return true;
-    } else if (withDSRights && user.hasRole(Roles.DS_WRITER, Optional.of(pid), false)) {
-      log.debug("User {} has DS_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
-      return true;
-    } else if (!onlyWrite && withDSRights && user.hasRole(Roles.DS_READER, Optional.of(pid), false)) {
-      log.debug("User {} has DS_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
-      return true;
+    try {
+      if (user.hasRole(Roles.ADMIN)) {
+        log.debug("User {} is DataWiz Admin", () -> user.getEmail());
+        return Roles.ADMIN;
+      }
+      final List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
+      if (userRoles == null || userRoles.size() <= 0)
+        return null;
+      userRoles.sort((o1, o2) -> Long.compare(o1.getRoleId(), o2.getRoleId()));
+      for (UserRoleDTO role : userRoles) {
+        Roles uRole = Roles.valueOf(role.getType());
+        if (uRole.equals(Roles.PROJECT_ADMIN)) {
+          log.debug("User {} has PROJECT_ADMIN role for project [id: {}]", () -> user.getEmail(), () -> pid);
+          return Roles.PROJECT_ADMIN;
+        } else if (uRole.equals(Roles.PROJECT_WRITER)) {
+          log.debug("User {} has PROJECT_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+          return Roles.PROJECT_WRITER;
+        } else if (!onlyWrite && uRole.equals(Roles.PROJECT_READER)) {
+          log.debug("User {} has PROJECT_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+          return Roles.PROJECT_READER;
+        } else if (withDSRights && uRole.equals(Roles.DS_WRITER)) {
+          log.debug("User {} has DS_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+          return Roles.DS_WRITER;
+        } else if (!onlyWrite && withDSRights && uRole.equals(Roles.DS_READER)) {
+          log.debug("User {} has DS_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+          return Roles.DS_READER;
+        }
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      return null;
     }
-    return false;
+    return null;
   }
 
 }

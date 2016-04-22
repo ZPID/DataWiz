@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -100,7 +101,7 @@ public class DMPController extends SuperController {
       return "redirect:/login";
     }
     try {
-      getProjectForm(pForm, pid, user, "DMP");
+      getProjectForm(pForm, pid, user, "DMP", checkProjectRoles(user, pid, false, false));
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
       String redirectMessage = "";
@@ -123,12 +124,17 @@ public class DMPController extends SuperController {
 
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
   public String saveDMP(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
-      RedirectAttributes redirectAttributes, BindingResult bRes) {
+      RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> pid) {
     if (log.isEnabled(Level.DEBUG)) {
       log.debug("execute saveDMP - POST");
     }
     UserDTO user = UserUtil.getCurrentUser();
     Boolean hasErrors = false;
+    if (!pid.isPresent() || checkProjectRoles(user, pid.get(), true, false) == null) {
+      bRes.reject("globalErrors",
+          messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
+      hasErrors = true;
+    }
     Boolean unChanged = true;
     validator.validate(pForm, bRes, ProjectDTO.ProjectVal.class);
     if (bRes.hasErrors() || pForm.getProject() == null || pForm.getProject().getTitle().isEmpty()) {
@@ -137,13 +143,12 @@ public class DMPController extends SuperController {
       }
       hasErrors = true;
     }
-    if (saveOrUpdateProject(pForm, this.projectDAO, this.roleDAO)) {
+    if (hasErrors || !saveOrUpdateProject(pForm)) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;
     }
-
-    if (pForm.getDmp() != null && (pForm.getDmp().getId() <= 0)) {
+    if (!hasErrors && pForm.getDmp() != null && (pForm.getDmp().getId() <= 0)) {
       try {
         int chk = dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
         if (chk <= 0)

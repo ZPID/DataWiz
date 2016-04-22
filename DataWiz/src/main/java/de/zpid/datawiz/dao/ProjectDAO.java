@@ -30,14 +30,13 @@ public class ProjectDAO extends SuperDAO {
     log.info("Loading ProjectDAO as Singleton and Service");
   }
 
-  public List<ProjectDTO> findAllByUserID(UserDTO user) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute findAllByUserID for user [email: " + user.getEmail() + "]");
+  public List<ProjectDTO> findAllByUserID(final UserDTO user) throws Exception {
+    log.trace("execute findAllByUserID for user [email: {}]", () -> user.getEmail());
     String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
         + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
         + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
         + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 GROUP BY dw_project.id";
-    return jdbcTemplate.query(sql, new Object[] { user.getId() }, new RowMapper<ProjectDTO>() {
+    List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] { user.getId() }, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
         project.setId(rs.getInt("id"));
@@ -48,6 +47,8 @@ public class ProjectDAO extends SuperDAO {
         return project;
       }
     });
+    log.debug("Transaction for findAllByUserID returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
+    return ret;
   }
 
   /**
@@ -60,9 +61,8 @@ public class ProjectDAO extends SuperDAO {
    * @throws SQLException
    * @throws DataAccessException
    */
-  public ProjectDTO findById(long projectId) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute findByIdWithRole for project [id: " + projectId + "]");
+  public ProjectDTO findById(final long projectId) throws Exception {
+    log.trace("execute findById for project [id: " + projectId + "]");
     ProjectDTO project = jdbcTemplate.query(
         // "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_project"
         // + " LEFT JOIN dw_user_roles ON dw_project.id = dw_user_roles.project_id"
@@ -84,21 +84,20 @@ public class ProjectDAO extends SuperDAO {
             return null;
           }
         });
-    if (log.isDebugEnabled())
-      log.debug("leaving findByID project: " + ((project != null) ? project.getId() : "null"));
+    log.debug("Transaction for findById returned [id: {}]", () -> ((project != null) ? project.getTitle() : "null"));
     return project;
   }
 
-  public int updateProject(ProjectDTO project) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute updateProject for project [id: " + project.getId() + "]");
-    return this.jdbcTemplate.update("UPDATE dw_project SET name = ?, description = ? WHERE id = ?", project.getTitle(),
-        project.getDescription(), project.getId());
+  public int updateProject(final ProjectDTO project) throws Exception {
+    log.trace("execute updateProject for project [id: {}]", () -> project.getId());
+    int chk = this.jdbcTemplate.update("UPDATE dw_project SET name = ?, description = ? WHERE id = ?",
+        project.getTitle(), project.getDescription(), project.getId());
+    log.debug("Transaction for updateProject returned [success: {}]", () -> chk);
+    return chk;
   }
 
-  public int insertProject(ProjectDTO project) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute saveProject: " + project);
+  public int insertProject(final ProjectDTO project) throws Exception {
+    log.trace("execute insertProject [title: {}]", () -> project.getTitle());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_project (name, description, created, owner_id) VALUES (?,?,?,?)";
     this.jdbcTemplate.update(new PreparedStatementCreator() {
@@ -112,23 +111,26 @@ public class ProjectDAO extends SuperDAO {
         return ps;
       }
     }, holder);
-    return (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
+    final int key = (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
+    log.debug("Transaction for insertProject returned [key: {}]", () -> key);
+    return key;
   }
 
-  public int insertInviteEntree(long projectId, String userMail, String adminMail) {
-    if (log.isDebugEnabled())
-      log.debug("execute instertUsertoProject for project [id: " + projectId + "], User [id: " + userMail
-          + "] by Admin [email: " + adminMail + "]");
-    return this.jdbcTemplate.update(
+  public int insertInviteEntree(final long projectId, final String userMail, final String adminMail) {
+    log.trace("execute instertUsertoProject for project [id: {}], User [id: {}] by Admin [email: {}]", () -> projectId,
+        () -> userMail, () -> adminMail);
+    int chk = this.jdbcTemplate.update(
         "INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)",
         userMail, adminMail, projectId, UUID.randomUUID().toString(), LocalDateTime.now().toString());
+    log.debug("Transaction for insertInviteEntree returned [success: {}]", () -> chk);
+    return chk;
   }
 
-  public String getValFromInviteData(String email, long projectId, String val) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute getInviteHash for user [email: " + email + "]");
-    String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
-    return jdbcTemplate.query(sql, new Object[] { email, projectId }, new ResultSetExtractor<String>() {
+  public String getValFromInviteData(final String email, final long projectId, final String val) throws Exception {
+    log.trace("execute getValFromInviteData for project [id: {}], user [id: {}] and [val: {}]", () -> projectId,
+        () -> email, () -> val);
+    final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
+    String ret = jdbcTemplate.query(sql, new Object[] { email, projectId }, new ResultSetExtractor<String>() {
       @Override
       public String extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (rs.next()) {
@@ -137,32 +139,38 @@ public class ProjectDAO extends SuperDAO {
         return null;
       }
     });
+    log.debug("Transaction for getValFromInviteData returned [{}: {}]", () -> val, () -> ret);
+    return ret;
   }
 
-  public List<String> findPendingInvitesByProjectID(long pid) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute findPendingInvitesByProjectID for project [id: " + pid + "]");
-    String sql = "SELECT user_email from dw_project_invite WHERE project_id = ?";
-    return jdbcTemplate.query(sql, new Object[] { pid }, new RowMapper<String>() {
+  public List<String> findPendingInvitesByProjectID(final long pid) throws Exception {
+    log.trace("execute findPendingInvitesByProjectID for project [id: {}]", () -> pid);
+    final String sql = "SELECT user_email from dw_project_invite WHERE project_id = ?";
+    List<String> ret = jdbcTemplate.query(sql, new Object[] { pid }, new RowMapper<String>() {
       public String mapRow(ResultSet rs, int rowNum) throws SQLException {
         return rs.getString("user_email");
       }
     });
+    log.debug("Transaction for findPendingInvitesByProjectID returned [lenght: {}]",
+        () -> ret != null ? ret.size() : "null");
+    return ret;
   }
 
-  public int deleteInvitationEntree(long projectId, String userMail) {
-    if (log.isDebugEnabled())
-      log.debug("execute deleteInvitationEntree for project [id: " + projectId + "] and User [id: " + userMail + "]");
-    return this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?", userMail,
-        projectId);
+  public int deleteInvitationEntree(final long projectId, final String userMail) {
+    log.trace("execute deleteInvitationEntree for project [id: {}] and User [id: {}]", () -> projectId, () -> userMail);
+    int chk = this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?",
+        userMail, projectId);
+    log.debug("Transaction for deleteInvitationEntree returned [success: {}]", () -> chk);
+    return chk;
   }
 
   public int updateInvitationEntree(long projectId, String userMailOld, String userEmailNew) {
-    if (log.isDebugEnabled())
-      log.debug("execute updateInvitationEntree for project [id: " + projectId + "] and User [old email: " + userMailOld
-          + "new email: " + userEmailNew + "]");
-    return this.jdbcTemplate.update(
+    log.trace("execute updateInvitationEntree for project [id: {}] and User [old email: {}; new email: {}]",
+        () -> projectId, () -> userMailOld, () -> userEmailNew);
+    int chk = this.jdbcTemplate.update(
         "UPDATE dw_project_invite SET user_email = ? WHERE user_email = ? AND project_id = ?", userEmailNew,
         userMailOld, projectId);
+    log.debug("Transaction for updateInvitationEntree returned [success: {}]", () -> chk);
+    return chk;
   }
 }

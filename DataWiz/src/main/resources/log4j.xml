@@ -17,10 +17,10 @@
 		</layout>
 	</appender>
 	<logger name="org.springframework">
-		<level value="info" />
+		<level value="warn" />
 	</logger>
 	<logger name="org.hibernate">
-		<level value="info" />
+		<level value="warn" />
 	</logger>
 	<logger name="de.zpid">
 		<level value="trace" />

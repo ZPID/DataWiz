@@ -70,6 +70,10 @@ function setProjectSubmenu(id) {
       $("#workersActiveClick").addClass("active");
       $("#workersActiveContent").show();
       break;
+    case "study":
+      $("#studiesActiveClick").addClass("active");
+      $("#studiesActiveContent").show();
+      break;
     case "material":
       $("#materialsActiveClick").addClass("active");
       $("#materialsActiveContent").show();

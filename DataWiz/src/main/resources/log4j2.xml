@@ -14,8 +14,8 @@
 		</Async>
 	</Appenders>
 	<Loggers>
-		<logger name="org.springframework" level="INFO" />
-		<logger name="org.hibernate" level="INFO" />
+		<logger name="org.springframework" level="WARN" />
+		<logger name="org.hibernate" level="WARN" />
 		<logger name="de.zpid" level="TRACE" />
 		<Root level="WARN">
 			<AppenderRef ref="Async" />

@@ -26,18 +26,20 @@
         </c:choose>
       </div>
       <!-- Submenu -->
-      <ul class="nav nav-tabs">
-        <li role="presentation" id="metaActiveClick" class="projectContentClick"><a><s:message
-              code="project.submenu.metadata" /></a></li>
-        <c:if test="${not empty ProjectForm.project.id}">
-          <li role="presentation" id="workersActiveClick" class="projectContentClick"><a><s:message
-                code="project.submenu.workers" /></a></li>
-          <li role="presentation" id="studiesActiveClick" class="projectContentClick"><a><s:message
-                code="project.submenu.studies" /></a></li>
-          <li role="presentation" id="materialsActiveClick" class="projectContentClick"><a><s:message
-                code="project.submenu.material" /></a></li>
-        </c:if>
-      </ul>
+      <c:if test="${!hideMenu}">
+        <ul class="nav nav-tabs">
+          <li role="presentation" id="metaActiveClick" class="projectContentClick"><a><s:message
+                code="project.submenu.metadata" /></a></li>
+          <c:if test="${not empty ProjectForm.project.id}">
+            <li role="presentation" id="workersActiveClick" class="projectContentClick"><a><s:message
+                  code="project.submenu.workers" /></a></li>
+            <li role="presentation" id="studiesActiveClick" class="projectContentClick"><a><s:message
+                  code="project.submenu.studies" /></a></li>
+            <li role="presentation" id="materialsActiveClick" class="projectContentClick"><a><s:message
+                  code="project.submenu.material" /></a></li>
+          </c:if>
+        </ul>
+      </c:if>
       <c:url var="projectUrl" value="/project/${ProjectForm.project.id}" />
       <sf:form action="${projectUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />

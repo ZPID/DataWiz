@@ -50,7 +50,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public MessageSource resourceBundleMessageSource() {
     ResourceBundleMessageSource resolver = new ResourceBundleMessageSource();
     resolver.setBasenames("de.zpid.datawiz.properties.ApplicationResources", "de.zpid.datawiz.properties.DMPResources",
-        "de.zpid.datawiz.properties.EmailResources","datawiz.properties");
+        "de.zpid.datawiz.properties.EmailResources", "de.zpid.datawiz.properties.StudyResources");
     resolver.setDefaultEncoding("UTF-8");
     return resolver;
   }
