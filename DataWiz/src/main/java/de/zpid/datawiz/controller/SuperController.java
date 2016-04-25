@@ -14,6 +14,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.validation.SmartValidator;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
@@ -31,10 +32,12 @@ import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.UserUtil;
 
 public class SuperController {
@@ -70,6 +73,16 @@ public class SuperController {
 
   protected Logger log = LogManager.getLogger(getClass());
 
+  @ModelAttribute("ProjectForm")
+  public ProjectForm createProjectForm() {
+    return (ProjectForm) context.getBean("ProjectForm");
+  }
+
+  @ModelAttribute("StudyForm")
+  public StudyForm createStudyForm() {
+    return (StudyForm) context.getBean("StudyForm");
+  }
+
   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.
    *
@@ -80,7 +93,7 @@ public class SuperController {
    */
   protected String checkProjectAdmin(final RedirectAttributes redirectAttributes, final long projectId,
       final UserDTO admin) {
-    log.trace("Entering checkProjectAdmin for project [id: {}] and user [mail: {}] ", () -> projectId,
+    log.trace("Entering checkProjectAdmin(SuperController) for project [id: {}] and user [mail: {}] ", () -> projectId,
         () -> admin.getEmail());
     if (admin == null) {
       log.warn("Auth User Object == null - redirect to login");
@@ -100,7 +113,7 @@ public class SuperController {
       log.error("ERROR: Database Error while getting roles - Exception:", e);
       ret = "redirect:/access/" + projectId;
     }
-    log.trace("Method checkProjectAdmin completed");
+    log.trace("Method checkProjectAdmin(SuperController) completed");
     return ret;
   }
 
@@ -111,9 +124,10 @@ public class SuperController {
    * @return
    * @throws Exception
    */
-  protected void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final String call,
+  protected void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final PageState call,
       Roles userRole) throws Exception {
-    log.trace("Entering getProjectData for project [id: {}] and user [mail: {}] ", () -> pid, () -> user.getEmail());
+    log.trace("Entering getProjectData(SuperController) for project [id: {}] and user [mail: {}] ", () -> pid,
+        () -> user.getEmail());
     // security access check!
     if (pid > 0 && user != null) {
       if (userRole == null) {
@@ -129,14 +143,14 @@ public class SuperController {
       if (userRole.equals(Roles.ADMIN) || userRole.equals(Roles.PROJECT_ADMIN) || userRole.equals(Roles.PROJECT_READER)
           || userRole.equals(Roles.PROJECT_WRITER)) {
         // load /project data
-        if (call == null || call.isEmpty() || call.equals("PROJECT")) {
+        if (call == null || call.equals(PageState.PROJECT)) {
           pForm.setFiles(fileDAO.getProjectFiles(pdto));
           pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
           pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
           pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
           pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
         } // load /dmp data
-        else if (call.equals("DMP")) {
+        else if (call.equals(PageState.DMP)) {
           DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
           if (dmp != null && dmp.getId() > 0) {
             dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.datatype));
@@ -160,8 +174,11 @@ public class SuperController {
           pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
           pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
         } // load /access data
-        else if (call.equals("ACCESS")) {
+        else if (call.equals(PageState.ACCESS)) {
           pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+        } // load /export data
+        else if (call.equals(PageState.EXPORT)) {
+
         }
       } else if (userRole.equals(Roles.DS_READER) || userRole.equals(Roles.DS_WRITER)) {
         List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
@@ -174,14 +191,15 @@ public class SuperController {
         }
         pForm.setStudies(cStud);
       }
-      log.trace("Method getProjectData successfully completed");
+      log.trace("Method getProjectData(SuperController) successfully completed");
     } else {
       log.warn("ProjectID or UserDTO is empty - NULL returned!");
-      throw new DataWizException("ProjectID or UserDTO is empty - getProjectForm aborted!");
+      throw new DataWizException("ProjectID or UserDTO is empty - getProjectForm(SuperController) aborted!");
     }
   }
 
-  protected boolean saveOrUpdateProject(ProjectForm pForm) {
+  protected boolean saveOrUpdateProject(final ProjectForm pForm) {
+    log.trace("Entering saveOrUpdateProject(SuperController) for project [id: {}] ", () -> pForm.getProject().getId());
     boolean success = true;
     try {
       UserDTO user = UserUtil.getCurrentUser();
@@ -208,11 +226,23 @@ public class SuperController {
       log.error("Project saving not sucessful error:", e);
       success = false;
     }
+    log.trace("Method saveOrUpdateProject(SuperController) completed with sucess={}", success);
     return success;
   }
 
+  /**
+   * 
+   * @param user
+   * @param pid
+   * @param onlyWrite
+   * @param withDSRights
+   * @return
+   */
   protected Roles checkProjectRoles(final UserDTO user, final long pid, final boolean onlyWrite,
       final boolean withDSRights) {
+    log.trace(
+        "Entering checkProjectRoles(SuperController) for user [id: {}], project [id: {}], with Rights to write only [{}] and Studyrights [{}] ",
+        () -> user.getId(), () -> pid, () -> onlyWrite, () -> withDSRights);
     try {
       if (user.hasRole(Roles.ADMIN)) {
         log.debug("User {} is DataWiz Admin", () -> user.getEmail());
@@ -242,9 +272,11 @@ public class SuperController {
         }
       }
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+      log.error("checkProjectRoles not sucessful -> return null! error:", e);
       return null;
     }
+    log.debug("Method gcheckProjectRoles(SuperController) ended without result for user [id: {}] and project [id: {}]",
+        () -> user.getId(), () -> pid);
     return null;
   }
 

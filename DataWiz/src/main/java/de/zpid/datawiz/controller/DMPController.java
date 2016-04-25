@@ -24,6 +24,7 @@ import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DelType;
 import de.zpid.datawiz.enumeration.DmpCategory;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
@@ -73,8 +74,8 @@ public class DMPController extends SuperController {
       model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp", null, 0));
-    model.put("subnaviActive", "DMP");
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.DMP, null, 0));
+    model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     if (log.isEnabled(Level.DEBUG)) {
       log.debug("Method createDMP successfully completed");
@@ -101,7 +102,7 @@ public class DMPController extends SuperController {
       return "redirect:/login";
     }
     try {
-      getProjectForm(pForm, pid, user, "DMP", checkProjectRoles(user, pid, false, false));
+      getProjectForm(pForm, pid, user, PageState.DMP, checkProjectRoles(user, pid, false, false));
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
       String redirectMessage = "";
@@ -116,8 +117,8 @@ public class DMPController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("dmp", null, 0));
-    model.put("subnaviActive", "DMP");
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.DMP, null, 0));
+    model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     return "dmp";
   }

@@ -8,6 +8,7 @@ import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
@@ -54,42 +56,15 @@ public class ProjectController extends SuperController {
 
   /**
    * 
-   * @return
-   */
-  @ModelAttribute("ProjectForm")
-  public ProjectForm createProjectForm() {
-    return (ProjectForm) context.getBean("ProjectForm");
-  }
-
-  /**
-   * 
-   * @param model
-   * @return
-   */
-  @RequestMapping(method = RequestMethod.GET)
-  public String createProject(ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute createProject - GET");
-    }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project", null, 0));
-    model.put("subnaviActive", "PROJECT");
-    model.put("ProjectForm", createProjectForm());
-    return "project";
-  }
-
-  /**
-   * 
    * @param pid
    * @param pForm
    * @param model
    * @return
    */
-  @RequestMapping(value = "/{pid}", method = RequestMethod.GET)
-  public String editProject(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+  @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
+  public String showProjectPage(@PathVariable Optional<Long> pid, ModelMap model,
       RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute editProject for projectID=" + pid);
-    }
+    log.debug("execute showProjectPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
@@ -97,34 +72,37 @@ public class ProjectController extends SuperController {
     }
     // create new pform!
     Roles role = null;
-    try {
-      role = checkProjectRoles(user, pid, false, true);
-      getProjectForm(pForm, pid, user, "PROJECT", role);
-    } catch (Exception e) {
-      // TODO
-      log.warn(e.getMessage());
-      String redirectMessage = "";
-      if (e instanceof DataWizException) {
-        redirectMessage = "project.not.available";
-      } else if (e instanceof DataWizSecurityException) {
-        redirectMessage = "project.access.denied";
-      } else {
-        redirectMessage = "dbs.sql.exception";
+    ProjectForm pForm = createProjectForm();
+    if (pid.isPresent()) {
+      try {
+        role = checkProjectRoles(user, pid.get(), false, true);
+        getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
+      } catch (Exception e) {
+        // TODO
+        log.warn(e.getMessage());
+        String redirectMessage = "";
+        if (e instanceof DataWizException) {
+          redirectMessage = "project.not.available";
+        } else if (e instanceof DataWizSecurityException) {
+          redirectMessage = "project.access.denied";
+        } else {
+          redirectMessage = "dbs.sql.exception";
+        }
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+        return "redirect:/panel";
       }
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
-      return "redirect:/panel";
+      if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
+          && !role.equals(Roles.PROJECT_WRITER)) && role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER)) {
+        model.put("jQueryMap", "study");
+        model.put("hideMenu", true);
+      }
     }
-    if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
-        && !role.equals(Roles.PROJECT_WRITER)) && role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER)) {
-      model.put("jQueryMap", "study");
-      model.put("hideMenu", true);
-    }
-
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("project", null, 0));
-    model.put("subnaviActive", "PROJECT");
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, null, 0));
+    model.put("subnaviActive", PageState.PROJECT.name());
     model.put("ProjectForm", pForm);
     return "project";
+
   }
 
   /**

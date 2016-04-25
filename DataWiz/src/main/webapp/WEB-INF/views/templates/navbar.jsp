@@ -40,7 +40,7 @@
             aria-expanded="false"><c:out value="${principal.username}" /><span class="caret"></span></a>
             <ul class="dropdown-menu">
               <li><a href="<c:url value="/panel" />">Projekte</a></li>
-              <li><a href="#">Eigene Daten</a></li>
+              <li><a href="<c:url value="/usersettings" />">Eigene Daten</a></li>
               <li><a href="#">Placeholder</a></li>
               <li role="separator" class="divider"></li>
               <li><a href="<c:url value="/logout" />">Logout</a></li>

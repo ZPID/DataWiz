@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -60,7 +61,7 @@ public class PanelController extends SuperController {
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("panel", null, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PANEL, null, 0));
     model.put("CProjectForm", cpform);
     return "panel";
   }

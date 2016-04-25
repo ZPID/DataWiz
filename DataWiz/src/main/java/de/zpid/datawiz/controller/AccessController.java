@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
@@ -58,16 +59,6 @@ public class AccessController extends SuperController {
   }
 
   /**
-   * Creates the project form.
-   *
-   * @return ProjectForm
-   */
-  @ModelAttribute("ProjectForm")
-  public ProjectForm createProjectForm() {
-    return (ProjectForm) context.getBean("ProjectForm");
-  }
-
-  /**
    * Show access page.
    *
    * @param projectId
@@ -78,7 +69,7 @@ public class AccessController extends SuperController {
   @RequestMapping(value = { "", "/{projectId}" }, method = RequestMethod.GET)
   public String showAccessPage(@PathVariable final Optional<Long> projectId, final ModelMap model,
       final RedirectAttributes reAtt) {
-    log.trace("Entering showAccessPage for project [id: {}]", () -> projectId.get());
+    log.trace("Entering showAccessPage for project [id: {}]", () -> projectId.isPresent() ? projectId.get() : "null");
     if (!projectId.isPresent()) {
       reAtt.addFlashAttribute("errorMSG",
           messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
@@ -92,7 +83,8 @@ public class AccessController extends SuperController {
     final ProjectForm pForm = createProjectForm();
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
-      getProjectForm(pForm, projectId.get(), user, "ACCESS", checkProjectRoles(user, projectId.get(), false, false));
+      getProjectForm(pForm, projectId.get(), user, PageState.ACCESS,
+          checkProjectRoles(user, projectId.get(), false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject()));
         pForm.setRoleList(roleDAO.findAllProjectRoles());
@@ -119,8 +111,8 @@ public class AccessController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC("access", null, 0));
-    model.put("subnaviActive", "ACCESS");
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.ACCESS, null, 0));
+    model.put("subnaviActive", PageState.ACCESS.name());
     model.put("ProjectForm", pForm);
     log.trace("Method showAccessPage successfully completed");
     return "access";
