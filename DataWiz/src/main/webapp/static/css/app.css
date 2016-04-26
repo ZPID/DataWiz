@@ -1,364 +1,377 @@
 /**************** START DOC SETTINGS ****************/
 html {
-	position: relative;
-	min-height: 100%;
+  position: relative;
+  min-height: 100%;
 }
 
 body {
-	font-family: 'PT Sans', "helvetica neue", sans-serif;
-	margin-bottom: 60px;
+  font-family: 'PT Sans', "helvetica neue", sans-serif;
+  margin-bottom: 60px;
 }
 
 body, #mainWrapper {
-	background-color: #eee;
+  background-color: #eee;
 }
 
 body, #mainWrapper, .form-control {
-	font-size: 12px !important;
+  font-size: 12px !important;
 }
 /**************** END DOC SETTINGS ****************/
 /**************** START HEADER ****************/
 #logo {
-	margin: auto;
-	width: 300px;
+  margin: auto;
+  width: 300px;
 }
 
 #logo img {
-	width: 300px;
-	padding: 20px 0px 20px 0px;
-	margin: auto;
+  width: 300px;
+  padding: 20px 0px 20px 0px;
+  margin: auto;
 }
 /**************** END HEADER ****************/
 /**************** START Content ****************/
 textarea {
-	resize: vertical; /* user can resize vertically, but width is fixed */
+  resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
 .form-group .required:BEFORE {
-	content: "*";
-	color: red;
+  content: "*";
+  color: red;
 }
 
 .reddot:AFTER {
-	content: "*";
-	color: red;
+  content: "*";
+  color: red;
 }
 
 .form-group label:AFTER {
-	content: ":";
+  content: ":";
 }
 
 .form-group-clean label:AFTER {
-	content: "";
+  content: "";
 }
 
 .list-group-item .btn:AFTER {
-	content: "";
+  content: "";
 }
 
 [type="checkbox"] ~ label:AFTER {
-	content: "";
+  content: "";
 }
 
 .clean_label:AFTER {
-	content: "";
+  content: "";
 }
 
 .projectContentClick {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .projectContent {
-	display: none;
+  display: none;
 }
 
 .glyphicon-lg {
-	font-size: 3em
+  font-size: 3em
 }
 
 .marginTop1 {
-	margin-top: 12px;
+  margin-top: 12px;
 }
 
 .gylph-help {
-	font-size: 1.2em;
-	width: 1.4em;
-	color: #286090;
+  font-size: 1.2em;
+  width: 1.4em;
+  color: #286090;
 }
 
 .chkboxbtn {
-	text-align: left;
-	white-space: normal;
-	width: 100%;
+  text-align: left;
+  white-space: normal;
+  width: 100%;
 }
 
 .vcenter {
-	vertical-align: middle;
+  vertical-align: middle;
+}
+
+.control-label-left .control-label {
+  /* text-align:right; */
+  text-align: left;
 }
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
 @media ( max-width : 765px) {
-	/* LOGIN */
-	.login_container {
-		background-color: white;
-		width: 100%;
-		margin: auto;
-	}
-	.login-card {
-		width: 90%;
-		margin: auto;
-	}
-	.login-form {
-		padding: 3%;
-	}
-	/* Content */
-	.content-container {
-		background-color: white;
-		width: 100%;
-		margin: auto;
-	}
-	.content-padding {
-		padding: 1% 0%;
-	}
-	#mainWrapper .form-group {
-		padding: 0% 1% 0% 1%;
-	}
+  /* LOGIN */
+  .login_container {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+  }
+  .login-card {
+    width: 90%;
+    margin: auto;
+  }
+  .login-form {
+    padding: 3%;
+  }
+  /* Content */
+  .content-container {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+  }
+  .content-padding {
+    padding: 1% 0%;
+  }
+  #mainWrapper .form-group {
+    padding: 0% 1% 0% 1%;
+  }
 }
 /* Breite ab 766 pixel */
 @media ( min-width : 766px) and (max-width:1599px) {
-	.login_container {
-		background-color: white;
-		width: 90%;
-		margin: auto;
-	}
-	.login-card {
-		width: 80%;
-		margin: auto;
-	}
-	.login-form {
-		padding: 6%;
-	}
-	/* Content */
-	.content-container {
-		background-color: white;
-		width: 100%;
-		margin: auto;
-	}
-	.content-padding {
-		padding: 2%;
-	}
-	#mainWrapper .form-group {
-		padding: 0% 1% 0% 1%;
-	}
+  .login_container {
+    background-color: white;
+    width: 90%;
+    margin: auto;
+  }
+  .login-card {
+    width: 80%;
+    margin: auto;
+  }
+  .login-form {
+    padding: 6%;
+  }
+  /* Content */
+  .content-container {
+    background-color: white;
+    width: 100%;
+    margin: auto;
+  }
+  .content-padding {
+    padding: 2%;
+  }
+  #mainWrapper .form-group {
+    padding: 0% 1% 0% 1%;
+  }
 }
 /* Breite ab 1200 pixel */
 @media ( min-width : 1600px) {
-	.login_container {
-		background-color: white;
-		width: 40%;
-		margin: auto;
-	}
-	.login-card {
-		width: 80%;
-		margin: auto;
-	}
-	.content-padding {
-		padding: 20px 8%;
-	}
-	/* Content */
-	.content-container {
-		background-color: white;
-		width: 80%;
-		margin: auto;
-	}
+  .login_container {
+    background-color: white;
+    width: 40%;
+    margin: auto;
+  }
+  .login-card {
+    width: 80%;
+    margin: auto;
+  }
+  .content-padding {
+    padding: 20px 8%;
+  }
+  /* Content */
+  .content-container {
+    background-color: white;
+    width: 80%;
+    margin: auto;
+  }
 }
 /**************** END RESPONSIVE ****************/
 /**************** START FOOTER ****************/
 .footer {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	/* Set the fixed height of the footer here */
-	height: 40px;
-	background-color: #337ab7;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 40px;
+  background-color: #337ab7;
 }
 /**************** END FOOTER ****************/
 /**************** START TAGGING STYLE ****************/
 .tagging {
-	border: 1px solid #CCCCCC;
-	cursor: text;
-	font-size: 1em;
-	height: auto;
-	padding: 10px 10px 15px;
+  border: 1px solid #CCCCCC;
+  cursor: text;
+  font-size: 1em;
+  height: auto;
+  padding: 10px 10px 15px;
 }
 
 .tag {
-	background: none repeat scroll 0 0 #337ab7;
-	border-radius: 2px;
-	color: white;
-	cursor: default;
-	display: inline-block;
-	position: relative;
-	white-space: nowrap;
-	padding: 4px 20px 4px 0;
-	margin: 5px 10px 0 0;
+  background: none repeat scroll 0 0 #337ab7;
+  border-radius: 2px;
+  color: white;
+  cursor: default;
+  display: inline-block;
+  position: relative;
+  white-space: nowrap;
+  padding: 4px 20px 4px 0;
+  margin: 5px 10px 0 0;
 }
 
 .tag span {
-	background: none repeat scroll 0 0 #286090;
-	border-radius: 2px 0 0 2px;
-	margin-right: 5px;
-	padding: 5px 10px 5px;
+  background: none repeat scroll 0 0 #286090;
+  border-radius: 2px 0 0 2px;
+  margin-right: 5px;
+  padding: 5px 10px 5px;
 }
 
 .tag .tag-i {
-	color: white;
-	cursor: pointer;
-	font-size: 1.3em;
-	height: 0;
-	line-height: 0.1em;
-	position: absolute;
-	right: 5px;
-	top: 0.7em;
-	text-align: center;
-	width: 10px;
+  color: white;
+  cursor: pointer;
+  font-size: 1.3em;
+  height: 0;
+  line-height: 0.1em;
+  position: absolute;
+  right: 5px;
+  top: 0.7em;
+  text-align: center;
+  width: 10px;
 }
 
 .tag .tag-i:hover {
-	color: black;
-	text-decoration: underline;
+  color: black;
+  text-decoration: underline;
 }
 
 .type-zone {
-	border: 0 none;
-	height: auto;
-	width: auto;
-	min-width: 20px;
-	display: inline-block;
+  border: 0 none;
+  height: auto;
+  width: auto;
+  min-width: 20px;
+  display: inline-block;
 }
 
 .type-zone:focus {
-	outline: none;
+  outline: none;
 }
 /**************** END TAGGING STYLE ****************/
 /**************** START NAVBAR CUSTOMISATION ****************/
 .navbar-default {
-	background-color: #337ab7;
-	border-color: #286090;
+  background-color: #337ab7;
+  border-color: #286090;
 }
 
 .navbar-default .navbar-brand {
-	color: #ffffff;
+  color: #ffffff;
 }
 
-.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus
-	{
-	color: #fefeff;
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+  color: #fefeff;
 }
 
 .navbar-default .navbar-text {
-	color: #ffffff;
+  color: #ffffff;
 }
 
 .navbar-default .navbar-nav>li>a {
-	color: #ffffff;
+  color: #ffffff;
 }
 
-.navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus
-	{
-	color: #fefeff;
+.navbar-default .navbar-nav>li>a:hover, .navbar-default .navbar-nav>li>a:focus {
+  color: #fefeff;
 }
 
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover,
-	.navbar-default .navbar-nav>.active>a:focus {
-	color: #fefeff;
-	background-color: #286090;
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus
+  {
+  color: #fefeff;
+  background-color: #286090;
 }
 
-.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover,
-	.navbar-default .navbar-nav>.open>a:focus {
-	color: #fefeff;
-	background-color: #286090;
+.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus
+  {
+  color: #fefeff;
+  background-color: #286090;
 }
 
 .navbar-default .navbar-toggle {
-	border-color: #286090;
+  border-color: #286090;
 }
 
-.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus
-	{
-	background-color: #286090;
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+  background-color: #286090;
 }
 
 .navbar-default .navbar-toggle .icon-bar {
-	background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 .navbar-default .navbar-collapse, .navbar-default .navbar-form {
-	border-color: #ffffff;
+  border-color: #ffffff;
 }
 
 .navbar-default .navbar-link {
-	color: #ffffff;
+  color: #ffffff;
 }
 
 .navbar-default .navbar-link:hover {
-	color: #fefeff;
+  color: #fefeff;
 }
 
 @media ( max-width : 767px) {
-	.navbar-default .navbar-nav .open .dropdown-menu>li>a {
-		color: #ffffff;
-	}
-	.navbar-default .navbar-nav .open .dropdown-menu>li>a:hover,
-		.navbar-default .navbar-nav .open .dropdown-menu>li>a:focus {
-		color: #fefeff;
-	}
-	.navbar-default .navbar-nav .open .dropdown-menu>.active>a,
-		.navbar-default .navbar-nav .open .dropdown-menu>.active>a:hover,
-		.navbar-default .navbar-nav .open .dropdown-menu>.active>a:focus {
-		color: #fefeff;
-		background-color: #286090;
-	}
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a {
+    color: #ffffff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover, .navbar-default .navbar-nav .open .dropdown-menu>li>a:focus
+    {
+    color: #fefeff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu>.active>a, .navbar-default .navbar-nav .open .dropdown-menu>.active>a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu>.active>a:focus {
+    color: #fefeff;
+    background-color: #286090;
+  }
 }
 /**************** END NAVBAR CUSTOMISATION ****************/
 /**************** START FIXED NAVBAR SETTINGS ****************/
 .mainnavtop.affix {
-	top: 0;
-	width: 100%
+  top: 0;
+  width: 100%
 }
 
 .mainnavtop {
-	border-left: 0;
-	border-right: 0;
-	border-radius: 0;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	-o-border-radius: 0;
-	z-index: 1;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -o-border-radius: 0;
+  z-index: 1;
 }
 
 .subnavtop.affix {
-	position: fixed;
-	top: 51;
-	left: 0;
-	z-index: 1;
-	width: 100%;
-	background-color: white;
-	text-align: center;
-	margin: 0 auto;
-	padding-left: 15.6%
+  position: fixed;
+  top: 51;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  background-color: white;
+  text-align: center;
+  margin: 0 auto;
+  padding-left: 15.6%
 }
 
 .subnavtop {
-	border-left: 0;
-	border-right: 0;
-	border-radius: 0;
-	-webkit-border-radius: 0;
-	-moz-border-radius: 0;
-	-o-border-radius: 0;
-	z-index: 1;
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -o-border-radius: 0;
+  z-index: 1;
 }
 
 /**************** END FIXED NAVBAR SETTINGS ****************/
+
+.progress_custom {
+    position: relative;
+    top: 8px;
+}
+
+.progress_custom span {
+    position: absolute;
+    display: block;
+    width: 100%;
+    color: black;
+ }

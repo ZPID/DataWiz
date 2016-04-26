@@ -358,3 +358,104 @@ $(function() {
     });
   });
 });
+
+$('.user-pswd-button').on("click", function(e) {
+  $('.user-pswd-button, #user-pswd-content').toggle();
+});
+
+function passwordStrength(password) {
+  var desc = new Array();
+  desc[0] = "Very Weak";
+  desc[1] = "Weak";
+  desc[2] = "Better";
+  desc[3] = "Medium";
+  desc[4] = "Strong";
+  desc[5] = "Strongest";
+
+  var score = 0;
+
+  // if password bigger than 6 give 1 point
+  if (password.length > 6)
+    score++;
+
+  // if password has both lower and uppercase characters give 1 point
+  if ((password.match(/[a-z]/)) && (password.match(/[A-Z]/)))
+    score++;
+
+  // if password has at least one number give 1 point
+  if (password.match(/\d+/))
+    score++;
+
+  // if password has at least one special caracther give 1 point
+  if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))
+    score++;
+
+  // if password bigger than 12 give another 1 point
+  if (password.length > 12)
+    score++;
+
+  document.getElementById("pwdcheckstr").innerHTML = desc[score];
+
+  document.getElementById("passwordStrength").className = "strength" + score;
+}
+
+/*
+ * start password check function
+ */
+
+$('#pwdcheckin').keyup(function() {
+  $('#pwdcheckstr span').html(checkStrength($('#pwdcheckin').val()))
+})
+
+function checkStrength(password) {
+  var str = 0;
+  if (password.length <= 0) {
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width(0);
+    $('.progress_custom span').css('color', '#000');
+    return 'Passwort eingeben';
+  }
+  if (password.length >= 8) {
+    str++;
+    if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/))
+      str++;
+    if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/))
+      str++;
+    if (password.match(/([!,%,&,@,#,$,^,*,?,_,~])/))
+      str++;
+    if (password.match(/(.*[!,%,&,@,#,$,^,*,?,_,~].*[!,%,&,@,#,$,^,*,?,_,~])/))
+      str++;
+    if (password.length >= 16)
+      str++;
+  }
+  switch (str) {
+  case 0:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width(0);
+    $('.progress_custom span').css('color', '#000');
+    return 'Too short';
+  case 1:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width("20%");
+    $('.progress_custom span').css('color', '#000');
+    return 'Extrem Weak';
+  case 2:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("40%");
+    $('.progress_custom span').css('color', '#000');
+    return 'Weak';
+  case 3:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("60%");
+    $('.progress_custom span').css('color', '#000');
+    return 'Good';
+  case 4:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("80%");
+    $('.progress_custom span').css('color', '#fff');
+    return 'Strong';
+  case 5:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("100%");
+    $('.progress_custom span').css('color', '#fff');
+    return 'Strongest';
+  default:
+  }
+}
+
+/*
+ * end password check function
+ */
