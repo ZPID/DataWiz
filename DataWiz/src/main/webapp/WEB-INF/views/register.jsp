@@ -8,25 +8,25 @@
         <c:url var="loginUrl" value="/register" />
         <sf:form action="${loginUrl}" commandName="UserDTO" class="form-horizontal" method="post">
           <div class="form-group">
-            <label class="control-label col-sm-2" for="firstName"><s:message code="gen.first.name" /></label>
+            <label class="control-label col-sm-2" for="firstName"><s:message code="gen.firstName" /></label>
             <div class="col-sm-10">
-              <s:message code="gen.first.name.ph" var="reg_first" />
+              <s:message code="gen.firstName.ph" var="reg_first" />
               <sf:input path="firstName" class="form-control" placeholder="${reg_first}" />
               <sf:errors path="firstName" cssClass="alert alert-danger" element="div" />
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2" for="lastName"><s:message code="gen.last.name" /></label>
+            <label class="control-label col-sm-2" for="lastName"><s:message code="gen.lastName" /></label>
             <div class="col-sm-10">
-              <s:message code="gen.last.name.ph" var="reg_last" />
+              <s:message code="gen.lastName.ph" var="reg_last" />
               <sf:input path="lastName" class="form-control" placeholder="${reg_last}" />
               <sf:errors path="lastName" cssClass="alert alert-danger" element="div" />
             </div>
           </div>
           <div class="form-group">
-            <label class="control-label col-sm-2 required" for="email"><s:message code="gen.mail" /></label>
+            <label class="control-label col-sm-2 required" for="email"><s:message code="gen.email" /></label>
             <div class="col-sm-10">
-              <s:message code="gen.mail.ph" var="reg_mail" />
+              <s:message code="gen.email.ph" var="reg_mail" />
               <sf:input path="email" class="form-control" placeholder="${reg_mail}" type="email" required="required" />
               <sf:errors path="email" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
@@ -35,7 +35,8 @@
             <label class="control-label col-sm-2 required" for="password"><s:message code="gen.password" /></label>
             <div class="col-sm-10">
               <s:message code="gen.password.ph" var="reg_password" />
-              <sf:input path="password" class="form-control" placeholder="${reg_password}" type="password" required="required" />
+              <sf:input path="password" class="form-control" placeholder="${reg_password}" type="password"
+                required="required" />
               <sf:errors path="password" cssClass="alert alert-danger" element="div" />
             </div>
           </div>
@@ -43,8 +44,8 @@
             <div class="control-label col-sm-2"></div>
             <div class="col-sm-10">
               <s:message code="gen.password.retype.ph" var="reg_password_retype" />
-              <sf:input path="password_retyped" class="form-control" placeholder="${reg_password_retype}" type="password"
-                required="required" />
+              <sf:input path="password_retyped" class="form-control" placeholder="${reg_password_retype}"
+                type="password" required="required" />
               <sf:errors path="password" cssClass="alert alert-danger" element="div" />
             </div>
           </div>

@@ -2,8 +2,11 @@ package de.zpid.datawiz.controller;
 
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,7 +55,8 @@ public class UserController extends SuperController {
   }
 
   @RequestMapping(method = RequestMethod.POST)
-  public String saveUserSettings(@ModelAttribute("UserDTO") UserDTO user) {
+  public String saveUserSettings(@Valid @ModelAttribute("UserDTO") final UserDTO user, final BindingResult bRes) {
+    
 
     return "usersettings";
   }

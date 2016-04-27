@@ -9,12 +9,12 @@ public class RegexUtil {
    * username@yahoo.corporate.in : true .username@yahoo.com : false username@yahoo.com. : false username@yahoo..com :
    * false username@yahoo.c : false username@yahoo.corporate : false
    */
-  public static final String validEmail = "[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
+  public static final String validEmail = "[\\w!#$%&â€™*+/=?`{|}~^-]+(?:\\.[\\w!#$%&â€™*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
 
   /**
    * Regex for only alphabetic characters with umlauts, blanks and hyphens.
    */
-  public static final String alphabeticWithBlanksAndHypens = "([a-zA-ZöäüßÖÄÜ]+|[ ]|[\\-]|[.])";
+  public static final String alphabeticWithBlanksAndHypens = "([a-zA-ZÃ¶Ã¤Ã¼ÃŸÃ–Ã„Ãœ]+|[ ]|[\\-]|[.])";
 
   /**
    * Phonenumber regex for german DIN-Norm: Example +49 (0) 651 201-2877

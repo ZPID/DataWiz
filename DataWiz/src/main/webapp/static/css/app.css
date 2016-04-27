@@ -100,6 +100,11 @@ textarea {
   /* text-align:right; */
   text-align: left;
 }
+
+.helpblock_margin {
+  margin-bottom: -5px;
+  left: -10px;
+}
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
@@ -363,15 +368,14 @@ textarea {
 }
 
 /**************** END FIXED NAVBAR SETTINGS ****************/
-
 .progress_custom {
-    position: relative;
-    top: 8px;
+  position: relative;
+  top: 8px;
 }
 
 .progress_custom span {
-    position: absolute;
-    display: block;
-    width: 100%;
-    color: black;
- }
+  position: absolute;
+  display: block;
+  width: 100%;
+  color: black;
+}

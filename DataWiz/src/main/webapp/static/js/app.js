@@ -10,6 +10,9 @@ $tag_box = null;
  */
 (function($, window, document, undefined) {
   $(document).ready(function() {
+    $(function() {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
     // loading DMP Content - not nessesary on other pages!
     if (window.location.pathname.search("/dmp") > 0) {
       $("#dmpForm :input").prop("disabled", false);
@@ -363,42 +366,6 @@ $('.user-pswd-button').on("click", function(e) {
   $('.user-pswd-button, #user-pswd-content').toggle();
 });
 
-function passwordStrength(password) {
-  var desc = new Array();
-  desc[0] = "Very Weak";
-  desc[1] = "Weak";
-  desc[2] = "Better";
-  desc[3] = "Medium";
-  desc[4] = "Strong";
-  desc[5] = "Strongest";
-
-  var score = 0;
-
-  // if password bigger than 6 give 1 point
-  if (password.length > 6)
-    score++;
-
-  // if password has both lower and uppercase characters give 1 point
-  if ((password.match(/[a-z]/)) && (password.match(/[A-Z]/)))
-    score++;
-
-  // if password has at least one number give 1 point
-  if (password.match(/\d+/))
-    score++;
-
-  // if password has at least one special caracther give 1 point
-  if (password.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/))
-    score++;
-
-  // if password bigger than 12 give another 1 point
-  if (password.length > 12)
-    score++;
-
-  document.getElementById("pwdcheckstr").innerHTML = desc[score];
-
-  document.getElementById("passwordStrength").className = "strength" + score;
-}
-
 /*
  * start password check function
  */
@@ -418,14 +385,19 @@ function checkStrength(password) {
     str++;
     if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/))
       str++;
-    if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/))
+    if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) {
       str++;
-    if (password.match(/([!,%,&,@,#,$,^,*,?,_,~])/))
+      if (password.match(/([^A-Za-z0-9])/)) {
+        str++;
+      }
+      if (password.match(/(.*[^A-Za-z0-9].*[^A-Za-z0-9])/)) {
+        str++;
+        if (password.length >= 16)
+          str++;
+      }
+    } else if (password.match(/([a-zA-Z])/) && password.match(/([^A-Za-z0-9])/)) {
       str++;
-    if (password.match(/(.*[!,%,&,@,#,$,^,*,?,_,~].*[!,%,&,@,#,$,^,*,?,_,~])/))
-      str++;
-    if (password.length >= 16)
-      str++;
+    }
   }
   switch (str) {
   case 0:
@@ -433,22 +405,26 @@ function checkStrength(password) {
     $('.progress_custom span').css('color', '#000');
     return 'Too short';
   case 1:
-    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width("20%");
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width("15%");
     $('.progress_custom span').css('color', '#000');
     return 'Extrem Weak';
   case 2:
-    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("40%");
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("30%");
     $('.progress_custom span').css('color', '#000');
     return 'Weak';
   case 3:
-    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("60%");
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("50%");
     $('.progress_custom span').css('color', '#000');
     return 'Good';
   case 4:
-    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("80%");
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("70%");
     $('.progress_custom span').css('color', '#fff');
     return 'Strong';
   case 5:
+    $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("85%");
+    $('.progress_custom span').css('color', '#fff');
+    return 'Strong';
+  case 6:
     $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("100%");
     $('.progress_custom span').css('color', '#fff');
     return 'Strongest';

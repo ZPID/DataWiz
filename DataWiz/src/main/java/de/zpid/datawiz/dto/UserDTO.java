@@ -30,6 +30,7 @@ public class UserDTO implements Serializable {
   @NotNull
   private String password;
   @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to50)
+  @Size(min = 0, max = 25)
   private String title;
   @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to250)
   private String firstName;
@@ -68,6 +69,8 @@ public class UserDTO implements Serializable {
   @NotNull
   private String password_retyped;
   private boolean checkedGTC;
+  @NotNull
+  private String password_old;
 
   public long getId() {
     return id;
@@ -275,6 +278,14 @@ public class UserDTO implements Serializable {
 
   public boolean hasRole(Object rol, Object id, boolean isStudy) {
     return hasRole(rol, (id == null) ? Optional.empty() : Optional.of(id), isStudy);
+  }
+
+  public String getPassword_old() {
+    return password_old;
+  }
+
+  public void setPassword_old(String password_old) {
+    this.password_old = password_old;
   }
 
   public boolean hasRole(final Object rol, final Optional<Object> id, final boolean isStudy) {

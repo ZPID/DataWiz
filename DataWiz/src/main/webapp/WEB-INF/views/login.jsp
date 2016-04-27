@@ -40,7 +40,7 @@
           <sf:label cssClass="input-group-addon" path="email">
             <i class="fa fa-envelope"></i>
           </sf:label>
-          <s:message code="gen.mail.ph" var="place_user" />
+          <s:message code="gen.email.ph" var="place_user" />
           <sf:input cssClass="form-control" path="email" placeholder="${place_user}" required="required" />
         </div>
         <div class="input-group input-sm">

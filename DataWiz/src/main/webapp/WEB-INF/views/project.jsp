@@ -109,15 +109,15 @@
                   <div class="form-group">
                     <div class="form-group row">
                       <!-- PrimaryContributor firstName -->
-                      <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.first.name" /></label>
+                      <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.firstName" /></label>
                       <div class="col-md-3">
-                        <s:message code="gen.first.name.ph" var="reg_first" />
+                        <s:message code="gen.firstName.ph" var="reg_first" />
                         <sf:input path="primaryContributor.firstName" class="form-control" placeholder="${reg_first}" />
                       </div>
                       <!-- PrimaryContributor lastName -->
-                      <label for="inputValue" class="col-md-2 control-label"><s:message code="gen.last.name" /></label>
+                      <label for="inputValue" class="col-md-2 control-label"><s:message code="gen.lastName" /></label>
                       <div class="col-md-3">
-                        <s:message code="gen.last.name.ph" var="reg_first" />
+                        <s:message code="gen.lastName.ph" var="reg_first" />
                         <sf:input path="primaryContributor.lastName" class="form-control" placeholder="${reg_first}" />
                       </div>
                     </div>
@@ -125,9 +125,9 @@
                   <div class="form-group">
                     <div class="form-group row">
                       <!-- PrimaryContributor institution -->
-                      <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.intitution" /></label>
+                      <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.institution" /></label>
                       <div class="col-md-8">
-                        <s:message code="gen.intitution.ph" var="reg_first" />
+                        <s:message code="gen.institution.ph" var="reg_first" />
                         <sf:input path="primaryContributor.institution" class="form-control" placeholder="${reg_first}" />
                       </div>
                     </div>
