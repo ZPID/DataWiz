@@ -5,6 +5,8 @@
  input_vars[2] = css classes for the label
  input_vars[3] = css classes for the input container
  input_vars[4] = dss classes for the help block
+ input_vars[5] = dss classes for the input field
+ input_vars[6] = optional type arguments - password for example
  --%>
 <c:set var="input_vars" value="${fn:split(input_vars, ';')}" />
 <s:message text="" var="input_class" />
@@ -15,11 +17,13 @@
     <s:bind path="${input_vars[0]}">
       <c:choose>
         <c:when test="${status.error}">
-          <sf:input path="${input_vars[0]}" class="form-control" style="border: 1px solid red;"
-            placeholder="${placeholder_txt}" title="${status.errorMessage}" data-toggle="tooltip"/>
+          <sf:input path="${input_vars[0]}" class="form-control ${input_vars[5]}" style="border: 1px solid red;"
+            placeholder="${placeholder_txt}" title="${status.errorMessage}" data-toggle="tooltip"
+            type="${input_vars[6]}" />
         </c:when>
         <c:otherwise>
-          <sf:input path="${input_vars[0]}" class="form-control" placeholder="${placeholder_txt}" />
+          <sf:input path="${input_vars[0]}" class="form-control ${input_vars[5]}" placeholder="${placeholder_txt}"
+            type="${input_vars[6]}" />
         </c:otherwise>
       </c:choose>
     </s:bind>

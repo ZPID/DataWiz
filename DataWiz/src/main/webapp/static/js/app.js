@@ -10,10 +10,8 @@ $tag_box = null;
  */
 (function($, window, document, undefined) {
   $(document).ready(function() {
-    $(function() {
-      $('[data-toggle="tooltip"]').tooltip()
-    })
-    // loading DMP Content - not nessesary on other pages!
+    $('[data-toggle="tooltip"]').tooltip()
+    // loading DMP Content
     if (window.location.pathname.search("/dmp") > 0) {
       $("#dmpForm :input").prop("disabled", false);
       setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
@@ -26,18 +24,26 @@ $tag_box = null;
           return msg; // Webkit
         }
       });
-    } // loading Project Content - not nessesary on other pages!
+    } // loading Project Content
     else if (window.location.pathname.search("/project") > 0) {
       setProjectSubmenu(null);
       startTagging();
-    } // loading Panel Content - not nessesary on other pages!
+    } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {
       startAccordion();
-    } else if (window.location.pathname.search("/access") > 0) {
+    } // loading access Content
+    else if (window.location.pathname.search("/access") > 0) {
       showHideNewRole();
+    } // loading usersetings Content
+    else if (window.location.pathname.search("/usersettings") > 0) {
+      if ($('#passwd_error').val())
+        $('.user-pswd-button, #user-pswd-content').toggle();
+      $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
     }
   });
 })(window.jQuery, window, document);
+
+
 
 $(".projectContentClick").click(function() {
   $("#pagePosi").val($(this).attr("id"));
@@ -370,8 +376,8 @@ $('.user-pswd-button').on("click", function(e) {
  * start password check function
  */
 
-$('#pwdcheckin').keyup(function() {
-  $('#pwdcheckstr span').html(checkStrength($('#pwdcheckin').val()))
+$('.pwdcheckin').keyup(function() {
+  $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
 })
 
 function checkStrength(password) {

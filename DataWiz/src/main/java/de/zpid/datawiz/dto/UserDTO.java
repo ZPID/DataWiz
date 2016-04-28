@@ -25,7 +25,7 @@ public class UserDTO implements Serializable {
   @NotNull
   @Pattern(regexp = RegexUtil.validEmail)
   private String email;
-  @Pattern(regexp = RegexUtil.validEmail)
+  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.validEmail)
   private String secEmail;
   @NotNull
   private String password;
@@ -36,9 +36,9 @@ public class UserDTO implements Serializable {
   private String firstName;
   @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to250)
   private String lastName;
-  @Pattern(regexp = RegexUtil.phonenumberGermanDIN)
+  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.phonenumberGermanDIN)
   private String phone;
-  @Pattern(regexp = RegexUtil.phonenumberGermanDIN)
+  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.phonenumberGermanDIN)
   private String fax;
   @Size(min = 0, max = 500)
   private String comments;
@@ -50,15 +50,15 @@ public class UserDTO implements Serializable {
   private String homepage;
   @Size(min = 0, max = 250)
   private String street;
-  // @Pattern(regexp = RegexUtil.onlyDigits + RegexUtil.size0to10)
-  private int zip;
+  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.onlyDigits)
+  private String zip;
   @Size(min = 0, max = 250)
   private String city;
   @Size(min = 0, max = 250)
   private String state;
   @Size(min = 0, max = 250)
   private String country;
-  // @Pattern(regexp = RegexUtil.regexORCID)
+  @Pattern(regexp = RegexUtil.regexORCID)
   private String orcid;
 
   private String account_state;
@@ -216,11 +216,11 @@ public class UserDTO implements Serializable {
     this.street = street;
   }
 
-  public int getZip() {
+  public String getZip() {
     return zip;
   }
 
-  public void setZip(int zip) {
+  public void setZip(String zip) {
     this.zip = zip;
   }
 
@@ -276,16 +276,16 @@ public class UserDTO implements Serializable {
     return hasRole(rol, Optional.empty(), false);
   }
 
-  public boolean hasRole(Object rol, Object id, boolean isStudy) {
-    return hasRole(rol, (id == null) ? Optional.empty() : Optional.of(id), isStudy);
-  }
-
   public String getPassword_old() {
     return password_old;
   }
 
   public void setPassword_old(String password_old) {
     this.password_old = password_old;
+  }
+
+  public boolean hasRole(Object rol, Object id, boolean isStudy) {
+    return hasRole(rol, (id == null) ? Optional.empty() : Optional.of(id), isStudy);
   }
 
   public boolean hasRole(final Object rol, final Optional<Object> id, final boolean isStudy) {
@@ -334,19 +334,10 @@ public class UserDTO implements Serializable {
     return false;
   }
 
-  /**
-   * 
-   * @param role
-   * @return
-   */
-
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((account_state == null) ? 0 : account_state.hashCode());
-    result = prime * result + ((activationCode == null) ? 0 : activationCode.hashCode());
-    result = prime * result + (checkedGTC ? 1231 : 1237);
     result = prime * result + ((city == null) ? 0 : city.hashCode());
     result = prime * result + ((comments == null) ? 0 : comments.hashCode());
     result = prime * result + ((country == null) ? 0 : country.hashCode());
@@ -360,14 +351,12 @@ public class UserDTO implements Serializable {
     result = prime * result + ((institution == null) ? 0 : institution.hashCode());
     result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
     result = prime * result + ((orcid == null) ? 0 : orcid.hashCode());
-    result = prime * result + ((password == null) ? 0 : password.hashCode());
-    result = prime * result + ((password_retyped == null) ? 0 : password_retyped.hashCode());
     result = prime * result + ((phone == null) ? 0 : phone.hashCode());
     result = prime * result + ((secEmail == null) ? 0 : secEmail.hashCode());
     result = prime * result + ((state == null) ? 0 : state.hashCode());
     result = prime * result + ((street == null) ? 0 : street.hashCode());
     result = prime * result + ((title == null) ? 0 : title.hashCode());
-    result = prime * result + zip;
+    result = prime * result + ((zip == null) ? 0 : zip.hashCode());
     return result;
   }
 
@@ -380,18 +369,6 @@ public class UserDTO implements Serializable {
     if (getClass() != obj.getClass())
       return false;
     UserDTO other = (UserDTO) obj;
-    if (account_state == null) {
-      if (other.account_state != null)
-        return false;
-    } else if (!account_state.equals(other.account_state))
-      return false;
-    if (activationCode == null) {
-      if (other.activationCode != null)
-        return false;
-    } else if (!activationCode.equals(other.activationCode))
-      return false;
-    if (checkedGTC != other.checkedGTC)
-      return false;
     if (city == null) {
       if (other.city != null)
         return false;
@@ -454,16 +431,6 @@ public class UserDTO implements Serializable {
         return false;
     } else if (!orcid.equals(other.orcid))
       return false;
-    if (password == null) {
-      if (other.password != null)
-        return false;
-    } else if (!password.equals(other.password))
-      return false;
-    if (password_retyped == null) {
-      if (other.password_retyped != null)
-        return false;
-    } else if (!password_retyped.equals(other.password_retyped))
-      return false;
     if (phone == null) {
       if (other.phone != null)
         return false;
@@ -489,7 +456,10 @@ public class UserDTO implements Serializable {
         return false;
     } else if (!title.equals(other.title))
       return false;
-    if (zip != other.zip)
+    if (zip == null) {
+      if (other.zip != null)
+        return false;
+    } else if (!zip.equals(other.zip))
       return false;
     return true;
   }

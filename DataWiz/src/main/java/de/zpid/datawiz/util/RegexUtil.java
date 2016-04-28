@@ -10,7 +10,7 @@ public class RegexUtil {
    * false username@yahoo.c : false username@yahoo.corporate : false
    */
   public static final String validEmail = "[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
-
+  public static final String emptyOr = "^$|";
   /**
    * Regex for only alphabetic characters with umlauts, blanks and hyphens.
    */

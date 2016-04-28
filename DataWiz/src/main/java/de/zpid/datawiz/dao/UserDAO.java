@@ -29,10 +29,10 @@ public class UserDAO extends SuperDAO {
   @Autowired
   private RoleDAO roleDAO;
 
-  public UserDTO findById(long l) throws Exception {
+  public UserDTO findById(long id) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute findById [id: " + l + "]");
-    UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE id= ?", new Object[] { l },
+      log.debug("execute findById [id: " + id + "]");
+    UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE id= ?", new Object[] { id },
         new ResultSetExtractor<UserDTO>() {
           @Override
           public UserDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -134,6 +134,25 @@ public class UserDAO extends SuperDAO {
           (user.getActivationCode() != null && !user.getActivationCode().isEmpty()) ? user.getActivationCode()
               : UUID.randomUUID().toString());
     }
+  }
+
+  public String findPasswordbyId(long id) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute findPasswordbyId [id: " + id + "]");
+    final String pwd = this.jdbcTemplate.query("SELECT dw_user.password FROM dw_user WHERE id= ?", new Object[] { id },
+        new ResultSetExtractor<String>() {
+          @Override
+          public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+            if (rs.next()) {
+              return rs.getString("password");
+            }
+            return null;
+          }
+        });
+    if (log.isDebugEnabled())
+      log.debug("leaving findPasswordbyId with result: {}",
+          () -> (pwd != null && !pwd.isEmpty()) ? "password found" : "no password found");
+    return pwd;
   }
 
   public void activateUserAccount(UserDTO user) {

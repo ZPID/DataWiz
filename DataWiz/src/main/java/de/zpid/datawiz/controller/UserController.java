@@ -4,6 +4,9 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
@@ -20,7 +25,11 @@ import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = { "/usersettings" })
+@SessionAttributes({ "UserDTO" })
 public class UserController extends SuperController {
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   public UserController() {
     super();
@@ -29,20 +38,20 @@ public class UserController extends SuperController {
   }
 
   @RequestMapping(value = { "", "/{userId}", }, method = RequestMethod.GET)
-  public String showUserSettingPage(@PathVariable final Optional<Long> userId, ModelMap model) {
+  public String showUserSettingPage(@PathVariable final Optional<Long> userId, final ModelMap model) {
     final UserDTO auth = UserUtil.getCurrentUser();
     log.trace("Entering showUserSettingPage for user [id: {}]",
         () -> userId.isPresent() ? userId.get() : (auth != null && auth.getId() > 0) ? auth.getId() : "null");
     UserDTO user = null;
-    if (userId.isPresent() && auth.hasRole(Roles.ADMIN)) {
-      try {
+    try {
+      if (userId.isPresent() && auth.hasRole(Roles.ADMIN)) {
         user = userDAO.findById(userId.get());
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      } else {
+        user = userDAO.findById(auth.getId());
       }
-    } else {
-      user = auth;
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
@@ -55,9 +64,48 @@ public class UserController extends SuperController {
   }
 
   @RequestMapping(method = RequestMethod.POST)
-  public String saveUserSettings(@Valid @ModelAttribute("UserDTO") final UserDTO user, final BindingResult bRes) {
-    
-
-    return "usersettings";
+  public String saveUserSettings(@Valid @ModelAttribute("UserDTO") final UserDTO user, final BindingResult bRes,
+      final RedirectAttributes reAtt) {
+    log.trace("Entering saveUserSettings for user [id: {}]", () -> user != null ? user.getEmail() : null);
+    if (user == null || user.getId() <= 0) {
+      log.warn("UserDTO Object == null or UserID is not present");
+      reAtt.addFlashAttribute("errorMSG",
+          messageSource.getMessage("no.data.exception", null, LocaleContextHolder.getLocale()));
+      return "redirect:/usersettings";
+    }
+    final UserDTO auth = UserUtil.getCurrentUser();
+    if (auth == null || (!auth.hasRole(Roles.ADMIN) && auth.getId() != user.getId())) {
+      log.warn("Auth User Object == null or user [email: {}] do not have the permission to edit user user [email: {}]",
+          () -> auth != null ? auth.getEmail() : null, () -> user.getEmail());
+      reAtt.addFlashAttribute("errorMSG",
+          messageSource.getMessage("usersettings.error.noaccess", null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    try {
+      if (!user.getPassword().isEmpty()) {
+        if (user.getPassword_old().isEmpty() || user.getPassword_retyped().isEmpty()) {
+          bRes.rejectValue("password", "passwords.not.given");
+          bRes.rejectValue("password_retyped", "passwords.not.given");
+          bRes.rejectValue("password_old", "passwords.not.given");
+        } else if (user.getPassword().length() < 8) {
+          bRes.rejectValue("password", "passwords.too.short");
+        } else if (!user.getPassword().equals(user.getPassword_retyped())) {
+          bRes.rejectValue("password", "passwords.not.equal");
+          bRes.rejectValue("password_retyped", "passwords.not.equal");
+        } else if (!passwordEncoder.matches(user.getPassword_old(), userDAO.findPasswordbyId(user.getId()))) {
+          bRes.rejectValue("password_old", "passwords.old.not.match");
+        }
+      }      
+      if (bRes.hasErrors()) {
+        
+        return "usersettings";
+      }
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    log.trace("Method saveUserSettings successfully completed");
+    return "redirect:/usersettings";
   }
 }

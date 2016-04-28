@@ -29,7 +29,7 @@
         <%@ include file="templates/gen_input.jsp"%>
         <!-- input orcid -->
         <c:set var="input_vars"
-          value="orcid;gen.orcid;col-sm-3;col-lg-6 col-md-6 col-sm-6 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin" />
+          value="orcid;gen.orcid;col-sm-3;col-lg-2 col-md-3 col-sm-4 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin" />
         <%@ include file="templates/gen_input.jsp"%>
         <!-- input email -->
         <c:set var="input_vars"
@@ -42,46 +42,49 @@
         <!-- change pwassword -->
         <div class="form-group">
           <label class="control-label col-sm-3" for="password"><s:message code="gen.password" /></label>
+          <s:hasBindErrors name="UserDTO">
+            <c:if test="${errors.hasFieldErrors('password') or errors.hasFieldErrors('password_old')}">
+              <input type="hidden" value="true" id="passwd_error">
+            </c:if>
+          </s:hasBindErrors>
           <div class="col-sm-6">
-            <div class="form-group user-pswd-button">
-              <div class="col-sm-8">
-                <div class="btn btn-default btn-sm">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <div class="btn btn-info btn-sm user-pswd-button" style="display: none;">
+                  <s:message code="gen.close" />
+                </div>
+                <div class="btn btn-info btn-sm user-pswd-button">
                   <s:message code="gen.change" />
                 </div>
               </div>
             </div>
-            <div id="user-pswd-content" style="display: none;">
-              <!-- input password_old -->
-              <c:set var="input_vars"
-                value="password_old;gen.password.old;col-sm-4 required;col-sm-8 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin" />
-              <%@ include file="templates/gen_input.jsp"%>
-              <!-- input password -->
-              <c:set var="input_vars"
-                value="password;gen.password;col-sm-4 required;col-sm-8 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin" />
-              <%@ include file="templates/gen_input.jsp"%>
-              <!-- password strength -->
-              <div class="form-group">
-                <label class="control-label col-sm-4" for="password_retyped"><s:message
-                    code="gen.password.strength" /></label>
-                <div class="col-sm-8">
-                  <div class="progress progress_custom">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0"
-                      aria-valuemax="100" style="width: 0%" id="pwdcheckstr">
-                      <span><s:message code="gen.password.ph" /></span>
+            <div id="user-pswd-content" style="display: none;" class="panel panel-default">
+              <div class="panel-body">
+                <!-- input password_old -->
+                <c:set var="input_vars"
+                  value="password_old;gen.password.old;col-sm-4 required;col-sm-8 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin; ;password" />
+                <%@ include file="templates/gen_input.jsp"%>
+                <!-- input password -->
+                <c:set var="input_vars"
+                  value="password;gen.password;col-sm-4 required;col-sm-8 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin;pwdcheckin;password" />
+                <%@ include file="templates/gen_input.jsp"%>
+                <!-- password strength -->
+                <div class="form-group">
+                  <label class="control-label col-sm-4" for="password_retyped"><s:message
+                      code="gen.password.strength" /></label>
+                  <div class="col-sm-8">
+                    <div class="progress progress_custom">
+                      <div class="progress-bar" role="progressbar" aria-valuenow="80" aria-valuemin="0"
+                        aria-valuemax="100" style="width: 0%" id="pwdcheckstr">
+                        <span><s:message code="gen.password.ph" /></span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <!-- input password_retyped -->
-              <c:set var="input_vars"
-                value="password_retyped;gen.password.retype;col-sm-4 required;col-sm-8 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin" />
-              <%@ include file="templates/gen_input.jsp"%>
-              <div class="form-group user-pswd-button" style="display: none;">
-                <div class="col-sm-8">
-                  <div class="btn btn-default btn-sm">
-                    <s:message code="gen.close" />
-                  </div>
-                </div>
+                <!-- input password_retyped -->
+                <c:set var="input_vars"
+                  value="password_retyped;gen.password.retype;col-sm-4 required;col-sm-8 col-xs-12;col-sm-offset-3 col-sm-7 helpblock_margin; ;password" />
+                <%@ include file="templates/gen_input.jsp"%>
               </div>
             </div>
           </div>
