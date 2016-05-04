@@ -75,8 +75,8 @@ public class ProjectController extends SuperController {
     ProjectForm pForm = createProjectForm();
     if (pid.isPresent()) {
       try {
-        role = checkProjectRoles(user, pid.get(), false, true);
-        getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
+        role = pUtil.checkProjectRoles(user, pid.get(), false, true);
+        pUtil.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
       } catch (Exception e) {
         // TODO
         log.warn(e.getMessage());
@@ -126,7 +126,7 @@ public class ProjectController extends SuperController {
       }
       return "project";
     }
-    if (!saveOrUpdateProject(pForm)) {
+    if (!pUtil.saveOrUpdateProject(pForm)) {
       // TODO vern�nftige Fehlerausgabe
       model.put("saveState", SavedState.ERROR.toString());
       model.put("saveStateMsg", "fehler!!!!");

@@ -21,7 +21,7 @@ public class RoleDAO extends SuperDAO {
       log.info("Loading RoleDAO as Singleton and Service");
   }
 
-  public int setRole(final UserRoleDTO role) throws Exception {
+  public int setRole(final UserRoleDTO role) throws SQLException {
     log.trace("Entering setRole role: {}", () -> role);
     final int ret = this.jdbcTemplate.update(
         "INSERT INTO dw_user_roles (user_id, role_id, project_id, study_id) VALUES (?,?,?,?)", role.getUserId(),
@@ -31,7 +31,7 @@ public class RoleDAO extends SuperDAO {
     return ret;
   }
 
-  public int deleteRole(final UserRoleDTO role) throws Exception {
+  public int deleteRole(final UserRoleDTO role) throws SQLException {
     log.trace("Entering deleteRole role: {}", () -> role);
     List<Object> oList = new LinkedList<Object>();
     oList.add(role.getRoleId());
@@ -50,7 +50,7 @@ public class RoleDAO extends SuperDAO {
     return ret;
   }
 
-  public List<UserRoleDTO> findRolesByUserID(final long id) throws Exception {
+  public List<UserRoleDTO> findRolesByUserID(final long id) throws SQLException {
     log.trace("Entering findRolesByUserID id: {}", () -> id);
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
         + "WHERE user_id  = ?";
@@ -63,7 +63,7 @@ public class RoleDAO extends SuperDAO {
     return ret;
   }
 
-  public List<String> findAllProjectRoles() throws Exception {
+  public List<String> findAllProjectRoles() throws SQLException {
     log.trace("Entering findAllProjectRoles");
     String sql = "SELECT type FROM dw_roles WHERE type != 'USER' AND type != 'ADMIN' AND type != 'REL_ROLE'";
     final List<String> ret = this.jdbcTemplate.query(sql, new Object[] {}, new RowMapper<String>() {
@@ -75,7 +75,7 @@ public class RoleDAO extends SuperDAO {
     return ret;
   }
 
-  public List<UserRoleDTO> findRolesByUserIDAndProjectID(final long uid, final long pid) throws Exception {
+  public List<UserRoleDTO> findRolesByUserIDAndProjectID(final long uid, final long pid) throws SQLException {
     log.trace("execute findRolesByUserIDAndProjectID for [userid: {} projectid: {}]", () -> uid, () -> pid);
     String sql = "SELECT * FROM dw_user_roles " + " JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
         + "WHERE user_id  = ? AND project_id = ?";

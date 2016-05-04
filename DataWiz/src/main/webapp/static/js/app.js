@@ -372,10 +372,10 @@ $('.user-pswd-button').on("click", function(e) {
   $('.user-pswd-button, #user-pswd-content').toggle();
 });
 
+
 /*
  * start password check function
  */
-
 $('.pwdcheckin').keyup(function() {
   $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
 })

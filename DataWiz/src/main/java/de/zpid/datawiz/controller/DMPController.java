@@ -65,9 +65,9 @@ public class DMPController extends SuperController {
     model.put("subnaviActive", "DMP");
     ProjectForm pForm = createProjectForm();
     try {
-      pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.datatype));
-      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.collectionmode));
-      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.metaporpose));
+      pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.DATATYPE));
+      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.COLLECTIONMODE));
+      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.METAPORPOSE));
     } catch (Exception e) {
       if (log.isEnabled(Level.ERROR))
         log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
@@ -102,7 +102,7 @@ public class DMPController extends SuperController {
       return "redirect:/login";
     }
     try {
-      getProjectForm(pForm, pid, user, PageState.DMP, checkProjectRoles(user, pid, false, false));
+      pUtil.getProjectForm(pForm, pid, user, PageState.DMP, pUtil.checkProjectRoles(user, pid, false, false));
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
       String redirectMessage = "";
@@ -131,7 +131,7 @@ public class DMPController extends SuperController {
     }
     UserDTO user = UserUtil.getCurrentUser();
     Boolean hasErrors = false;
-    if (!pid.isPresent() || checkProjectRoles(user, pid.get(), true, false) == null) {
+    if (!pid.isPresent() || pUtil.checkProjectRoles(user, pid.get(), true, false) == null) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;
@@ -144,7 +144,7 @@ public class DMPController extends SuperController {
       }
       hasErrors = true;
     }
-    if (hasErrors || !saveOrUpdateProject(pForm)) {
+    if (hasErrors || !pUtil.saveOrUpdateProject(pForm)) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;

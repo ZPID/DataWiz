@@ -52,7 +52,7 @@ public class PanelController extends SuperController {
           pform.setProject(pdto);
           pform.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
           pform.setContributors(contributorDAO.findByProject(pdto, false, true));
-          pform.setSharedUser(userDAO.findGroupedByProject(pdto));
+          pform.setSharedUser(userDAO.findGroupedByProject(pdto.getId()));
           cpform.add(pform);
         }
       }

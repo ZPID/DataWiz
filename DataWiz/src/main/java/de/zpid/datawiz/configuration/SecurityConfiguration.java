@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -52,10 +53,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**")
         .access("hasRole('ADMIN')").antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**")
         .access("hasRole('USER') or hasRole('ADMIN')").and().csrf().and().formLogin().defaultSuccessUrl("/panel")
-        .loginPage("/login").usernameParameter("email").passwordParameter("password").and().rememberMe()
+        .loginPage("/login").permitAll().usernameParameter("email").passwordParameter("password").and().rememberMe()
         .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400)
         .and().csrf().and().exceptionHandling().accessDeniedPage("/Access_Denied").and().logout()
         .deleteCookies("remember-me");
+  }
+
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers("/resources/**");
   }
 
   @Bean

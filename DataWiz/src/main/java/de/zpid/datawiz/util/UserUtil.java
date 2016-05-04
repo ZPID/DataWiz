@@ -13,7 +13,10 @@ public class UserUtil {
   public static UserDTO getCurrentUser() {
     UserDTO user = null;
     try {
-      user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
+      if (SecurityContextHolder.getContext().getAuthentication() != null
+          && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null
+          && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof CustomUserDetails)
+        user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
     } catch (Exception e) {
       log.warn("Error getting current authendicated User - Message: " + e.getMessage());
       user = null;

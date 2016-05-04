@@ -57,7 +57,7 @@ public class StudyDAO extends SuperDAO {
     study.setId(rs.getInt("id"));
     study.setProjectId(rs.getLong("project_id"));
     study.setLastUserId(rs.getLong("last_user_id"));
-    study.setTimestamp(rs.getTimestamp("last_edit"));
+    study.setTimestamp(rs.getTimestamp("last_edit").toLocalDateTime());
     study.setTitle(rs.getString("title"));
     return study;
   }

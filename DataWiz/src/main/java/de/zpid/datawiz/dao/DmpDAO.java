@@ -188,7 +188,7 @@ public class DmpDAO extends SuperDAO {
         dmp.getSelectionTime(), dmp.getSelectionResp(), dmp.getSelectionSoftware(), dmp.getSelectionCriteria(),
         dmp.getStorageDuration(), dmp.getDeleteProcedure(), dmp.getId());
     if (ret > 0) {
-      List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DelType.datatype);
+      List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DelType.DATATYPE);
       if (datatypes != null && datatypes.size() > 0) {
         for (Integer i : datatypes)
           deleteDMPUsedDataTypes(dmp.getId(), i);
@@ -197,7 +197,7 @@ public class DmpDAO extends SuperDAO {
         for (int i : dmp.getUsedDataTypes())
           insertDMPUsedDataTypes(dmp.getId(), i);
       }
-      List<Integer> collectionModes = getDMPUsedDataTypes(dmp.getId(), DelType.collectionmode);
+      List<Integer> collectionModes = getDMPUsedDataTypes(dmp.getId(), DelType.COLLECTIONMODE);
       if (collectionModes != null && collectionModes.size() > 0) {
         for (Integer i : collectionModes)
           deleteDMPUsedDataTypes(dmp.getId(), i);
@@ -218,7 +218,7 @@ public class DmpDAO extends SuperDAO {
         dmp.getMetaDescription(), dmp.getMetaFramework(), dmp.getMetaGeneration(), dmp.getMetaMonitor(),
         dmp.getMetaFormat(), dmp.getId());
     if (ret > 0) {
-      List<Integer> metaporpose = getDMPUsedDataTypes(dmp.getId(), DelType.metaporpose);
+      List<Integer> metaporpose = getDMPUsedDataTypes(dmp.getId(), DelType.METAPORPOSE);
       if (metaporpose != null && metaporpose.size() > 0) {
         for (Integer i : metaporpose)
           deleteDMPUsedDataTypes(dmp.getId(), i);

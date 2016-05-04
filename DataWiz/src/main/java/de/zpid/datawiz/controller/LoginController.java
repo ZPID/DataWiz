@@ -74,7 +74,7 @@ public class LoginController extends SuperController {
    * @param model
    * @return
    */
-  @RequestMapping(value = "/login")
+  @RequestMapping(value = "/login", method = RequestMethod.GET)
   public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute loginPage()");
@@ -126,16 +126,19 @@ public class LoginController extends SuperController {
   @RequestMapping(value = { "/register" }, method = RequestMethod.POST)
   public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult,
       ModelMap model) {
-    if (log.isDebugEnabled())
-      log.debug("execute registerDataWizUser()- POST");
+    log.trace("execute registerDataWizUser()- POST {}", person);
     try {
       // password check
-      if (!person.getPassword().equals(person.getPassword_retyped())) {
+      if (person.getPassword() == null || person.getPassword_retyped() == null) {
+        // TOTO password msg
+        bindingResult.rejectValue("password", "passwords.not.equal");
+        log.debug("Passwords are emtpy");
+      } else if (!person.getPassword().equals(person.getPassword_retyped())) {
         bindingResult.rejectValue("password", "passwords.not.equal");
         if (log.isDebugEnabled())
           log.debug("Password and retyped password not equal!");
       }
-      // GTC(AGB) check
+      // GTC(AGB) check TODO TEXT
       if (!person.isCheckedGTC()) {
         bindingResult.rejectValue("checkedGTC", "email.already.exists");
         if (log.isDebugEnabled())
@@ -149,6 +152,7 @@ public class LoginController extends SuperController {
       }
       // return to registerform if errors
       if (bindingResult.hasErrors()) {
+        log.trace("UserDTO has Errors - return to register form");
         return "register";
       }
       // at this point registerform is valid
@@ -171,7 +175,7 @@ public class LoginController extends SuperController {
       userDAO.saveOrUpdate(person, false);
       person = userDAO.findByMail(person.getEmail(), false);
     } catch (Exception e) {
-      log.error("DBS error during user registration: " + e);
+      log.error("DBS error during user registration: ", e);
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
@@ -185,7 +189,7 @@ public class LoginController extends SuperController {
                 new Object[] { request.getRequestURL(), person.getEmail(), person.getActivationCode() },
                 LocaleContextHolder.getLocale()));
       } catch (Exception e) {
-        log.error("Mail error during user registration: " + e.getStackTrace());
+        log.error("Mail error during user registration: ", e);
         model.put("errormsg", messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
         return "error";
       }

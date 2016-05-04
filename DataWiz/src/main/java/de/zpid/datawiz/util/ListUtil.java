@@ -12,7 +12,7 @@ public class ListUtil {
    * @param snd
    * @return
    */
-  public static boolean equalsWithoutOrder(List<?> fst, List<?> snd) {
+  public static boolean equalsWithoutOrder(final List<?> fst, final List<?> snd) {
     if (fst != null && snd != null) {
       if (fst.size() == snd.size()) {
         List<?> cfst = new ArrayList<Object>(fst);

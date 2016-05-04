@@ -29,7 +29,7 @@ public class UserDTO implements Serializable {
   private String secEmail;
   @NotNull
   private String password;
-  @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to50)
+  @Pattern(regexp = RegexUtil.emptyOr +RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to50)
   @Size(min = 0, max = 25)
   private String title;
   @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to250)
@@ -50,7 +50,7 @@ public class UserDTO implements Serializable {
   private String homepage;
   @Size(min = 0, max = 250)
   private String street;
-  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.onlyDigits)
+  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.onlyDigits + RegexUtil.size0to10)
   private String zip;
   @Size(min = 0, max = 250)
   private String city;
@@ -66,10 +66,8 @@ public class UserDTO implements Serializable {
   private String activationCode;
   private List<UserRoleDTO> globalRoles = new ArrayList<UserRoleDTO>();
   // Values for RegisterCheck
-  @NotNull
   private String password_retyped;
   private boolean checkedGTC;
-  @NotNull
   private String password_old;
 
   public long getId() {

@@ -1,17 +1,67 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class StudyDTO implements Serializable {
 
   private static final long serialVersionUID = -7300213401850684971L;
   private long id;
   private long projectId;
-  private long lastUserId;
-  private boolean master;
-  private Date timestamp;
+
+  public interface StGeneralVal {
+  }
+
+  /** Study01 */
+  @NotNull(groups = StGeneralVal.class)
+  @Size(min = 0, max = 250, groups = StGeneralVal.class)
   private String title;
+  /** Study02 */
+  @Size(min = 0, max = 50, groups = StGeneralVal.class)
+  private String internalID;
+  /** Study03 */
+  @Size(min = 0, max = 250, groups = StGeneralVal.class)
+  private String transTitle;
+  /** Study04 */
+  private List<ContributorDTO> contributor;
+  /** Study05 */
+  @Size(min = 0, max = 2000, groups = StGeneralVal.class)
+  private String sAbstract;
+  /** Study06 */
+  @Size(min = 0, max = 2000, groups = StGeneralVal.class)
+  private String sAbstractTrans;
+  /** Study07 */
+  @Size(min = 0, max = 20, groups = StGeneralVal.class)
+  private String completeSel;
+  /** Study08 */
+  @Size(min = 0, max = 500, groups = StGeneralVal.class)
+  private String excerpt;
+  /** Study09 */
+  @Size(min = 0, max = 20, groups = StGeneralVal.class)
+  private String prevWork;
+  /** Study10 */
+  @Size(min = 0, max = 500, groups = StGeneralVal.class)
+  private String prevWorkStr;
+  /** Study11 */
+  private List<String> software;
+  /** Study12 */
+  private List<String> pubOnData;
+  /** Study13 */
+  private List<String> conflInterest;
+
+  public interface StDesignVal {
+  }
+  
+  
+
+  
+
+  private long lastUserId;
+  private LocalDateTime timestamp;
 
   public long getId() {
     return id;
@@ -37,19 +87,11 @@ public class StudyDTO implements Serializable {
     this.lastUserId = lastUserId;
   }
 
-  public boolean isMaster() {
-    return master;
-  }
-
-  public void setMaster(boolean master) {
-    this.master = master;
-  }
-
-  public Date getTimestamp() {
+  public LocalDateTime getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(Date timestamp) {
+  public void setTimestamp(LocalDateTime timestamp) {
     this.timestamp = timestamp;
   }
 
@@ -59,55 +101,6 @@ public class StudyDTO implements Serializable {
 
   public void setTitle(String title) {
     this.title = title;
-  }
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (int) (id ^ (id >>> 32));
-    result = prime * result + (int) (lastUserId ^ (lastUserId >>> 32));
-    result = prime * result + (master ? 1231 : 1237);
-    result = prime * result + (int) (projectId ^ (projectId >>> 32));
-    result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-    result = prime * result + ((title == null) ? 0 : title.hashCode());
-    return result;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    StudyDTO other = (StudyDTO) obj;
-    if (id != other.id)
-      return false;
-    if (lastUserId != other.lastUserId)
-      return false;
-    if (master != other.master)
-      return false;
-    if (projectId != other.projectId)
-      return false;
-    if (timestamp == null) {
-      if (other.timestamp != null)
-        return false;
-    } else if (!timestamp.equals(other.timestamp))
-      return false;
-    if (title == null) {
-      if (other.title != null)
-        return false;
-    } else if (!title.equals(other.title))
-      return false;
-    return true;
-  }
-
-  @Override
-  public String toString() {
-    return "StudyDTO [id=" + id + ", projectId=" + projectId + ", lastUserId=" + lastUserId + ", master=" + master
-        + ", timestamp=" + timestamp + ", title=" + title + "]";
   }
 
 }

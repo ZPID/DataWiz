@@ -1,5 +1,5 @@
 package de.zpid.datawiz.enumeration;
 
 public enum DelType {
-  datatype, collectionmode, metaporpose
+  DATATYPE, COLLECTIONMODE, METAPORPOSE, SOFTWARE, PUBONDATA, CONFLINTEREST
 }

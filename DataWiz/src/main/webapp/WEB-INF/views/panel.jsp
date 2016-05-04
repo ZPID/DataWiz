@@ -91,13 +91,16 @@
               <div class="panel-footer">
                 <c:forEach items="${form.sharedUser}" var="user" varStatus="loopu">
                   <c:choose>
-                    <c:when test="${not empty user.lastName && not empty user.firstName && loopu.index < form.sharedUser.size()-1}">
+                    <c:when
+                      test="${not empty user.lastName && not empty user.firstName && loopu.index < form.sharedUser.size()-1}">
                       <c:set var="shared" value="${shared} ${user.firstName} ${user.lastName}(${user.email}), " />
                     </c:when>
-                    <c:when test="${not empty user.lastName && not empty user.firstName && loopu.index >= form.sharedUser.size()-1}">
+                    <c:when
+                      test="${not empty user.lastName && not empty user.firstName && loopu.index >= form.sharedUser.size()-1}">
                       <c:set var="shared" value="${shared} ${user.firstName} ${user.lastName}(${user.email})" />
                     </c:when>
-                    <c:when test="${(empty user.lastName || empty user.firstName) && loopu.index < form.sharedUser.size()-1}">
+                    <c:when
+                      test="${(empty user.lastName || empty user.firstName) && loopu.index < form.sharedUser.size()-1}">
                       <c:set var="shared" value="${shared} ${user.email}, " />
                     </c:when>
                     <c:otherwise>
@@ -108,9 +111,10 @@
                 <div class="row">
                   <div class="col-xs-6">
                     <span class="label label-success" data-toggle="tooltip" data-placement="top"
-                      title="<c:out value="${form.project.title}"></c:out>"><s:message code="panel.published" /></span> <span
-                      class="label label-default" data-toggle="tooltip" data-placement="top" title="<c:out value="${shared}" />"><s:message
-                        code="panel.shared" /> (<c:out value="${form.sharedUser.size()}" />)</span> <a href="project/${form.project.id}"
+                      title="<c:out value="${form.project.title}"></c:out>"><s:message code="panel.published" /></span>
+                    <span class="label label-default" data-toggle="tooltip" data-placement="top"
+                      title="<c:out value="${shared}" />"><s:message code="panel.shared" /> (<c:out
+                        value="${form.sharedUser.size()}" />)</span> <a href="project/${form.project.id}"
                       class="label label-primary"><s:message code="gen.edit" /></a>
                   </div>
                   <div class="col-xs-6">
@@ -118,23 +122,29 @@
                       <c:when test="${not empty form.studies[0] && form.studies.size() > 0 }">
                         <c:forEach items="${form.sharedUser}" var="user">
                           <c:if test="${user.id eq form.studies[0].lastUserId}">
-                            <fmt:formatDate value="${form.studies[0].timestamp}" pattern="dd/MM/yyyy HH:mm" var="strDate" />
+                            <c:set var="date" value="${fn:split(form.studies[0].timestamp, 'T')}" />
+                            <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate"
+                              type="date" />
+                            <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm:ss" var="strDate" />
                             <c:choose>
                               <c:when test="${not empty user.lastName && not empty user.firstName}">
-                                <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"
-                                  htmlEscape="false" argumentSeparator=";" />
+                                <s:message code="panel.last.commit"
+                                  arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
+                                  argumentSeparator=";" />
                               </c:when>
                               <c:otherwise>
-                                <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false"
-                                  argumentSeparator=";" />
+                                <s:message code="panel.last.commit" arguments="${strDate};${user.email}"
+                                  htmlEscape="false" argumentSeparator=";" />
                               </c:otherwise>
                             </c:choose>
                           </c:if>
                         </c:forEach>
                       </c:when>
                       <c:otherwise>
-                        <fmt:parseDate value="${form.project.created}" pattern="yyyy-MM-dd" var="parsedDate" type="date" />
-                        <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy" var="strDate" />
+                        <c:set var="date" value="${fn:split(form.project.created, 'T')}" />
+                        <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate"
+                          type="date" />
+                        <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm:ss" var="strDate" />
                         <s:message code="panel.created" arguments="${strDate}" htmlEscape="false" argumentSeparator=";" />
                       </c:otherwise>
                     </c:choose>
@@ -149,5 +159,4 @@
     </div>
   </div>
 </div>
-
 <%@ include file="templates/footer.jsp"%>

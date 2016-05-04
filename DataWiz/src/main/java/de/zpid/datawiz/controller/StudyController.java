@@ -41,7 +41,7 @@ public class StudyController extends SuperController {
     StudyForm sForm = createStudyForm();
     try {
       if (pid.isPresent()) {
-        if (checkProjectRoles(user, pid.get(), false, true) == null) {
+        if (pUtil.checkProjectRoles(user, pid.get(), false, true) == null) {
           // TODO
         }
         sForm.setProject(projectDAO.findById(pid.get()));
