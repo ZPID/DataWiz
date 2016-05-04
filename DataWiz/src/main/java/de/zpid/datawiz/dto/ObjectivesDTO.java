@@ -2,14 +2,17 @@ package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
 
-import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.ObjectiveTypes;
 
-public class ListTypesDTO implements Serializable {
+public class ObjectivesDTO implements Serializable {
 
-  private static final long serialVersionUID = -3098463141488593526L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 6800112774213761668L;
   private long id;
-  private String text;
-  private DelType type;
+  private String objective;
+  private ObjectiveTypes type;
 
   public long getId() {
     return id;
@@ -19,19 +22,19 @@ public class ListTypesDTO implements Serializable {
     this.id = id;
   }
 
-  public String getText() {
-    return text;
+  public String getObjective() {
+    return objective;
   }
 
-  public void setText(String text) {
-    this.text = text;
+  public void setObjective(String objective) {
+    this.objective = objective;
   }
 
-  public DelType getType() {
+  public ObjectiveTypes getType() {
     return type;
   }
 
-  public void setType(DelType type) {
+  public void setType(ObjectiveTypes type) {
     this.type = type;
   }
 
@@ -40,7 +43,7 @@ public class ListTypesDTO implements Serializable {
     final int prime = 31;
     int result = 1;
     result = prime * result + (int) (id ^ (id >>> 32));
-    result = prime * result + ((text == null) ? 0 : text.hashCode());
+    result = prime * result + ((objective == null) ? 0 : objective.hashCode());
     result = prime * result + ((type == null) ? 0 : type.hashCode());
     return result;
   }
@@ -53,13 +56,13 @@ public class ListTypesDTO implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    ListTypesDTO other = (ListTypesDTO) obj;
+    ObjectivesDTO other = (ObjectivesDTO) obj;
     if (id != other.id)
       return false;
-    if (text == null) {
-      if (other.text != null)
+    if (objective == null) {
+      if (other.objective != null)
         return false;
-    } else if (!text.equals(other.text))
+    } else if (!objective.equals(other.objective))
       return false;
     if (type != other.type)
       return false;
@@ -68,7 +71,7 @@ public class ListTypesDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "ListTypesDTO [id=" + id + ", text=" + text + ", type=" + type + "]";
+    return "ObjectivesDTO [id=" + id + ", objective=" + objective + ", type=" + type + "]";
   }
 
 }

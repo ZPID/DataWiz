@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -47,18 +48,20 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 500, groups = StGeneralVal.class)
   private String prevWorkStr;
   /** Study11 */
-  private List<String> software;
+
+  private List<ListTypesDTO> software;
   /** Study12 */
-  private List<String> pubOnData;
+  private List<ListTypesDTO> pubOnData;
   /** Study13 */
-  private List<String> conflInterest;
+  private List<ListTypesDTO> conflInterests;
 
   public interface StDesignVal {
   }
-  
-  
 
-  
+  /** Study14/15 */
+  private List<ObjectivesDTO> objectives;
+  /** Study16 */
+  private List<ListTypesDTO> relTheorys;
 
   private long lastUserId;
   private LocalDateTime timestamp;
