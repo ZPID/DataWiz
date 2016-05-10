@@ -4,15 +4,28 @@ import java.io.Serializable;
 
 import de.zpid.datawiz.enumeration.ObjectiveTypes;
 
-public class ObjectivesDTO implements Serializable {
+public class StudyObjectivesDTO implements Serializable {
 
   /**
    * 
    */
   private static final long serialVersionUID = 6800112774213761668L;
   private long id;
+  private long studyId;
   private String objective;
   private ObjectiveTypes type;
+
+  public StudyObjectivesDTO() {
+    super();
+  }
+
+  public StudyObjectivesDTO(long id, long studyId, String objective, ObjectiveTypes type) {
+    super();
+    this.id = id;
+    this.studyId = studyId;
+    this.objective = objective;
+    this.type = type;
+  }
 
   public long getId() {
     return id;
@@ -20,6 +33,14 @@ public class ObjectivesDTO implements Serializable {
 
   public void setId(long id) {
     this.id = id;
+  }
+
+  public long getStudyId() {
+    return studyId;
+  }
+
+  public void setStudyId(long studyId) {
+    this.studyId = studyId;
   }
 
   public String getObjective() {
@@ -38,12 +59,17 @@ public class ObjectivesDTO implements Serializable {
     this.type = type;
   }
 
+  public static long getSerialversionuid() {
+    return serialVersionUID;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + (int) (id ^ (id >>> 32));
     result = prime * result + ((objective == null) ? 0 : objective.hashCode());
+    result = prime * result + (int) (studyId ^ (studyId >>> 32));
     result = prime * result + ((type == null) ? 0 : type.hashCode());
     return result;
   }
@@ -56,13 +82,15 @@ public class ObjectivesDTO implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    ObjectivesDTO other = (ObjectivesDTO) obj;
+    StudyObjectivesDTO other = (StudyObjectivesDTO) obj;
     if (id != other.id)
       return false;
     if (objective == null) {
       if (other.objective != null)
         return false;
     } else if (!objective.equals(other.objective))
+      return false;
+    if (studyId != other.studyId)
       return false;
     if (type != other.type)
       return false;
@@ -71,7 +99,7 @@ public class ObjectivesDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "ObjectivesDTO [id=" + id + ", objective=" + objective + ", type=" + type + "]";
+    return "ObjectivesDTO [id=" + id + ", studyId=" + studyId + ", objective=" + objective + ", type=" + type + "]";
   }
 
 }

@@ -51,28 +51,28 @@ public class StudyDTO implements Serializable {
   private String prevWorkStr;
   /** Study11 */
   @Valid
-  private List<ListTypesDTO> software;
+  private List<StudyListTypesDTO> software;
   /** Study12 */
   @Valid
-  private List<ListTypesDTO> pubOnData;
+  private List<StudyListTypesDTO> pubOnData;
   /** Study13 */
   @Valid
-  private List<ListTypesDTO> conflInterests;
+  private List<StudyListTypesDTO> conflInterests;
 
   public interface StDesignVal {
   }
 
   /** Study14/15 */
   @Valid
-  private List<ObjectivesDTO> objectives;
+  private List<StudyObjectivesDTO> objectives;
   /** Study16 */
   @Valid
-  private List<ListTypesDTO> relTheorys;
+  private List<StudyListTypesDTO> relTheorys;
   /** Study17 -> DMP89 */
   private String repMeasures;
   /** Study18 */
   @Valid
-  private List<ListTypesDTO> measOccName;
+  private List<StudyListTypesDTO> measOccName;
   /** Study19 */
   @Size(min = 0, max = 2000, groups = StDesignVal.class)
   private String timeDim;
@@ -92,27 +92,74 @@ public class StudyDTO implements Serializable {
   private InterventionTypes randomization;
   /** Study25 */
   @Valid
-  private List<ListTypesDTO> interArms;
+  private List<StudyListTypesDTO> interArms;
   /** Study26 */
   private List<Boolean> interTimeTable;
   /** Study27 */
   private InterventionTypes surveyType;
   /** Study28/ Study29 */
   @Valid
-  private List<ConstructDTO> constructs;
+  private List<StudyConstructDTO> constructs;
   /** Study30 - Study40 */
   @Valid
-  private List<InstrumentDTO> instruments;
+  private List<StudyInstrumentDTO> instruments;
   /** Study41 */
   @Size(min = 0, max = 2000, groups = StDesignVal.class)
   private String description;
 
   public interface StCharacteristicsVal {
   }
-  
-  
-  
-  
+
+  /** Study42 */
+  @Valid
+  private List<StudyListTypesDTO> eligibilities;
+  /** Study43 */
+  @Size(min = 0, max = 1000, groups = StCharacteristicsVal.class)
+  private String population;
+  /** Study44 */
+  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  private String sampleSize;
+  /** Study45 */
+  @Size(min = 0, max = 1000, groups = StCharacteristicsVal.class)
+  private String powerAnalysis;
+  /** Study46 */
+  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  private String intSampleSize;
+  /** Study47 */
+  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  private String obsUnit;
+  /** Study48 */
+  private boolean multilevel;
+  /** Study49 */
+  @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
+  private String multilevelDescr;
+  /** Study50 */
+  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  private String sex;
+  /** Study51 */
+  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  private String age;
+  /** Study52 */
+  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  private String specGroups;
+  /** Study53 */
+  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  private String country;
+  /** Study54 */
+  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  private String city;
+  /** Study55 */
+  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  private String region;
+  /** Study56 */
+  @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
+  private String missings;
+  /** Study55 */
+  @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
+  private String dataRerun;
+
+  public interface StCollectionVal {
+  }
 
   private long lastUserId;
   private LocalDateTime timestamp;
@@ -133,6 +180,382 @@ public class StudyDTO implements Serializable {
     this.projectId = projectId;
   }
 
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getInternalID() {
+    return internalID;
+  }
+
+  public void setInternalID(String internalID) {
+    this.internalID = internalID;
+  }
+
+  public String getTransTitle() {
+    return transTitle;
+  }
+
+  public void setTransTitle(String transTitle) {
+    this.transTitle = transTitle;
+  }
+
+  public List<ContributorDTO> getContributor() {
+    return contributor;
+  }
+
+  public void setContributor(List<ContributorDTO> contributor) {
+    this.contributor = contributor;
+  }
+
+  public String getsAbstract() {
+    return sAbstract;
+  }
+
+  public void setsAbstract(String sAbstract) {
+    this.sAbstract = sAbstract;
+  }
+
+  public String getsAbstractTrans() {
+    return sAbstractTrans;
+  }
+
+  public void setsAbstractTrans(String sAbstractTrans) {
+    this.sAbstractTrans = sAbstractTrans;
+  }
+
+  public String getCompleteSel() {
+    return completeSel;
+  }
+
+  public void setCompleteSel(String completeSel) {
+    this.completeSel = completeSel;
+  }
+
+  public String getExcerpt() {
+    return excerpt;
+  }
+
+  public void setExcerpt(String excerpt) {
+    this.excerpt = excerpt;
+  }
+
+  public String getPrevWork() {
+    return prevWork;
+  }
+
+  public void setPrevWork(String prevWork) {
+    this.prevWork = prevWork;
+  }
+
+  public String getPrevWorkStr() {
+    return prevWorkStr;
+  }
+
+  public void setPrevWorkStr(String prevWorkStr) {
+    this.prevWorkStr = prevWorkStr;
+  }
+
+  public List<StudyListTypesDTO> getSoftware() {
+    return software;
+  }
+
+  public void setSoftware(List<StudyListTypesDTO> software) {
+    this.software = software;
+  }
+
+  public List<StudyListTypesDTO> getPubOnData() {
+    return pubOnData;
+  }
+
+  public void setPubOnData(List<StudyListTypesDTO> pubOnData) {
+    this.pubOnData = pubOnData;
+  }
+
+  public List<StudyListTypesDTO> getConflInterests() {
+    return conflInterests;
+  }
+
+  public void setConflInterests(List<StudyListTypesDTO> conflInterests) {
+    this.conflInterests = conflInterests;
+  }
+
+  public List<StudyObjectivesDTO> getObjectives() {
+    return objectives;
+  }
+
+  public void setObjectives(List<StudyObjectivesDTO> objectives) {
+    this.objectives = objectives;
+  }
+
+  public List<StudyListTypesDTO> getRelTheorys() {
+    return relTheorys;
+  }
+
+  public void setRelTheorys(List<StudyListTypesDTO> relTheorys) {
+    this.relTheorys = relTheorys;
+  }
+
+  public String getRepMeasures() {
+    return repMeasures;
+  }
+
+  public void setRepMeasures(String repMeasures) {
+    this.repMeasures = repMeasures;
+  }
+
+  public List<StudyListTypesDTO> getMeasOccName() {
+    return measOccName;
+  }
+
+  public void setMeasOccName(List<StudyListTypesDTO> measOccName) {
+    this.measOccName = measOccName;
+  }
+
+  public String getTimeDim() {
+    return timeDim;
+  }
+
+  public void setTimeDim(String timeDim) {
+    this.timeDim = timeDim;
+  }
+
+  public boolean isSurveyIntervention() {
+    return surveyIntervention;
+  }
+
+  public void setSurveyIntervention(boolean surveyIntervention) {
+    this.surveyIntervention = surveyIntervention;
+  }
+
+  public boolean isExperimentalIntervention() {
+    return experimentalIntervention;
+  }
+
+  public void setExperimentalIntervention(boolean experimentalIntervention) {
+    this.experimentalIntervention = experimentalIntervention;
+  }
+
+  public boolean isTestIntervention() {
+    return testIntervention;
+  }
+
+  public void setTestIntervention(boolean testIntervention) {
+    this.testIntervention = testIntervention;
+  }
+
+  public InterventionTypes getInterTypeExp() {
+    return interTypeExp;
+  }
+
+  public void setInterTypeExp(InterventionTypes interTypeExp) {
+    this.interTypeExp = interTypeExp;
+  }
+
+  public InterventionTypes getInterTypeDes() {
+    return interTypeDes;
+  }
+
+  public void setInterTypeDes(InterventionTypes interTypeDes) {
+    this.interTypeDes = interTypeDes;
+  }
+
+  public InterventionTypes getInterTypeLab() {
+    return interTypeLab;
+  }
+
+  public void setInterTypeLab(InterventionTypes interTypeLab) {
+    this.interTypeLab = interTypeLab;
+  }
+
+  public InterventionTypes getRandomization() {
+    return randomization;
+  }
+
+  public void setRandomization(InterventionTypes randomization) {
+    this.randomization = randomization;
+  }
+
+  public List<StudyListTypesDTO> getInterArms() {
+    return interArms;
+  }
+
+  public void setInterArms(List<StudyListTypesDTO> interArms) {
+    this.interArms = interArms;
+  }
+
+  public List<Boolean> getInterTimeTable() {
+    return interTimeTable;
+  }
+
+  public void setInterTimeTable(List<Boolean> interTimeTable) {
+    this.interTimeTable = interTimeTable;
+  }
+
+  public InterventionTypes getSurveyType() {
+    return surveyType;
+  }
+
+  public void setSurveyType(InterventionTypes surveyType) {
+    this.surveyType = surveyType;
+  }
+
+  public List<StudyConstructDTO> getConstructs() {
+    return constructs;
+  }
+
+  public void setConstructs(List<StudyConstructDTO> constructs) {
+    this.constructs = constructs;
+  }
+
+  public List<StudyInstrumentDTO> getInstruments() {
+    return instruments;
+  }
+
+  public void setInstruments(List<StudyInstrumentDTO> instruments) {
+    this.instruments = instruments;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public List<StudyListTypesDTO> getEligibilities() {
+    return eligibilities;
+  }
+
+  public void setEligibilities(List<StudyListTypesDTO> eligibilities) {
+    this.eligibilities = eligibilities;
+  }
+
+  public String getPopulation() {
+    return population;
+  }
+
+  public void setPopulation(String population) {
+    this.population = population;
+  }
+
+  public String getSampleSize() {
+    return sampleSize;
+  }
+
+  public void setSampleSize(String sampleSize) {
+    this.sampleSize = sampleSize;
+  }
+
+  public String getPowerAnalysis() {
+    return powerAnalysis;
+  }
+
+  public void setPowerAnalysis(String powerAnalysis) {
+    this.powerAnalysis = powerAnalysis;
+  }
+
+  public String getIntSampleSize() {
+    return intSampleSize;
+  }
+
+  public void setIntSampleSize(String intSampleSize) {
+    this.intSampleSize = intSampleSize;
+  }
+
+  public String getObsUnit() {
+    return obsUnit;
+  }
+
+  public void setObsUnit(String obsUnit) {
+    this.obsUnit = obsUnit;
+  }
+
+  public boolean isMultilevel() {
+    return multilevel;
+  }
+
+  public void setMultilevel(boolean multilevel) {
+    this.multilevel = multilevel;
+  }
+
+  public String getMultilevelDescr() {
+    return multilevelDescr;
+  }
+
+  public void setMultilevelDescr(String multilevelDescr) {
+    this.multilevelDescr = multilevelDescr;
+  }
+
+  public String getSex() {
+    return sex;
+  }
+
+  public void setSex(String sex) {
+    this.sex = sex;
+  }
+
+  public String getAge() {
+    return age;
+  }
+
+  public void setAge(String age) {
+    this.age = age;
+  }
+
+  public String getSpecGroups() {
+    return specGroups;
+  }
+
+  public void setSpecGroups(String specGroups) {
+    this.specGroups = specGroups;
+  }
+
+  public String getCountry() {
+    return country;
+  }
+
+  public void setCountry(String country) {
+    this.country = country;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getRegion() {
+    return region;
+  }
+
+  public void setRegion(String region) {
+    this.region = region;
+  }
+
+  public String getMissings() {
+    return missings;
+  }
+
+  public void setMissings(String missings) {
+    this.missings = missings;
+  }
+
+  public String getDataRerun() {
+    return dataRerun;
+  }
+
+  public void setDataRerun(String dataRerun) {
+    this.dataRerun = dataRerun;
+  }
+
   public long getLastUserId() {
     return lastUserId;
   }
@@ -147,14 +570,6 @@ public class StudyDTO implements Serializable {
 
   public void setTimestamp(LocalDateTime timestamp) {
     this.timestamp = timestamp;
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
   }
 
 }

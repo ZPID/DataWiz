@@ -7,11 +7,11 @@ import java.util.List;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.UserRoleDTO;
 
-@Service
+@Repository
 @Scope("singleton")
 public class RoleDAO extends SuperDAO {
 

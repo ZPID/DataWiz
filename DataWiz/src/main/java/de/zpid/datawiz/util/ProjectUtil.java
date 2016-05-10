@@ -59,7 +59,7 @@ public class ProjectUtil {
 
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
-  private Logger log = LogManager.getLogger(getClass());
+  private Logger log = LogManager.getLogger(ProjectUtil.class);
 
   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.
@@ -120,44 +120,7 @@ public class ProjectUtil {
       // load all data if user has full project rights
       if (userRole.equals(Roles.ADMIN) || userRole.equals(Roles.PROJECT_ADMIN) || userRole.equals(Roles.PROJECT_READER)
           || userRole.equals(Roles.PROJECT_WRITER)) {
-        // load /project data
-        if (call == null || call.equals(PageState.PROJECT)) {
-          pForm.setFiles(fileDAO.getProjectFiles(pdto));
-          pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
-          pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
-          pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
-          pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-        } // load /dmp data
-        else if (call.equals(PageState.DMP)) {
-          DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
-          if (dmp != null && dmp.getId() > 0) {
-            dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.DATATYPE));
-            dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.COLLECTIONMODE));
-            dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.METAPORPOSE));
-            dmp.setAdminChanged(false);
-            dmp.setResearchChanged(false);
-            dmp.setMetaChanged(false);
-            dmp.setSharingChanged(false);
-            dmp.setStorageChanged(false);
-            dmp.setOrganizationChanged(false);
-            dmp.setEthicalChanged(false);
-            dmp.setCostsChanged(false);
-          }
-          if (dmp == null || dmp.getId() <= 0) {
-            dmp = (DmpDTO) context.getBean("DmpDTO");
-          }
-          pForm.setDmp(dmp);
-          pForm.setDataTypes(formTypeDAO.getAllByType(true, DWFieldTypes.DATATYPE));
-          pForm.setCollectionModes(formTypeDAO.getAllByType(true, DWFieldTypes.COLLECTIONMODE));
-          pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DWFieldTypes.METAPORPOSE));
-          pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
-        } // load /access data
-        else if (call.equals(PageState.ACCESS)) {
-          pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
-        } // load /export data
-        else if (call.equals(PageState.EXPORT)) {
-
-        }
+        setSpecificPageData(pForm, call, pdto);
       } else if (userRole.equals(Roles.DS_READER) || userRole.equals(Roles.DS_WRITER)) {
         List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
         List<StudyDTO> cStud = new ArrayList<StudyDTO>();
@@ -173,6 +136,54 @@ public class ProjectUtil {
     } else {
       log.warn("ProjectID or UserDTO is empty - NULL returned!");
       throw new DataWizException("ProjectID or UserDTO is empty - getProjectForm(SuperController) aborted!");
+    }
+  }
+
+  /**
+   * @param pForm
+   * @param call
+   * @param pdto
+   * @throws Exception
+   */
+  private void setSpecificPageData(final ProjectForm pForm, final PageState call, final ProjectDTO pdto)
+      throws Exception {
+    // load /project data
+    if (call == null || call.equals(PageState.PROJECT)) {
+      pForm.setFiles(fileDAO.getProjectFiles(pdto));
+      pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
+      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+      pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
+      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+    } // load /dmp data
+    else if (call.equals(PageState.DMP)) {
+      DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
+      if (dmp != null && dmp.getId() > 0) {
+        dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.DATATYPE));
+        dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.COLLECTIONMODE));
+        dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.METAPORPOSE));
+        dmp.setAdminChanged(false);
+        dmp.setResearchChanged(false);
+        dmp.setMetaChanged(false);
+        dmp.setSharingChanged(false);
+        dmp.setStorageChanged(false);
+        dmp.setOrganizationChanged(false);
+        dmp.setEthicalChanged(false);
+        dmp.setCostsChanged(false);
+      }
+      if (dmp == null || dmp.getId() <= 0) {
+        dmp = (DmpDTO) context.getBean("DmpDTO");
+      }
+      pForm.setDmp(dmp);
+      pForm.setDataTypes(formTypeDAO.getAllByType(true, DWFieldTypes.DATATYPE));
+      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DWFieldTypes.COLLECTIONMODE));
+      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DWFieldTypes.METAPORPOSE));
+      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+    } // load /access data
+    else if (call.equals(PageState.ACCESS)) {
+      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+    } // load /export data
+    else if (call.equals(PageState.EXPORT)) {
+
     }
   }
 

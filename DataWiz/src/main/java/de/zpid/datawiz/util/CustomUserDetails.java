@@ -21,7 +21,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 
-import de.zpid.datawiz.controller.LoginController;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.AccountState;
@@ -30,7 +29,7 @@ import de.zpid.datawiz.enumeration.Roles;
 public class CustomUserDetails implements UserDetails, CredentialsContainer {
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-	private static final Logger log = LogManager.getLogger(LoginController.class);
+	private static final Logger log = LogManager.getLogger(CustomUserDetails.class);
 
 	private UserDTO user;
 	private String password;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Size;
 
-public class InstrumentDTO implements Serializable {
+public class StudyInstrumentDTO implements Serializable {
 
   private static final long serialVersionUID = -2468624912740410851L;
 
@@ -43,7 +43,7 @@ public class InstrumentDTO implements Serializable {
   @Size(min = 0, max = 2000, groups = StudyDTO.StDesignVal.class)
   private String norm;
 
-  public InstrumentDTO(long id, String title, String author, String citation, String summary, String theoHint,
+  public StudyInstrumentDTO(long id, String title, String author, String citation, String summary, String theoHint,
       String structure, String construction, String objectivity, String reliability, String validity, String norm) {
     super();
     this.id = id;
@@ -60,7 +60,7 @@ public class InstrumentDTO implements Serializable {
     this.norm = norm;
   }
 
-  public InstrumentDTO() {
+  public StudyInstrumentDTO() {
     super();
   }
 
@@ -187,7 +187,7 @@ public class InstrumentDTO implements Serializable {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    InstrumentDTO other = (InstrumentDTO) obj;
+    StudyInstrumentDTO other = (StudyInstrumentDTO) obj;
     if (author == null) {
       if (other.author != null)
         return false;

@@ -11,12 +11,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.AccountState;
 
-@Service
+@Repository
 @Scope("singleton")
 public class UserDAO extends SuperDAO {
 

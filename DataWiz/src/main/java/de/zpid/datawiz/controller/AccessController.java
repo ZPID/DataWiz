@@ -1,5 +1,6 @@
 package de.zpid.datawiz.controller;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
@@ -247,15 +248,7 @@ public class AccessController extends SuperController {
     if (check != null) {
       return check;
     }
-    String adminName = (admin.getLastName() != null && !admin.getLastName().isEmpty() ? admin.getLastName() : "");
-    if (!adminName.isEmpty())
-      adminName = (admin.getTitle() != null && !admin.getTitle().isEmpty() ? admin.getTitle() + " " : "")
-          + (admin.getFirstName() != null && !admin.getFirstName().isEmpty() ? admin.getFirstName() + " " : "")
-          + adminName;
-    if (!adminName.isEmpty())
-      adminName = adminName + "( " + admin.getEmail() + " )";
-    else
-      adminName = admin.getEmail();
+    String adminName = createAdminName(admin);
     UserDTO user = null;
     String linkhash = null;
     try {
@@ -298,7 +291,6 @@ public class AccessController extends SuperController {
         }
         if (subject != null && content != null && url != null) {
           try {
-            System.out.println("------------------------- " + env.getRequiredProperty("mail.smtp.host"));
             EmailUtil mail = new EmailUtil(env);
             mail.sendSSLMail(pForm.getDelMail(),
                 messageSource.getMessage(subject, new Object[] { pForm.getProject().getTitle() },
@@ -538,28 +530,7 @@ public class AccessController extends SuperController {
             }
           }
           if (!bRes.hasErrors()) {
-            int chk = roleDAO.setRole(newRole);
-            // cleanup roles
-            if (chk > 0 && user.getGlobalRoles() != null) {
-              for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
-                if (newRole.getType().equals(Roles.PROJECT_ADMIN.name())
-                    && !roleTmp.getType().equals(Roles.REL_ROLE.name()) && roleTmp.getProjectId() > 0) {
-                  roleDAO.deleteRole(roleTmp);
-                } else if (newRole.getType().equals(Roles.PROJECT_READER.name())
-                    && roleTmp.getType().equals(Roles.DS_READER.name())) {
-                  roleDAO.deleteRole(roleTmp);
-                } else if (newRole.getType().equals(Roles.PROJECT_WRITER.name())
-                    && (roleTmp.getType().equals(Roles.DS_WRITER.name())
-                        || roleTmp.getType().equals(Roles.DS_READER.name())
-                        || roleTmp.getType().equals(Roles.PROJECT_READER.name()))) {
-                  roleDAO.deleteRole(roleTmp);
-                } else if (newRole.getType().equals(Roles.DS_WRITER.name())
-                    && newRole.getStudyId() == roleTmp.getStudyId()
-                    && roleTmp.getType().equals(Roles.DS_READER.name())) {
-                  roleDAO.deleteRole(roleTmp);
-                }
-              }
-            }
+            cleanupRoles(user, newRole);
           }
         } catch (Exception e) {
           log.error("ERROR: Database error during database transaction, role not saved - Exception:", e);
@@ -584,5 +555,55 @@ public class AccessController extends SuperController {
         new Object[] { user.getEmail() }, LocaleContextHolder.getLocale()));
     log.trace("Method addRoleToProjectUser successfully completed");
     return "redirect:/access/" + projectId;
+  }
+
+  /**
+   * This function tries to set the name of an admin if the needed fiels are set, otherwise it return the email of the
+   * admin
+   * 
+   * @param admin
+   * @return
+   */
+  private String createAdminName(final UserDTO admin) {
+    String adminName = (admin.getLastName() != null && !admin.getLastName().isEmpty() ? admin.getLastName() : "");
+    if (!adminName.isEmpty())
+      adminName = (admin.getTitle() != null && !admin.getTitle().isEmpty() ? admin.getTitle() + " " : "")
+          + (admin.getFirstName() != null && !admin.getFirstName().isEmpty() ? admin.getFirstName() + " " : "")
+          + adminName;
+    if (!adminName.isEmpty())
+      adminName = adminName + "( " + admin.getEmail() + " )";
+    else
+      adminName = admin.getEmail();
+    return adminName;
+  }
+
+  /**
+   * Checks if the new role has a higher priority as roles which are already set, because it is not useful to have
+   * global rights and additional study rights for example
+   * 
+   * @param user
+   * @param newRole
+   * @throws SQLException
+   */
+  private void cleanupRoles(final UserDTO user, final UserRoleDTO newRole) throws SQLException {
+    int chk = roleDAO.setRole(newRole);
+    if (chk > 0 && user.getGlobalRoles() != null) {
+      for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
+        if (newRole.getType().equals(Roles.PROJECT_ADMIN.name()) && !roleTmp.getType().equals(Roles.REL_ROLE.name())
+            && roleTmp.getProjectId() > 0) {
+          roleDAO.deleteRole(roleTmp);
+        } else if (newRole.getType().equals(Roles.PROJECT_READER.name())
+            && roleTmp.getType().equals(Roles.DS_READER.name())) {
+          roleDAO.deleteRole(roleTmp);
+        } else if (newRole.getType().equals(Roles.PROJECT_WRITER.name())
+            && (roleTmp.getType().equals(Roles.DS_WRITER.name()) || roleTmp.getType().equals(Roles.DS_READER.name())
+                || roleTmp.getType().equals(Roles.PROJECT_READER.name()))) {
+          roleDAO.deleteRole(roleTmp);
+        } else if (newRole.getType().equals(Roles.DS_WRITER.name()) && newRole.getStudyId() == roleTmp.getStudyId()
+            && roleTmp.getType().equals(Roles.DS_READER.name())) {
+          roleDAO.deleteRole(roleTmp);
+        }
+      }
+    }
   }
 }

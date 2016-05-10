@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 
-@Service
+
+@Repository
 @Scope("singleton")
 public class TagDAO extends SuperDAO {
-  
+
   public TagDAO() {
     super();
     if (log.isInfoEnabled())
