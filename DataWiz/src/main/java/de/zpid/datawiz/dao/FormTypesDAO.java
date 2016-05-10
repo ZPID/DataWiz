@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.FormTypesDTO;
-import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 
 @Service
 @Scope("singleton")
@@ -21,7 +21,7 @@ public class FormTypesDAO extends SuperDAO {
       log.info("Loading FormTypesDAO as Singleton and Service");
   }
 
-  public List<FormTypesDTO> getAllByType(boolean activ, DelType type) throws Exception {
+  public List<FormTypesDTO> getAllByType(boolean activ, DWFieldTypes type) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getAllByType [type=" + type.toString() + "]");
     String sql = "SELECT * FROM dw_formtypes WHERE dw_formtypes.active = ? AND dw_formtypes.type = ? ORDER BY dw_formtypes.sort";
@@ -34,7 +34,7 @@ public class FormTypesDAO extends SuperDAO {
         dt.setActive(rs.getBoolean("active"));
         dt.setInvestPresent(rs.getBoolean("investpresent"));
         dt.setSort(rs.getInt("sort"));
-        dt.setType(DelType.valueOf(rs.getString("type")));
+        dt.setType(DWFieldTypes.valueOf(rs.getString("type")));
         return dt;
       }
     });

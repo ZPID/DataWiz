@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.SavedState;
@@ -65,9 +65,9 @@ public class DMPController extends SuperController {
     model.put("subnaviActive", "DMP");
     ProjectForm pForm = createProjectForm();
     try {
-      pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.DATATYPE));
-      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.COLLECTIONMODE));
-      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.METAPORPOSE));
+      pForm.setDataTypes(formTypeDAO.getAllByType(true, DWFieldTypes.DATATYPE));
+      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DWFieldTypes.COLLECTIONMODE));
+      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DWFieldTypes.METAPORPOSE));
     } catch (Exception e) {
       if (log.isEnabled(Level.ERROR))
         log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);

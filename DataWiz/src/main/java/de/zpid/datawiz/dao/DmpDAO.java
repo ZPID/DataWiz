@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 
 @Service
 @Scope("singleton")
@@ -188,7 +188,7 @@ public class DmpDAO extends SuperDAO {
         dmp.getSelectionTime(), dmp.getSelectionResp(), dmp.getSelectionSoftware(), dmp.getSelectionCriteria(),
         dmp.getStorageDuration(), dmp.getDeleteProcedure(), dmp.getId());
     if (ret > 0) {
-      List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DelType.DATATYPE);
+      List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.DATATYPE);
       if (datatypes != null && datatypes.size() > 0) {
         for (Integer i : datatypes)
           deleteDMPUsedDataTypes(dmp.getId(), i);
@@ -197,7 +197,7 @@ public class DmpDAO extends SuperDAO {
         for (int i : dmp.getUsedDataTypes())
           insertDMPUsedDataTypes(dmp.getId(), i);
       }
-      List<Integer> collectionModes = getDMPUsedDataTypes(dmp.getId(), DelType.COLLECTIONMODE);
+      List<Integer> collectionModes = getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.COLLECTIONMODE);
       if (collectionModes != null && collectionModes.size() > 0) {
         for (Integer i : collectionModes)
           deleteDMPUsedDataTypes(dmp.getId(), i);
@@ -218,7 +218,7 @@ public class DmpDAO extends SuperDAO {
         dmp.getMetaDescription(), dmp.getMetaFramework(), dmp.getMetaGeneration(), dmp.getMetaMonitor(),
         dmp.getMetaFormat(), dmp.getId());
     if (ret > 0) {
-      List<Integer> metaporpose = getDMPUsedDataTypes(dmp.getId(), DelType.METAPORPOSE);
+      List<Integer> metaporpose = getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.METAPORPOSE);
       if (metaporpose != null && metaporpose.size() > 0) {
         for (Integer i : metaporpose)
           deleteDMPUsedDataTypes(dmp.getId(), i);
@@ -301,7 +301,7 @@ public class DmpDAO extends SuperDAO {
         dmp.getSpecificCosts(), dmp.getSpecificCostsTxt(), dmp.getAriseCosts(), dmp.getBearCost(), dmp.getId());
   }
 
-  public List<Integer> getDMPUsedDataTypes(long l, DelType type) throws Exception {
+  public List<Integer> getDMPUsedDataTypes(long l, DWFieldTypes type) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getDMPUsedDataTypes for dmp [id: " + l + " type: " + type.toString() + "]");
     String sql = "SELECT dw_dmp_formtypes.ftid FROM dw_dmp_formtypes "

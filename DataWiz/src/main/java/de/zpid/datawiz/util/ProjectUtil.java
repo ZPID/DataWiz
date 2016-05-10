@@ -27,7 +27,7 @@ import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
@@ -131,9 +131,9 @@ public class ProjectUtil {
         else if (call.equals(PageState.DMP)) {
           DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
           if (dmp != null && dmp.getId() > 0) {
-            dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.DATATYPE));
-            dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.COLLECTIONMODE));
-            dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DelType.METAPORPOSE));
+            dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.DATATYPE));
+            dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.COLLECTIONMODE));
+            dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.METAPORPOSE));
             dmp.setAdminChanged(false);
             dmp.setResearchChanged(false);
             dmp.setMetaChanged(false);
@@ -147,9 +147,9 @@ public class ProjectUtil {
             dmp = (DmpDTO) context.getBean("DmpDTO");
           }
           pForm.setDmp(dmp);
-          pForm.setDataTypes(formTypeDAO.getAllByType(true, DelType.DATATYPE));
-          pForm.setCollectionModes(formTypeDAO.getAllByType(true, DelType.COLLECTIONMODE));
-          pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DelType.METAPORPOSE));
+          pForm.setDataTypes(formTypeDAO.getAllByType(true, DWFieldTypes.DATATYPE));
+          pForm.setCollectionModes(formTypeDAO.getAllByType(true, DWFieldTypes.COLLECTIONMODE));
+          pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DWFieldTypes.METAPORPOSE));
           pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
         } // load /access data
         else if (call.equals(PageState.ACCESS)) {

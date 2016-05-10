@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
-import de.zpid.datawiz.enumeration.DelType;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 
 /**
  * Implementation of the MetaPorpose which are declared as DMP131in the excel meta data sheet.
@@ -44,14 +44,14 @@ public class FormTypesDTO implements Serializable {
   /** true if the investor is present. */
   private boolean investPresent;
 
-  private DelType type;
+  private DWFieldTypes type;
 
   public FormTypesDTO() {
     super();
   }
 
   public FormTypesDTO(int id, int dmpId, String nameDE, String nameEN, String otherTypes, boolean active, int sort,
-      boolean investPresent, DelType type) {
+      boolean investPresent, DWFieldTypes type) {
     super();
     this.id = id;
     this.dmpId = dmpId;
@@ -128,11 +128,11 @@ public class FormTypesDTO implements Serializable {
     this.investPresent = investPresent;
   }
 
-  public DelType getType() {
+  public DWFieldTypes getType() {
     return type;
   }
 
-  public void setType(DelType type) {
+  public void setType(DWFieldTypes type) {
     this.type = type;
   }
 

@@ -2,14 +2,18 @@ package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
 
-import de.zpid.datawiz.enumeration.DelType;
+import javax.validation.constraints.Size;
+
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 
 public class ListTypesDTO implements Serializable {
 
   private static final long serialVersionUID = -3098463141488593526L;
   private long id;
+
+  @Size(min = 0, max = 1000, groups = { StudyDTO.StGeneralVal.class, StudyDTO.StDesignVal.class })
   private String text;
-  private DelType type;
+  private DWFieldTypes type;
 
   public long getId() {
     return id;
@@ -27,11 +31,11 @@ public class ListTypesDTO implements Serializable {
     this.text = text;
   }
 
-  public DelType getType() {
+  public DWFieldTypes getType() {
     return type;
   }
 
-  public void setType(DelType type) {
+  public void setType(DWFieldTypes type) {
     this.type = type;
   }
 
