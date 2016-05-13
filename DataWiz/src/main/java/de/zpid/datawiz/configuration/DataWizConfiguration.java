@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.validation.SmartValidator;
@@ -48,9 +48,9 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @Bean(name = "messageSource")
   public MessageSource resourceBundleMessageSource() {
-    ResourceBundleMessageSource resolver = new ResourceBundleMessageSource();
-    resolver.setBasenames("de.zpid.datawiz.properties.ApplicationResources", "de.zpid.datawiz.properties.DMPResources",
-        "de.zpid.datawiz.properties.EmailResources", "de.zpid.datawiz.properties.StudyResources");
+    ReloadableResourceBundleMessageSource resolver = new ReloadableResourceBundleMessageSource();
+    resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale.DMPResources",
+        "classpath:locale/EmailResources", "classpath:locale/StudyResources");
     resolver.setDefaultEncoding("UTF-8");
     return resolver;
   }

@@ -1,6 +1,7 @@
 package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -154,12 +155,44 @@ public class StudyDTO implements Serializable {
   /** Study56 */
   @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
   private String missings;
-  /** Study55 */
+  /** Study57 */
   @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
   private String dataRerun;
 
   public interface StCollectionVal {
   }
+
+  /** Study58 */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String responsibility;
+  /** Study59 */
+  private LocalDate collStart;
+  /** Study60 */
+  private LocalDate collEnd;
+  /** Study61 -> DMP14 PsychData - META096 */
+  private List<Integer> usedCollectionModes;
+  /** Study61 -> DMP87 other Collection Modes with Invest. present */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String otherCMIP;
+  /** Study61 -> DMP87 other Collection Modes with Invest. not present */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String otherCMINP;
+  /** Study62 */
+  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  private String sampMethod;
+  /** Study63 */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String recruiting;
+  /** Study64 */
+  private List<Integer> usedSourFormat;
+  /** Study64 */
+  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  private String otherSourFormat;
+  /** Study65 select -> [null , simple, complex]*/
+  private String sourTrans;
+  /** Study65 if select == complex */
+  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  private String otherSourTrans;
 
   private long lastUserId;
   private LocalDateTime timestamp;
