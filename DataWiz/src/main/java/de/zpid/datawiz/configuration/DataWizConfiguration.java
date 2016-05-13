@@ -49,7 +49,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Bean(name = "messageSource")
   public MessageSource resourceBundleMessageSource() {
     ReloadableResourceBundleMessageSource resolver = new ReloadableResourceBundleMessageSource();
-    resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale.DMPResources",
+    resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale/DMPResources",
         "classpath:locale/EmailResources", "classpath:locale/StudyResources");
     resolver.setDefaultEncoding("UTF-8");
     return resolver;

@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import de.zpid.datawiz.enumeration.InterventionTypes;
@@ -16,6 +17,8 @@ public class StudyDTO implements Serializable {
   private static final long serialVersionUID = -7300213401850684971L;
   private long id;
   private long projectId;
+  private long lastUserId;
+  private LocalDateTime timestamp;
 
   public interface StGeneralVal {
   }
@@ -188,14 +191,58 @@ public class StudyDTO implements Serializable {
   /** Study64 */
   @Size(min = 0, max = 500, groups = StCollectionVal.class)
   private String otherSourFormat;
-  /** Study65 select -> [null , simple, complex]*/
+  /** Study65 select -> [null , simple, complex] */
+  @Pattern(regexp = "(^$|simple|complex)", groups = StCollectionVal.class)
   private String sourTrans;
   /** Study65 if select == complex */
   @Size(min = 0, max = 500, groups = StCollectionVal.class)
   private String otherSourTrans;
+  /** Study66 */
+  @Size(min = 0, max = 2000, groups = StCollectionVal.class)
+  private String specCirc;
+  /** Study67 */
+  @Size(min = 0, max = 2000, groups = StCollectionVal.class)
+  private String transDescr;
+  /** Study68 */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String qualInd;
+  /** Study69 */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String qualLim;
 
-  private long lastUserId;
-  private LocalDateTime timestamp;
+  public interface StEthicalVal {
+  }
+
+  /** Study70 */
+  private boolean irb;
+  /** Study71 */
+  @Size(min = 0, max = 500, groups = StEthicalVal.class)
+  private String irbName;
+  /** Study72 */
+  private boolean consent;
+  /** Study73 */
+  private boolean consentShare;
+  /** Study74 */
+  private boolean persDataColl;
+  /** Study75 -> [null , anonymous, non_anonymous] */
+  @Pattern(regexp = "(^$|anonymous|non_anonymous)", groups = StEthicalVal.class)
+  private String persDataPres;
+  /** Study76 */
+  @Size(min = 0, max = 1000, groups = StEthicalVal.class)
+  private String anonymProc;
+  /** Study77 */
+  private boolean copyright;
+  /** Study78 -> [null , pi, no_cr, other] */
+  @Pattern(regexp = "(^$|pi|no_cr|other)", groups = StEthicalVal.class)
+  private String copyrightHolder;
+  /** Study78 */
+  @Size(min = 0, max = 500, groups = StEthicalVal.class)
+  private String otherCopyrightHolder;
+  /** Study79 */
+  private boolean thirdParty;
+  /** Study80 */
+  @Size(min = 0, max = 1000, groups = StEthicalVal.class)
+  private String dataSharing;
 
   public long getId() {
     return id;
@@ -603,6 +650,230 @@ public class StudyDTO implements Serializable {
 
   public void setTimestamp(LocalDateTime timestamp) {
     this.timestamp = timestamp;
+  }
+
+  public String getResponsibility() {
+    return responsibility;
+  }
+
+  public void setResponsibility(String responsibility) {
+    this.responsibility = responsibility;
+  }
+
+  public LocalDate getCollStart() {
+    return collStart;
+  }
+
+  public void setCollStart(LocalDate collStart) {
+    this.collStart = collStart;
+  }
+
+  public LocalDate getCollEnd() {
+    return collEnd;
+  }
+
+  public void setCollEnd(LocalDate collEnd) {
+    this.collEnd = collEnd;
+  }
+
+  public List<Integer> getUsedCollectionModes() {
+    return usedCollectionModes;
+  }
+
+  public void setUsedCollectionModes(List<Integer> usedCollectionModes) {
+    this.usedCollectionModes = usedCollectionModes;
+  }
+
+  public String getOtherCMIP() {
+    return otherCMIP;
+  }
+
+  public void setOtherCMIP(String otherCMIP) {
+    this.otherCMIP = otherCMIP;
+  }
+
+  public String getOtherCMINP() {
+    return otherCMINP;
+  }
+
+  public void setOtherCMINP(String otherCMINP) {
+    this.otherCMINP = otherCMINP;
+  }
+
+  public String getSampMethod() {
+    return sampMethod;
+  }
+
+  public void setSampMethod(String sampMethod) {
+    this.sampMethod = sampMethod;
+  }
+
+  public String getRecruiting() {
+    return recruiting;
+  }
+
+  public void setRecruiting(String recruiting) {
+    this.recruiting = recruiting;
+  }
+
+  public List<Integer> getUsedSourFormat() {
+    return usedSourFormat;
+  }
+
+  public void setUsedSourFormat(List<Integer> usedSourFormat) {
+    this.usedSourFormat = usedSourFormat;
+  }
+
+  public String getOtherSourFormat() {
+    return otherSourFormat;
+  }
+
+  public void setOtherSourFormat(String otherSourFormat) {
+    this.otherSourFormat = otherSourFormat;
+  }
+
+  public String getSourTrans() {
+    return sourTrans;
+  }
+
+  public void setSourTrans(String sourTrans) {
+    this.sourTrans = sourTrans;
+  }
+
+  public String getOtherSourTrans() {
+    return otherSourTrans;
+  }
+
+  public void setOtherSourTrans(String otherSourTrans) {
+    this.otherSourTrans = otherSourTrans;
+  }
+
+  public String getSpecCirc() {
+    return specCirc;
+  }
+
+  public void setSpecCirc(String specCirc) {
+    this.specCirc = specCirc;
+  }
+
+  public String getTransDescr() {
+    return transDescr;
+  }
+
+  public void setTransDescr(String transDescr) {
+    this.transDescr = transDescr;
+  }
+
+  public String getQualInd() {
+    return qualInd;
+  }
+
+  public void setQualInd(String qualInd) {
+    this.qualInd = qualInd;
+  }
+
+  public String getQualLim() {
+    return qualLim;
+  }
+
+  public void setQualLim(String qualLim) {
+    this.qualLim = qualLim;
+  }
+
+  public boolean isIrb() {
+    return irb;
+  }
+
+  public void setIrb(boolean irb) {
+    this.irb = irb;
+  }
+
+  public String getIrbName() {
+    return irbName;
+  }
+
+  public void setIrbName(String irbName) {
+    this.irbName = irbName;
+  }
+
+  public boolean isConsent() {
+    return consent;
+  }
+
+  public void setConsent(boolean consent) {
+    this.consent = consent;
+  }
+
+  public boolean isConsentShare() {
+    return consentShare;
+  }
+
+  public void setConsentShare(boolean consentShare) {
+    this.consentShare = consentShare;
+  }
+
+  public boolean isPersDataColl() {
+    return persDataColl;
+  }
+
+  public void setPersDataColl(boolean persDataColl) {
+    this.persDataColl = persDataColl;
+  }
+
+  public String getPersDataPres() {
+    return persDataPres;
+  }
+
+  public void setPersDataPres(String persDataPres) {
+    this.persDataPres = persDataPres;
+  }
+
+  public String getAnonymProc() {
+    return anonymProc;
+  }
+
+  public void setAnonymProc(String anonymProc) {
+    this.anonymProc = anonymProc;
+  }
+
+  public boolean isCopyright() {
+    return copyright;
+  }
+
+  public void setCopyright(boolean copyright) {
+    this.copyright = copyright;
+  }
+
+  public String getCopyrightHolder() {
+    return copyrightHolder;
+  }
+
+  public void setCopyrightHolder(String copyrightHolder) {
+    this.copyrightHolder = copyrightHolder;
+  }
+
+  public String getOtherCopyrightHolder() {
+    return otherCopyrightHolder;
+  }
+
+  public void setOtherCopyrightHolder(String otherCopyrightHolder) {
+    this.otherCopyrightHolder = otherCopyrightHolder;
+  }
+
+  public boolean isThirdParty() {
+    return thirdParty;
+  }
+
+  public void setThirdParty(boolean thirdParty) {
+    this.thirdParty = thirdParty;
+  }
+
+  public String getDataSharing() {
+    return dataSharing;
+  }
+
+  public void setDataSharing(String dataSharing) {
+    this.dataSharing = dataSharing;
   }
 
 }
