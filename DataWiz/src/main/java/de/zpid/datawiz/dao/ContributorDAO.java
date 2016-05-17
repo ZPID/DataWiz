@@ -25,8 +25,7 @@ public class ContributorDAO extends SuperDAO {
 
   public List<ContributorDTO> findByProject(final ProjectDTO project, final boolean withStudy,
       final boolean withPrimary) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute getByProject for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
+    log.trace("Entering getByProject for project [id: {}]", () -> project.getId());
     String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
         + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
         + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ")
@@ -35,22 +34,26 @@ public class ContributorDAO extends SuperDAO {
     List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { project.getId() },
         new RowMapper<ContributorDTO>() {
           public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ContributorDTO contri = (ContributorDTO) context.getBean("ContributorDTO");
-            contri.setId(rs.getInt("id"));
-            contri.setProjectId(rs.getInt("project_id"));
-            contri.setStudyId(rs.getInt("study_id"));
-            contri.setTitle(rs.getString("title"));
-            contri.setFirstName(rs.getString("first_name"));
-            contri.setLastName(rs.getString("last_name"));
-            contri.setInstitution(rs.getString("institution"));
-            contri.setDepartment(rs.getString("department"));
-            contri.setOrcid(rs.getString("orcid"));
-            contri.setPrimaryContributor(rs.getBoolean("primaryContributor"));
-            return contri;
+            return setContributorDTO(rs);
           }
         });
-    if (log.isDebugEnabled())
-      log.debug("leaving getByProject with result length: " + ((cContri != null) ? cContri.size() : "null"));
+    log.debug("Transaction getByProject returned result length: [{}]",
+        () -> ((cContri != null) ? cContri.size() : "null"));
+    return cContri;
+  }
+
+  public List<ContributorDTO> findByStudy(final long studyId) throws Exception {
+    log.trace("Entering findByStudy for project [id: {}]", () -> studyId);
+    String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
+        + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+        + "dw_study_contributors.study_id = ? ORDER BY dw_contributors.id DESC";
+    List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { studyId }, new RowMapper<ContributorDTO>() {
+      public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return setContributorDTO(rs);
+      }
+    });
+    log.debug("Transaction findByStudy returned result length: [{}]",
+        () -> ((cContri != null) ? cContri.size() : "null"));
     return cContri;
   }
 
@@ -66,24 +69,33 @@ public class ContributorDAO extends SuperDAO {
           @Override
           public ContributorDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (rs.next()) {
-              ContributorDTO contri = (ContributorDTO) context.getBean("ContributorDTO");
-              contri.setId(rs.getInt("id"));
-              contri.setProjectId(rs.getInt("project_id"));
-              contri.setStudyId(rs.getInt("study_id"));
-              contri.setTitle(rs.getString("title"));
-              contri.setFirstName(rs.getString("first_name"));
-              contri.setLastName(rs.getString("last_name"));
-              contri.setInstitution(rs.getString("institution"));
-              contri.setDepartment(rs.getString("department"));
-              contri.setOrcid(rs.getString("orcid"));
-              contri.setPrimaryContributor(rs.getBoolean("primaryContributor"));
-              return contri;
+              return setContributorDTO(rs);
             }
             return null;
           }
         });
     if (log.isDebugEnabled())
       log.debug("leaving findPrimaryContributorByProject with contributor: " + contri);
+    return contri;
+  }
+
+  /**
+   * @param rs
+   * @return
+   * @throws SQLException
+   */
+  private ContributorDTO setContributorDTO(ResultSet rs) throws SQLException {
+    ContributorDTO contri = (ContributorDTO) context.getBean("ContributorDTO");
+    contri.setId(rs.getInt("id"));
+    contri.setProjectId(rs.getInt("project_id"));
+    contri.setStudyId(rs.getInt("study_id"));
+    contri.setTitle(rs.getString("title"));
+    contri.setFirstName(rs.getString("first_name"));
+    contri.setLastName(rs.getString("last_name"));
+    contri.setInstitution(rs.getString("institution"));
+    contri.setDepartment(rs.getString("department"));
+    contri.setOrcid(rs.getString("orcid"));
+    contri.setPrimaryContributor(rs.getBoolean("primaryContributor"));
     return contri;
   }
 

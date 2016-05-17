@@ -1,9 +1,11 @@
 package de.zpid.datawiz.form;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.validation.Valid;
 
+import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 
@@ -15,6 +17,10 @@ public class StudyForm implements Serializable {
   private StudyDTO study;
 
   private ProjectDTO project;
+
+  private List<ContributorDTO> projectContributors;
+
+  private String hiddenVar;
 
   public StudyDTO getStudy() {
     return study;
@@ -30,6 +36,22 @@ public class StudyForm implements Serializable {
 
   public void setProject(ProjectDTO project) {
     this.project = project;
+  }
+
+  public List<ContributorDTO> getProjectContributors() {
+    return projectContributors;
+  }
+
+  public void setProjectContributors(List<ContributorDTO> projectContributors) {
+    this.projectContributors = projectContributors;
+  }
+
+  public String getHiddenVar() {
+    return hiddenVar;
+  }
+
+  public void setHiddenVar(String hiddenVar) {
+    this.hiddenVar = hiddenVar;
   }
 
 }

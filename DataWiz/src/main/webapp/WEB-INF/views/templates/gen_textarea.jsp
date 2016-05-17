@@ -13,18 +13,16 @@
 <div class="form-group">
   <div class="col-sm-12">
     <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message code="${input_vars[1]}" /></label>
-    <s:message code="${input_vars[1]}.ph" var="placeholder_txt" />
     <div class="${input_vars[3]}">
       <s:bind path="${input_vars[0]}">
         <c:choose>
           <c:when test="${status.error}">
-            <sf:input path="${input_vars[0]}" class="form-control ${input_vars[5]}" style="border: 1px solid red;"
-              placeholder="${placeholder_txt}" title="${status.errorMessage}" data-toggle="tooltip"
+            <sf:textarea rows="5" path="${input_vars[0]}" class="form-control ${input_vars[5]}"
+              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip"
               type="${input_vars[6]}" />
           </c:when>
           <c:otherwise>
-            <sf:input path="${input_vars[0]}" class="form-control ${input_vars[5]}" placeholder="${placeholder_txt}"
-              type="${input_vars[6]}" />
+            <sf:textarea rows="5" path="${input_vars[0]}" class="form-control ${input_vars[5]}" type="${input_vars[6]}" />
           </c:otherwise>
         </c:choose>
       </s:bind>
@@ -33,8 +31,8 @@
     <c:if test="${not empty appresmess}">
       <div class="help-block ${input_vars[4]}">
         <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-        <div class="col-sm-10">
-          <s:message text="${appresmess}"/>
+        <div class="col-sm-11">
+          <s:message text="${appresmess}" />
         </div>
       </div>
     </c:if>

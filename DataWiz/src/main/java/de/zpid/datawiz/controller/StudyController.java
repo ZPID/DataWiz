@@ -1,5 +1,7 @@
 package de.zpid.datawiz.controller;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -9,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import de.zpid.datawiz.dto.ContributorDTO;
+import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.StudyForm;
@@ -33,6 +38,9 @@ public class StudyController extends SuperController {
     } else {
       log.trace("Entering showStudyPage(create) study");
     }
+    if (!pid.isPresent()) {
+      // TODO ausstieg - pid fehlt!!!
+    }
     final UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
@@ -40,17 +48,23 @@ public class StudyController extends SuperController {
     }
     StudyForm sForm = createStudyForm();
     try {
-      if (pid.isPresent()) {
-        if (pUtil.checkProjectRoles(user, pid.get(), false, true) == null) {
-          // TODO
-        }
-        sForm.setProject(projectDAO.findById(pid.get()));
-      } else {
-        // TODO ausstieg - pid fehlt!!!
+      if (pUtil.checkProjectRoles(user, pid.get(), false, true) == null) {
+        // TODO
       }
+      ProjectDTO project = projectDAO.findById(pid.get());
+      if (project == null) {
+        // TODO loggin
+        return "redirect:/panel";
+      }
+      sForm.setProject(project);
+      List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
       if (studyId.isPresent()) {
-        sForm.setStudy(studyDAO.findById(studyId.get()));
+        final StudyDTO study = studyDAO.findById(studyId.get());
+        study.setContributors(contributorDAO.findByStudy(studyId.get()));
+        sForm.setStudy(study);
+        cleanContributorList(pContri, study.getContributors());
       }
+      sForm.setProjectContributors(pContri);
     } catch (Exception e) {
       // TODO
       log.warn(e);
@@ -67,5 +81,19 @@ public class StudyController extends SuperController {
     model.put("subnaviActive", PageState.STUDY.name());
     log.trace("Method showStudyPage successfully completed");
     return "study";
+  }
+
+  /**
+   * @param pContri
+   * @param study
+   */
+  private void cleanContributorList(final List<ContributorDTO> pContri, final List<ContributorDTO> sContri) {
+    if (pContri != null && sContri != null)
+      for (Iterator<ContributorDTO> it = pContri.iterator(); it.hasNext();) {
+        ContributorDTO ccontri = it.next();
+        for (ContributorDTO scontri : sContri)
+          if (scontri.getId() == ccontri.getId())
+            it.remove();
+      }
   }
 }

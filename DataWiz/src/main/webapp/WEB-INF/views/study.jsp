@@ -45,18 +45,15 @@
         </ul>
       </c:if>
       <c:url var="accessUrl" value="/access/${StudyForm.project.id}/study/${StudyForm.study.id}" />
-      <sf:form action="${accessUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
-        <div class="form-group form-group-clean">
-          <div class="col-md-12">
-            <%@ include file="templates/message.jsp"%>
-            <div id="basisDataActiveContent" class="projectContent contentMargin">123</div>
-            <div id="designActiveContent" class="projectContent contentMargin">456</div>
-            <div id="sampleActiveContent" class="projectContent contentMargin">789</div>
-            <div id="surveyActiveContent" class="projectContent contentMargin">abc</div>
-            <div id="qualityActiveContent" class="projectContent contentMargin">def</div>
-            <div id="ethicalActiveContent" class="projectContent contentMargin">ghi</div>
-          </div>
-        </div>
+      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal">
+        <%@ include file="templates/message.jsp"%>
+        <!-- START General Data Content -->
+        <jsp:include page="forms/study_general.jsp" />
+        <div id="designActiveContent" class="projectContent contentMargin">456</div>
+        <div id="sampleActiveContent" class="projectContent contentMargin">789</div>
+        <div id="surveyActiveContent" class="projectContent contentMargin">abc</div>
+        <div id="qualityActiveContent" class="projectContent contentMargin">def</div>
+        <div id="ethicalActiveContent" class="projectContent contentMargin">ghi</div>
       </sf:form>
     </div>
   </div>

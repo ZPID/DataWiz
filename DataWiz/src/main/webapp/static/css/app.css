@@ -103,6 +103,7 @@ textarea {
 
 .helpblock_margin {
   margin-bottom: -5px;
+  position: relative;
   left: -10px;
 }
 /**************** END CONTENT ****************/

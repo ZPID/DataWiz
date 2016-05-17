@@ -34,21 +34,21 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 250, groups = StGeneralVal.class)
   private String transTitle;
   /** Study04 */
-  private List<ContributorDTO> contributor;
+  private List<ContributorDTO> contributors;
   /** Study05 */
   @Size(min = 0, max = 2000, groups = StGeneralVal.class)
   private String sAbstract;
   /** Study06 */
   @Size(min = 0, max = 2000, groups = StGeneralVal.class)
   private String sAbstractTrans;
-  /** Study07 */
-  @Size(min = 0, max = 20, groups = StGeneralVal.class)
+  /** Study07 -> [null , complete, excerpt] */
+  @Pattern(regexp = "(^$|complete|excerpt)", groups = StGeneralVal.class)
   private String completeSel;
   /** Study08 */
   @Size(min = 0, max = 500, groups = StGeneralVal.class)
   private String excerpt;
-  /** Study09 */
-  @Size(min = 0, max = 20, groups = StGeneralVal.class)
+  /** Study09 -> [null , replication, followup, other, norelation] */
+  @Pattern(regexp = "(^$|replication|followup|other|norelation)", groups = StGeneralVal.class)
   private String prevWork;
   /** Study10 */
   @Size(min = 0, max = 500, groups = StGeneralVal.class)
@@ -284,12 +284,12 @@ public class StudyDTO implements Serializable {
     this.transTitle = transTitle;
   }
 
-  public List<ContributorDTO> getContributor() {
-    return contributor;
+  public List<ContributorDTO> getContributors() {
+    return contributors;
   }
 
-  public void setContributor(List<ContributorDTO> contributor) {
-    this.contributor = contributor;
+  public void setContributors(List<ContributorDTO> contributors) {
+    this.contributors = contributors;
   }
 
   public String getsAbstract() {

@@ -7,12 +7,40 @@
 	<packaging>war</packaging>
 	<name>DataWiz</name>
 	<properties>
-		<springframework.version>4.2.5.RELEASE</springframework.version>
-		<springsecurity.version>4.0.4.RELEASE</springsecurity.version>
-		<mysql.connector.version>5.1.38</mysql.connector.version>
-		<org.slf4j-version>1.7.14</org.slf4j-version>
-		<hibernate.validator.version>5.2.3.Final</hibernate.validator.version>
+		<!-- http://mvnrepository.com/artifact/org.springframework/spring-core -->
+		<springframework.version>4.2.6.RELEASE</springframework.version>
+		<!-- http://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+		<springsecurity.version>4.1.0.RELEASE</springsecurity.version>
+		<!-- http://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<mysql.connector.version>5.1.39</mysql.connector.version>
+		<!-- http://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+		<org.slf4j-version>1.7.21</org.slf4j-version>
+		<!-- http://mvnrepository.com/artifact/junit/junit -->
+		<junit-version>4.12</junit-version>
+		<!-- http://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+		<javax.servlet.version>3.1.0</javax.servlet.version>
+		<!-- http://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
+		<javax.servlet.jsp.version>2.3.1</javax.servlet.jsp.version>
+		<!-- http://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+		<hibernate.validator.version>5.2.4.Final</hibernate.validator.version>
+		<!-- http://mvnrepository.com/artifact/javax.validation/validation-api -->
 		<javax.validation.version>1.1.0.Final</javax.validation.version>
+		<!-- http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+		<org.apache.maven.plugins.version>3.5.1</org.apache.maven.plugins.version>
+		<!-- http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
+		<maven-war-plugin.version>2.6</maven-war-plugin.version>
+		<!-- http://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+		<commons-fileupload.version>1.3.1</commons-fileupload.version>
+		<!-- http://mvnrepository.com/search?q=org.apache.logging.log4j -->
+		<log4j2.version>2.5</log4j2.version>
+		<!-- http://mvnrepository.com/artifact/javax.mail/mail -->
+		<javax.mail.version>1.4.7</javax.mail.version>
+		<!-- http://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<gson.version>2.6.2</gson.version>
+		<!-- http://mvnrepository.com/artifact/org.json/json -->
+		<json.version>20160212</json.version>
+		<!-- http://mvnrepository.com/artifact/javax.servlet/jstl -->
+		<jstl.version>1.2</jstl.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
@@ -21,12 +49,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${springframework.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -61,13 +84,13 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${springframework.version}</version>
-			<exclusions>
-				<!-- Exclude Commons Logging in favor of SLF4j -->
+			<!-- <exclusions>
+				Exclude Commons Logging in favor of SLF4j
 				<exclusion>
 					<groupId>commons-logging</groupId>
 					<artifactId>commons-logging</artifactId>
 				</exclusion>
-			</exclusions>
+			</exclusions> -->
 		</dependency>
 		<!-- Spring Security -->
 		<dependency>
@@ -91,45 +114,52 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.connector.version}</version>
 		</dependency>
+		<!-- jUnit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit-version}</version>
+		</dependency>
+		<!-- JavaX -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
+			<version>${javax.servlet.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
 			<artifactId>javax.servlet.jsp-api</artifactId>
-			<version>2.3.1</version>
+			<version>${javax.servlet.jsp.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+			<version>${jstl.version}</version>
 		</dependency>
 		<!-- JSON -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
-			<version>20160212</version>
+			<version>${json.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.6.2</version>
+			<version>${gson.version}</version>
 		</dependency>
 		<!-- mail -->
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
-			<version>1.4.7</version>
+			<version>${javax.mail.version}</version>
 		</dependency>
 		<!-- Logging -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${org.slf4j-version}</version>
-		</dependency>
-		<dependency>
+		</dependency> -->
+		<!-- <dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 			<version>${org.slf4j-version}</version>
@@ -140,21 +170,21 @@
 			<artifactId>slf4j-log4j12</artifactId>
 			<version>${org.slf4j-version}</version>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.5</version>
+			<version>${log4j2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.5</version>
+			<version>${log4j2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-jcl</artifactId>
-			<version>2.5</version>
+			<version>${log4j2.version}</version>
 		</dependency>
 		<!-- jsr303 validation dependencies -->
 		<dependency>
@@ -170,7 +200,7 @@
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
-			<version>1.3.1</version>
+			<version>${commons-fileupload.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -179,7 +209,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.4</version>
+					<version>${maven-war-plugin.version}</version>
 					<configuration>
 						<warSourceDirectory>src/main/webapp</warSourceDirectory>
 						<warName>DataWiz</warName>
@@ -189,11 +219,11 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.1</version>
+					<version>${org.apache.maven.plugins.version}</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
-						<encoding>UTF-8</encoding>
+						<encoding>${project.build.sourceEncoding}</encoding>
 					</configuration>
 				</plugin>
 			</plugins>
