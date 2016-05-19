@@ -11,6 +11,7 @@
   <bean id="FileDTO" class="de.zpid.datawiz.dto.FileDTO" scope="prototype" />
   <bean id="FormTypesDTO" class="de.zpid.datawiz.dto.FormTypesDTO" scope="prototype" />
   <bean id="DmpDTO" class="de.zpid.datawiz.dto.DmpDTO" scope="prototype" />
+  <bean id="StudyListTypesDTO" class="de.zpid.datawiz.dto.StudyListTypesDTO" scope="prototype" />
   <!-- FORM -->
   <bean id="ProjectForm" class="de.zpid.datawiz.form.ProjectForm" scope="prototype" />
   <bean id="StudyForm" class="de.zpid.datawiz.form.StudyForm" scope="prototype" /> 

@@ -15,6 +15,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
@@ -60,7 +61,12 @@ public class StudyController extends SuperController {
       List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
       if (studyId.isPresent()) {
         final StudyDTO study = studyDAO.findById(studyId.get());
-        study.setContributors(contributorDAO.findByStudy(studyId.get()));
+        if (study != null && study.getId() > 0) {
+          study.setContributors(contributorDAO.findByStudy(studyId.get()));
+          study.setSoftware(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
+          study.setPubOnData(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
+          study.setConflInterests(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
+        }
         sForm.setStudy(study);
         cleanContributorList(pContri, study.getContributors());
       }

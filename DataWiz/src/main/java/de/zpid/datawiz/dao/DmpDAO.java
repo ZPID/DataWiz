@@ -3,17 +3,14 @@ package de.zpid.datawiz.dao;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.enumeration.DWFieldTypes;
 
 @Repository
 @Scope("singleton")
@@ -167,7 +164,7 @@ public class DmpDAO extends SuperDAO {
         dmp.getId());
   }
 
-  public int updateResearchData(DmpDTO dmp) throws Exception {
+  public int updateResearchData(final DmpDTO dmp) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute updateResearchData for [id: " + dmp.getId() + "]");
     int ret = this.jdbcTemplate.update(
@@ -187,26 +184,6 @@ public class DmpDAO extends SuperDAO {
         dmp.getRequirementsTxt(), dmp.isDocumentation(), dmp.getDocumentationTxt(), dmp.isDataSelection(),
         dmp.getSelectionTime(), dmp.getSelectionResp(), dmp.getSelectionSoftware(), dmp.getSelectionCriteria(),
         dmp.getStorageDuration(), dmp.getDeleteProcedure(), dmp.getId());
-    if (ret > 0) {
-      List<Integer> datatypes = getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.DATATYPE);
-      if (datatypes != null && datatypes.size() > 0) {
-        for (Integer i : datatypes)
-          deleteDMPUsedDataTypes(dmp.getId(), i);
-      }
-      if (dmp.getUsedDataTypes() != null && dmp.getUsedDataTypes().size() > 0) {
-        for (int i : dmp.getUsedDataTypes())
-          insertDMPUsedDataTypes(dmp.getId(), i);
-      }
-      List<Integer> collectionModes = getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.COLLECTIONMODE);
-      if (collectionModes != null && collectionModes.size() > 0) {
-        for (Integer i : collectionModes)
-          deleteDMPUsedDataTypes(dmp.getId(), i);
-      }
-      if (dmp.getUsedCollectionModes() != null && dmp.getUsedCollectionModes().size() > 0) {
-        for (int i : dmp.getUsedCollectionModes())
-          insertDMPUsedDataTypes(dmp.getId(), i);
-      }
-    }
     return ret;
   }
 
@@ -217,17 +194,6 @@ public class DmpDAO extends SuperDAO {
         "UPDATE dw_dmp SET metaDescription = ?, metaFramework = ?, metaGeneration = ?, metaMonitor = ?, metaFormat = ? WHERE id = ?",
         dmp.getMetaDescription(), dmp.getMetaFramework(), dmp.getMetaGeneration(), dmp.getMetaMonitor(),
         dmp.getMetaFormat(), dmp.getId());
-    if (ret > 0) {
-      List<Integer> metaporpose = getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.METAPORPOSE);
-      if (metaporpose != null && metaporpose.size() > 0) {
-        for (Integer i : metaporpose)
-          deleteDMPUsedDataTypes(dmp.getId(), i);
-      }
-      if (dmp.getSelectedMetaPurposes() != null && dmp.getSelectedMetaPurposes().size() > 0) {
-        for (int i : dmp.getSelectedMetaPurposes())
-          insertDMPUsedDataTypes(dmp.getId(), i);
-      }
-    }
     return ret;
   }
 
@@ -301,34 +267,9 @@ public class DmpDAO extends SuperDAO {
         dmp.getSpecificCosts(), dmp.getSpecificCostsTxt(), dmp.getAriseCosts(), dmp.getBearCost(), dmp.getId());
   }
 
-  public List<Integer> getDMPUsedDataTypes(long l, DWFieldTypes type) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute getDMPUsedDataTypes for dmp [id: " + l + " type: " + type.toString() + "]");
-    String sql = "SELECT dw_dmp_formtypes.ftid FROM dw_dmp_formtypes "
-        + "LEFT JOIN dw_formtypes ON dw_dmp_formtypes.ftid = dw_formtypes.id "
-        + "WHERE dw_dmp_formtypes.dmpid = ? AND dw_formtypes.type = ? ";
-    return jdbcTemplate.query(sql, new Object[] { l, type.toString() }, new RowMapper<Integer>() {
-      public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return rs.getInt("ftid");
-      }
-    });
-  }
-
   public int insertNewDMP(BigInteger dmpid) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute insertNewDMP for project [id: " + dmpid + "]");
     return this.jdbcTemplate.update("INSERT INTO dw_dmp (id) VALUES(?)", dmpid);
-  }
-
-  private int deleteDMPUsedDataTypes(long l, int ftid) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute deleteDMPUsedDataTypes for [dmpid: " + l + " ftid: " + ftid + "]");
-    return this.jdbcTemplate.update("DELETE FROM dw_dmp_formtypes WHERE dmpid = ? AND ftid = ?", l, ftid);
-  }
-
-  private int insertDMPUsedDataTypes(long l, int ftid) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute insert DMPUsedDataTypes for [dmpid: " + l + " ftid: " + ftid + "]");
-    return this.jdbcTemplate.update("INSERT INTO dw_dmp_formtypes (dmpid, ftid) VALUES(?,?)", l, ftid);
   }
 }

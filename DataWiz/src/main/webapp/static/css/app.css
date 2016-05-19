@@ -106,6 +106,16 @@ textarea {
   position: relative;
   left: -10px;
 }
+
+.margin-bottom-10 {
+  margin-bottom: 10px;
+}
+
+.margin-bottom-0 {
+  margin-bottom: 0px;
+}
+
+
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
@@ -380,3 +390,7 @@ textarea {
   width: 100%;
   color: black;
 }
+
+/* .list-group-item:nth-of-type(even) {
+    background: #eee;
+} */

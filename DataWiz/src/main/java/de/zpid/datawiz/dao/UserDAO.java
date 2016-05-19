@@ -121,7 +121,7 @@ public class UserDAO extends SuperDAO {
         return setUserDTO(false, rs);
       }
     });
-    log.debug("Transaction for findGroupedByProject returned [lenght: {}]", () -> ret.size());
+    log.debug("Transaction for findGroupedByProject returned [size: {}]", () -> ret.size());
     return ret;
   }
 

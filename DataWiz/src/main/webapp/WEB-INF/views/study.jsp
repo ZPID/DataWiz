@@ -49,11 +49,23 @@
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
         <jsp:include page="forms/study_general.jsp" />
-        <div id="designActiveContent" class="projectContent contentMargin">456</div>
+        <!-- START Design Data Content -->
+        <jsp:include page="forms/study_design.jsp" />
         <div id="sampleActiveContent" class="projectContent contentMargin">789</div>
         <div id="surveyActiveContent" class="projectContent contentMargin">abc</div>
         <div id="qualityActiveContent" class="projectContent contentMargin">def</div>
         <div id="ethicalActiveContent" class="projectContent contentMargin">ghi</div>
+        <!-- Buttons -->
+        <div class="form-group">
+          <div class="col-sm-offset-0 col-md-12">
+            <button type="reset" class="btn btn-default">
+              <s:message code="gen.reset" />
+            </button>
+            <sf:button type="submit" class="btn btn-success">
+              <s:message code="gen.submit" />
+            </sf:button>
+          </div>
+        </div>
       </sf:form>
     </div>
   </div>

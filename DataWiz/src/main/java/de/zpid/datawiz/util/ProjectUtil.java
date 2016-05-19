@@ -158,9 +158,11 @@ public class ProjectUtil {
     else if (call.equals(PageState.DMP)) {
       DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
       if (dmp != null && dmp.getId() > 0) {
-        dmp.setUsedDataTypes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.DATATYPE));
-        dmp.setUsedCollectionModes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.COLLECTIONMODE));
-        dmp.setSelectedMetaPurposes(dmpDAO.getDMPUsedDataTypes(dmp.getId(), DWFieldTypes.METAPORPOSE));
+        dmp.setUsedDataTypes(formTypeDAO.getSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.DATATYPE, false));
+        dmp.setUsedCollectionModes(
+            formTypeDAO.getSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.COLLECTIONMODE, false));
+        dmp.setSelectedMetaPurposes(
+            formTypeDAO.getSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.METAPORPOSE, false));
         dmp.setAdminChanged(false);
         dmp.setResearchChanged(false);
         dmp.setMetaChanged(false);

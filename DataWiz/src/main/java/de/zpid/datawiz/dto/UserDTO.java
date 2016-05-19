@@ -9,8 +9,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import org.springframework.stereotype.Component;
-
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.RegexUtil;
 

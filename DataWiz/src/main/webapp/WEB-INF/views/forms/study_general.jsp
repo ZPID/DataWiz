@@ -21,10 +21,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label" for=""><s:message code="study.contributors" /></label>
-      <div class="panel panel-default panel-body">
+      <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.contributors}" var="contri">
           <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
-          <div class="input-group">
+          <div class="input-group margin-bottom-10">
             <input type="text" class="form-control" value="${fn:trim(contriName)}" disabled="disabled" /><span
               class="input-group-btn">
               <button class="btn btn-danger" type="button">
@@ -49,16 +49,16 @@
             </button>
           </span>
         </div>
-        <s:message code="study.contributors.help" var="appresmess" />
-        <c:if test="${not empty appresmess}">
-          <div class="help-block helpblock_margin">
-            <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-            <div class="col-sm-11">
-              <s:message text="${appresmess}" />
-            </div>
-          </div>
-        </c:if>
       </div>
+      <s:message code="study.contributors.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="help-block helpblock_margin">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
     </div>
   </div>
   <!-- study.sAbstract -->
@@ -131,5 +131,79 @@
   <!-- study.prevWorkStr -->
   <c:set var="input_vars" value="study.prevWorkStr;study.prevWorkStr; ; ;helpblock_margin" />
   <%@ include file="../templates/gen_textarea.jsp"%>
-  
+  <!-- study.software -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.software"><s:message code="study.software" /></label>
+      <div class="panel panel-default panel-body margin-bottom-0">
+        <c:forEach items="${StudyForm.study.software}" varStatus="loop">
+          <sf:textarea rows="1" path="study.software[${loop.index}].text" class="form-control margin-bottom-10" />
+        </c:forEach>
+        <div class="input-group-btn">
+          <button class="btn btn-sm btn-success" type="button">
+            <s:message code="gen.add" />
+          </button>
+        </div>
+      </div>
+      <s:message code="study.software.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="help-block helpblock_margin">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
+    </div>
+  </div>
+  <!-- study.pubOnData -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.pubOnData"><s:message code="study.pubOnData" /></label>
+      <div class="panel panel-default panel-body margin-bottom-0">
+        <c:forEach items="${StudyForm.study.pubOnData}" varStatus="loop">
+          <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />
+        </c:forEach>
+        <div class="input-group-btn">
+          <button class="btn btn-sm btn-success" type="button">
+            <s:message code="gen.add" />
+          </button>
+        </div>
+      </div>
+      <s:message code="study.pubOnData.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="help-block helpblock_margin">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
+    </div>
+  </div>
+  <!-- study.conflInterests -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.conflInterests"><s:message code="study.conflInterests" /></label>
+      <div class="panel panel-default panel-body margin-bottom-0">
+        <c:forEach items="${StudyForm.study.conflInterests}" varStatus="loop">
+          <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text" class="form-control margin-bottom-10" />
+        </c:forEach>
+        <div class="input-group-btn">
+          <button class="btn btn-sm btn-success" type="button">
+            <s:message code="gen.add" />
+          </button>
+        </div>
+      </div>
+      <s:message code="study.conflInterests.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="help-block helpblock_margin">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
+    </div>
+  </div>
 </div>

@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
@@ -228,12 +229,14 @@ public class DMPController extends SuperController {
             pForm.getDmp().setAdminChanged(false);
           break;
         case RESEARCH:
-          changed = (dmpDAO.updateResearchData(pForm.getDmp()));
+          changed = dmpDAO.updateResearchData(pForm.getDmp());
+          updateFormTypes(pForm, changed, cat);
           if (changed > 0)
             pForm.getDmp().setResearchChanged(false);
           break;
         case META:
-          changed = (dmpDAO.updateMetaData(pForm.getDmp()));
+          changed = dmpDAO.updateMetaData(pForm.getDmp());
+          updateFormTypes(pForm, changed, cat);
           if (changed > 0)
             pForm.getDmp().setMetaChanged(false);
           break;
@@ -287,6 +290,49 @@ public class DMPController extends SuperController {
       return true;
     }
     return false;
+  }
+
+  /**
+   * @param pForm
+   * @param changed
+   * @throws Exception
+   */
+  private void updateFormTypes(ProjectForm pForm, int changed, DmpCategory cat) throws Exception {
+    if (changed > 0) {
+      if (cat.equals(DmpCategory.RESEARCH)) {
+        List<Integer> datatypes = formTypeDAO.getSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
+            DWFieldTypes.DATATYPE, false);
+        if (datatypes != null && datatypes.size() > 0) {
+          for (Integer i : datatypes)
+            formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), i, false);
+        }
+        if (pForm.getDmp().getUsedDataTypes() != null && pForm.getDmp().getUsedDataTypes().size() > 0) {
+          for (int i : pForm.getDmp().getUsedDataTypes())
+            formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
+        }
+        List<Integer> collectionModes = formTypeDAO.getSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
+            DWFieldTypes.COLLECTIONMODE, false);
+        if (collectionModes != null && collectionModes.size() > 0) {
+          for (Integer i : collectionModes)
+            formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), i, false);
+        }
+        if (pForm.getDmp().getUsedCollectionModes() != null && pForm.getDmp().getUsedCollectionModes().size() > 0) {
+          for (int i : pForm.getDmp().getUsedCollectionModes())
+            formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
+        }
+      } else if (cat.equals(DmpCategory.META)) {
+        List<Integer> metaporpose = formTypeDAO.getSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
+            DWFieldTypes.METAPORPOSE, false);
+        if (metaporpose != null && metaporpose.size() > 0) {
+          for (Integer i : metaporpose)
+            formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), i, false);
+        }
+        if (pForm.getDmp().getSelectedMetaPurposes() != null && pForm.getDmp().getSelectedMetaPurposes().size() > 0) {
+          for (int i : pForm.getDmp().getSelectedMetaPurposes())
+            formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
+        }
+      }
+    }
   }
 
   @RequestMapping(value = { "/checkConnection" })
