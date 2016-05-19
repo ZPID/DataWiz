@@ -1,6 +1,7 @@
 package de.zpid.datawiz.enumeration;
 
 public enum InterventionTypes {
+  EXPERIMENTAL,
   QUASIEXPERIMENTAL,
   REPEATEDMEASURES,
   GROUPCOMPARISON,

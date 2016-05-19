@@ -20,6 +20,7 @@ import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.StudyListTypesDAO;
+import de.zpid.datawiz.dao.StudyObjectivesDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
@@ -48,6 +49,8 @@ public class SuperController {
   protected DmpDAO dmpDAO;
   @Autowired
   protected StudyListTypesDAO studyListTypesDAO;
+  @Autowired
+  protected StudyObjectivesDAO studyObjectivesDAO;
   @Autowired
   protected SmartValidator validator;
   @Autowired

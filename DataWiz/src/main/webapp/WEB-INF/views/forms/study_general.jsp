@@ -9,13 +9,13 @@
     </div>
   </div>
   <!-- study.title -->
-  <c:set var="input_vars" value="study.title;study.title;required; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.title;study.title;required; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.title -->
-  <c:set var="input_vars" value="study.internalID;study.internalID; ; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.internalID;study.internalID; ; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.title -->
-  <c:set var="input_vars" value="study.transTitle;study.transTitle; ; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.transTitle;study.transTitle; ; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.contributors -->
   <div class="form-group">
@@ -52,7 +52,7 @@
       </div>
       <s:message code="study.contributors.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
-        <div class="help-block helpblock_margin">
+        <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
           <div class="col-sm-11">
             <s:message text="${appresmess}" />
@@ -62,10 +62,10 @@
     </div>
   </div>
   <!-- study.sAbstract -->
-  <c:set var="input_vars" value="study.sAbstract;study.sAbstract; ; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.sAbstract;study.sAbstract; ; ;row" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.sAbstractTrans -->
-  <c:set var="input_vars" value="study.sAbstractTrans;study.sAbstractTrans; ; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.sAbstractTrans;study.sAbstractTrans; ; ;row" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.completeSel -->
   <div class="form-group">
@@ -84,7 +84,7 @@
       </sf:select>
       <s:message code="study.completeSel.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
-        <div class="help-block helpblock_margin">
+        <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
           <div class="col-sm-11">
             <s:message text="${appresmess}" />
@@ -94,7 +94,7 @@
     </div>
   </div>
   <!-- study.excerpt -->
-  <c:set var="input_vars" value="study.excerpt;study.excerpt; ; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.excerpt;study.excerpt; ; ;row" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.prevWork -->
   <div class="form-group">
@@ -119,7 +119,7 @@
       </sf:select>
       <s:message code="study.prevWork.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
-        <div class="help-block helpblock_margin">
+        <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
           <div class="col-sm-11">
             <s:message text="${appresmess}" />
@@ -129,7 +129,7 @@
     </div>
   </div>
   <!-- study.prevWorkStr -->
-  <c:set var="input_vars" value="study.prevWorkStr;study.prevWorkStr; ; ;helpblock_margin" />
+  <c:set var="input_vars" value="study.prevWorkStr;study.prevWorkStr; ; ;row" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.software -->
   <div class="form-group">
@@ -147,7 +147,7 @@
       </div>
       <s:message code="study.software.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
-        <div class="help-block helpblock_margin">
+        <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
           <div class="col-sm-11">
             <s:message text="${appresmess}" />
@@ -172,7 +172,7 @@
       </div>
       <s:message code="study.pubOnData.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
-        <div class="help-block helpblock_margin">
+        <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
           <div class="col-sm-11">
             <s:message text="${appresmess}" />
@@ -197,7 +197,7 @@
       </div>
       <s:message code="study.conflInterests.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
-        <div class="help-block helpblock_margin">
+        <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
           <div class="col-sm-11">
             <s:message text="${appresmess}" />

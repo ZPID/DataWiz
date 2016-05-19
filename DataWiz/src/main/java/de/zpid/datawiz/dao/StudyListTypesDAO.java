@@ -29,6 +29,7 @@ public class StudyListTypesDAO extends SuperDAO {
           public StudyListTypesDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
             StudyListTypesDTO dt = (StudyListTypesDTO) context.getBean("StudyListTypesDTO");
             dt.setId(rs.getInt("id"));
+            dt.setStudyid(rs.getLong("studyid"));
             dt.setText(rs.getString("text"));
             dt.setType(DWFieldTypes.valueOf(rs.getString("type")));
             return dt;

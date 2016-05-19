@@ -73,6 +73,7 @@ public class StudyDTO implements Serializable {
   @Valid
   private List<StudyListTypesDTO> relTheorys;
   /** Study17 -> DMP89 */
+  @Pattern(regexp = "(^$|single|multiple)", groups = StDesignVal.class)
   private String repMeasures;
   /** Study18 */
   @Valid

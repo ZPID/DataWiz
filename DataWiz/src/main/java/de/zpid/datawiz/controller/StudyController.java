@@ -61,12 +61,7 @@ public class StudyController extends SuperController {
       List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
       if (studyId.isPresent()) {
         final StudyDTO study = studyDAO.findById(studyId.get());
-        if (study != null && study.getId() > 0) {
-          study.setContributors(contributorDAO.findByStudy(studyId.get()));
-          study.setSoftware(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
-          study.setPubOnData(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
-          study.setConflInterests(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
-        }
+        setStudyDTO(studyId, study);
         sForm.setStudy(study);
         cleanContributorList(pContri, study.getContributors());
       }
@@ -87,6 +82,24 @@ public class StudyController extends SuperController {
     model.put("subnaviActive", PageState.STUDY.name());
     log.trace("Method showStudyPage successfully completed");
     return "study";
+  }
+
+  /**
+   * @param studyId
+   * @param study
+   * @throws Exception
+   */
+  private void setStudyDTO(final Optional<Long> studyId, final StudyDTO study) throws Exception {
+    if (study != null && study.getId() > 0) {
+      study.setContributors(contributorDAO.findByStudy(studyId.get()));
+      study.setSoftware(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
+      study.setPubOnData(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
+      study.setConflInterests(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
+      study.setObjectives(studyObjectivesDAO.getAllByStudy(studyId.get()));
+      study.setRelTheorys(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
+      study.setMeasOccName(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
+      study.setInterArms(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
+    }
   }
 
   /**
