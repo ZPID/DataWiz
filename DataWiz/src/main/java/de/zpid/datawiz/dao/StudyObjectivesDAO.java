@@ -21,8 +21,8 @@ public class StudyObjectivesDAO extends SuperDAO {
       log.info("Loading StudyObjectivesDAO as Singleton and Service");
   }
 
-  public List<StudyObjectivesDTO> getAllByStudy(final long studyId) throws Exception {
-    log.trace("execute getAllByStudy [id: {}]", () -> studyId);
+  public List<StudyObjectivesDTO> findAllByStudy(final long studyId) throws Exception {
+    log.trace("execute findAllByStudy [id: {}]", () -> studyId);
     String sql = "SELECT * FROM dw_study_objectives WHERE dw_study_objectives.study_id = ?";
     final List<StudyObjectivesDTO> ret = jdbcTemplate.query(sql, new Object[] { studyId },
         new RowMapper<StudyObjectivesDTO>() {
@@ -35,7 +35,7 @@ public class StudyObjectivesDAO extends SuperDAO {
             return dt;
           }
         });
-    log.debug("Transaction for getAllByStudy returned [size: {}]", () -> ret.size());
+    log.debug("Transaction for findAllByStudy returned [size: {}]", () -> ret.size());
     return ret;
   }
 

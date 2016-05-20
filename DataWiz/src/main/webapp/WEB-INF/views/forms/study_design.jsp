@@ -23,13 +23,13 @@
                 <sf:option value="">
                   <s:message code="gen.select" />
                 </sf:option>
-                <sf:option value="primary">
+                <sf:option value="PRIMARY">
                   <s:message code="study.objectives.primary" />
                 </sf:option>
-                <sf:option value="secondary">
+                <sf:option value="SECONDARY">
                   <s:message code="study.objectives.secondary" />
                 </sf:option>
-                <sf:option value="exploratory">
+                <sf:option value="EXPLORATORY">
                   <s:message code="study.objectives.exploratory" />
                 </sf:option>
               </sf:select>
@@ -86,39 +86,14 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="single">
+        <sf:option value="SINGLE">
           <s:message code="study.repMeasures.single" />
         </sf:option>
-        <sf:option value="multiple">
+        <sf:option value="MULTIPLE">
           <s:message code="study.repMeasures.multiple" />
         </sf:option>
       </sf:select>
       <s:message code="study.repMeasures.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
-    </div>
-  </div>
-  <!-- study.measOccName -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <label class="control-label " for="study.measOccName"><s:message code="study.measOccName" /></label>
-      <div class="panel panel-default panel-body margin-bottom-0">
-        <c:forEach items="${StudyForm.study.measOccName}" varStatus="loop">
-          <sf:textarea rows="1" path="study.measOccName[${loop.index}].text" class="form-control margin-bottom-10" />
-        </c:forEach>
-        <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
-            <s:message code="gen.add" />
-          </button>
-        </div>
-      </div>
-      <s:message code="study.measOccName.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
         <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
@@ -164,10 +139,10 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="experimental">
+        <sf:option value="EXPERIMENTAL">
           <s:message code="study.interTypeExp.experimental" />
         </sf:option>
-        <sf:option value="quasiexperimental">
+        <sf:option value="QUASIEXPERIMENTAL">
           <s:message code="study.interTypeExp.quasiexperimental" />
         </sf:option>
       </sf:select>
@@ -190,13 +165,13 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="repeatedmeasures">
+        <sf:option value="REPEATEDMEASURES">
           <s:message code="study.interTypeDes.repeatedmeasures" />
         </sf:option>
-        <sf:option value="groupcomparison">
+        <sf:option value="GROUPCOMPARISON">
           <s:message code="study.interTypeDes.groupcomparison" />
         </sf:option>
-        <sf:option value="mixeddesign">
+        <sf:option value="MIXEDDESIGN">
           <s:message code="study.interTypeDes.mixeddesign" />
         </sf:option>
       </sf:select>
@@ -219,10 +194,10 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="laboratory">
+        <sf:option value="LABORATORY">
           <s:message code="study.interTypeLab.laboratory" />
         </sf:option>
-        <sf:option value="field">
+        <sf:option value="FIELD">
           <s:message code="study.interTypeLab.field" />
         </sf:option>
       </sf:select>
@@ -245,10 +220,10 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="randomized">
+        <sf:option value="RANDOMIZED">
           <s:message code="study.randomization.randomized" />
         </sf:option>
-        <sf:option value="nonrandomized">
+        <sf:option value="NONRANDOMIZED">
           <s:message code="study.randomization.nonrandomized" />
         </sf:option>
       </sf:select>
@@ -278,6 +253,172 @@
         </div>
       </div>
       <s:message code="study.interArms.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="row help-block">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
+    </div>
+  </div>
+  <!-- study.measOccName -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.measOccName"><s:message code="study.measOccName" /></label>
+      <div class="panel panel-default panel-body margin-bottom-0">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th class="col-sm-10">Zeitpunkt</th>
+                <th class="col-sm-1">Zeitdimension</th>
+                <th class="col-sm-1">Sortierung</th>
+              </tr>
+            </thead>
+            <tbody>
+              <c:forEach items="${StudyForm.study.measOccName}" varStatus="loop">
+                <tr>
+                  <td><sf:textarea rows="1" path="study.measOccName[${loop.index}].text" class="form-control" /></td>
+                  <td style="text-align: center;">
+                    <div class="checkbox form-group-clean">
+                      <label><sf:checkbox path="study.measOccName[${loop.index}].timetable" /></label>
+                    </div>
+                  </td>
+                  <td><sf:input path="study.measOccName[${loop.index}].sort" class="form-control" /></td>
+                </tr>
+              </c:forEach>
+            </tbody>
+          </table>
+        </div>
+        <div class="input-group-btn">
+          <button class="btn btn-sm btn-success" type="button">
+            <s:message code="gen.add" />
+          </button>
+        </div>
+      </div>
+      <s:message code="study.measOccName.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="row help-block">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
+    </div>
+  </div>
+  <!-- study.surveyType -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
+      <sf:select path="study.surveyType" class="form-control">
+        <sf:option value="">
+          <s:message code="gen.select" />
+        </sf:option>
+        <sf:option value="HARDLYINSTRUMENT">
+          <s:message code="study.surveyType.hardlyinstrument" />
+        </sf:option>
+        <sf:option value="PARTIALLYINSTRUMENT">
+          <s:message code="study.surveyType.partiallyinstrument" />
+        </sf:option>
+        <sf:option value="FULLYINSTRUMENT">
+          <s:message code="study.surveyType.fullyinstrument" />
+        </sf:option>
+      </sf:select>
+      <s:message code="study.surveyType.help" var="appresmess" />
+      <c:if test="${not empty appresmess}">
+        <div class="row help-block">
+          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+          <div class="col-sm-11">
+            <s:message text="${appresmess}" />
+          </div>
+        </div>
+      </c:if>
+    </div>
+  </div>
+  <!-- study.constructs -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.constructs"><s:message code="study.constructs" /></label>
+      <div class="panel panel-default panel-body margin-bottom-0">
+        <c:forEach items="${StudyForm.study.constructs}" varStatus="loop">
+          <div class="panel panel-default panel-body margin-bottom-10">
+            <!-- study.constructs.name -->
+            <div class="form-group margin-bottom-0">
+              <div class="col-sm-6 margin-bottom-0">
+                <label class="control-label " for="study.constructs[${loop.index}].name"><s:message
+                    code="study.constructs.name" />&nbsp;<s:message text="${loop.index + 1}" /></label>
+                <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control" />
+                <s:message code="study.constructs.name.help" var="appresmess" />
+                <c:if test="${not empty appresmess}">
+                  <div class="row help-block margin-bottom-0">
+                    <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+                    <div class="col-sm-11">
+                      <s:message text="${appresmess}" />
+                    </div>
+                  </div>
+                </c:if>
+              </div>
+              <!-- study.constructs.type -->
+              <div class="col-sm-6 margin-bottom-0">
+                <label class="control-label " for="study.constructs[${loop.index}].type"><s:message
+                    code="study.constructs.type" /></label>
+                <sf:select path="study.constructs[${loop.index}].type" class="form-control">
+                  <sf:option value="">
+                    <s:message code="gen.select" />
+                  </sf:option>
+                  <sf:option value="INDEPENDENT">
+                    <s:message code="study.constructs.type.independent" />
+                  </sf:option>
+                  <sf:option value="DEPENDENT">
+                    <s:message code="study.constructs.type.dependent" />
+                  </sf:option>
+                  <sf:option value="CONTROL">
+                    <s:message code="study.constructs.type.control" />
+                  </sf:option>
+                  <sf:option value="OTHER">
+                    <s:message code="study.constructs.type.other" />
+                  </sf:option>
+                </sf:select>
+                <s:message code="study.constructs.type.help" var="appresmess" />
+                <c:if test="${not empty appresmess}">
+                  <div class="row help-block margin-bottom-0">
+                    <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+                    <div class="col-sm-11">
+                      <s:message text="${appresmess}" />
+                    </div>
+                  </div>
+                </c:if>
+              </div>
+            </div>
+            <!-- study.constructs.other -->
+            <div class="form-group margin-bottom-0 margin-bottom-0">
+              <div class="col-sm-6 col-sm-offset-6 margin-bottom-0">
+                <label class="control-label " for="study.constructs[${loop.index}].other"><s:message
+                    code="study.constructs.other" /></label>
+                <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control" />
+                <s:message code="study.constructs.other.help" var="appresmess" />
+                <c:if test="${not empty appresmess}">
+                  <div class="row help-block margin-bottom-0">
+                    <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
+                    <div class="col-sm-11">
+                      <s:message text="${appresmess}" />
+                    </div>
+                  </div>
+                </c:if>
+              </div>
+            </div>
+          </div>
+        </c:forEach>
+        <div class="input-group-btn">
+          <button class="btn btn-sm btn-success" type="button">
+            <s:message code="gen.add" />
+          </button>
+        </div>
+      </div>
+      <s:message code="study.constructs.help" var="appresmess" />
       <c:if test="${not empty appresmess}">
         <div class="row help-block">
           <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>

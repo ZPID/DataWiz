@@ -18,6 +18,7 @@ import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
+import de.zpid.datawiz.dao.StudyConstructDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.StudyListTypesDAO;
 import de.zpid.datawiz.dao.StudyObjectivesDAO;
@@ -51,6 +52,8 @@ public class SuperController {
   protected StudyListTypesDAO studyListTypesDAO;
   @Autowired
   protected StudyObjectivesDAO studyObjectivesDAO;
+  @Autowired
+  protected StudyConstructDAO studyConstructDAO;
   @Autowired
   protected SmartValidator validator;
   @Autowired

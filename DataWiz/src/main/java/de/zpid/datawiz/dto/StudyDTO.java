@@ -99,7 +99,7 @@ public class StudyDTO implements Serializable {
   @Valid
   private List<StudyListTypesDTO> interArms;
   /** Study26 */
-  private List<Boolean> interTimeTable;
+  /*private List<Boolean> interTimeTable;*/
   /** Study27 */
   private InterventionTypes surveyType;
   /** Study28/ Study29 */
@@ -469,13 +469,13 @@ public class StudyDTO implements Serializable {
     this.interArms = interArms;
   }
 
-  public List<Boolean> getInterTimeTable() {
+/*  public List<Boolean> getInterTimeTable() {
     return interTimeTable;
   }
 
   public void setInterTimeTable(List<Boolean> interTimeTable) {
     this.interTimeTable = interTimeTable;
-  }
+  }*/
 
   public InterventionTypes getSurveyType() {
     return surveyType;

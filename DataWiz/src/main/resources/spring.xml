@@ -13,6 +13,7 @@
 	<bean id="DmpDTO" class="de.zpid.datawiz.dto.DmpDTO" scope="prototype" />
 	<bean id="StudyListTypesDTO" class="de.zpid.datawiz.dto.StudyListTypesDTO" scope="prototype" />
 	<bean id="StudyObjectivesDTO" class="de.zpid.datawiz.dto.StudyObjectivesDTO" scope="prototype" />
+	<bean id="StudyConstructDTO" class="de.zpid.datawiz.dto.StudyConstructDTO" scope="prototype" />
 	<!-- FORM -->
 	<bean id="ProjectForm" class="de.zpid.datawiz.form.ProjectForm" scope="prototype" />
 	<bean id="StudyForm" class="de.zpid.datawiz.form.StudyForm" scope="prototype" />

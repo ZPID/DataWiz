@@ -17,17 +17,21 @@ public class StudyListTypesDTO implements Serializable {
       StudyDTO.StCharacteristicsVal.class })
   private String text;
   private DWFieldTypes type;
+  private int sort;
+  private boolean timetable;
 
   public StudyListTypesDTO() {
     super();
   }
 
-  public StudyListTypesDTO(long id, long studyid, String text, DWFieldTypes type) {
+  public StudyListTypesDTO(long id, long studyid, String text, DWFieldTypes type, int sort, boolean timetable) {
     super();
     this.id = id;
     this.studyid = studyid;
     this.text = text;
     this.type = type;
+    this.sort = sort;
+    this.timetable = timetable;
   }
 
   public long getId() {
@@ -66,13 +70,31 @@ public class StudyListTypesDTO implements Serializable {
     return serialVersionUID;
   }
 
+  public int getSort() {
+    return sort;
+  }
+
+  public void setSort(int sort) {
+    this.sort = sort;
+  }
+
+  public boolean isTimetable() {
+    return timetable;
+  }
+
+  public void setTimetable(boolean timetable) {
+    this.timetable = timetable;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + (int) (id ^ (id >>> 32));
+    result = prime * result + sort;
     result = prime * result + (int) (studyid ^ (studyid >>> 32));
     result = prime * result + ((text == null) ? 0 : text.hashCode());
+    result = prime * result + (timetable ? 1231 : 1237);
     result = prime * result + ((type == null) ? 0 : type.hashCode());
     return result;
   }
@@ -88,12 +110,16 @@ public class StudyListTypesDTO implements Serializable {
     StudyListTypesDTO other = (StudyListTypesDTO) obj;
     if (id != other.id)
       return false;
+    if (sort != other.sort)
+      return false;
     if (studyid != other.studyid)
       return false;
     if (text == null) {
       if (other.text != null)
         return false;
     } else if (!text.equals(other.text))
+      return false;
+    if (timetable != other.timetable)
       return false;
     if (type != other.type)
       return false;
@@ -102,7 +128,8 @@ public class StudyListTypesDTO implements Serializable {
 
   @Override
   public String toString() {
-    return "ListTypesDTO [id=" + id + ", studyid=" + studyid + ", text=" + text + ", type=" + type + "]";
+    return "StudyListTypesDTO [id=" + id + ", studyid=" + studyid + ", text=" + text + ", type=" + type + ", sort="
+        + sort + ", timetable=" + timetable + "]";
   }
 
 }

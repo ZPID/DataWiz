@@ -92,13 +92,14 @@ public class StudyController extends SuperController {
   private void setStudyDTO(final Optional<Long> studyId, final StudyDTO study) throws Exception {
     if (study != null && study.getId() > 0) {
       study.setContributors(contributorDAO.findByStudy(studyId.get()));
-      study.setSoftware(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
-      study.setPubOnData(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
-      study.setConflInterests(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
-      study.setObjectives(studyObjectivesDAO.getAllByStudy(studyId.get()));
-      study.setRelTheorys(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
-      study.setMeasOccName(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
-      study.setInterArms(studyListTypesDAO.getAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
+      study.setSoftware(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
+      study.setPubOnData(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
+      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
+      study.setObjectives(studyObjectivesDAO.findAllByStudy(studyId.get()));
+      study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
+      study.setMeasOccName(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
+      study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
+      study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
     }
   }
 
