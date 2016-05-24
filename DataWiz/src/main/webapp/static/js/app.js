@@ -24,10 +24,13 @@ $tag_box = null;
           return msg; // Webkit
         }
       });
-    } // loading Project Content
-    else if (window.location.pathname.search("/project") > 0) {
+    } // loading Project Content without study!
+    else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
       setProjectSubmenu(null);
       startTagging();
+    } // loading Study Content
+    else if (window.location.pathname.search("/study") > 0) {
+      startAccordion();
     } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {
       startAccordion();
@@ -42,8 +45,6 @@ $tag_box = null;
     }
   });
 })(window.jQuery, window, document);
-
-
 
 $(".projectContentClick").click(function() {
   $("#pagePosi").val($(this).attr("id"));
@@ -132,15 +133,16 @@ function startTagging() {
 
 function startAccordion() {
   $('[data-toggle="tooltip"]').tooltip();
-  $('#accordion').on('hidden.bs.collapse', function() {
-    // do something...
+  $('#accordion').on('hidden.bs.collapse', function(e) {
+    toggleChevron(e);
   })
-  $('.accordion-toggle').click(
-      function(e) {
-        var chevState = $(e.target).siblings("row").siblings("i.indicator").toggleClass(
-            'glyphicon-chevron-down glyphicon-chevron-up');
-        $("i.indicator").not(chevState).removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
-      });
+  $('#accordion').on('shown.bs.collapse', function(e) {
+    toggleChevron(e);
+  })
+}
+
+function toggleChevron(e) {
+  $(e.target).prev('.panel-heading').find('.indicator').toggleClass('glyphicon glyphicon-plus glyphicon glyphicon-minus');
 }
 
 // Start DROPZONE for project-material upload!
@@ -371,7 +373,6 @@ $(function() {
 $('.user-pswd-button').on("click", function(e) {
   $('.user-pswd-button, #user-pswd-content').toggle();
 });
-
 
 /*
  * start password check function

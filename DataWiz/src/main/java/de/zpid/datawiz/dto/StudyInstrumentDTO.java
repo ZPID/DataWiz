@@ -9,6 +9,7 @@ public class StudyInstrumentDTO implements Serializable {
   private static final long serialVersionUID = -2468624912740410851L;
 
   private long id;
+  private long studyId;
   /** Study30 */
   @Size(min = 0, max = 500, groups = StudyDTO.StDesignVal.class)
   private String title;
@@ -70,6 +71,14 @@ public class StudyInstrumentDTO implements Serializable {
 
   public void setId(long id) {
     this.id = id;
+  }
+
+  public long getStudyId() {
+    return studyId;
+  }
+
+  public void setStudyId(long studyId) {
+    this.studyId = studyId;
   }
 
   public String getTitle() {

@@ -22,7 +22,7 @@ public class StudyConstructDAO extends SuperDAO {
   }
 
   public List<StudyConstructDTO> findAllByStudy(final long studyId) throws Exception {
-    log.trace("execute findAllByType [id: {}; type: {}]", () -> studyId);
+    log.trace("execute findAllByType [id: {}]", () -> studyId);
     String sql = "SELECT * FROM dw_study_constructs WHERE dw_study_constructs.study_id = ?";
     final List<StudyConstructDTO> ret = jdbcTemplate.query(sql, new Object[] { studyId },
         new RowMapper<StudyConstructDTO>() {

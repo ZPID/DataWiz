@@ -68,7 +68,7 @@
                   </div>
                   <div class="col-xs-3"></div>
                   <div class="col-xs-1">
-                    <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+                    <i class="indicator glyphicon glyphicon glyphicon-plus  pull-right"></i>
                   </div>
                 </div>
               </div>

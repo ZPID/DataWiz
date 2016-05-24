@@ -94,12 +94,13 @@ public class StudyController extends SuperController {
       study.setContributors(contributorDAO.findByStudy(studyId.get()));
       study.setSoftware(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
       study.setPubOnData(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
-      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
-      study.setObjectives(studyObjectivesDAO.findAllByStudy(studyId.get()));
+      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));      
       study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
       study.setMeasOccName(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
       study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
+      study.setObjectives(studyObjectivesDAO.findAllByStudy(studyId.get()));
       study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
+      study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get()));
     }
   }
 

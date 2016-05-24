@@ -429,4 +429,90 @@
       </c:if>
     </div>
   </div>
+  <!-- study.instrument -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.instruments"><s:message code="study.instruments" /></label>
+      <div class="panel panel-default panel-body margin-bottom-0">
+        <div class="panel-group" id="accordion">
+          <c:forEach items="${StudyForm.study.instruments}" var="form" varStatus="loop">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <label class="control-label " for="study.instruments"><s:message code="study.instrument" />&nbsp;<s:message
+                    text="${loop.index + 1}" /></label>
+                <div class="panel panel-default">
+                  <div class="panel-heading" data-target="#panel_coll_${loop.index}" data-toggle="collapse"
+                    data-parent="#accordion">
+                    <div class="row">
+                      <div class="col-sm-11">
+                        <!-- study.instrument.title -->
+                        <c:set var="input_vars"
+                          value="study.instruments[${loop.index}].title;study.instruments.title; ; ;row margin-bottom-0" />
+                        <%@ include file="../templates/gen_input.jsp"%>
+                      </div>
+                      <div class="col-sm-1">
+                        <i class="indicator glyphicon glyphicon glyphicon-plus"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel-collapse collapse" id="panel_coll_${loop.index}">
+                    <div class="panel-body">
+                      <!-- study.instrument.author -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].author;study.instruments.author; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.citation -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].citation;study.instruments.citation; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.summary -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].summary;study.instruments.summary; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.theoHint -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].theoHint;study.instruments.theoHint; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.structure -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].structure;study.instruments.structure; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.construction -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].construction;study.instruments.construction; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.objectivity -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].objectivity;study.instruments.objectivity; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.reliability -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].reliability;study.instruments.reliability; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.validity -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].validity;study.instruments.validity; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                      <!-- study.instruments.norm -->
+                      <c:set var="input_vars"
+                        value="study.instruments[${loop.index}].norm;study.instruments.norm; ; ;row margin-bottom-0" />
+                      <%@ include file="../templates/gen_textarea.jsp"%>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </c:forEach>
+        </div>
+        <div class="input-group-btn">
+          <button class="btn btn-sm btn-success" type="button">
+            <s:message code="gen.add" />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- study.description -->
+  <c:set var="input_vars" value="study.description;study.description; ; ;row" />
+  <%@ include file="../templates/gen_textarea.jsp"%>
 </div>
