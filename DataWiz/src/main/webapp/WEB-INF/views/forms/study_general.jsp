@@ -75,10 +75,10 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="complete">
+        <sf:option value="COMPLETE">
           <s:message code="study.completeSel.complete" />
         </sf:option>
-        <sf:option value="excerpt">
+        <sf:option value="EXCERPT">
           <s:message code="study.completeSel.excerpt" />
         </sf:option>
       </sf:select>
@@ -104,16 +104,16 @@
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
-        <sf:option value="replication">
+        <sf:option value="REPLICATION">
           <s:message code="study.prevWork.replication" />
         </sf:option>
-        <sf:option value="followup">
+        <sf:option value="FOLLOWUP">
           <s:message code="study.prevWork.followup" />
         </sf:option>
-        <sf:option value="other">
+        <sf:option value="OTHER">
           <s:message code="study.prevWork.other" />
         </sf:option>
-        <sf:option value="norelation">
+        <sf:option value="NORELATION">
           <s:message code="study.prevWork.norelation" />
         </sf:option>
       </sf:select>

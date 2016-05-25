@@ -10,6 +10,7 @@ $tag_box = null;
  */
 (function($, window, document, undefined) {
   $(document).ready(function() {
+
     $('[data-toggle="tooltip"]').tooltip()
     // loading DMP Content
     if (window.location.pathname.search("/dmp") > 0) {
@@ -31,6 +32,9 @@ $tag_box = null;
     } // loading Study Content
     else if (window.location.pathname.search("/study") > 0) {
       startAccordion();
+      $('.input-daterange').datepicker({
+        /*format : "yyyy-mm-dd"*/
+      });
     } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {
       startAccordion();
@@ -142,7 +146,8 @@ function startAccordion() {
 }
 
 function toggleChevron(e) {
-  $(e.target).prev('.panel-heading').find('.indicator').toggleClass('glyphicon glyphicon-plus glyphicon glyphicon-minus');
+  $(e.target).prev('.panel-heading').find('.indicator').toggleClass(
+      'glyphicon glyphicon-plus glyphicon glyphicon-minus');
 }
 
 // Start DROPZONE for project-material upload!

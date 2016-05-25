@@ -53,8 +53,8 @@
         <jsp:include page="forms/study_design.jsp" />
         <!-- START Sample Characteristics Content -->
         <jsp:include page="forms/study_sample.jsp" />
-        
-        <div id="surveyActiveContent" class="projectContent contentMargin">abc</div>
+        <!-- START Survey Content -->
+        <jsp:include page="forms/study_survey.jsp" />
         <div id="qualityActiveContent" class="projectContent contentMargin">def</div>
         <div id="ethicalActiveContent" class="projectContent contentMargin">ghi</div>
         <!-- Buttons -->

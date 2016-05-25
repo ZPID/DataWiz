@@ -3,6 +3,7 @@ package de.zpid.datawiz.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -42,13 +43,13 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 2000, groups = StGeneralVal.class)
   private String sAbstractTrans;
   /** Study07 -> [null , complete, excerpt] */
-  @Pattern(regexp = "(^$|complete|excerpt)", groups = StGeneralVal.class)
+  @Pattern(regexp = "(^$|COMPLETE|EXCERPT)", groups = StGeneralVal.class)
   private String completeSel;
   /** Study08 */
   @Size(min = 0, max = 500, groups = StGeneralVal.class)
   private String excerpt;
   /** Study09 -> [null , replication, followup, other, norelation] */
-  @Pattern(regexp = "(^$|replication|followup|other|norelation)", groups = StGeneralVal.class)
+  @Pattern(regexp = "(^$|REPLICATION|FOLLOWUP|OTHER|NORELATION)", groups = StGeneralVal.class)
   private String prevWork;
   /** Study10 */
   @Size(min = 0, max = 500, groups = StGeneralVal.class)
@@ -73,7 +74,7 @@ public class StudyDTO implements Serializable {
   @Valid
   private List<StudyListTypesDTO> relTheorys;
   /** Study17 -> DMP89 */
-  @Pattern(regexp = "(^$|single|multiple)", groups = StDesignVal.class)
+  @Pattern(regexp = "(^$|SINGLE|MULTIPLE)", groups = StDesignVal.class)
   private String repMeasures;
   /** Study18 */
   @Valid
@@ -99,7 +100,7 @@ public class StudyDTO implements Serializable {
   @Valid
   private List<StudyListTypesDTO> interArms;
   /** Study26 */
-  /*private List<Boolean> interTimeTable;*/
+  /* private List<Boolean> interTimeTable; */
   /** Study27 */
   private InterventionTypes surveyType;
   /** Study28/ Study29 */
@@ -131,13 +132,14 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
   private String intSampleSize;
   /** Study47 */
-  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  @Pattern(regexp = "(^$|INDIVIDUALS|DYADS|FAMILIES|GROUPS|ORGANIZATIONS|OTHER)", groups = StCharacteristicsVal.class)
   private String obsUnit;
-  /** Study48 */
-  private boolean multilevel;
-  /** Study49 */
+  /** Study47 */
+  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  private String obsUnitOther;
+  /** Study48/49 */
   @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
-  private String multilevelDescr;
+  private String multilevel;
   /** Study50 */
   @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
   private String sex;
@@ -167,10 +169,13 @@ public class StudyDTO implements Serializable {
   }
 
   /** Study58 */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|PRIMARY|OTHER)", groups = StCollectionVal.class)
   private String responsibility;
+  /** Study58 */
+  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  private String responsibilityOther;
   /** Study59 */
-  private LocalDate collStart;
+  private LocalDate collStart = LocalDate.now();
   /** Study60 */
   private LocalDate collEnd;
   /** Study61 -> DMP14 PsychData - META096 */
@@ -193,7 +198,7 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 500, groups = StCollectionVal.class)
   private String otherSourFormat;
   /** Study65 select -> [null , simple, complex] */
-  @Pattern(regexp = "(^$|simple|complex)", groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|SIMPLE|COMPLEX)", groups = StCollectionVal.class)
   private String sourTrans;
   /** Study65 if select == complex */
   @Size(min = 0, max = 500, groups = StCollectionVal.class)
@@ -226,7 +231,7 @@ public class StudyDTO implements Serializable {
   /** Study74 */
   private boolean persDataColl;
   /** Study75 -> [null , anonymous, non_anonymous] */
-  @Pattern(regexp = "(^$|anonymous|non_anonymous)", groups = StEthicalVal.class)
+  @Pattern(regexp = "(^$|ANONYMOUS|NON_ANONYMOUS)", groups = StEthicalVal.class)
   private String persDataPres;
   /** Study76 */
   @Size(min = 0, max = 1000, groups = StEthicalVal.class)
@@ -234,7 +239,7 @@ public class StudyDTO implements Serializable {
   /** Study77 */
   private boolean copyright;
   /** Study78 -> [null , pi, no_cr, other] */
-  @Pattern(regexp = "(^$|pi|no_cr|other)", groups = StEthicalVal.class)
+  @Pattern(regexp = "(^$|PI|NO_CR|OTHER)", groups = StEthicalVal.class)
   private String copyrightHolder;
   /** Study78 */
   @Size(min = 0, max = 500, groups = StEthicalVal.class)
@@ -469,13 +474,11 @@ public class StudyDTO implements Serializable {
     this.interArms = interArms;
   }
 
-/*  public List<Boolean> getInterTimeTable() {
-    return interTimeTable;
-  }
-
-  public void setInterTimeTable(List<Boolean> interTimeTable) {
-    this.interTimeTable = interTimeTable;
-  }*/
+  /*
+   * public List<Boolean> getInterTimeTable() { return interTimeTable; }
+   * 
+   * public void setInterTimeTable(List<Boolean> interTimeTable) { this.interTimeTable = interTimeTable; }
+   */
 
   public InterventionTypes getSurveyType() {
     return surveyType;
@@ -557,20 +560,20 @@ public class StudyDTO implements Serializable {
     this.obsUnit = obsUnit;
   }
 
-  public boolean isMultilevel() {
+  public String getObsUnitOther() {
+    return obsUnitOther;
+  }
+
+  public void setObsUnitOther(String obsUnitOther) {
+    this.obsUnitOther = obsUnitOther;
+  }
+
+  public String getMultilevel() {
     return multilevel;
   }
 
-  public void setMultilevel(boolean multilevel) {
-    this.multilevel = multilevel;
-  }
-
-  public String getMultilevelDescr() {
-    return multilevelDescr;
-  }
-
-  public void setMultilevelDescr(String multilevelDescr) {
-    this.multilevelDescr = multilevelDescr;
+  public void setMultilevel(String multilevelDescr) {
+    this.multilevel = multilevelDescr;
   }
 
   public String getSex() {
@@ -659,6 +662,14 @@ public class StudyDTO implements Serializable {
 
   public void setResponsibility(String responsibility) {
     this.responsibility = responsibility;
+  }
+
+  public String getResponsibilityOther() {
+    return responsibilityOther;
+  }
+
+  public void setResponsibilityOther(String responsibilityOther) {
+    this.responsibilityOther = responsibilityOther;
   }
 
   public LocalDate getCollStart() {

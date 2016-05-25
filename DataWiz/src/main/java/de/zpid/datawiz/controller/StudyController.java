@@ -1,5 +1,6 @@
 package de.zpid.datawiz.controller;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,7 @@ public class StudyController extends SuperController {
     } else {
       log.trace("Entering showStudyPage(create) study");
     }
+    System.out.println(LocalDate.now());
     if (!pid.isPresent()) {
       // TODO ausstieg - pid fehlt!!!
     }
