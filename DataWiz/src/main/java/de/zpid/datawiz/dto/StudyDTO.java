@@ -190,8 +190,11 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 1000, groups = StCollectionVal.class)
   private String otherCMINP;
   /** Study62 */
-  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|ACCRUING|CENSUS|RANDOM|CLUSTER|STRATIFIED|QUOTA|OTHER)", groups = StCollectionVal.class)
   private String sampMethod;
+  /** Study62 */
+  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  private String sampMethodOther;
   /** Study63 */
   @Size(min = 0, max = 1000, groups = StCollectionVal.class)
   private String recruiting;
@@ -721,6 +724,14 @@ public class StudyDTO implements Serializable {
 
   public void setSampMethod(String sampMethod) {
     this.sampMethod = sampMethod;
+  }
+
+  public String getSampMethodOther() {
+    return sampMethodOther;
+  }
+
+  public void setSampMethodOther(String sampMethodOther) {
+    this.sampMethodOther = sampMethodOther;
   }
 
   public String getRecruiting() {

@@ -66,6 +66,7 @@ public class StudyController extends SuperController {
         final StudyDTO study = studyDAO.findById(studyId.get());
         setStudyDTO(studyId, study);
         sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
+        sForm.setSourFormat(formTypeDAO.findAllByType(true, DWFieldTypes.DATAFORMAT));
         sForm.setStudy(study);
         cleanContributorList(pContri, study.getContributors());
       }

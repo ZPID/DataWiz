@@ -7,10 +7,11 @@
  input_vars[4] = dss classes for the help block
  input_vars[5] = dss classes for the input field
  input_vars[6] = optional type arguments - password for example
+ input_vars[7] = css classes for form-group div
  --%>
 <c:set var="input_vars" value="${fn:split(input_vars, ';')}" />
 <s:message text="" var="input_class" />
-<div class="form-group">
+<div class="form-group ${input_vars[7]}">
   <div class="col-sm-12">
     <s:message code="${input_vars[1]}" var="labeltxt" />
     <c:if test="${not empty labeltxt}">

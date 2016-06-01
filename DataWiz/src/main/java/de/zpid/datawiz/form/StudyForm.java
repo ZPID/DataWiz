@@ -22,6 +22,7 @@ public class StudyForm implements Serializable {
   private List<ContributorDTO> projectContributors;
 
   private List<FormTypesDTO> collectionModes;
+  private List<FormTypesDTO> sourFormat;
 
   private String hiddenVar;
 
@@ -63,6 +64,14 @@ public class StudyForm implements Serializable {
 
   public void setCollectionModes(List<FormTypesDTO> collectionModes) {
     this.collectionModes = collectionModes;
+  }
+
+  public List<FormTypesDTO> getSourFormat() {
+    return sourFormat;
+  }
+
+  public void setSourFormat(List<FormTypesDTO> sourFormat) {
+    this.sourFormat = sourFormat;
   }
 
 }
