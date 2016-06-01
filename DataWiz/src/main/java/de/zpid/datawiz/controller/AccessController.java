@@ -255,7 +255,7 @@ public class AccessController extends SuperController {
       user = userDAO.findByMail(pForm.getDelMail(), false);
       if (resend != true)
         projectDAO.insertInviteEntree(projectId, pForm.getDelMail(), admin.getEmail());
-      linkhash = projectDAO.getValFromInviteData(pForm.getDelMail(), projectId, "linkhash");
+      linkhash = projectDAO.findValFromInviteData(pForm.getDelMail(), projectId, "linkhash");
     } catch (Exception e) {
       if (e instanceof DuplicateKeyException) {
         bRes.reject("globalErrors",
@@ -353,13 +353,13 @@ public class AccessController extends SuperController {
     try {
       project = projectDAO.findById(projectId);
       if (project != null) {
-        adminMail = projectDAO.getValFromInviteData(email, projectId, "invited_by");
+        adminMail = projectDAO.findValFromInviteData(email, projectId, "invited_by");
         if (adminMail != null && !adminMail.isEmpty()) {
-          String hash = projectDAO.getValFromInviteData(email, projectId, "linkhash");
+          String hash = projectDAO.findValFromInviteData(email, projectId, "linkhash");
           if (hash != null && !hash.isEmpty() && !linkhash.isEmpty() && linkhash.trim().equals(hash.trim())) {
             UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), admin.getId(), projectId, 0,
                 Roles.REL_ROLE.name());
-            roleDAO.setRole(role);
+            roleDAO.saveRole(role);
             projectDAO.deleteInvitationEntree(projectId, email);
           }
           StringBuffer url = request.getRequestURL();
@@ -586,7 +586,7 @@ public class AccessController extends SuperController {
    * @throws SQLException
    */
   private void cleanupRoles(final UserDTO user, final UserRoleDTO newRole) throws SQLException {
-    int chk = roleDAO.setRole(newRole);
+    int chk = roleDAO.saveRole(newRole);
     if (chk > 0 && user.getGlobalRoles() != null) {
       for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
         if (newRole.getType().equals(Roles.PROJECT_ADMIN.name()) && !roleTmp.getType().equals(Roles.REL_ROLE.name())

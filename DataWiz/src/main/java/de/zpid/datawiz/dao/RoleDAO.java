@@ -21,7 +21,7 @@ public class RoleDAO extends SuperDAO {
       log.info("Loading RoleDAO as Singleton and Service");
   }
 
-  public int setRole(final UserRoleDTO role) throws SQLException {
+  public int saveRole(final UserRoleDTO role) throws SQLException {
     log.trace("Entering setRole role: {}", () -> role);
     final int ret = this.jdbcTemplate.update(
         "INSERT INTO dw_user_roles (user_id, role_id, project_id, study_id) VALUES (?,?,?,?)", role.getUserId(),

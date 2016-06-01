@@ -29,7 +29,7 @@ public class FileDAO extends SuperDAO {
    * @return
    * @throws Exception
    */
-  public List<FileDTO> getProjectFiles(ProjectDTO project) throws Exception {
+  public List<FileDTO> findProjectFiles(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getProjectFiles for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
     String sql = "SELECT dw_files.id, dw_files.project_id, dw_files.user_id, dw_files.name, dw_files.size, dw_files.contentType,"

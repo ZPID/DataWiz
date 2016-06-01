@@ -149,20 +149,20 @@ public class ProjectUtil {
       throws Exception {
     // load /project data
     if (call == null || call.equals(PageState.PROJECT)) {
-      pForm.setFiles(fileDAO.getProjectFiles(pdto));
-      pForm.setTags(new ArrayList<String>(tagDAO.getTagsByProjectID(pdto).values()));
+      pForm.setFiles(fileDAO.findProjectFiles(pdto));
+      pForm.setTags(new ArrayList<String>(tagDAO.findTagsByProjectID(pdto).values()));
       pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
       pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
     } // load /dmp data
     else if (call.equals(PageState.DMP)) {
-      DmpDTO dmp = dmpDAO.getByID(pForm.getProject());
+      DmpDTO dmp = dmpDAO.findByID(pForm.getProject());
       if (dmp != null && dmp.getId() > 0) {
-        dmp.setUsedDataTypes(formTypeDAO.getSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.DATATYPE, false));
+        dmp.setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.DATATYPE, false));
         dmp.setUsedCollectionModes(
-            formTypeDAO.getSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.COLLECTIONMODE, false));
+            formTypeDAO.findSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.COLLECTIONMODE, false));
         dmp.setSelectedMetaPurposes(
-            formTypeDAO.getSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.METAPORPOSE, false));
+            formTypeDAO.findSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.METAPORPOSE, false));
         dmp.setAdminChanged(false);
         dmp.setResearchChanged(false);
         dmp.setMetaChanged(false);
@@ -176,9 +176,9 @@ public class ProjectUtil {
         dmp = (DmpDTO) context.getBean("DmpDTO");
       }
       pForm.setDmp(dmp);
-      pForm.setDataTypes(formTypeDAO.getAllByType(true, DWFieldTypes.DATATYPE));
-      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DWFieldTypes.COLLECTIONMODE));
-      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DWFieldTypes.METAPORPOSE));
+      pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));
+      pForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
+      pForm.setMetaPurposes(formTypeDAO.findAllByType(true, DWFieldTypes.METAPORPOSE));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
     } // load /access data
     else if (call.equals(PageState.ACCESS)) {
@@ -204,8 +204,8 @@ public class ProjectUtil {
           pForm.getProject().setOwnerId(user.getId());
           int chk = projectDAO.insertProject(pForm.getProject());
           if (chk > 0) {
-            roleDAO.setRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
-            roleDAO.setRole(
+            roleDAO.saveRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
+            roleDAO.saveRole(
                 new UserRoleDTO(Roles.PROJECT_ADMIN.toInt(), user.getId(), chk, 0, Roles.PROJECT_ADMIN.name()));
             pForm.getProject().setId(chk);
           } else {

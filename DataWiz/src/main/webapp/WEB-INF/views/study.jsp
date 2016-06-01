@@ -44,7 +44,7 @@
           </c:if>
         </ul>
       </c:if>
-      <c:url var="accessUrl" value="/access/${StudyForm.project.id}/study/${StudyForm.study.id}" />
+      <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal">
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
@@ -54,7 +54,9 @@
         <!-- START Sample Characteristics Content -->
         <jsp:include page="forms/study_sample.jsp" />
         <!-- START Survey Content -->
-        <jsp:include page="forms/study_survey.jsp" />
+        <jsp:include page="forms/study_survey.jsp">
+          <jsp:param value="${localeCode}" name="localeCode" />
+        </jsp:include>
         <div id="qualityActiveContent" class="projectContent contentMargin">def</div>
         <div id="ethicalActiveContent" class="projectContent contentMargin">ghi</div>
         <!-- Buttons -->

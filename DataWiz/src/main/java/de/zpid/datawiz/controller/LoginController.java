@@ -216,7 +216,7 @@ public class LoginController extends SuperController {
       if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
           && user.getActivationCode().equals(activationCode)) {
         userDAO.activateUserAccount(user);
-        roleDAO.setRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
+        roleDAO.saveRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
       }
     } catch (Exception e) {
       log.warn("DBS error during user registration: " + e);

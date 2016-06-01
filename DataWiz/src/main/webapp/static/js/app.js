@@ -33,7 +33,13 @@ $tag_box = null;
     else if (window.location.pathname.search("/study") > 0) {
       startAccordion();
       $('.input-daterange').datepicker({
-        /*format : "yyyy-mm-dd"*/
+        format : "dd/mm/yyyy",
+        weekStart : 1,
+        todayBtn : "linked",
+        clearBtn : true,
+        language : "de",
+        todayHighlight : true
+
       });
     } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {

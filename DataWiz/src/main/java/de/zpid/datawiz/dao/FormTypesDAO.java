@@ -21,7 +21,7 @@ public class FormTypesDAO extends SuperDAO {
       log.info("Loading FormTypesDAO as Singleton and Service");
   }
 
-  public List<FormTypesDTO> getAllByType(final boolean active, final DWFieldTypes type) throws Exception {
+  public List<FormTypesDTO> findAllByType(final boolean active, final DWFieldTypes type) throws Exception {
     log.trace("execute getAllByType [type: {}; active: {}]", () -> type, () -> active);
     String sql = "SELECT * FROM dw_formtypes WHERE dw_formtypes.active = ? AND dw_formtypes.type = ? ORDER BY dw_formtypes.sort";
     final List<FormTypesDTO> ret = jdbcTemplate.query(sql, new Object[] { active, type.toString() },
@@ -42,7 +42,7 @@ public class FormTypesDAO extends SuperDAO {
     return ret;
   }
 
-  public List<Integer> getSelectedFormTypesByIdAndType(final long id, final DWFieldTypes type, final boolean isStudy)
+  public List<Integer> findSelectedFormTypesByIdAndType(final long id, final DWFieldTypes type, final boolean isStudy)
       throws Exception {
     log.trace("execute getSelectedFormTypesByIdAndType for [id: {}; type: {}; isStudy: {}]", () -> id,
         () -> type.name(), () -> isStudy);

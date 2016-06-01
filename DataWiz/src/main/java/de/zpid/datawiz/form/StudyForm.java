@@ -6,6 +6,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import de.zpid.datawiz.dto.ContributorDTO;
+import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 
@@ -19,6 +20,8 @@ public class StudyForm implements Serializable {
   private ProjectDTO project;
 
   private List<ContributorDTO> projectContributors;
+
+  private List<FormTypesDTO> collectionModes;
 
   private String hiddenVar;
 
@@ -52,6 +55,14 @@ public class StudyForm implements Serializable {
 
   public void setHiddenVar(String hiddenVar) {
     this.hiddenVar = hiddenVar;
+  }
+
+  public List<FormTypesDTO> getCollectionModes() {
+    return collectionModes;
+  }
+
+  public void setCollectionModes(List<FormTypesDTO> collectionModes) {
+    this.collectionModes = collectionModes;
   }
 
 }

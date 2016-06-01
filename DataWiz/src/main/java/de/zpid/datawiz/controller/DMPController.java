@@ -66,9 +66,9 @@ public class DMPController extends SuperController {
     model.put("subnaviActive", "DMP");
     ProjectForm pForm = createProjectForm();
     try {
-      pForm.setDataTypes(formTypeDAO.getAllByType(true, DWFieldTypes.DATATYPE));
-      pForm.setCollectionModes(formTypeDAO.getAllByType(true, DWFieldTypes.COLLECTIONMODE));
-      pForm.setMetaPurposes(formTypeDAO.getAllByType(true, DWFieldTypes.METAPORPOSE));
+      pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));
+      pForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
+      pForm.setMetaPurposes(formTypeDAO.findAllByType(true, DWFieldTypes.METAPORPOSE));
     } catch (Exception e) {
       if (log.isEnabled(Level.ERROR))
         log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
@@ -300,7 +300,7 @@ public class DMPController extends SuperController {
   private void updateFormTypes(ProjectForm pForm, int changed, DmpCategory cat) throws Exception {
     if (changed > 0) {
       if (cat.equals(DmpCategory.RESEARCH)) {
-        List<Integer> datatypes = formTypeDAO.getSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
+        List<Integer> datatypes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
             DWFieldTypes.DATATYPE, false);
         if (datatypes != null && datatypes.size() > 0) {
           for (Integer i : datatypes)
@@ -310,7 +310,7 @@ public class DMPController extends SuperController {
           for (int i : pForm.getDmp().getUsedDataTypes())
             formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
         }
-        List<Integer> collectionModes = formTypeDAO.getSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
+        List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
             DWFieldTypes.COLLECTIONMODE, false);
         if (collectionModes != null && collectionModes.size() > 0) {
           for (Integer i : collectionModes)
@@ -321,7 +321,7 @@ public class DMPController extends SuperController {
             formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
         }
       } else if (cat.equals(DmpCategory.META)) {
-        List<Integer> metaporpose = formTypeDAO.getSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
+        List<Integer> metaporpose = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
             DWFieldTypes.METAPORPOSE, false);
         if (metaporpose != null && metaporpose.size() > 0) {
           for (Integer i : metaporpose)

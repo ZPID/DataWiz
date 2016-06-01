@@ -126,7 +126,7 @@ public class ProjectDAO extends SuperDAO {
     return chk;
   }
 
-  public String getValFromInviteData(final String email, final long projectId, final String val) throws Exception {
+  public String findValFromInviteData(final String email, final long projectId, final String val) throws Exception {
     log.trace("execute getValFromInviteData for project [id: {}], user [id: {}] and [val: {}]", () -> projectId,
         () -> email, () -> val);
     final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";

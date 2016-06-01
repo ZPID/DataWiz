@@ -70,7 +70,7 @@
   <!-- study.completeSel -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.completeSel"><s:message code="study.completeSel" /></label>
+      <label class="control-label" for="study.completeSel"><s:message code="study.completeSel" /></label>
       <sf:select path="study.completeSel" class="form-control">
         <sf:option value="">
           <s:message code="gen.select" />

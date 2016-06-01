@@ -1,16 +1,18 @@
 package de.zpid.datawiz.controller;
 
-import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
@@ -40,7 +42,6 @@ public class StudyController extends SuperController {
     } else {
       log.trace("Entering showStudyPage(create) study");
     }
-    System.out.println(LocalDate.now());
     if (!pid.isPresent()) {
       // TODO ausstieg - pid fehlt!!!
     }
@@ -64,6 +65,7 @@ public class StudyController extends SuperController {
       if (studyId.isPresent()) {
         final StudyDTO study = studyDAO.findById(studyId.get());
         setStudyDTO(studyId, study);
+        sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
         sForm.setStudy(study);
         cleanContributorList(pContri, study.getContributors());
       }
@@ -86,6 +88,14 @@ public class StudyController extends SuperController {
     return "study";
   }
 
+  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST)
+  public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
+      RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId) {
+    log.trace("Entering saveStudy");
+    System.out.println(sForm.getStudy().getCollStart() + "  --  " + sForm.getStudy().getCollEnd());
+    return "study";
+  }
+
   /**
    * @param studyId
    * @param study
@@ -96,7 +106,7 @@ public class StudyController extends SuperController {
       study.setContributors(contributorDAO.findByStudy(studyId.get()));
       study.setSoftware(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
       study.setPubOnData(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
-      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));      
+      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
       study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
       study.setMeasOccName(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
       study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));

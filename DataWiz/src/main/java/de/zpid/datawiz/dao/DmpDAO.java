@@ -22,9 +22,9 @@ public class DmpDAO extends SuperDAO {
       log.info("Loading DmpDAO as Singleton and Service");
   }
 
-  public DmpDTO getByID(ProjectDTO project) throws Exception {
+  public DmpDTO findByID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
-      log.debug("execute getByID [id: " + project.getId() + "]");
+      log.debug("execute findByID [id: " + project.getId() + "]");
     String sql = "SELECT * FROM dw_dmp where id = ?";
     DmpDTO dmp = jdbcTemplate.query(sql, new Object[] { project.getId() }, new ResultSetExtractor<DmpDTO>() {
       @Override

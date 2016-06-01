@@ -21,7 +21,7 @@ public class TagDAO extends SuperDAO {
       log.info("Loading TagDAO as Singleton and Service");
   }
 
-  public HashMap<String, String> getTagsByProjectID(ProjectDTO project) throws Exception {
+  public HashMap<String, String> findTagsByProjectID(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug(
           "execute getTagsByProjectID for project [id: " + project.getId() + " name: " + project.getTitle() + "]");

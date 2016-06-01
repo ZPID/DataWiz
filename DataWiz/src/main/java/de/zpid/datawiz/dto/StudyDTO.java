@@ -3,13 +3,14 @@ package de.zpid.datawiz.dto;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import de.zpid.datawiz.enumeration.InterventionTypes;
 
@@ -175,8 +176,10 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 1000, groups = StCollectionVal.class)
   private String responsibilityOther;
   /** Study59 */
-  private LocalDate collStart = LocalDate.now();
+  @DateTimeFormat(pattern = "dd/MM/yyyy")
+  private LocalDate collStart;
   /** Study60 */
+  @DateTimeFormat(pattern = "dd/MM/yyyy")
   private LocalDate collEnd;
   /** Study61 -> DMP14 PsychData - META096 */
   private List<Integer> usedCollectionModes;
