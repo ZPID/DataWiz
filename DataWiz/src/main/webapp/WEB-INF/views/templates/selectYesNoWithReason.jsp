@@ -7,11 +7,11 @@
     </sf:select>
     <s:message code="dmp.edit.${dmp_var_name}.help" var="appresmess" />
     <%@ include file="helpblock.jsp"%>
-    <div class="form-group" id="content${dmp_var_name}">
-      <div class="col-sm-12">       
-        <s:message text="${dmp_var_name}Txt" var="dmp_var_name" />
-        <%@ include file="../templates/textarea.jsp"%>
-      </div>
-    </div>
+  </div>
+</div>
+<div class="form-group" id="content${dmp_var_name}">
+  <div class="col-sm-12">
+    <s:message text="${dmp_var_name}Txt" var="dmp_var_name" />
+    <%@ include file="../templates/textarea.jsp"%>
   </div>
 </div>

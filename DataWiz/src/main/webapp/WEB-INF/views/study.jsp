@@ -37,8 +37,6 @@
                   code="study.submenu.sample" /></a></li>
             <li role="presentation" id="surveyActiveClick" class="projectContentClick"><a><s:message
                   code="study.submenu.survey" /></a></li>
-            <li role="presentation" id="qualityActiveClick" class="projectContentClick"><a><s:message
-                  code="study.submenu.quality" /></a></li>
             <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message
                   code="study.submenu.ethical" /></a></li>
           </c:if>
@@ -57,8 +55,8 @@
         <jsp:include page="forms/study_survey.jsp">
           <jsp:param value="${localeCode}" name="localeCode" />
         </jsp:include>
-        <div id="qualityActiveContent" class="projectContent contentMargin">def</div>
-        <div id="ethicalActiveContent" class="projectContent contentMargin">ghi</div>
+        <!-- START Ethical Content -->
+        <jsp:include page="forms/study_ethical.jsp" />        
         <!-- Buttons -->
         <div class="form-group">
           <div class="col-sm-offset-0 col-md-12">

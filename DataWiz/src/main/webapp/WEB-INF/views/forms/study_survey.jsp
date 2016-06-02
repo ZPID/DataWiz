@@ -163,27 +163,62 @@
       <sf:label path="study.usedSourFormat">
         <s:message code="study.usedSourFormat" />
       </sf:label>
-      <c:forEach items="${StudyForm.sourFormat}" var="dtype">
-        <c:choose>
-          <c:when test="${dtype.id == 41}">
-            <label class="btn btn-default chkboxbtn"><sf:checkbox path="study.usedSourFormat"
-                value="${dtype.id}" onchange="switchViewIfChecked('selectUsedSourFormat')"
-                id="selectUsedSourFormat" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" />
-            </label>
-          </c:when>
-          <c:otherwise>
-            <label class="btn btn-default chkboxbtn"><sf:checkbox path="study.usedSourFormat"
-                value="${dtype.id}" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
-          </c:otherwise>
-        </c:choose>
-      </c:forEach>
-      <!-- study.sourFormatOther -->
-      <div id="contentUsedSourFormat">
-        <c:set var="input_vars" value="study.otherCMIP;study.otherCMIP; ; ;row margin-bottom-0" />
-        <%@ include file="../templates/gen_textarea.jsp"%>
+      <div class="panel panel-default panel-body">
+        <c:forEach items="${StudyForm.sourFormat}" var="dtype">
+          <c:choose>
+            <c:when test="${dtype.id == 41}">
+              <label class="btn btn-default chkboxbtn"><sf:checkbox path="study.usedSourFormat"
+                  value="${dtype.id}" onchange="switchViewIfChecked('selectUsedSourFormat')" id="selectUsedSourFormat" />
+                <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+            </c:when>
+            <c:otherwise>
+              <label class="btn btn-default chkboxbtn"><sf:checkbox path="study.usedSourFormat"
+                  value="${dtype.id}" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+            </c:otherwise>
+          </c:choose>
+        </c:forEach>
+        <!-- study.sourFormatOther -->
+        <div id="contentUsedSourFormat">
+          <c:set var="input_vars" value="study.otherCMIP;study.otherCMIP; ; ;row margin-bottom-0" />
+          <%@ include file="../templates/gen_textarea.jsp"%>
+        </div>
+        <s:message code="study.usedSourFormat.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
       </div>
-      <s:message code="study.usedSourFormat.help" var="appresmess" />
+    </div>
+  </div>
+  <!-- study.sourTrans -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.sourTrans"><s:message code="study.sourTrans" /></label>
+      <sf:select path="study.completeSel" class="form-control">
+        <sf:option value="">
+          <s:message code="gen.select" />
+        </sf:option>
+        <sf:option value="SIMPLE">
+          <s:message code="study.sourTrans.simple" />
+        </sf:option>
+        <sf:option value="COMPLEX">
+          <s:message code="study.sourTrans.complex" />
+        </sf:option>
+      </sf:select>
+      <!-- study.otherSourTrans -->
+      <c:set var="input_vars" value="study.otherSourTrans;study.otherSourTrans; ; ;row; ; ;margin-bottom-0" />
+      <%@ include file="../templates/gen_textarea.jsp"%>
+      <s:message code="study.sourTrans.help" var="appresmess" />
       <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
+  <!-- study.specCirc -->
+  <c:set var="input_vars" value="study.specCirc;study.specCirc; ; ;row; ; ;" />
+  <%@ include file="../templates/gen_textarea.jsp"%>
+  <!-- study.transDescr -->
+  <c:set var="input_vars" value="study.transDescr;study.transDescr; ; ;row; ; ;" />
+  <%@ include file="../templates/gen_textarea.jsp"%>
+  <!-- study.qualInd-->
+  <c:set var="input_vars" value="study.qualInd;study.qualInd; ; ;row; ; ;" />
+  <%@ include file="../templates/gen_textarea.jsp"%>
+  <!-- study.qualLim -->
+  <c:set var="input_vars" value="study.qualLim;study.qualLim; ; ;row; ; ;" />
+  <%@ include file="../templates/gen_textarea.jsp"%>
 </div>

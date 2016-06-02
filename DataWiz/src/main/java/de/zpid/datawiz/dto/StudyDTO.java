@@ -204,7 +204,7 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 500, groups = StCollectionVal.class)
   private String otherSourFormat;
   /** Study65 select -> [null , simple, complex] */
-  @Pattern(regexp = "(^$|SIMPLE|COMPLEX)", groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|SIMPLE|COMPLEX|OTHER)", groups = StCollectionVal.class)
   private String sourTrans;
   /** Study65 if select == complex */
   @Size(min = 0, max = 500, groups = StCollectionVal.class)
@@ -244,12 +244,9 @@ public class StudyDTO implements Serializable {
   private String anonymProc;
   /** Study77 */
   private boolean copyright;
-  /** Study78 -> [null , pi, no_cr, other] */
-  @Pattern(regexp = "(^$|PI|NO_CR|OTHER)", groups = StEthicalVal.class)
-  private String copyrightHolder;
   /** Study78 */
-  @Size(min = 0, max = 500, groups = StEthicalVal.class)
-  private String otherCopyrightHolder;
+  @Size(min = 0, max = 1000, groups = StEthicalVal.class)
+  private String copyrightHolder;
   /** Study79 */
   private boolean thirdParty;
   /** Study80 */
@@ -876,14 +873,6 @@ public class StudyDTO implements Serializable {
 
   public void setCopyrightHolder(String copyrightHolder) {
     this.copyrightHolder = copyrightHolder;
-  }
-
-  public String getOtherCopyrightHolder() {
-    return otherCopyrightHolder;
-  }
-
-  public void setOtherCopyrightHolder(String otherCopyrightHolder) {
-    this.otherCopyrightHolder = otherCopyrightHolder;
   }
 
   public boolean isThirdParty() {
