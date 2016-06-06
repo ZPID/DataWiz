@@ -28,22 +28,24 @@
       <!-- Submenu -->
       <c:if test="${!hideMenu}">
         <ul class="nav nav-tabs">
-          <li role="presentation" id="basisDataActiveClick" class="projectContentClick"><a><s:message
+          <li role="presentation" id="basisDataActiveClick" class="studyContentClick"><a><s:message
                 code="study.submenu.basic.data" /></a></li>
           <c:if test="${not empty StudyForm.study.id}">
-            <li role="presentation" id="designActiveClick" class="projectContentClick"><a><s:message
+            <li role="presentation" id="designActiveClick" class="studyContentClick"><a><s:message
                   code="study.submenu.design" /></a></li>
-            <li role="presentation" id="sampleActiveClick" class="projectContentClick"><a><s:message
+            <li role="presentation" id="sampleActiveClick" class="studyContentClick"><a><s:message
                   code="study.submenu.sample" /></a></li>
-            <li role="presentation" id="surveyActiveClick" class="projectContentClick"><a><s:message
+            <li role="presentation" id="surveyActiveClick" class="studyContentClick"><a><s:message
                   code="study.submenu.survey" /></a></li>
-            <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message
+            <li role="presentation" id="ethicalActiveClick" class="studyContentClick"><a><s:message
                   code="study.submenu.ethical" /></a></li>
           </c:if>
         </ul>
       </c:if>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal">
+        <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
+        <sf:hidden path="delPos" />
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
         <jsp:include page="forms/study_general.jsp" />
@@ -56,7 +58,7 @@
           <jsp:param value="${localeCode}" name="localeCode" />
         </jsp:include>
         <!-- START Ethical Content -->
-        <jsp:include page="forms/study_ethical.jsp" />        
+        <jsp:include page="forms/study_ethical.jsp" />
         <!-- Buttons -->
         <div class="form-group">
           <div class="col-sm-offset-0 col-md-12">

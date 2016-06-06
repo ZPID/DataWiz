@@ -1,11 +1,11 @@
 <%@ include file="../templates/includes.jsp"%>
 <c:set var="localeCode" value="${pageContext.response.locale}" />
-<div id="surveyActiveContent" class="projectContent contentMargin">
+<div id="surveyActiveContent" class="studyContent">
   <!-- Infotext -->
   <div class="form-group">
     <div class="col-sm-12">
       <div class="well marginTop1">
-        <s:message code="dmp.edit.admindata.info" />
+        <s:message code="study.surveydata.info" />
       </div>
     </div>
   </div>
@@ -13,7 +13,8 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.responsibility"><s:message code="study.responsibility" /></label>
-      <sf:select path="study.completeSel" class="form-control">
+      <sf:select path="study.completeSel" class="form-control" id="selectResponsibility"
+        onchange="switchViewIfSelected('selectResponsibility', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -24,9 +25,11 @@
           <s:message code="study.responsibility.other" />
         </sf:option>
       </sf:select>
-      <!-- study.responsibilityOther -->
-      <c:set var="input_vars" value="study.responsibilityOther;study.responsibilityOther; ; ;row; ; ;margin-bottom-0" />
-      <%@ include file="../templates/gen_textarea.jsp"%>
+      <div id="contentResponsibility">
+        <!-- study.responsibilityOther -->
+        <c:set var="input_vars" value="study.responsibilityOther;study.responsibilityOther; ; ;row; ; ;margin-bottom-0" />
+        <%@ include file="../templates/gen_textarea.jsp"%>
+      </div>
       <s:message code="study.responsibility.help" var="appresmess" />
       <%@ include file="../templates/helpblock.jsp"%>
     </div>
@@ -121,7 +124,8 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.sampMethod"><s:message code="study.sampMethod" /></label>
-      <sf:select path="study.completeSel" class="form-control">
+      <sf:select path="study.completeSel" class="form-control" id="selectSampMethod"
+        onchange="switchViewIfSelected('selectSampMethod', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -147,9 +151,11 @@
           <s:message code="study.sampMethod.other" />
         </sf:option>
       </sf:select>
-      <!-- study.sampMethodOther -->
-      <c:set var="input_vars" value="study.sampMethodOther;study.sampMethodOther; ; ;row; ; ;margin-bottom-0" />
-      <%@ include file="../templates/gen_textarea.jsp"%>
+      <div id="contentSampMethod">
+        <!-- study.sampMethodOther -->
+        <c:set var="input_vars" value="study.sampMethodOther;study.sampMethodOther; ; ;row; ; ;margin-bottom-0" />
+        <%@ include file="../templates/gen_textarea.jsp"%>
+      </div>
       <s:message code="study.responsibility.help" var="appresmess" />
       <%@ include file="../templates/helpblock.jsp"%>
     </div>
@@ -191,7 +197,8 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.sourTrans"><s:message code="study.sourTrans" /></label>
-      <sf:select path="study.completeSel" class="form-control">
+      <sf:select path="study.sourTrans" class="form-control" id="selectSourTrans"
+        onchange="switchViewIfSelected('selectSourTrans', 'COMPLEX');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -202,9 +209,11 @@
           <s:message code="study.sourTrans.complex" />
         </sf:option>
       </sf:select>
-      <!-- study.otherSourTrans -->
-      <c:set var="input_vars" value="study.otherSourTrans;study.otherSourTrans; ; ;row; ; ;margin-bottom-0" />
-      <%@ include file="../templates/gen_textarea.jsp"%>
+      <div id="contentSourTrans">
+        <!-- study.otherSourTrans -->
+        <c:set var="input_vars" value="study.otherSourTrans;study.otherSourTrans; ; ;row; ; ;margin-bottom-0" />
+        <%@ include file="../templates/gen_textarea.jsp"%>
+      </div>
       <s:message code="study.sourTrans.help" var="appresmess" />
       <%@ include file="../templates/helpblock.jsp"%>
     </div>

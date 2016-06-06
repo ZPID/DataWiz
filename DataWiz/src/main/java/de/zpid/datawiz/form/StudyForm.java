@@ -24,7 +24,8 @@ public class StudyForm implements Serializable {
   private List<FormTypesDTO> collectionModes;
   private List<FormTypesDTO> sourFormat;
 
-  private String hiddenVar;
+  private int hiddenVar;
+  private int delPos;
 
   public StudyDTO getStudy() {
     return study;
@@ -50,11 +51,11 @@ public class StudyForm implements Serializable {
     this.projectContributors = projectContributors;
   }
 
-  public String getHiddenVar() {
+  public int getHiddenVar() {
     return hiddenVar;
   }
 
-  public void setHiddenVar(String hiddenVar) {
+  public void setHiddenVar(int hiddenVar) {
     this.hiddenVar = hiddenVar;
   }
 
@@ -72,6 +73,14 @@ public class StudyForm implements Serializable {
 
   public void setSourFormat(List<FormTypesDTO> sourFormat) {
     this.sourFormat = sourFormat;
+  }
+
+  public int getDelPos() {
+    return delPos;
+  }
+
+  public void setDelPos(int delPos) {
+    this.delPos = delPos;
   }
 
 }

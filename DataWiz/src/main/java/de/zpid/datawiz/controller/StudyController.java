@@ -26,7 +26,7 @@ import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
-@SessionAttributes({ "StudyForm", "subnaviActive" })
+@SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
 public class StudyController extends SuperController {
 
   public StudyController() {
@@ -93,7 +93,32 @@ public class StudyController extends SuperController {
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId) {
     log.trace("Entering saveStudy");
-    System.out.println(sForm.getStudy().getCollStart() + "  --  " + sForm.getStudy().getCollEnd());
+
+    model.put("studySubMenu", true);
+    return "study";
+  }
+
+  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addContri")
+  public String addContributor(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
+    log.trace("Entering addContributor");
+    if (sForm.getHiddenVar() >= 0) {
+      sForm.getStudy().getContributors().add(sForm.getProjectContributors().get(sForm.getHiddenVar()));
+      sForm.getProjectContributors().remove(sForm.getHiddenVar());
+      sForm.setHiddenVar(-1);
+    }
+    model.put("studySubMenu", true);
+    return "study";
+  }
+
+  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "deleteContri")
+  public String deleteContributor(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
+    log.trace("Entering deleteContributor");
+    System.out.println(sForm.getDelPos());
+    if (sForm.getDelPos() >= 0) {
+      sForm.getProjectContributors().add(sForm.getStudy().getContributors().get(sForm.getDelPos()));
+      sForm.getStudy().getContributors().remove(sForm.getDelPos());
+    }
+    model.put("studySubMenu", true);
     return "study";
   }
 

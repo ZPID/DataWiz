@@ -1,10 +1,10 @@
 <%@ include file="../templates/includes.jsp"%>
-<div id="sampleActiveContent" class="projectContent contentMargin">
+<div id="sampleActiveContent" class="studyContent">
   <!-- Infotext -->
   <div class="form-group">
     <div class="col-sm-12">
       <div class="well marginTop1">
-        <s:message code="dmp.edit.admindata.info" />
+        <s:message code="study.sampledata.info" />
       </div>
     </div>
   </div>
@@ -23,14 +23,7 @@
         </div>
       </div>
       <s:message code="study.eligibilities.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.population -->
@@ -49,7 +42,8 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.obsUnit"><s:message code="study.obsUnit" /></label>
-      <sf:select path="study.completeSel" class="form-control">
+      <sf:select path="study.completeSel" class="form-control" id="selectObsUnit"
+        onchange="switchViewIfSelected('selectObsUnit', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -72,18 +66,13 @@
           <s:message code="study.obsUnit.other" />
         </sf:option>
       </sf:select>
-      <!-- study.obsUnitOther -->
-      <c:set var="input_vars" value="study.obsUnitOther;study.obsUnitOther; ; ;row margin-bottom-0" />
-      <%@ include file="../templates/gen_textarea.jsp"%>
+      <div id="contentObsUnit">
+        <!-- study.obsUnitOther -->
+        <c:set var="input_vars" value="study.obsUnitOther;study.obsUnitOther; ; ;row margin-bottom-0" />
+        <%@ include file="../templates/gen_textarea.jsp"%>
+      </div>
       <s:message code="study.obsUnit.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.multilevel -->

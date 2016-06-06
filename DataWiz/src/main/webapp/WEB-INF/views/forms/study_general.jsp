@@ -1,20 +1,20 @@
 <%@ include file="../templates/includes.jsp"%>
-<div id="basisDataActiveContent" class="projectContent contentMargin">
+<div id="basisDataActiveContent" class="studyContent">
   <!-- Infotext -->
   <div class="form-group">
     <div class="col-sm-12">
       <div class="well marginTop1">
-        <s:message code="dmp.edit.admindata.info" />
+        <s:message code="study.generaldata.info" />
       </div>
     </div>
   </div>
   <!-- study.title -->
   <c:set var="input_vars" value="study.title;study.title;required; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
-  <!-- study.title -->
+  <!-- study.internalID -->
   <c:set var="input_vars" value="study.internalID;study.internalID; ; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
-  <!-- study.title -->
+  <!-- study.transTitle -->
   <c:set var="input_vars" value="study.transTitle;study.transTitle; ; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.contributors -->
@@ -22,43 +22,37 @@
     <div class="col-sm-12">
       <label class="control-label" for=""><s:message code="study.contributors" /></label>
       <div class="panel panel-default panel-body margin-bottom-0">
-        <c:forEach items="${StudyForm.study.contributors}" var="contri">
+        <c:forEach items="${StudyForm.study.contributors}" var="contri" varStatus="coloop">
           <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
           <div class="input-group margin-bottom-10">
             <input type="text" class="form-control" value="${fn:trim(contriName)}" disabled="disabled" /><span
-              class="input-group-btn">
-              <button class="btn btn-danger" type="button">
+              class="input-group-btn"> <sf:button class="btn btn-danger" name="deleteContri"
+                onclick="document.getElementById('delPos').value=${coloop.count-1}">
                 <s:message code="gen.delete" />
-              </button>
+              </sf:button>
             </span>
           </div>
         </c:forEach>
-        <div class="input-group">
-          <sf:select path="hiddenVar" class="form-control">
-            <sf:option value="0">
-              <s:message code="gen.select" />
-            </sf:option>
-            <c:forEach items="${StudyForm.projectContributors}" var="contri">
-              <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
-              <sf:option value="${contri.id}">${fn:trim(contriName)}</sf:option>
-            </c:forEach>
-          </sf:select>
-          <span class="input-group-btn">
-            <button class="btn btn-success" type="button">
-              <s:message code="gen.add" />
-            </button>
-          </span>
-        </div>
+        <c:if test="${StudyForm.projectContributors.size() > 0}">
+          <div class="input-group">
+            <sf:select path="hiddenVar" class="form-control">
+              <sf:option value="-1">
+                <s:message code="gen.select" />
+              </sf:option>
+              <c:forEach items="${StudyForm.projectContributors}" var="contri" varStatus="coloop">
+                <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
+                <sf:option value="${coloop.index}">${fn:trim(contriName)}</sf:option>
+              </c:forEach>
+            </sf:select>
+            <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri">
+                <s:message code="gen.add" />
+              </sf:button>
+            </span>
+          </div>
+        </c:if>
       </div>
       <s:message code="study.contributors.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.sAbstract -->
@@ -83,14 +77,7 @@
         </sf:option>
       </sf:select>
       <s:message code="study.completeSel.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.excerpt -->
@@ -100,7 +87,8 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.prevWork"><s:message code="study.prevWork" /></label>
-      <sf:select path="study.completeSel" class="form-control">
+      <sf:select path="study.completeSel" class="form-control" id="selectPrevWork"
+        onchange="switchViewIfSelected('selectPrevWork', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -117,20 +105,15 @@
           <s:message code="study.prevWork.norelation" />
         </sf:option>
       </sf:select>
+      <div id="contentPrevWork">
+        <!-- study.prevWorkStr -->
+        <c:set var="input_vars" value="study.prevWorkStr;study.prevWorkStr; ; ;row" />
+        <%@ include file="../templates/gen_textarea.jsp"%>
+      </div>
       <s:message code="study.prevWork.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
-  <!-- study.prevWorkStr -->
-  <c:set var="input_vars" value="study.prevWorkStr;study.prevWorkStr; ; ;row" />
-  <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.software -->
   <div class="form-group">
     <div class="col-sm-12">
@@ -140,20 +123,13 @@
           <sf:textarea rows="1" path="study.software[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.software.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.pubOnData -->
@@ -165,20 +141,13 @@
           <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.pubOnData.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.conflInterests -->
@@ -190,20 +159,13 @@
           <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.conflInterests.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
 </div>

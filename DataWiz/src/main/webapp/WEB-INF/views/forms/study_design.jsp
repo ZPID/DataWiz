@@ -1,10 +1,10 @@
 <%@ include file="../templates/includes.jsp"%>
-<div id="designActiveContent" class="projectContent contentMargin">
+<div id="designActiveContent" class="studyContent">
   <!-- Infotext -->
   <div class="form-group">
     <div class="col-sm-12">
       <div class="well marginTop1">
-        <s:message code="dmp.edit.admindata.info" />
+        <s:message code="study.designdata.info" />
       </div>
     </div>
   </div>
@@ -43,14 +43,7 @@
         </div>
       </div>
       <s:message code="study.objectives.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.relTheorys -->
@@ -68,14 +61,7 @@
         </div>
       </div>
       <s:message code="study.relTheorys.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.repMeasures -->
@@ -94,14 +80,7 @@
         </sf:option>
       </sf:select>
       <s:message code="study.repMeasures.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.timeDim -->
@@ -117,150 +96,111 @@
         </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox path="study.testIntervention" />
           <s:message code="study.intervention.test" />
         </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox
-            path="study.experimentalIntervention" /> <s:message code="study.intervention.experimental" />
+            path="study.experimentalIntervention" onchange="switchViewIfChecked('selectExperimentalIntervention')"
+            id="selectExperimentalIntervention" /> <s:message code="study.intervention.experimental" />
         </label>
       </div>
       <s:message code="study.intervention.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
-  <!-- study.interTypeExp -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <label class="control-label " for="study.interTypeExp"><s:message code="study.interTypeExp" /></label>
-      <sf:select path="study.interTypeExp" class="form-control">
-        <sf:option value="">
-          <s:message code="gen.select" />
-        </sf:option>
-        <sf:option value="EXPERIMENTAL">
-          <s:message code="study.interTypeExp.experimental" />
-        </sf:option>
-        <sf:option value="QUASIEXPERIMENTAL">
-          <s:message code="study.interTypeExp.quasiexperimental" />
-        </sf:option>
-      </sf:select>
-      <s:message code="study.interTypeExp.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
-    </div>
-  </div>
-  <!-- study.interTypeDes -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <label class="control-label " for="study.interTypeDes"><s:message code="study.interTypeDes" /></label>
-      <sf:select path="study.interTypeDes" class="form-control">
-        <sf:option value="">
-          <s:message code="gen.select" />
-        </sf:option>
-        <sf:option value="REPEATEDMEASURES">
-          <s:message code="study.interTypeDes.repeatedmeasures" />
-        </sf:option>
-        <sf:option value="GROUPCOMPARISON">
-          <s:message code="study.interTypeDes.groupcomparison" />
-        </sf:option>
-        <sf:option value="MIXEDDESIGN">
-          <s:message code="study.interTypeDes.mixeddesign" />
-        </sf:option>
-      </sf:select>
-      <s:message code="study.interTypeDes.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
-    </div>
-  </div>
-  <!-- study.interTypeLab -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <label class="control-label " for="study.interTypeLab"><s:message code="study.interTypeLab" /></label>
-      <sf:select path="study.interTypeLab" class="form-control">
-        <sf:option value="">
-          <s:message code="gen.select" />
-        </sf:option>
-        <sf:option value="LABORATORY">
-          <s:message code="study.interTypeLab.laboratory" />
-        </sf:option>
-        <sf:option value="FIELD">
-          <s:message code="study.interTypeLab.field" />
-        </sf:option>
-      </sf:select>
-      <s:message code="study.interTypeLab.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
-    </div>
-  </div>
-  <!-- study.randomization -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <label class="control-label " for="study.randomization"><s:message code="study.randomization" /></label>
-      <sf:select path="study.randomization" class="form-control">
-        <sf:option value="">
-          <s:message code="gen.select" />
-        </sf:option>
-        <sf:option value="RANDOMIZED">
-          <s:message code="study.randomization.randomized" />
-        </sf:option>
-        <sf:option value="NONRANDOMIZED">
-          <s:message code="study.randomization.nonrandomized" />
-        </sf:option>
-      </sf:select>
-      <s:message code="study.randomization.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
-    </div>
-  </div>
-  <!-- study.interArms -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <label class="control-label " for="study.interArms"><s:message code="study.interArms" /></label>
-      <div class="panel panel-default panel-body margin-bottom-0">
-        <c:forEach items="${StudyForm.study.interArms}" varStatus="loop">
-          <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
-        </c:forEach>
-        <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
-            <s:message code="gen.add" />
-          </button>
-        </div>
+  <div id="contentExperimentalIntervention">
+    <!-- study.interTypeExp -->
+    <div class="form-group">
+      <div class="col-sm-12">
+        <label class="control-label " for="study.interTypeExp"><s:message code="study.interTypeExp" /></label>
+        <sf:select path="study.interTypeExp" class="form-control">
+          <sf:option value="">
+            <s:message code="gen.select" />
+          </sf:option>
+          <sf:option value="EXPERIMENTAL">
+            <s:message code="study.interTypeExp.experimental" />
+          </sf:option>
+          <sf:option value="QUASIEXPERIMENTAL">
+            <s:message code="study.interTypeExp.quasiexperimental" />
+          </sf:option>
+        </sf:select>
+        <s:message code="study.interTypeExp.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
       </div>
-      <s:message code="study.interArms.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
+    </div>
+    <!-- study.interTypeDes -->
+    <div class="form-group">
+      <div class="col-sm-12">
+        <label class="control-label " for="study.interTypeDes"><s:message code="study.interTypeDes" /></label>
+        <sf:select path="study.interTypeDes" class="form-control">
+          <sf:option value="">
+            <s:message code="gen.select" />
+          </sf:option>
+          <sf:option value="REPEATEDMEASURES">
+            <s:message code="study.interTypeDes.repeatedmeasures" />
+          </sf:option>
+          <sf:option value="GROUPCOMPARISON">
+            <s:message code="study.interTypeDes.groupcomparison" />
+          </sf:option>
+          <sf:option value="MIXEDDESIGN">
+            <s:message code="study.interTypeDes.mixeddesign" />
+          </sf:option>
+        </sf:select>
+        <s:message code="study.interTypeDes.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
+      </div>
+    </div>
+    <!-- study.interTypeLab -->
+    <div class="form-group">
+      <div class="col-sm-12">
+        <label class="control-label " for="study.interTypeLab"><s:message code="study.interTypeLab" /></label>
+        <sf:select path="study.interTypeLab" class="form-control">
+          <sf:option value="">
+            <s:message code="gen.select" />
+          </sf:option>
+          <sf:option value="LABORATORY">
+            <s:message code="study.interTypeLab.laboratory" />
+          </sf:option>
+          <sf:option value="FIELD">
+            <s:message code="study.interTypeLab.field" />
+          </sf:option>
+        </sf:select>
+        <s:message code="study.interTypeLab.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
+      </div>
+    </div>
+    <!-- study.randomization -->
+    <div class="form-group">
+      <div class="col-sm-12">
+        <label class="control-label " for="study.randomization"><s:message code="study.randomization" /></label>
+        <sf:select path="study.randomization" class="form-control">
+          <sf:option value="">
+            <s:message code="gen.select" />
+          </sf:option>
+          <sf:option value="RANDOMIZED">
+            <s:message code="study.randomization.randomized" />
+          </sf:option>
+          <sf:option value="NONRANDOMIZED">
+            <s:message code="study.randomization.nonrandomized" />
+          </sf:option>
+        </sf:select>
+        <s:message code="study.randomization.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
+      </div>
+    </div>
+    <!-- study.interArms -->
+    <div class="form-group">
+      <div class="col-sm-12">
+        <label class="control-label " for="study.interArms"><s:message code="study.interArms" /></label>
+        <div class="panel panel-default panel-body margin-bottom-0">
+          <c:forEach items="${StudyForm.study.interArms}" varStatus="loop">
+            <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
+          </c:forEach>
+          <div class="input-group-btn">
+            <button class="btn btn-sm btn-success" type="button">
+              <s:message code="gen.add" />
+            </button>
           </div>
         </div>
-      </c:if>
+        <s:message code="study.interArms.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
+      </div>
     </div>
   </div>
   <!-- study.measOccName -->
@@ -299,14 +239,7 @@
         </div>
       </div>
       <s:message code="study.measOccName.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.surveyType -->
@@ -328,14 +261,7 @@
         </sf:option>
       </sf:select>
       <s:message code="study.surveyType.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.constructs -->
@@ -352,14 +278,7 @@
                     code="study.constructs.name" />&nbsp;<s:message text="${loop.index + 1}" /></label>
                 <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control" />
                 <s:message code="study.constructs.name.help" var="appresmess" />
-                <c:if test="${not empty appresmess}">
-                  <div class="row help-block margin-bottom-0">
-                    <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-                    <div class="col-sm-11">
-                      <s:message text="${appresmess}" />
-                    </div>
-                  </div>
-                </c:if>
+                <%@ include file="../templates/helpblock.jsp"%>
               </div>
               <!-- study.constructs.type -->
               <div class="col-sm-6 margin-bottom-0">
@@ -383,14 +302,7 @@
                   </sf:option>
                 </sf:select>
                 <s:message code="study.constructs.type.help" var="appresmess" />
-                <c:if test="${not empty appresmess}">
-                  <div class="row help-block margin-bottom-0">
-                    <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-                    <div class="col-sm-11">
-                      <s:message text="${appresmess}" />
-                    </div>
-                  </div>
-                </c:if>
+                <%@ include file="../templates/helpblock.jsp"%>
               </div>
             </div>
             <!-- study.constructs.other -->
@@ -400,14 +312,7 @@
                     code="study.constructs.other" /></label>
                 <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control" />
                 <s:message code="study.constructs.other.help" var="appresmess" />
-                <c:if test="${not empty appresmess}">
-                  <div class="row help-block margin-bottom-0">
-                    <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-                    <div class="col-sm-11">
-                      <s:message text="${appresmess}" />
-                    </div>
-                  </div>
-                </c:if>
+                <%@ include file="../templates/helpblock.jsp"%>
               </div>
             </div>
           </div>
@@ -419,14 +324,7 @@
         </div>
       </div>
       <s:message code="study.constructs.help" var="appresmess" />
-      <c:if test="${not empty appresmess}">
-        <div class="row help-block">
-          <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-          <div class="col-sm-11">
-            <s:message text="${appresmess}" />
-          </div>
-        </div>
-      </c:if>
+     <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.instrument -->

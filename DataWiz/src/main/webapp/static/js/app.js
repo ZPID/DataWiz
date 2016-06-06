@@ -32,15 +32,9 @@ $tag_box = null;
     } // loading Study Content
     else if (window.location.pathname.search("/study") > 0) {
       startAccordion();
-      $('.input-daterange').datepicker({
-        format : "dd/mm/yyyy",
-        weekStart : 1,
-        todayBtn : "linked",
-        clearBtn : true,
-        language : "de",
-        todayHighlight : true
-
-      });
+      startDatePicker();
+      setStudySubmenu(null);
+      showorHideStudyContent();
     } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {
       startAccordion();
@@ -59,6 +53,11 @@ $tag_box = null;
 $(".projectContentClick").click(function() {
   $("#pagePosi").val($(this).attr("id"));
   setProjectSubmenu($(this).attr("id"));
+});
+
+$(".studyContentClick").click(function() {
+  $("#jQueryMap").val($(this).attr("id"));
+  setStudySubmenu($(this).attr("id"));
 });
 
 /**
@@ -108,6 +107,29 @@ function setProjectSubmenu(id) {
   }
 }
 
+function setStudySubmenu(id) {
+  if (id != null) {
+    if (!$("#" + id).hasClass("active")) {
+      $(".studyContent").hide();
+      $(".studyContentClick").removeClass("active");
+      $("#" + id).addClass("active");
+      $("#" + id.replace('Click', 'Content')).show();
+    }
+  } else {
+    $(".studyContent").hide();
+    $(".studyContentClick").removeClass("active");
+    switch ($("#jQueryMap").val()) {
+    case "contri":
+
+      break;
+    default:
+      $("#basisDataActiveClick").addClass("active");
+      $("#basisDataActiveContent").show();
+      break;
+    }
+  }
+}
+
 /**
  * 
  * @param sParam
@@ -149,6 +171,17 @@ function startAccordion() {
   $('#accordion').on('shown.bs.collapse', function(e) {
     toggleChevron(e);
   })
+}
+
+function startDatePicker() {
+  $('.input-daterange').datepicker({
+    format : "dd/mm/yyyy",
+    weekStart : 1,
+    todayBtn : "linked",
+    clearBtn : true,
+    language : "de",
+    todayHighlight : true
+  });
 }
 
 function toggleChevron(e) {
@@ -236,6 +269,25 @@ function showorHideDMPContent() {
   switchViewIfSelected('selectinternalCopyright', 1);
   switchViewIfSelectedMulti('selectspecificCosts', 'reference,lifecycle,other');
 }
+
+function showorHideStudyContent() {
+  switchViewIfSelected('selectThirdParty', 1);
+  switchViewIfSelected('selectCopyright', 1);
+  switchViewIfSelected('selectPersDataPres', 'ANONYMOUS');
+  switchViewIfSelected('selectPersDataColl', 1);
+  switchViewIfSelected('selectConsent', 1);
+  switchViewIfSelected('selectIrb', 1);
+  switchViewIfSelected('selectResponsibility', 'OTHER');
+  switchViewIfChecked('selectCollectionModesIP');
+  switchViewIfChecked('selectCollectionModesINP');
+  switchViewIfSelected('selectSampMethod', 'OTHER');
+  switchViewIfChecked('selectUsedSourFormat');
+  switchViewIfSelected('selectSourTrans', 'COMPLEX');
+  switchViewIfSelected('selectObsUnit', 'OTHER');
+  switchViewIfChecked('selectExperimentalIntervention');
+  switchViewIfSelected('selectPrevWork', 'OTHER');
+}
+
 
 /**
  * 

@@ -1,10 +1,10 @@
 <%@ include file="../templates/includes.jsp"%>
-<div id="ethicalActiveContent" class="projectContent contentMargin">
+<div id="ethicalActiveContent" class="studyContent">
   <!-- Infotext -->
   <div class="form-group">
     <div class="col-sm-12">
       <div class="well marginTop1">
-        <s:message code="dmp.edit.admindata.info" />
+        <s:message code="study.ethicaldata.info" />
       </div>
     </div>
   </div>
@@ -102,11 +102,11 @@
         <%@ include file="../templates/helpblock.jsp"%>
       </div>
     </div>
-  </div>
-  <div id="contentPersDataPres">
-    <!-- study.anonymProc -->
-    <c:set var="input_vars" value="study.anonymProc;study.anonymProc; ; ;row; ; ;" />
-    <%@ include file="../templates/gen_textarea.jsp"%>
+    <div id="contentPersDataPres">
+      <!-- study.anonymProc -->
+      <c:set var="input_vars" value="study.anonymProc;study.anonymProc; ; ;row; ; ;" />
+      <%@ include file="../templates/gen_textarea.jsp"%>
+    </div>
   </div>
   <!-- study.copyright -->
   <div class="form-group">
@@ -128,6 +128,28 @@
   <div id="contentCopyright">
     <!-- study.copyrightHolder -->
     <c:set var="input_vars" value="study.copyrightHolder;study.copyrightHolder; ; ;row; ; ;" />
+    <%@ include file="../templates/gen_textarea.jsp"%>
+  </div>
+  <!-- study.thirdParty -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label class="control-label " for="study.thirdParty"><s:message code="study.thirdParty" /></label>
+      <sf:select path="study.copyright" class="form-control" id="selectThirdParty"
+        onchange="switchViewIfSelected('selectThirdParty', 1);">
+        <sf:option value="0">
+          <s:message code="gen.no" />
+        </sf:option>
+        <sf:option value="1">
+          <s:message code="gen.yes" />
+        </sf:option>
+      </sf:select>
+      <s:message code="study.thirdParty.help" var="appresmess" />
+      <%@ include file="../templates/helpblock.jsp"%>
+    </div>
+  </div>
+  <div id="contentThirdParty">
+    <!-- study.thirdPartyHolder -->
+    <c:set var="input_vars" value="study.thirdPartyHolder;study.thirdPartyHolder; ; ;row; ; ;" />
     <%@ include file="../templates/gen_textarea.jsp"%>
   </div>
 </div>

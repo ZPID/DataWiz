@@ -251,7 +251,7 @@ public class StudyDTO implements Serializable {
   private boolean thirdParty;
   /** Study80 */
   @Size(min = 0, max = 1000, groups = StEthicalVal.class)
-  private String dataSharing;
+  private String thirdPartyHolder;
 
   public long getId() {
     return id;
@@ -883,12 +883,12 @@ public class StudyDTO implements Serializable {
     this.thirdParty = thirdParty;
   }
 
-  public String getDataSharing() {
-    return dataSharing;
+  public String getThirdPartyHolder() {
+    return thirdPartyHolder;
   }
 
-  public void setDataSharing(String dataSharing) {
-    this.dataSharing = dataSharing;
+  public void setThirdPartyHolder(String thirdPartyHolder) {
+    this.thirdPartyHolder = thirdPartyHolder;
   }
 
 }
