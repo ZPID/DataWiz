@@ -10,7 +10,6 @@ $tag_box = null;
  */
 (function($, window, document, undefined) {
   $(document).ready(function() {
-
     $('[data-toggle="tooltip"]').tooltip()
     // loading DMP Content
     if (window.location.pathname.search("/dmp") > 0) {
@@ -31,10 +30,11 @@ $tag_box = null;
       startTagging();
     } // loading Study Content
     else if (window.location.pathname.search("/study") > 0) {
+      scrollToPosition();
       startAccordion();
       startDatePicker();
       setStudySubmenu(null);
-      showorHideStudyContent();
+      showorHideStudyContent();      
     } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {
       startAccordion();
@@ -119,8 +119,9 @@ function setStudySubmenu(id) {
     $(".studyContent").hide();
     $(".studyContentClick").removeClass("active");
     switch ($("#jQueryMap").val()) {
-    case "contri":
-
+    case "STUDYDESIGN":
+      $("#designActiveClick").addClass("active");
+      $("#designActiveContent").show();
       break;
     default:
       $("#basisDataActiveClick").addClass("active");
@@ -287,7 +288,6 @@ function showorHideStudyContent() {
   switchViewIfChecked('selectExperimentalIntervention');
   switchViewIfSelected('selectPrevWork', 'OTHER');
 }
-
 
 /**
  * 
@@ -505,3 +505,23 @@ function checkStrength(password) {
 /*
  * end password check function
  */
+
+function setScrollPosition() {
+  var position = 0;
+  if (typeof window.pageYOffset != 'undefined') {
+    position = window.pageYOffset;
+  } else if (typeof document.documentElement.scrollTop != 'undefined' && document.documentElement.scrollTop > 0) {
+    position = document.documentElement.scrollTop;
+  } else if (typeof document.body.scrollTop != 'undefined') {
+    position = document.body.scrollTop;
+  }
+  $("#scrollPosition").val(position);
+}
+
+function scrollToPosition() {  
+  var position = $("#scrollPosition").val();
+  if (typeof position != 'undefined' && position > 0) {
+    window.scrollTo(0, position);
+    $("#scrollPosition").val(0);
+  }
+}

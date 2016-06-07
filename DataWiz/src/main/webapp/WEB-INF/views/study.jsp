@@ -46,6 +46,7 @@
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal">
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <sf:hidden path="delPos" />
+        <sf:hidden path="scrollPosition"/>
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
         <jsp:include page="forms/study_general.jsp" />

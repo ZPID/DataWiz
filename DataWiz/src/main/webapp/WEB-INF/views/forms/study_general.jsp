@@ -27,7 +27,7 @@
           <div class="input-group margin-bottom-10">
             <input type="text" class="form-control" value="${fn:trim(contriName)}" disabled="disabled" /><span
               class="input-group-btn"> <sf:button class="btn btn-danger" name="deleteContri"
-                onclick="document.getElementById('delPos').value=${coloop.count-1}">
+                onclick="document.getElementById('delPos').value=${coloop.count-1}; setScrollPosition();">
                 <s:message code="gen.delete" />
               </sf:button>
             </span>
@@ -44,7 +44,7 @@
                 <sf:option value="${coloop.index}">${fn:trim(contriName)}</sf:option>
               </c:forEach>
             </sf:select>
-            <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri">
+            <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri" onclick="setScrollPosition();">
                 <s:message code="gen.add" />
               </sf:button>
             </span>
@@ -123,7 +123,7 @@
           <sf:textarea rows="1" path="study.software[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success">
+          <sf:button class="btn btn-sm btn-success" name="addSoftware" onclick="setScrollPosition();">
             <s:message code="gen.add" />
           </sf:button>
         </div>
@@ -141,7 +141,7 @@
           <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success">
+          <sf:button class="btn btn-sm btn-success" name="addPubOnData" onclick="setScrollPosition();">
             <s:message code="gen.add" />
           </sf:button>
         </div>
@@ -159,7 +159,7 @@
           <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success">
+          <sf:button class="btn btn-sm btn-success" name="addConflInterests" onclick="setScrollPosition();">
             <s:message code="gen.add" />
           </sf:button>
         </div>

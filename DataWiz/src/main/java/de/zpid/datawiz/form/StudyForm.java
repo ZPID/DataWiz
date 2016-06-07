@@ -26,6 +26,7 @@ public class StudyForm implements Serializable {
 
   private int hiddenVar;
   private int delPos;
+  private int scrollPosition;
 
   public StudyDTO getStudy() {
     return study;
@@ -81,6 +82,14 @@ public class StudyForm implements Serializable {
 
   public void setDelPos(int delPos) {
     this.delPos = delPos;
+  }
+
+  public int getScrollPosition() {
+    return scrollPosition;
+  }
+
+  public void setScrollPosition(int scrollPosition) {
+    this.scrollPosition = scrollPosition;
   }
 
 }

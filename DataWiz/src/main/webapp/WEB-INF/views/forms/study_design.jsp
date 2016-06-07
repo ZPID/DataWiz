@@ -37,9 +37,9 @@
           </div>
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success"  name="addObjectives" onclick="setScrollPosition();">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.objectives.help" var="appresmess" />
@@ -55,9 +55,9 @@
           <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success" name="addRelTheorys" onclick="setScrollPosition();">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.relTheorys.help" var="appresmess" />
@@ -193,9 +193,9 @@
             <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
           </c:forEach>
           <div class="input-group-btn">
-            <button class="btn btn-sm btn-success" type="button">
+            <sf:button class="btn btn-sm btn-success" name="addInterArms" onclick="setScrollPosition();">
               <s:message code="gen.add" />
-            </button>
+            </sf:button>
           </div>
         </div>
         <s:message code="study.interArms.help" var="appresmess" />
@@ -233,9 +233,9 @@
           </table>
         </div>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success" name="addMeasOccName" onclick="setScrollPosition();">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.measOccName.help" var="appresmess" />
@@ -318,13 +318,13 @@
           </div>
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success" >
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.constructs.help" var="appresmess" />
-     <%@ include file="../templates/helpblock.jsp"%>
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.instrument -->
@@ -403,9 +403,9 @@
           </c:forEach>
         </div>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success" >
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
     </div>
