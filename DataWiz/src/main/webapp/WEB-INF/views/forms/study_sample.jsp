@@ -17,9 +17,9 @@
           <sf:textarea rows="1" path="study.eligibilities[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
         <div class="input-group-btn">
-          <button class="btn btn-sm btn-success" type="button">
+          <sf:button class="btn btn-sm btn-success" name="addEligibilities" onclick="setScrollPosition();">
             <s:message code="gen.add" />
-          </button>
+          </sf:button>
         </div>
       </div>
       <s:message code="study.eligibilities.help" var="appresmess" />

@@ -17,7 +17,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyConstructDTO;
 import de.zpid.datawiz.dto.StudyDTO;
+import de.zpid.datawiz.dto.StudyInstrumentDTO;
 import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.StudyObjectivesDTO;
 import de.zpid.datawiz.dto.UserDTO;
@@ -263,7 +265,7 @@ public class StudyController extends SuperController {
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
-  
+
   /**
    * 
    * appends a StudyListTypesDTO to the List of InterArms items. If the List is NULL, a new ArrayList is created before
@@ -285,11 +287,11 @@ public class StudyController extends SuperController {
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
-  
+
   /**
    * 
-   * appends a StudyListTypesDTO to the List of MeasOccName items. If the List is NULL, a new ArrayList is created before
-   * the new item is appended.
+   * appends a StudyListTypesDTO to the List of MeasOccName items. If the List is NULL, a new ArrayList is created
+   * before the new item is appended.
    * 
    * @param sForm
    *          including all study data
@@ -307,7 +309,72 @@ public class StudyController extends SuperController {
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
- 
+
+  /**
+   * 
+   * appends a StudyConstructDTO to the List of Construct items. If the List is NULL, a new ArrayList is created before
+   * the new item is appended.
+   * 
+   * @param sForm
+   *          including all study data
+   * @param model
+   *          transporting the important parameter to the view
+   * @return mapping to "study.jsp"
+   */
+  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addConstruct")
+  public String addConstruct(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
+    log.trace("Entering addConstruct");
+    if (sForm.getStudy().getConstructs() == null)
+      sForm.getStudy().setConstructs(new ArrayList<StudyConstructDTO>());
+    sForm.getStudy().getConstructs().add((StudyConstructDTO) context.getBean("StudyConstructDTO"));
+    model.put("studySubMenu", true);
+    model.put("jQueryMap", PageState.STUDYDESIGN);
+    return "study";
+  }
+
+  /**
+   * 
+   * appends a StudyInstrumentDTO to the List of Instrument items. If the List is NULL, a new ArrayList is created
+   * before the new item is appended.
+   * 
+   * @param sForm
+   *          including all study data
+   * @param model
+   *          transporting the important parameter to the view
+   * @return mapping to "study.jsp"
+   */
+  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addInstrument")
+  public String addInstrument(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
+    log.trace("Entering addInstrument");
+    if (sForm.getStudy().getInstruments() == null)
+      sForm.getStudy().setInstruments(new ArrayList<StudyInstrumentDTO>());
+    sForm.getStudy().getInstruments().add((StudyInstrumentDTO) context.getBean("StudyInstrumentDTO"));
+    model.put("studySubMenu", true);
+    model.put("jQueryMap", PageState.STUDYDESIGN);
+    return "study";
+  }
+
+  /**
+   * 
+   * appends a StudyListTypesDTO to the List of Eligibilities items. If the List is NULL, a new ArrayList is created
+   * before the new item is appended.
+   * 
+   * @param sForm
+   *          including all study data
+   * @param model
+   *          transporting the important parameter to the view
+   * @return mapping to "study.jsp"
+   */
+  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addEligibilities")
+  public String addEligibilities(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
+    log.trace("Entering addEligibilities");
+    if (sForm.getStudy().getEligibilities() == null)
+      sForm.getStudy().setEligibilities(new ArrayList<StudyListTypesDTO>());
+    sForm.getStudy().getEligibilities().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    model.put("studySubMenu", true);
+    model.put("jQueryMap", PageState.STUDYSAMPLE);
+    return "study";
+  }
 
   /**
    * @param studyId

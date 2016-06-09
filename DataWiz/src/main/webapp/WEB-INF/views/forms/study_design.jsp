@@ -37,7 +37,7 @@
           </div>
         </c:forEach>
         <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success"  name="addObjectives" onclick="setScrollPosition();">
+          <sf:button class="btn btn-sm btn-success" name="addObjectives" onclick="setScrollPosition();">
             <s:message code="gen.add" />
           </sf:button>
         </div>
@@ -104,7 +104,7 @@
       <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
-  <div id="contentExperimentalIntervention">
+  <div class="contentExperimentalIntervention">
     <!-- study.interTypeExp -->
     <div class="form-group">
       <div class="col-sm-12">
@@ -212,16 +212,16 @@
           <table class="table table-hover">
             <thead>
               <tr>
-                <th class="col-sm-10">Zeitpunkt</th>
-                <th class="col-sm-1">Zeitdimension</th>
-                <th class="col-sm-1">Sortierung</th>
+                <th class="col-sm-10"><s:message code="study.measOccName.time" /></th>
+                <th class="col-sm-1 contentExperimentalIntervention"><s:message code="study.measOccName.dim" /></th>
+                <th class="col-sm-1"><s:message code="study.measOccName.sort" /></th>
               </tr>
             </thead>
             <tbody>
               <c:forEach items="${StudyForm.study.measOccName}" varStatus="loop">
                 <tr>
                   <td><sf:textarea rows="1" path="study.measOccName[${loop.index}].text" class="form-control" /></td>
-                  <td style="text-align: center;">
+                  <td style="text-align: center;" class="contentExperimentalIntervention">
                     <div class="checkbox form-group-clean">
                       <label><sf:checkbox path="study.measOccName[${loop.index}].timetable" /></label>
                     </div>
@@ -269,6 +269,7 @@
     <div class="col-sm-12">
       <label class="control-label " for="study.constructs"><s:message code="study.constructs" /></label>
       <div class="panel panel-default panel-body margin-bottom-0">
+        <input type="hidden" value="${StudyForm.study.constructs.size()}" id="constructSize" />
         <c:forEach items="${StudyForm.study.constructs}" varStatus="loop">
           <div class="panel panel-default panel-body margin-bottom-10">
             <!-- study.constructs.name -->
@@ -284,7 +285,9 @@
               <div class="col-sm-6 margin-bottom-0">
                 <label class="control-label " for="study.constructs[${loop.index}].type"><s:message
                     code="study.constructs.type" /></label>
-                <sf:select path="study.constructs[${loop.index}].type" class="form-control">
+                <sf:select path="study.constructs[${loop.index}].type" class="form-control"
+                  id="selectConstructType${loop.index}"
+                  onchange="switchViewIfSelected('selectConstructType${loop.index}', 'OTHER');">
                   <sf:option value="">
                     <s:message code="gen.select" />
                   </sf:option>
@@ -306,8 +309,8 @@
               </div>
             </div>
             <!-- study.constructs.other -->
-            <div class="form-group margin-bottom-0 margin-bottom-0">
-              <div class="col-sm-6 col-sm-offset-6 margin-bottom-0">
+            <div class="form-group margin-bottom-0" id="contentConstructType${loop.index}">
+              <div class="col-sm-6 col-sm-offset-6">
                 <label class="control-label " for="study.constructs[${loop.index}].other"><s:message
                     code="study.constructs.other" /></label>
                 <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control" />
@@ -318,7 +321,7 @@
           </div>
         </c:forEach>
         <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" >
+          <sf:button class="btn btn-sm btn-success" name="addConstruct" onclick="setScrollPosition();">
             <s:message code="gen.add" />
           </sf:button>
         </div>
@@ -403,7 +406,7 @@
           </c:forEach>
         </div>
         <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" >
+          <sf:button class="btn btn-sm btn-success" name="addInstrument" onclick="setScrollPosition();">
             <s:message code="gen.add" />
           </sf:button>
         </div>

@@ -34,7 +34,7 @@ $tag_box = null;
       startAccordion();
       startDatePicker();
       setStudySubmenu(null);
-      showorHideStudyContent();      
+      showorHideStudyContent();
     } // loading Panel Content
     else if (window.location.pathname.search("/panel") > 0) {
       startAccordion();
@@ -122,6 +122,10 @@ function setStudySubmenu(id) {
     case "STUDYDESIGN":
       $("#designActiveClick").addClass("active");
       $("#designActiveContent").show();
+      break;
+    case "STUDYSAMPLE":
+      $("#sampleActiveClick").addClass("active");
+      $("#sampleActiveContent").show();
       break;
     default:
       $("#basisDataActiveClick").addClass("active");
@@ -287,6 +291,9 @@ function showorHideStudyContent() {
   switchViewIfSelected('selectObsUnit', 'OTHER');
   switchViewIfChecked('selectExperimentalIntervention');
   switchViewIfSelected('selectPrevWork', 'OTHER');
+  for (var i = 0; i < $("#constructSize").val(); i++) {
+    switchViewIfSelected('selectConstructType' + i, 'OTHER');
+  }
 }
 
 /**
@@ -350,6 +357,7 @@ function switchViewIfChecked(name) {
   var selected = $("#" + name).is(':checked');
   name = name.replace('select', 'content');
   $("#" + name + "").toggle(selected);
+  $("." + name + "").toggle(selected);
 }
 
 function countChar(val) {
@@ -518,7 +526,7 @@ function setScrollPosition() {
   $("#scrollPosition").val(position);
 }
 
-function scrollToPosition() {  
+function scrollToPosition() {
   var position = $("#scrollPosition").val();
   if (typeof position != 'undefined' && position > 0) {
     window.scrollTo(0, position);
