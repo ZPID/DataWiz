@@ -13,6 +13,9 @@ public class FileDTO implements Serializable {
 
   private long id;
   private long projectId;
+  private long studyId;
+  private long recordID;
+  private long version;
   private long userId;
 
   private String fileName;
@@ -29,14 +32,17 @@ public class FileDTO implements Serializable {
     super();
   }
 
-  public FileDTO(int id, int projectId, int userId, String filename, String contentType, long fileSize,
-      String sha256Checksum, String sha1Checksum, String md5checksum, LocalDateTime uploadDate, BufferedImage thumbnail,
-      byte[] content) {
+  public FileDTO(long id, long projectId, long studyId, long recordID, long version, long userId, String fileName,
+      String contentType, long fileSize, String sha256Checksum, String sha1Checksum, String md5checksum,
+      LocalDateTime uploadDate, BufferedImage thumbnail, byte[] content) {
     super();
     this.id = id;
     this.projectId = projectId;
+    this.studyId = studyId;
+    this.recordID = recordID;
+    this.version = version;
     this.userId = userId;
-    this.fileName = filename;
+    this.fileName = fileName;
     this.contentType = contentType;
     this.fileSize = fileSize;
     this.sha256Checksum = sha256Checksum;
@@ -153,4 +159,29 @@ public class FileDTO implements Serializable {
   public void setUploadDate(LocalDateTime uploadDate) {
     this.uploadDate = uploadDate;
   }
+
+  public long getStudyId() {
+    return studyId;
+  }
+
+  public void setStudyId(long studyId) {
+    this.studyId = studyId;
+  }
+
+  public long getRecordID() {
+    return recordID;
+  }
+
+  public void setRecordID(long recordID) {
+    this.recordID = recordID;
+  }
+
+  public long getVersion() {
+    return version;
+  }
+
+  public void setVersion(long version) {
+    this.version = version;
+  }
+
 }

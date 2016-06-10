@@ -4,11 +4,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSBuckets;
+import com.mongodb.client.gridfs.GridFSUploadStream;
+import com.mongodb.client.gridfs.model.GridFSUploadOptions;
 
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
@@ -16,6 +24,9 @@ import de.zpid.datawiz.dto.ProjectDTO;
 @Repository
 @Scope("singleton")
 public class FileDAO extends SuperDAO {
+
+  @Autowired
+  MongoDatabase mongoDatabase;
 
   public FileDAO() {
     super();
@@ -110,4 +121,27 @@ public class FileDAO extends SuperDAO {
       log.debug("execute deleteFile id: " + id);
     return this.jdbcTemplate.update("DELETE FROM dw_files WHERE id = ? ", id);
   }
+
+  public String saveFileToMongo(FileDTO file) {
+    GridFSBucket gridFSBucket = GridFSBuckets.create(mongoDatabase, "project_files");
+    Document doc = new Document("type", file.getContentType());
+    doc.append("projectId", file.getProjectId());
+    doc.append("studyId", file.getStudyId());
+    doc.append("recordID", file.getRecordID());
+    doc.append("version", file.getVersion());
+    doc.append("userId", file.getUserId());
+    doc.append("fileName", file.getFileName());
+    doc.append("contentType", file.getContentType());
+    doc.append("fileSize", file.getFileSize());
+    doc.append("sha256Checksum", file.getSha256Checksum());
+    doc.append("sha1Checksum", file.getSha1Checksum());
+    doc.append("md5checksum", file.getMd5checksum());
+    GridFSUploadStream uploadStream = gridFSBucket.openUploadStream(file.getFileName().toString(),
+        new GridFSUploadOptions().metadata(doc));
+    uploadStream.write(file.getContent());
+    uploadStream.close();
+    return uploadStream.getFileId().toHexString();
+  }
+  
+  //TODO find funktionen = merke: {"metadata.projectId" : 1}
 }

@@ -48,6 +48,8 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/project")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class ProjectController extends SuperController {
+  
+
 
   public ProjectController() {
     super();
@@ -212,8 +214,12 @@ public class ProjectController extends SuperController {
           file.setSha1Checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("SHA-1"), file.getContent()));
           // file.setSha256Checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("SHA-256"),
           file.setProjectId(pForm.getProject().getId());
+          file.setStudyId(0);
+          file.setRecordID(0);
+          file.setVersion(0);
           file.setUserId(user.getId());
           file.setUploadDate(LocalDateTime.now());
+          fileDAO.saveFileToMongo(file);
           fileDAO.saveFile(file);
         }
       }

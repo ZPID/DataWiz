@@ -45,6 +45,8 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     viewResolver.setSuffix(".jsp");
     return viewResolver;
   }
+  
+  
 
   @Bean(name = "messageSource")
   public MessageSource resourceBundleMessageSource() {
