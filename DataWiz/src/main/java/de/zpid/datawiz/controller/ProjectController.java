@@ -2,7 +2,6 @@ package de.zpid.datawiz.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
@@ -41,15 +40,12 @@ import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
-import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = "/project")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class ProjectController extends SuperController {
-  
-
 
   public ProjectController() {
     super();
@@ -104,7 +100,6 @@ public class ProjectController extends SuperController {
     model.put("subnaviActive", PageState.PROJECT.name());
     model.put("ProjectForm", pForm);
     return "project";
-
   }
 
   /**
@@ -190,7 +185,7 @@ public class ProjectController extends SuperController {
    */
   @RequestMapping(value = { "/{pid}/upload" }, method = RequestMethod.POST)
   public @ResponseBody ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
-      @ModelAttribute("ProjectForm") ProjectForm pForm) {
+      @ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable long pid) {
     if (log.isDebugEnabled()) {
       log.debug("execute uploadFile");
     }
@@ -206,26 +201,31 @@ public class ProjectController extends SuperController {
     try {
       Iterator<String> itr = request.getFileNames();
       while (itr.hasNext()) {
-        FileDTO file = (FileDTO) context.getBean("FileDTO");
-        MultipartFile mpf = request.getFile(itr.next());
+        final FileDTO file = (FileDTO) context.getBean("FileDTO");
+        final MultipartFile mpf = request.getFile(itr.next());
         if (mpf != null) {
           file.setMultipartFile(mpf);
-          file.setMd5checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("MD5"), file.getContent()));
-          file.setSha1Checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("SHA-1"), file.getContent()));
-          // file.setSha256Checksum(FileUtil.getFileChecksum(MessageDigest.getInstance("SHA-256"),
+          file.setMd5checksum(fileUtil.getFileChecksum(MessageDigest.getInstance("MD5"), file.getContent()));
+          file.setSha1Checksum(fileUtil.getFileChecksum(MessageDigest.getInstance("SHA-1"), file.getContent()));
+          file.setSha256Checksum(fileUtil.getFileChecksum(MessageDigest.getInstance("SHA-256"), file.getContent()));
           file.setProjectId(pForm.getProject().getId());
           file.setStudyId(0);
           file.setRecordID(0);
           file.setVersion(0);
           file.setUserId(user.getId());
           file.setUploadDate(LocalDateTime.now());
-          fileDAO.saveFileToMongo(file);
-          fileDAO.saveFile(file);
+          file.setProjectId(pid);
+          String filePath = fileUtil.saveFile(file);
+          if (filePath != null && !filePath.isEmpty()) {
+            file.setFilePath(filePath);
+            fileDAO.saveFile(file);
+          }
         }
       }
     } catch (Exception e) {
+      // TODO delete file
       log.warn("Exception during file upload: " + e);
-      return new ResponseEntity<String>("{\"test\": \"test\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return new ResponseEntity<String>("{}", HttpStatus.OK);
   }
@@ -237,7 +237,7 @@ public class ProjectController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = "/multisaved")
+  @RequestMapping(value = {"/multisaved", "/{pid}/multisaved"})
   public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
@@ -257,19 +257,20 @@ public class ProjectController extends SuperController {
    * @return
    */
   @RequestMapping(value = { "/{pid}/download/{docId}" }, method = RequestMethod.GET)
-  public String downloadDocument(@PathVariable int pid, @PathVariable int docId, HttpServletResponse response,
-      RedirectAttributes redirectAttributes) {
+  public @ResponseBody ResponseEntity<String> downloadDocument(@PathVariable long pid, @PathVariable long docId,
+      HttpServletResponse response, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute downloadDocument id=" + docId);
     }
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
-      return "redirect:/login";
+      return new ResponseEntity<String>("{}", HttpStatus.OK);
     }
     FileDTO file = null;
     try {
       file = fileDAO.findById(docId);
+      fileUtil.setFileBytes(file);
       response.setContentType(file.getContentType());
       response.setContentLength(file.getContent().length);
       response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
@@ -281,7 +282,7 @@ public class ProjectController extends SuperController {
     redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
     redirectAttributes.addFlashAttribute("saveStateMsg", "Downloaderror");
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
-    return "redirect:/project/" + pid;
+    return new ResponseEntity<String>("{}", HttpStatus.OK);
   }
 
   /**
@@ -293,7 +294,7 @@ public class ProjectController extends SuperController {
    * @return
    */
   @RequestMapping(value = { "/{pid}/delDoc/{docId}" }, method = RequestMethod.GET)
-  public String deleteDocument(@PathVariable int pid, @PathVariable int docId, HttpServletResponse response,
+  public String deleteDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute deleteDocument id=" + docId);
@@ -304,6 +305,8 @@ public class ProjectController extends SuperController {
       return "redirect:/login";
     }
     try {
+      FileDTO file = fileDAO.findById(docId);
+      fileUtil.deleteFile(file);
       fileDAO.deleteFile(docId);
     } catch (Exception e) {
       // TODO: handle exception
@@ -321,20 +324,21 @@ public class ProjectController extends SuperController {
    * @param response
    */
   @RequestMapping(value = { "/{pid}/img/{imgId}" }, method = RequestMethod.GET)
-  private void setThumbnailImage(@PathVariable int pid, @PathVariable int imgId, HttpServletResponse response) {
+  private void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
     FileDTO file;
     final int thumbHeight = 98;
     final int maxWidth = 160;
     try {
       file = fileDAO.findById(imgId);
-      if (file.getContentType().substring(0, 5).equalsIgnoreCase("image") && file.getContent() != null) {
+      fileUtil.setFileBytes(file);
+      if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null
+          && !file.getContentType().toLowerCase().contains("icon")) {
         OutputStream sos = response.getOutputStream();
-        InputStream in = new ByteArrayInputStream(file.getContent());
-        BufferedImage bImage = ImageIO.read(in);
+        BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
         int scale = bImage.getHeight() / thumbHeight;
-        BufferedImage bf = FileUtil.scaleImage(bImage,
+        BufferedImage bf = fileUtil.scaleImage(bImage,
             (bImage.getWidth() / scale > maxWidth) ? maxWidth : bImage.getWidth() / scale, thumbHeight);
-        response.setContentType(file.getContentType());
+        response.setContentType(file.getContentType());        
         ImageIO.write(bf, "jpg", sos);
         sos.flush();
         sos.close();

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,32 +27,8 @@ public class FileDTO implements Serializable {
   private String md5checksum;
   private LocalDateTime uploadDate;
   private BufferedImage thumbnail;
+  private String filePath;
   private byte[] content;
-
-  public FileDTO() {
-    super();
-  }
-
-  public FileDTO(long id, long projectId, long studyId, long recordID, long version, long userId, String fileName,
-      String contentType, long fileSize, String sha256Checksum, String sha1Checksum, String md5checksum,
-      LocalDateTime uploadDate, BufferedImage thumbnail, byte[] content) {
-    super();
-    this.id = id;
-    this.projectId = projectId;
-    this.studyId = studyId;
-    this.recordID = recordID;
-    this.version = version;
-    this.userId = userId;
-    this.fileName = fileName;
-    this.contentType = contentType;
-    this.fileSize = fileSize;
-    this.sha256Checksum = sha256Checksum;
-    this.sha1Checksum = sha1Checksum;
-    this.md5checksum = md5checksum;
-    this.uploadDate = uploadDate;
-    this.thumbnail = thumbnail;
-    this.content = content;
-  }
 
   public void setMultipartFile(MultipartFile multipartFile) throws IOException {
     if (this.content == null || this.content.length <= 0)
@@ -184,4 +161,20 @@ public class FileDTO implements Serializable {
     this.version = version;
   }
 
+  public String getFilePath() {
+    return filePath;
+  }
+
+  public void setFilePath(String filePath) {
+    this.filePath = filePath;
+  }
+
+  @Override
+  public String toString() {
+    return "FileDTO [id=" + id + ", projectId=" + projectId + ", studyId=" + studyId + ", recordID=" + recordID
+        + ", version=" + version + ", userId=" + userId + ", fileName=" + fileName + ", contentType=" + contentType
+        + ", fileSize=" + fileSize + ", sha256Checksum=" + sha256Checksum + ", sha1Checksum=" + sha1Checksum
+        + ", md5checksum=" + md5checksum + ", uploadDate=" + uploadDate + ", thumbnail=" + thumbnail + ", filePath="
+        + filePath + ", content=" + Arrays.toString(content) + "]";
+  }
 }

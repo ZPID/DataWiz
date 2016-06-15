@@ -201,7 +201,7 @@ Dropzone.options.myDropzone = {
   autoDiscover : false,
   parallelUploads : 20,
   // maxFiles : 2,
-  maxFilesize : 256, // MB
+  maxFilesize : 2048, // MB
   dictMaxFilesExceeded : $('#maxFiles').val(),
   dictResponseError : $('#responseError').val(),
   dictDefaultMessage : $('#defaultMsg').val(),

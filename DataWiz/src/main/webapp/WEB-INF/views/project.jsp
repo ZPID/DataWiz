@@ -365,16 +365,19 @@
         <ul class="list-group" id="file">
           <c:forEach items="${ProjectForm.files}" var="file">
             <c:set var="ctype" value="${fn:split(file.contentType, '/')}" />
+            <c:set var="namearr" value="${fn:split(file.fileName, '.')}" />
+            <c:set var="basename" value="${namearr[fn:length(namearr)-1]}" />
             <li class="list-group-item">
               <!-- Image -->
               <div class="form-group row">
                 <div class="col-md-2">
                   <c:choose>
-                    <c:when test="${ctype[0]=='image' || ctype[0]=='IMAGE'}">
-                      <img alt="" src="${ProjectForm.project.id}/img/${file.id}">
+                    <c:when test="${(ctype[0]=='image' || ctype[0]=='IMAGE') && basename != 'ico'}">
+                      <img style="padding-left: 14px" alt="${file.fileName}"
+                        src="${ProjectForm.project.id}/img/${file.id}">
                     </c:when>
                     <c:otherwise>
-                      <img alt="" src="<c:url value="/static/images/fileformat/${ctype[fn:length(ctype)-1]}.png" />">
+                      <img alt="" src="<c:url value="/static/images/fileformat/${fn:toLowerCase(basename)}.png" />">
                     </c:otherwise>
                   </c:choose>
                 </div>

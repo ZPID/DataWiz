@@ -27,6 +27,7 @@ import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ProjectUtil;
 
 public class SuperController {
@@ -67,6 +68,8 @@ public class SuperController {
   protected PasswordEncoder passwordEncoder;
   @Autowired
   protected ProjectUtil pUtil;
+  @Autowired
+  protected FileUtil fileUtil;
 
   protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
