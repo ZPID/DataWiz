@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -24,6 +26,8 @@ import de.zpid.datawiz.dto.UserDTO;
 @Repository
 @Scope("singleton")
 public class ProjectDAO extends SuperDAO {
+  
+  private static Logger log = LogManager.getLogger(ProjectDAO.class);
 
   public ProjectDAO() {
     super();

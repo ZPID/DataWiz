@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
@@ -19,6 +21,8 @@ import de.zpid.datawiz.enumeration.AccountState;
 @Repository
 @Scope("singleton")
 public class UserDAO extends SuperDAO {
+  
+  private static Logger log = LogManager.getLogger(UserDAO.class);
 
   public UserDAO() {
     super();

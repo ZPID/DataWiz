@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,6 +16,8 @@ import de.zpid.datawiz.dto.UserRoleDTO;
 @Repository
 @Scope("singleton")
 public class RoleDAO extends SuperDAO {
+  
+  private static Logger log = LogManager.getLogger(RoleDAO.class);
 
   public RoleDAO() {
     super();

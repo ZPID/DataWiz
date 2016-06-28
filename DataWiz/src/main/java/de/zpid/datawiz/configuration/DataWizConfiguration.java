@@ -1,15 +1,23 @@
 package de.zpid.datawiz.configuration;
 
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Locale;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -28,11 +36,15 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import de.zpid.datawiz.util.MinioDAO;
+
 @Configuration
 @EnableWebMvc
 @ComponentScan(basePackages = "de.zpid.datawiz")
 @PropertySource("classpath:datawiz.properties")
 public class DataWizConfiguration extends WebMvcConfigurerAdapter {
+
+  private static Logger log = LogManager.getLogger(DataWizConfiguration.class);
 
   @Autowired
   private Environment env;
@@ -43,10 +55,9 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     viewResolver.setViewClass(JstlView.class);
     viewResolver.setPrefix("/WEB-INF/views/");
     viewResolver.setSuffix(".jsp");
+    log.info("viewResolver succesfully loaded");
     return viewResolver;
   }
-  
-  
 
   @Bean(name = "messageSource")
   public MessageSource resourceBundleMessageSource() {
@@ -54,6 +65,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale/DMPResources",
         "classpath:locale/EmailResources", "classpath:locale/StudyResources");
     resolver.setDefaultEncoding("UTF-8");
+    log.info("messageSource succesfully loaded");
     return resolver;
   }
 
@@ -61,6 +73,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public LocaleResolver localeResolver() {
     CookieLocaleResolver resolver = new CookieLocaleResolver();
     resolver.setDefaultLocale(new Locale("de"));
+    log.info("localeResolver succesfully loaded");
     return resolver;
   }
 
@@ -68,6 +81,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public SmartValidator validator() {
     LocalValidatorFactoryBean sm = new LocalValidatorFactoryBean();
     sm.setValidationMessageSource(resourceBundleMessageSource());
+    log.info("validator succesfully loaded");
     return sm;
   }
 
@@ -75,6 +89,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public CommonsMultipartResolver multipartResolver() {
     CommonsMultipartResolver resolver = new CommonsMultipartResolver();
     resolver.setDefaultEncoding("utf-8");
+    log.info("multipartResolver succesfully loaded");
     return resolver;
   }
 
@@ -85,7 +100,14 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     dataSource.setUrl(env.getRequiredProperty("dataSource.url"));
     dataSource.setUsername(env.getRequiredProperty("dataSource.username"));
     dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
+    log.info("dataSource succesfully loaded");
     return dataSource;
+  }
+
+  @Bean(name = "minioDAO")
+  @Scope("singleton")
+  public MinioDAO minioDAO() {
+    return new MinioDAO(env);
   }
 
   @Override
@@ -103,5 +125,19 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   @Override
   public void configurePathMatch(PathMatchConfigurer matcher) {
     matcher.setUseRegisteredSuffixPatternMatch(true);
+  }
+
+  @PreDestroy
+  public void destroy() {
+    LogManager.shutdown();
+    Enumeration<Driver> drivers = DriverManager.getDrivers();
+    while (drivers.hasMoreElements()) {
+      Driver driver = drivers.nextElement();
+      try {
+        DriverManager.deregisterDriver(driver);
+      } catch (SQLException e) {
+        e.printStackTrace();
+      }
+    }
   }
 }

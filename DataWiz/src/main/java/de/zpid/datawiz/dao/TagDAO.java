@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +16,8 @@ import de.zpid.datawiz.dto.ProjectDTO;
 @Repository
 @Scope("singleton")
 public class TagDAO extends SuperDAO {
+  
+  private static Logger log = LogManager.getLogger(TagDAO.class);
 
   public TagDAO() {
     super();

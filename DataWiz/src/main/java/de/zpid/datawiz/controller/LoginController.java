@@ -6,6 +6,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AccountExpiredException;
@@ -37,6 +39,8 @@ import de.zpid.datawiz.util.UserUtil;
 @Controller
 @SessionAttributes("UserDTO")
 public class LoginController extends SuperController {
+  
+  private static Logger log = LogManager.getLogger(LoginController.class);
 
   public LoginController() {
     super();

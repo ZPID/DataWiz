@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -33,6 +35,8 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
 public class StudyController extends SuperController {
+  
+  private static Logger log = LogManager.getLogger(StudyController.class);
 
   public StudyController() {
     super();

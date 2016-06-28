@@ -29,7 +29,7 @@ import de.zpid.datawiz.enumeration.Roles;
 public class CustomUserDetails implements UserDetails, CredentialsContainer {
 
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
-	private static final Logger log = LogManager.getLogger(CustomUserDetails.class);
+	private static Logger log = LogManager.getLogger(CustomUserDetails.class);
 
 	private UserDTO user;
 	private String password;

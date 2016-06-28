@@ -59,7 +59,7 @@ public class ProjectUtil {
 
   private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
 
-  private Logger log = LogManager.getLogger(ProjectUtil.class);
+  private static Logger log = LogManager.getLogger(ProjectUtil.class);
 
   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.

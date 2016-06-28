@@ -12,6 +12,9 @@ import java.util.Optional;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +36,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
@@ -40,6 +44,7 @@ import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.MinioDAO;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
@@ -47,10 +52,15 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class ProjectController extends SuperController {
 
+  private static Logger log = LogManager.getLogger(ProjectController.class);
+
   public ProjectController() {
     super();
     log.info("Loading ProjectController for mapping /project");
   }
+
+  @Autowired
+  MinioDAO minioDAO;
 
   /**
    * 
@@ -215,10 +225,16 @@ public class ProjectController extends SuperController {
           file.setUserId(user.getId());
           file.setUploadDate(LocalDateTime.now());
           file.setProjectId(pid);
-          String filePath = fileUtil.saveFile(file);
-          if (filePath != null && !filePath.isEmpty()) {
-            file.setFilePath(filePath);
+          // String filePath = fileUtil.saveFile(file);
+          MinioResult res = minioDAO.storeFileIntoMinio(file);
+          if (res.equals(MinioResult.OK)) {
             fileDAO.saveFile(file);
+          } else if (res.equals(MinioResult.CONNECTION_ERROR)) {
+            return new ResponseEntity<String>("{\"error\" : \""
+                + messageSource.getMessage("minio.connection.exception", null, LocaleContextHolder.getLocale()) + "\"}",
+                HttpStatus.INTERNAL_SERVER_ERROR);
+          } else {
+            return new ResponseEntity<String>("{\"error\" : \"12\"}", HttpStatus.INTERNAL_SERVER_ERROR);
           }
         }
       }
@@ -237,7 +253,7 @@ public class ProjectController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = {"/multisaved", "/{pid}/multisaved"})
+  @RequestMapping(value = { "/multisaved", "/{pid}/multisaved" })
   public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
@@ -263,26 +279,28 @@ public class ProjectController extends SuperController {
       log.debug("execute downloadDocument id=" + docId);
     }
     UserDTO user = UserUtil.getCurrentUser();
+    ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
-      return new ResponseEntity<String>("{}", HttpStatus.OK);
+      resp = new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
     }
     FileDTO file = null;
     try {
       file = fileDAO.findById(docId);
-      fileUtil.setFileBytes(file);
-      response.setContentType(file.getContentType());
-      response.setContentLength(file.getContent().length);
-      response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
-      FileCopyUtils.copy(file.getContent(), response.getOutputStream());
+      // fileUtil.setFileBytes(file);
+      if (minioDAO.getFileFromMinio(file).equals(MinioResult.OK)) {
+        response.setContentType(file.getContentType());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
+        response.setContentLength(file.getContent().length);
+        FileCopyUtils.copy(file.getContent(), response.getOutputStream());
+      } else {
+        resp = new ResponseEntity<String>("Fehler und so", HttpStatus.NOT_FOUND);
+      }
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+      resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
       e.printStackTrace();
     }
-    redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
-    redirectAttributes.addFlashAttribute("saveStateMsg", "Downloaderror");
-    redirectAttributes.addFlashAttribute("jQueryMap", "material");
-    return new ResponseEntity<String>("{}", HttpStatus.OK);
+    return resp;
   }
 
   /**
@@ -306,10 +324,13 @@ public class ProjectController extends SuperController {
     }
     try {
       FileDTO file = fileDAO.findById(docId);
-      fileUtil.deleteFile(file);
+      // fileUtil.deleteFile(file);
+
+      minioDAO.deleteFileFromMinio(file);
       fileDAO.deleteFile(docId);
+
     } catch (Exception e) {
-      // TODO: handle exception
+      // TODO
     }
     redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
     redirectAttributes.addFlashAttribute("saveStateMsg", "DELTETE");
@@ -330,23 +351,23 @@ public class ProjectController extends SuperController {
     final int maxWidth = 160;
     try {
       file = fileDAO.findById(imgId);
-      fileUtil.setFileBytes(file);
-      if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null
-          && !file.getContentType().toLowerCase().contains("icon")) {
-        OutputStream sos = response.getOutputStream();
-        BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
-        int scale = bImage.getHeight() / thumbHeight;
-        BufferedImage bf = fileUtil.scaleImage(bImage,
-            (bImage.getWidth() / scale > maxWidth) ? maxWidth : bImage.getWidth() / scale, thumbHeight);
-        response.setContentType(file.getContentType());        
-        ImageIO.write(bf, "jpg", sos);
-        sos.flush();
-        sos.close();
+      // fileUtil.setFileBytes(file);
+      if (minioDAO.getFileFromMinio(file).equals(MinioResult.OK)) {
+        if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null
+            && !file.getContentType().toLowerCase().contains("icon")) {
+          OutputStream sos = response.getOutputStream();
+          BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
+          int scale = bImage.getHeight() / thumbHeight;
+          BufferedImage bf = fileUtil.scaleImage(bImage,
+              (bImage.getWidth() / scale > maxWidth) ? maxWidth : bImage.getWidth() / scale, thumbHeight);
+          response.setContentType(file.getContentType());
+          ImageIO.write(bf, "jpg", sos);
+          sos.flush();
+          sos.close();
+        }
       }
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
-
 }

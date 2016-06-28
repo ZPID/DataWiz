@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -25,6 +27,8 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/panel")
 @SessionAttributes({ "breadcrumpList" })
 public class PanelController extends SuperController {
+  
+  private static Logger log = LogManager.getLogger(PanelController.class);
 
   public PanelController() {
     super();

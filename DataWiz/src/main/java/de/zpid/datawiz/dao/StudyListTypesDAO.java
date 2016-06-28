@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -14,6 +16,8 @@ import de.zpid.datawiz.enumeration.DWFieldTypes;
 @Repository
 @Scope("singleton")
 public class StudyListTypesDAO extends SuperDAO {
+  
+  private static Logger log = LogManager.getLogger(StudyListTypesDAO.class);
 
   public StudyListTypesDAO() {
     super();

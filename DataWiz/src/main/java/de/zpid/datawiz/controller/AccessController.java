@@ -6,6 +6,8 @@ import java.util.Optional;
 import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
@@ -53,6 +55,8 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/access")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class AccessController extends SuperController {
+  
+  private static Logger log = LogManager.getLogger(AccessController.class);
 
   public AccessController() {
     super();

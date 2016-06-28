@@ -8,7 +8,7 @@ import de.zpid.datawiz.dto.UserDTO;
 
 public class UserUtil {
 
-  private static final Logger log = LogManager.getLogger(UserUtil.class);
+  private static Logger log = LogManager.getLogger(UserUtil.class);
 
   public static UserDTO getCurrentUser() {
     UserDTO user = null;

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,8 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/dmp")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class DMPController extends SuperController {
+  
+  private static Logger log = LogManager.getLogger(DMPController.class);
 
   public DMPController() {
     super();

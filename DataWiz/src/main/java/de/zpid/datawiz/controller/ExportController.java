@@ -2,6 +2,8 @@ package de.zpid.datawiz.controller;
 
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -23,6 +25,8 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/export")
 @SessionAttributes({ "breadcrumpList" })
 public class ExportController extends SuperController {
+  
+  private static Logger log = LogManager.getLogger(ExportController.class);
 
   @RequestMapping(value = { "", "/{projectId}" }, method = RequestMethod.GET)
   public String showExportPage(@PathVariable final Optional<Long> projectId, final ModelMap model,

@@ -9,7 +9,7 @@ $tag_box = null;
  * @param undefined
  */
 (function($, window, document, undefined) {
-  $(document).ready(function() {
+  $(document).ready(function() {    
     $('[data-toggle="tooltip"]').tooltip()
     // loading DMP Content
     if (window.location.pathname.search("/dmp") > 0) {

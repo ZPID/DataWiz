@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -49,7 +51,7 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "UserDTO" })
 public class UserController extends SuperController {
 
- 
+  private static Logger log = LogManager.getLogger(UserController.class);
 
   public UserController() {
     super();

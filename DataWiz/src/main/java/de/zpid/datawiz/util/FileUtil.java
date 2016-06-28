@@ -32,7 +32,7 @@ import de.zpid.datawiz.dto.FileDTO;
 @Scope("singleton")
 public class FileUtil {
 
-  protected Logger log = LogManager.getLogger(getClass());
+  private static Logger log = LogManager.getLogger(FileUtil.class);
   final static String OS = System.getProperty("os.name").toLowerCase();
 
   /**
@@ -100,8 +100,6 @@ public class FileUtil {
   }
 
   public void setFileBytes(final FileDTO file) {
-    System.out.println(file.getFilePath());
-
     try {
       file.setContent(Files.readAllBytes(Paths.get(file.getFilePath())));
     } catch (IOException e) {
@@ -126,7 +124,6 @@ public class FileUtil {
     } else {
       return null;
     }
-    System.out.println(ret.toString());
     return ret.toString();
   }
 

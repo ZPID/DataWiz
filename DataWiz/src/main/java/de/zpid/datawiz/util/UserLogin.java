@@ -15,7 +15,7 @@ import de.zpid.datawiz.dto.UserDTO;
 @Service("userLogin")
 public class UserLogin implements UserDetailsService {
 
-	final Logger log = LogManager.getLogger(UserLogin.class);
+	private static Logger log = LogManager.getLogger(UserLogin.class);
 	@Autowired
 	private UserDAO userDao;
 

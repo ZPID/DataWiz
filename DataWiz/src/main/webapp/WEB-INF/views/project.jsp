@@ -386,7 +386,7 @@
                   <div class="row">
                     <div class="col-md-11"></div>
                     <div class="col-md-1">
-                      <a class="btn btn-primary btn-sm" href="${ProjectForm.project.id}/download/${file.id}"> <span
+                      <a class="btn btn-primary btn-sm" href="${ProjectForm.project.id}/download/${file.id}" target="_blank"> <span
                         class="glyphicon glyphicon-save-file" aria-hidden="true"></span></a>
                     </div>
                   </div>

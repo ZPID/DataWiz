@@ -21,7 +21,6 @@ public class SuperDAO {
     jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
-  protected Logger log = LogManager.getLogger(getClass());
   protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
   protected JdbcTemplate jdbcTemplate;
 

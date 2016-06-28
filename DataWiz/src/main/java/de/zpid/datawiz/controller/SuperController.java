@@ -2,8 +2,6 @@ package de.zpid.datawiz.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,6 +26,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.FileUtil;
+import de.zpid.datawiz.util.MinioDAO;
 import de.zpid.datawiz.util.ProjectUtil;
 
 public class SuperController {
@@ -70,10 +69,9 @@ public class SuperController {
   protected ProjectUtil pUtil;
   @Autowired
   protected FileUtil fileUtil;
+  
 
   protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-
-  protected Logger log = LogManager.getLogger(getClass());
 
   @ModelAttribute("ProjectForm")
   protected ProjectForm createProjectForm() {
