@@ -57,7 +57,7 @@ public class StudyDAO extends SuperDAO {
   }
 
   private StudyDTO setStudyDTO(final ResultSet rs) throws SQLException {
-    StudyDTO study = (StudyDTO) context.getBean("StudyDTO");
+    StudyDTO study = (StudyDTO) applicationContext.getBean("StudyDTO");
     study.setId(rs.getInt("id"));
     study.setProjectId(rs.getLong("project_id"));
     study.setLastUserId(rs.getLong("last_user_id"));

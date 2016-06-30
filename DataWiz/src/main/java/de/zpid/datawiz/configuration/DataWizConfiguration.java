@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -36,7 +36,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import de.zpid.datawiz.util.MinioDAO;
+import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+
+import de.zpid.datawiz.util.MinioUtil;
 
 @Configuration
 @EnableWebMvc
@@ -67,6 +69,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     resolver.setDefaultEncoding("UTF-8");
     log.info("messageSource succesfully loaded");
     return resolver;
+  }
+
+  @Bean(name = "applicationContext")
+  public ClassPathXmlApplicationContext applicationContext() {
+    return new ClassPathXmlApplicationContext("spring.xml");
   }
 
   @Bean
@@ -104,10 +111,9 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     return dataSource;
   }
 
-  @Bean(name = "minioDAO")
-  @Scope("singleton")
-  public MinioDAO minioDAO() {
-    return new MinioDAO(env);
+  @Bean(name = "minioUtil")
+  public MinioUtil minioUtil() {
+    return new MinioUtil(env);
   }
 
   @Override
@@ -129,7 +135,10 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @PreDestroy
   public void destroy() {
-    LogManager.shutdown();
+    try {
+      AbandonedConnectionCleanupThread.shutdown();
+    } catch (Throwable t) {
+    }
     Enumeration<Driver> drivers = DriverManager.getDrivers();
     while (drivers.hasMoreElements()) {
       Driver driver = drivers.nextElement();
@@ -137,6 +146,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
         DriverManager.deregisterDriver(driver);
       } catch (SQLException e) {
         e.printStackTrace();
+
       }
     }
   }

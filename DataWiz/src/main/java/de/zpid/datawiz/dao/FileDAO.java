@@ -99,7 +99,7 @@ public class FileDAO extends SuperDAO {
    * @throws SQLException
    */
   private FileDTO setFileDTO(ResultSet rs) throws SQLException {
-    FileDTO file = (FileDTO) context.getBean("FileDTO");
+    FileDTO file = (FileDTO) applicationContext.getBean("FileDTO");
     file.setId(rs.getInt("id"));
     file.setProjectId(rs.getInt("project_id"));
     file.setUserId(rs.getInt("user_id"));

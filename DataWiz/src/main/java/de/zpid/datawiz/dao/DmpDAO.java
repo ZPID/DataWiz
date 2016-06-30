@@ -34,7 +34,7 @@ public class DmpDAO extends SuperDAO {
       @Override
       public DmpDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (rs.next()) {
-          DmpDTO dmp = (DmpDTO) context.getBean("DmpDTO");
+          DmpDTO dmp = (DmpDTO) applicationContext.getBean("DmpDTO");
           dmp.setId(rs.getLong("id"));
           // ***************** Administrative Data *****************
           dmp.setProjectAims(rs.getString("projectAims"));

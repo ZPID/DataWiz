@@ -54,7 +54,7 @@ public class DMPController extends SuperController {
    */
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
-    return (ProjectForm) context.getBean("ProjectForm");
+    return (ProjectForm) applicationContext.getBean("ProjectForm");
   }
 
   /**

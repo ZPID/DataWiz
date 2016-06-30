@@ -13,37 +13,67 @@ import org.springframework.core.env.Environment;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.enumeration.MinioResult;
 import io.minio.MinioClient;
+import io.minio.Result;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InvalidEndpointException;
 import io.minio.errors.InvalidPortException;
+import io.minio.messages.Item;
 
-public class MinioDAO {
+/**
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2016, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style=
+ * "border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL">
+ * Leibniz Institute for Psychology Information (ZPID)</a> is licensed under a
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.<br />
+ * <br />
+ * This class includes all functions to connect to a given Minio-Fileserver, and to PUT,GET,and DELETE files.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ */
+public class MinioUtil {
 
-  private Environment env;
-  private static Logger log = LogManager.getLogger(MinioDAO.class);
+  private static final Logger log = LogManager.getLogger(MinioUtil.class);
   private MinioClient minioClient;
+  private final String bucketPrefix;
 
-  public MinioDAO(Environment env) {
+  /**
+   * MinioUtil Constructor - build a MinioClient Object which is used for the connection to the Minio Server.
+   * Environment is required, because it includes the Connection setup
+   * 
+   * @param env
+   */
+  public MinioUtil(Environment env) {
     super();
-    this.env = env;
-    log.info("Loading MinioDAO with ServerAddress: {}", () -> env.getRequiredProperty("minio.url"));
+    this.bucketPrefix = env.getRequiredProperty("minio.bucket.prefix") + ".";
+    log.info("Loading MinioDAO with [ServerAddress: {}; Bucket_Prefix: {}]", () -> env.getRequiredProperty("minio.url"),
+        () -> env.getRequiredProperty("minio.bucket.prefix"));
     try {
       this.minioClient = new MinioClient(env.getRequiredProperty("minio.url"),
           env.getRequiredProperty("minio.access.key"), env.getRequiredProperty("minio.secret.key"));
     } catch (InvalidEndpointException | InvalidPortException | IllegalStateException e) {
-      log.error("ERROR: Creating new MinioClient was not successful: Message: {}", () -> e);
+      log.error("ERROR: Creating MinioClient was not successful: Message: {}", () -> e);
     }
   }
 
   /**
+   * Function to put a file to the Minio storage
    * 
    * @param minioClient
    * @param file
    * @return
    */
-  public MinioResult storeFileIntoMinio(final FileDTO file) {
-    log.trace("Entering storeFileIntoMinio for file: [name: {}]", () -> file.getFileName());
-    final String bucket = env.getRequiredProperty("minio.bucket.prefix") + "." + file.getProjectId();
+  public MinioResult putFile(final FileDTO file) {
+    log.trace("Entering putFile for file: [name: {}]", () -> file.getFileName());
+    final String bucket = this.bucketPrefix + file.getProjectId();
     String filePath = UUID.randomUUID().toString();
     try {
       if (!this.minioClient.bucketExists(bucket)) {
@@ -82,10 +112,9 @@ public class MinioDAO {
    * @return
    * @throws Exception
    */
-  public MinioResult getFileFromMinio(final FileDTO file) {
-    log.trace("Entering getFileFromMinio for file: [name: {}; path: {}]", () -> file.getFileName(),
-        () -> file.getFilePath());
-    String bucket = env.getRequiredProperty("minio.bucket.prefix") + "." + file.getProjectId();
+  public MinioResult getFile(final FileDTO file) {
+    log.trace("Entering getFile for file: [name: {}; path: {}]", () -> file.getFileName(), () -> file.getFilePath());
+    String bucket = this.bucketPrefix + file.getProjectId();
     try {
       if (!this.minioClient.bucketExists(bucket)) {
         log.fatal("FATAL: Bucket [name: {}] not exists in Minio FileSystem - Please check file system consistency!",
@@ -126,27 +155,25 @@ public class MinioDAO {
    * @param file
    * @return
    */
-  public MinioResult deleteFileFromMinio(FileDTO file) {
-    String bucket = env.getRequiredProperty("minio.bucket.prefix") + "." + file.getProjectId();
+  public MinioResult deleteFile(final FileDTO file) {
+    log.trace("Entering deleteFile  file: [name: {}; path: {}]", () -> file.getFileName(), () -> file.getFilePath());
+    final String bucket = this.bucketPrefix + file.getProjectId();
     try {
       if (!this.minioClient.bucketExists(bucket)) {
         log.fatal("FATAL: Bucket [name: {}] not exists in Minio FileSystem - Please check file system consistency!",
             () -> bucket);
         return MinioResult.BUCKET_NOT_FOUND;
       }
-      this.minioClient.statObject(bucket, file.getFilePath());
-      System.out.println("file exsists");
       this.minioClient.removeObject(bucket, file.getFilePath());
+      Iterable<Result<Item>> blist = this.minioClient.listObjects(bucket);
+      if (blist == null || !blist.iterator().hasNext()) {
+        log.debug("deleteFile: Bucket empty and deleted");
+        this.minioClient.removeBucket(bucket);
+      }
       return MinioResult.OK;
     } catch (Exception e) {
-      if (e instanceof ErrorResponseException && e.toString().contains("Object does not exist")) {
-        log.fatal(
-            "FATAL: File [id: {}; bucket: {}; filePath: {}] not exists in Minio FileSystem, but in Database - Please check file system and database consistency! Message: {}",
-            () -> file.getId(), () -> bucket, () -> file.getFilePath(), () -> e);
-        return MinioResult.FILE_NOT_FOUND;
-      }
-      log.error("ERROR: File [id: {}; bucket: {}; filePath: {}] not saved in Minio - Message: {}", () -> file.getId(),
-          () -> bucket, () -> file.getFilePath(), () -> e);
+      log.error("ERROR: File [id: {}; bucket: {}; filePath: {}] not deleted from Minio - Message: {}",
+          () -> file.getId(), () -> bucket, () -> file.getFilePath(), () -> e);
       return MinioResult.ERROR;
     }
   }

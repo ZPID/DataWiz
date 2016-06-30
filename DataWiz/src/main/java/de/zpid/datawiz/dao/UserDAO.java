@@ -233,7 +233,7 @@ public class UserDAO extends SuperDAO {
    * @throws SQLException
    */
   private UserDTO setUserDTO(final boolean pwd, final ResultSet rs) throws SQLException {
-    final UserDTO contact = (UserDTO) context.getBean("UserDTO");
+    final UserDTO contact = (UserDTO) applicationContext.getBean("UserDTO");
     contact.setId(rs.getLong("id"));
     contact.setEmail(rs.getString("email"));
     contact.setSecEmail(rs.getString("email2"));

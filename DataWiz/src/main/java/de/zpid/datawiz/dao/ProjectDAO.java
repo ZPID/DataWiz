@@ -42,7 +42,7 @@ public class ProjectDAO extends SuperDAO {
         + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 GROUP BY dw_project.id";
     List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] { user.getId() }, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
+        ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
         project.setId(rs.getInt("id"));
         project.setTitle(rs.getString("name"));
         project.setOwnerId(rs.getLong("owner_id"));
@@ -77,7 +77,7 @@ public class ProjectDAO extends SuperDAO {
           @Override
           public ProjectDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (rs.next()) {
-              ProjectDTO project = (ProjectDTO) context.getBean("ProjectDTO");
+              ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
               project.setId(rs.getInt("id"));
               project.setTitle(rs.getString("name"));
               project.setOwnerId(rs.getLong("owner_id"));

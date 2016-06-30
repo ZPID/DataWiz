@@ -2,8 +2,10 @@ package de.zpid.datawiz.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,6 @@ import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
-import de.zpid.datawiz.util.MinioDAO;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
@@ -58,9 +58,6 @@ public class ProjectController extends SuperController {
     super();
     log.info("Loading ProjectController for mapping /project");
   }
-
-  @Autowired
-  MinioDAO minioDAO;
 
   /**
    * 
@@ -159,7 +156,7 @@ public class ProjectController extends SuperController {
     if (pForm.getContributors() == null) {
       pForm.setContributors(new ArrayList<ContributorDTO>());
     }
-    pForm.getContributors().add(0, (ContributorDTO) context.getBean("ContributorDTO"));
+    pForm.getContributors().add(0, (ContributorDTO) applicationContext.getBean("ContributorDTO"));
     // pForm.getContributors().add(new ContributorDTO());
     model.put("jQueryMap", "contri");
     return "project";
@@ -196,11 +193,9 @@ public class ProjectController extends SuperController {
   @RequestMapping(value = { "/{pid}/upload" }, method = RequestMethod.POST)
   public @ResponseBody ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
       @ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable long pid) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute uploadFile");
-    }
+    log.trace("Entering uploadFile for Project [id: {}]", () -> pid);
     if (pForm == null || pForm.getProject() == null || pForm.getProject().getId() <= 0) {
-      log.warn("");
+      log.warn("ProjectForm is empty or missing values");
       return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     UserDTO user = UserUtil.getCurrentUser();
@@ -211,38 +206,32 @@ public class ProjectController extends SuperController {
     try {
       Iterator<String> itr = request.getFileNames();
       while (itr.hasNext()) {
-        final FileDTO file = (FileDTO) context.getBean("FileDTO");
-        final MultipartFile mpf = request.getFile(itr.next());
+        String filename = itr.next();
+        log.debug("Saving file [name: {}]", () -> filename);
+        final MultipartFile mpf = request.getFile(filename);
         if (mpf != null) {
-          file.setMultipartFile(mpf);
-          file.setMd5checksum(fileUtil.getFileChecksum(MessageDigest.getInstance("MD5"), file.getContent()));
-          file.setSha1Checksum(fileUtil.getFileChecksum(MessageDigest.getInstance("SHA-1"), file.getContent()));
-          file.setSha256Checksum(fileUtil.getFileChecksum(MessageDigest.getInstance("SHA-256"), file.getContent()));
-          file.setProjectId(pForm.getProject().getId());
-          file.setStudyId(0);
-          file.setRecordID(0);
-          file.setVersion(0);
-          file.setUserId(user.getId());
-          file.setUploadDate(LocalDateTime.now());
-          file.setProjectId(pid);
+          FileDTO file = fileUtil.buildFileDTO(pid, 0, 0, 0, user.getId(), mpf);
           // String filePath = fileUtil.saveFile(file);
-          MinioResult res = minioDAO.storeFileIntoMinio(file);
+          MinioResult res = minioUtil.putFile(file);
           if (res.equals(MinioResult.OK)) {
             fileDAO.saveFile(file);
           } else if (res.equals(MinioResult.CONNECTION_ERROR)) {
+            log.error("ERROR: No Connection to Minio Server - please check Settings or Server");
             return new ResponseEntity<String>("{\"error\" : \""
                 + messageSource.getMessage("minio.connection.exception", null, LocaleContextHolder.getLocale()) + "\"}",
                 HttpStatus.INTERNAL_SERVER_ERROR);
           } else {
+            log.error("ERROR: During Saving File - MinioResult:", () -> res.name());
             return new ResponseEntity<String>("{\"error\" : \"12\"}", HttpStatus.INTERNAL_SERVER_ERROR);
           }
         }
       }
     } catch (Exception e) {
       // TODO delete file
-      log.warn("Exception during file upload: " + e);
+      log.warn("Exception during file upload: ", () -> e);
       return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    log.trace("Method uploadFile successfully completed");
     return new ResponseEntity<String>("{}", HttpStatus.OK);
   }
 
@@ -253,7 +242,7 @@ public class ProjectController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = { "/multisaved", "/{pid}/multisaved" })
+  @RequestMapping(value = { "/{pid}/multisaved" })
   public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
@@ -288,7 +277,7 @@ public class ProjectController extends SuperController {
     try {
       file = fileDAO.findById(docId);
       // fileUtil.setFileBytes(file);
-      if (minioDAO.getFileFromMinio(file).equals(MinioResult.OK)) {
+      if (minioUtil.getFile(file).equals(MinioResult.OK)) {
         response.setContentType(file.getContentType());
         response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
         response.setContentLength(file.getContent().length);
@@ -324,11 +313,8 @@ public class ProjectController extends SuperController {
     }
     try {
       FileDTO file = fileDAO.findById(docId);
-      // fileUtil.deleteFile(file);
-
-      minioDAO.deleteFileFromMinio(file);
+      minioUtil.deleteFile(file);
       fileDAO.deleteFile(docId);
-
     } catch (Exception e) {
       // TODO
     }
@@ -352,7 +338,7 @@ public class ProjectController extends SuperController {
     try {
       file = fileDAO.findById(imgId);
       // fileUtil.setFileBytes(file);
-      if (minioDAO.getFileFromMinio(file).equals(MinioResult.OK)) {
+      if (minioUtil.getFile(file).equals(MinioResult.OK)) {
         if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null
             && !file.getContentType().toLowerCase().contains("icon")) {
           OutputStream sos = response.getOutputStream();

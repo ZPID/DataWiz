@@ -352,7 +352,8 @@
           <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles"
             type="hidden" value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError"
             type="hidden" value="<s:message code="upload.response.error" />" /> <input id="defaultMsg" type="hidden"
-            value="<s:message code="upload.default.message" />" />
+            value="<s:message code="upload.default.message" />" /> <input id="uploadPid" type="hidden"
+            value="<s:message text="${ProjectForm.project.id}" />" />
           <c:url var="uploadUrl" value="/project/${ProjectForm.project.id}/upload" />
           <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
             role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
@@ -372,7 +373,7 @@
               <div class="form-group row">
                 <div class="col-md-2">
                   <c:choose>
-                    <c:when test="${(ctype[0]=='image' || ctype[0]=='IMAGE') && basename != 'ico'}">
+                    <c:when test="${(ctype[0]=='image' || ctype[0]=='IMAGE') && basename != 'ico' && basename != 'gif'}">
                       <img style="padding-left: 14px" alt="${file.fileName}"
                         src="${ProjectForm.project.id}/img/${file.id}">
                     </c:when>
@@ -386,8 +387,8 @@
                   <div class="row">
                     <div class="col-md-11"></div>
                     <div class="col-md-1">
-                      <a class="btn btn-primary btn-sm" href="${ProjectForm.project.id}/download/${file.id}" target="_blank"> <span
-                        class="glyphicon glyphicon-save-file" aria-hidden="true"></span></a>
+                      <a class="btn btn-primary btn-sm" href="${ProjectForm.project.id}/download/${file.id}"
+                        target="_blank"> <span class="glyphicon glyphicon-save-file" aria-hidden="true"></span></a>
                     </div>
                   </div>
                   <!-- filename -->

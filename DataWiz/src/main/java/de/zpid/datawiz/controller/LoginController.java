@@ -53,7 +53,7 @@ public class LoginController extends SuperController {
 
   @ModelAttribute("UserDTO")
   public UserDTO createUserObject() {
-    return (UserDTO) context.getBean("UserDTO");
+    return (UserDTO) applicationContext.getBean("UserDTO");
   }
 
   /**

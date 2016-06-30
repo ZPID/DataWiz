@@ -31,7 +31,7 @@ public class FormTypesDAO extends SuperDAO {
     final List<FormTypesDTO> ret = jdbcTemplate.query(sql, new Object[] { active, type.toString() },
         new RowMapper<FormTypesDTO>() {
           public FormTypesDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            FormTypesDTO dt = (FormTypesDTO) context.getBean("FormTypesDTO");
+            FormTypesDTO dt = (FormTypesDTO) applicationContext.getBean("FormTypesDTO");
             dt.setId(rs.getInt("id"));
             dt.setNameDE(rs.getString("name_de"));
             dt.setNameEN(rs.getString("name_en"));

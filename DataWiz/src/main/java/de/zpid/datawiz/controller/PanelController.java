@@ -38,7 +38,7 @@ public class PanelController extends SuperController {
 
   @ModelAttribute("ProjectForm")
   public ProjectForm createProjectForm() {
-    return (ProjectForm) context.getBean("ProjectForm");
+    return (ProjectForm) applicationContext.getBean("ProjectForm");
   }
 
   @RequestMapping(method = RequestMethod.GET)

@@ -8,8 +8,9 @@ $tag_box = null;
  * @param document
  * @param undefined
  */
+
 (function($, window, document, undefined) {
-  $(document).ready(function() {    
+  $(document).ready(function() {
     $('[data-toggle="tooltip"]').tooltip()
     // loading DMP Content
     if (window.location.pathname.search("/dmp") > 0) {
@@ -47,6 +48,7 @@ $tag_box = null;
         $('.user-pswd-button, #user-pswd-content').toggle();
       $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
     }
+    $(".loader").fadeOut("slow");
   });
 })(window.jQuery, window, document);
 
@@ -211,8 +213,9 @@ Dropzone.options.myDropzone = {
   init : function() {
     // upload button click event
     var myDropzone = this;
-    $('#dz-upload-button').on("click", function(e) {
+    $('#dz-upload-button').on("click", function(e) {      
       myDropzone.processQueue();
+      
     });
     // reset button click event
     $('#dz-reset-button').on("click", function(e) {
@@ -237,8 +240,16 @@ Dropzone.options.myDropzone = {
     this.on("successmultiple", function(files, serverResponse) {
       // calls controller after successful multiple saving to reload the page"
       setTimeout(function() {
-        $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
-      }, 1000);
+        $("form#my-dropzone").attr("enctype", "").attr("action", $('#uploadPid').val() + "/multisaved").submit();
+      }, 500);
+    });
+    this.on("error", function(files, serverResponse) {
+      $("body").removeClass("loading");
+      $(".loader").fadeOut("slow");
+    });
+    this.on("processingmultiple", function(files, serverResponse) {
+      $("body").addClass("loading");
+      $(".loader").fadeIn("slow");
     });
   }
 };

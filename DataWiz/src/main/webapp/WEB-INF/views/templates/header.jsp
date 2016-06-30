@@ -15,6 +15,7 @@
 </head>
 <body>
   <sec:authentication var="principal" property="principal" />
+  <div class="loader"></div>
   <div id="logo">
     <s:eval expression="@environment.getProperty('application.logo.url')" var="logoUri" />
     <img alt="" src="<c:url value="${logoUri}" />">

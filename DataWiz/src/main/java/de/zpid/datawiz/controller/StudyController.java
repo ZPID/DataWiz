@@ -176,7 +176,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addSoftware");
     if (sForm.getStudy().getSoftware() == null)
       sForm.getStudy().setSoftware(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getSoftware().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getSoftware().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
@@ -198,7 +198,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addPubOnData");
     if (sForm.getStudy().getPubOnData() == null)
       sForm.getStudy().setPubOnData(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getPubOnData().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getPubOnData().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
@@ -220,7 +220,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addConflInterests");
     if (sForm.getStudy().getConflInterests() == null)
       sForm.getStudy().setConflInterests(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getConflInterests().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getConflInterests().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
@@ -242,7 +242,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addObjectives");
     if (sForm.getStudy().getObjectives() == null)
       sForm.getStudy().setObjectives(new ArrayList<StudyObjectivesDTO>());
-    sForm.getStudy().getObjectives().add((StudyObjectivesDTO) context.getBean("StudyObjectivesDTO"));
+    sForm.getStudy().getObjectives().add((StudyObjectivesDTO) applicationContext.getBean("StudyObjectivesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -264,7 +264,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addRelTheorys");
     if (sForm.getStudy().getRelTheorys() == null)
       sForm.getStudy().setRelTheorys(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getRelTheorys().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getRelTheorys().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -286,7 +286,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addInterArms");
     if (sForm.getStudy().getInterArms() == null)
       sForm.getStudy().setInterArms(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getInterArms().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getInterArms().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -308,7 +308,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addMeasOccName");
     if (sForm.getStudy().getMeasOccName() == null)
       sForm.getStudy().setMeasOccName(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getMeasOccName().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getMeasOccName().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -330,7 +330,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addConstruct");
     if (sForm.getStudy().getConstructs() == null)
       sForm.getStudy().setConstructs(new ArrayList<StudyConstructDTO>());
-    sForm.getStudy().getConstructs().add((StudyConstructDTO) context.getBean("StudyConstructDTO"));
+    sForm.getStudy().getConstructs().add((StudyConstructDTO) applicationContext.getBean("StudyConstructDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -352,7 +352,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addInstrument");
     if (sForm.getStudy().getInstruments() == null)
       sForm.getStudy().setInstruments(new ArrayList<StudyInstrumentDTO>());
-    sForm.getStudy().getInstruments().add((StudyInstrumentDTO) context.getBean("StudyInstrumentDTO"));
+    sForm.getStudy().getInstruments().add((StudyInstrumentDTO) applicationContext.getBean("StudyInstrumentDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -374,7 +374,7 @@ public class StudyController extends SuperController {
     log.trace("Entering addEligibilities");
     if (sForm.getStudy().getEligibilities() == null)
       sForm.getStudy().setEligibilities(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getEligibilities().add((StudyListTypesDTO) context.getBean("StudyListTypesDTO"));
+    sForm.getStudy().getEligibilities().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYSAMPLE);
     return "study";

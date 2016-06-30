@@ -26,7 +26,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.FileUtil;
-import de.zpid.datawiz.util.MinioDAO;
+import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.ProjectUtil;
 
 public class SuperController {
@@ -69,23 +69,24 @@ public class SuperController {
   protected ProjectUtil pUtil;
   @Autowired
   protected FileUtil fileUtil;
-  
-
-  protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+  @Autowired
+  protected MinioUtil minioUtil;  
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
 
   @ModelAttribute("ProjectForm")
   protected ProjectForm createProjectForm() {
-    return (ProjectForm) context.getBean("ProjectForm");
+    return (ProjectForm) applicationContext.getBean("ProjectForm");
   }
 
   @ModelAttribute("StudyForm")
   protected StudyForm createStudyForm() {
-    return (StudyForm) context.getBean("StudyForm");
+    return (StudyForm) applicationContext.getBean("StudyForm");
   }
 
   @ModelAttribute("UserDTO")
   protected UserDTO createUserDTO() {
-    return (UserDTO) context.getBean("UserDTO");
+    return (UserDTO) applicationContext.getBean("UserDTO");
   }
 
 }

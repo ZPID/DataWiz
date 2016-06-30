@@ -89,7 +89,7 @@ public class ContributorDAO extends SuperDAO {
    * @throws SQLException
    */
   private ContributorDTO setContributorDTO(ResultSet rs) throws SQLException {
-    ContributorDTO contri = (ContributorDTO) context.getBean("ContributorDTO");
+    ContributorDTO contri = (ContributorDTO) applicationContext.getBean("ContributorDTO");
     contri.setId(rs.getInt("id"));
     contri.setProjectId(rs.getInt("project_id"));
     contri.setStudyId(rs.getInt("study_id"));

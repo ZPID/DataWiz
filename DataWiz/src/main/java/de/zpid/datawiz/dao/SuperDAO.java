@@ -3,8 +3,6 @@ package de.zpid.datawiz.dao;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -20,8 +18,8 @@ public class SuperDAO {
   protected void initialize() {
     jdbcTemplate = new JdbcTemplate(dataSource);
   }
-
-  protected ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
   protected JdbcTemplate jdbcTemplate;
 
 }

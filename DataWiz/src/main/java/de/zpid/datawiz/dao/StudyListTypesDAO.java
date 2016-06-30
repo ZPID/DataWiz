@@ -31,7 +31,7 @@ public class StudyListTypesDAO extends SuperDAO {
     final List<StudyListTypesDTO> ret = jdbcTemplate.query(sql, new Object[] { studyId, type.toString() },
         new RowMapper<StudyListTypesDTO>() {
           public StudyListTypesDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            StudyListTypesDTO dt = (StudyListTypesDTO) context.getBean("StudyListTypesDTO");
+            StudyListTypesDTO dt = (StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO");
             dt.setId(rs.getLong("id"));
             dt.setStudyid(rs.getLong("studyid"));
             dt.setText(rs.getString("text"));

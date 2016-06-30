@@ -93,7 +93,7 @@ public class RoleDAO extends SuperDAO {
   }
 
   private UserRoleDTO setRole(final ResultSet rs) throws SQLException {
-    final UserRoleDTO role = (UserRoleDTO) context.getBean("UserRoleDTO");
+    final UserRoleDTO role = (UserRoleDTO) applicationContext.getBean("UserRoleDTO");
     role.setRoleId(rs.getLong("id"));
     role.setStudyId(rs.getLong("study_id"));
     role.setProjectId(rs.getLong("project_id"));

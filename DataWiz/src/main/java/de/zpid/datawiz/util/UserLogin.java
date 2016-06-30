@@ -3,6 +3,7 @@ package de.zpid.datawiz.util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +14,7 @@ import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 
 @Service("userLogin")
+@Scope("singleton")
 public class UserLogin implements UserDetailsService {
 
 	private static Logger log = LogManager.getLogger(UserLogin.class);

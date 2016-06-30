@@ -56,8 +56,8 @@ public class ProjectUtil {
   private FormTypesDAO formTypeDAO;
   @Autowired
   private DmpDAO dmpDAO;
-
-  private ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
 
   private static Logger log = LogManager.getLogger(ProjectUtil.class);
 
@@ -173,7 +173,7 @@ public class ProjectUtil {
         dmp.setCostsChanged(false);
       }
       if (dmp == null || dmp.getId() <= 0) {
-        dmp = (DmpDTO) context.getBean("DmpDTO");
+        dmp = (DmpDTO) applicationContext.getBean("DmpDTO");
       }
       pForm.setDmp(dmp);
       pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));

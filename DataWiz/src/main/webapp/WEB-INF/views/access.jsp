@@ -88,7 +88,8 @@
                                     <li class="list-group-item list-group-item-warning"><s:message
                                         code="roles.delete.user" /> <a
                                       href="<c:url value="/access/${ProjectForm.project.id}/deleteUser/${user.id}" />"><s:message
-                                          code="roles.delete.user.link" /></a></li>
+                                          code="roles.delete.user.link" /></a>
+                                    <s:message code="roles.delete.user.link.post" /></li>
                                   </c:when>
                                 </c:choose>
                               </c:forEach>

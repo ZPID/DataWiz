@@ -2,23 +2,23 @@
 <Configuration>
 	<Appenders>
 		<Console name="CONSOLE" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n" />
+			<PatternLayout
+				pattern="%d{DEFAULT} [%t] %level: %c{3} --- %msg%n" />
 		</Console>
 		<File name="DataWizLog" fileName="C:/logs/DataWizLog.log">
-			<PatternLayout
-				pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
+			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
 		</File>
-		<Async name="Async">
+<!-- 		<Async name="Async">
 			<AppenderRef ref="DataWizLog" />
 			<AppenderRef ref="CONSOLE" />
-		</Async>
+		</Async> -->
 	</Appenders>
 	<Loggers>
 		<logger name="org.springframework" level="WARN" />
 		<logger name="org.hibernate" level="WARN" />
 		<logger name="de.zpid" level="TRACE" />
 		<Root level="WARN">
-			<AppenderRef ref="Async" />
+			<AppenderRef ref="CONSOLE" />
 		</Root>
 	</Loggers>
 </Configuration>
