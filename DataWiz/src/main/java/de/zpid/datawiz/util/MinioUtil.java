@@ -65,7 +65,9 @@ public class MinioUtil {
   }
 
   /**
-   * Function to put a file to the Minio storage
+   * Function to put a file to the Minio storage To not get problems Unix/Windows file naming convention, this function
+   * Changes the Filename to a generated random UUID. This name is saved as file path in the DataWiz database, and it's
+   * unique in a project.
    * 
    * @param minioClient
    * @param file
@@ -106,6 +108,8 @@ public class MinioUtil {
   }
 
   /**
+   * Get a file from the Minio file system. The project identifier and the file path must be given in the FileDTO,
+   * because the is is used as bucket identifier and the unique path as file identifier.
    * 
    * @param minioClient
    * @param file
@@ -151,6 +155,8 @@ public class MinioUtil {
   }
 
   /**
+   * Delete a file from Minio file system. The project identifier and the file path must be given in the FileDTO,
+   * because the is is used as bucket identifier and the unique path as file identifier.
    * 
    * @param file
    * @return
