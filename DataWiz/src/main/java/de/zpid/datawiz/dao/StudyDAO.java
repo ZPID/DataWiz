@@ -18,7 +18,7 @@ import de.zpid.datawiz.dto.StudyDTO;
 @Repository
 @Scope("singleton")
 public class StudyDAO extends SuperDAO {
-  
+
   private static Logger log = LogManager.getLogger(StudyDAO.class);
 
   public StudyDAO() {
@@ -40,10 +40,11 @@ public class StudyDAO extends SuperDAO {
     return res;
   }
 
-  public StudyDTO findById(final long studyId) throws Exception {
-    log.trace("execute findById for study [id: {}]", () -> studyId);
-    final StudyDTO res = jdbcTemplate.query("SELECT dw_study.* FROM dw_study WHERE dw_study.id = ?",
-        new Object[] { studyId }, new ResultSetExtractor<StudyDTO>() {
+  public StudyDTO findById(final long studyId, final long projectId) throws Exception {
+    log.trace("execute findById for study [id: {}] from project [id: {}]", () -> studyId, () -> projectId);
+    final StudyDTO res = jdbcTemplate.query(
+        "SELECT dw_study.* FROM dw_study WHERE dw_study.id = ? AND dw_study.project_id = ?",
+        new Object[] { studyId, projectId }, new ResultSetExtractor<StudyDTO>() {
           @Override
           public StudyDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (rs.next()) {

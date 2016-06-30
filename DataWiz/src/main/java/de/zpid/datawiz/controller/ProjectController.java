@@ -80,7 +80,7 @@ public class ProjectController extends SuperController {
     ProjectForm pForm = createProjectForm();
     if (pid.isPresent()) {
       try {
-        role = pUtil.checkProjectRoles(user, pid.get(), false, true);
+        role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
         pUtil.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
       } catch (Exception e) {
         // TODO
@@ -98,7 +98,7 @@ public class ProjectController extends SuperController {
         return "redirect:/panel";
       }
       if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
-          && !role.equals(Roles.PROJECT_WRITER)) && role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER)) {
+          && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
         model.put("jQueryMap", "study");
         model.put("hideMenu", true);
       }
@@ -303,23 +303,26 @@ public class ProjectController extends SuperController {
   @RequestMapping(value = { "/{pid}/delDoc/{docId}" }, method = RequestMethod.GET)
   public String deleteDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response,
       RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute deleteDocument id=" + docId);
-    }
+    log.trace("Entering deleteDocument [id: {}]", () -> docId);
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
+    SavedState state = SavedState.ERROR;
+    String msg = "Nicht gelöscht";
     try {
-      FileDTO file = fileDAO.findById(docId);
-      minioUtil.deleteFile(file);
-      fileDAO.deleteFile(docId);
-    } catch (Exception e) {
-      // TODO
+      if (minioUtil.deleteFile(fileDAO.findById(docId)).equals(MinioResult.OK)) {
+        fileDAO.deleteFile(docId);
+        state = SavedState.SUCCESS;
+        msg = "Erfolgreich gelöscht";
+        log.trace("Method deleteDocument [id: {}] successfully completed", () -> docId);
+      }
+    } catch (Exception e) {      
+      log.warn("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e);
     }
-    redirectAttributes.addFlashAttribute("saveState", SavedState.ERROR.toString());
-    redirectAttributes.addFlashAttribute("saveStateMsg", "DELTETE");
+    redirectAttributes.addFlashAttribute("saveState", state.name());
+    redirectAttributes.addFlashAttribute("saveStateMsg", msg);
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
     return "redirect:/project/" + pid;
   }

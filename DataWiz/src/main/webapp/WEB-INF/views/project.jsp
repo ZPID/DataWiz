@@ -44,6 +44,8 @@
       <sf:form action="${projectUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <sf:hidden path="delPos" />
+        <!-- Messages -->
+        <%@ include file="templates/message.jsp"%>
         <!-- Start Page Projectdata -->
         <div id="metaActiveContent" class="projectContent">
           <div class="form-group">
@@ -53,16 +55,6 @@
               </div>
             </div>
           </div>
-          <!-- Messages -->
-          <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && empty jQueryMap}">
-            <div
-              class="alert <c:out value="${saveState eq 'SUCCESS' ? 'alert-success' : 
-                                                saveState eq 'ERROR' ? 'alert-danger' : 
-                                                saveState eq 'INFO' ? 'alert-warning' : 'alert-info'}"/>"
-              role="alert">
-              <c:out value="${saveStateMsg}" />
-            </div>
-          </c:if>
           <!-- Projectname -->
           <div class="form-group">
             <label class="control-label col-sm-2 required" for="project.title"><s:message
@@ -207,16 +199,6 @@
               </div>
             </div>
           </div>
-          <!-- Messages -->
-          <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && jQueryMap == 'contri'}">
-            <div
-              class="alert <c:out value="${saveState eq 'SUCCESS' ? 'alert-success' : 
-                                                saveState eq 'ERROR' ? 'alert-danger' : 
-                                                saveState eq 'INFO' ? 'alert-warning' : 'alert-info'}"/>"
-              role="alert">
-              <c:out value="${saveStateMsg}" />
-            </div>
-          </c:if>
           <ul class="list-group">
             <li class="list-group-item">
               <div class="row">
@@ -338,16 +320,6 @@
         <div class="well">
           <s:message code="project.edit.metadata.info" />
         </div>
-        <!-- Messages -->
-        <c:if test="${not empty saveState && saveState != '' && not empty saveStateMsg && jQueryMap == 'material'}">
-          <div
-            class="alert <c:out value="${saveState eq 'SUCCESS' ? 'alert-success' : 
-                                                saveState eq 'ERROR' ? 'alert-danger' : 
-                                                saveState eq 'INFO' ? 'alert-warning' : 'alert-info'}"/>"
-            role="alert">
-            <c:out value="${saveStateMsg}" />
-          </div>
-        </c:if>
         <div class="well">
           <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles"
             type="hidden" value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError"

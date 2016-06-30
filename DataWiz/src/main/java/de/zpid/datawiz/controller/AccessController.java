@@ -55,7 +55,7 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/access")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class AccessController extends SuperController {
-  
+
   private static Logger log = LogManager.getLogger(AccessController.class);
 
   public AccessController() {
@@ -89,7 +89,7 @@ public class AccessController extends SuperController {
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
       pUtil.getProjectForm(pForm, projectId.get(), user, PageState.ACCESS,
-          pUtil.checkProjectRoles(user, projectId.get(), false, false));
+          pUtil.checkProjectRoles(user, projectId.get(), 0, false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject().getId()));
         pForm.setRoleList(roleDAO.findAllProjectRoles());

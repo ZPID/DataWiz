@@ -127,7 +127,7 @@ public class ProjectUtil {
         for (UserRoleDTO role : userRoles) {
           Roles uRole = Roles.valueOf(role.getType());
           if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
-            cStud.add(studyDAO.findById(role.getStudyId()));
+            cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId()));
           }
         }
         pForm.setStudies(cStud);
@@ -231,11 +231,12 @@ public class ProjectUtil {
    * 
    * @param user
    * @param pid
+   * @param studyid
    * @param onlyWrite
    * @param withDSRights
    * @return
    */
-  public Roles checkProjectRoles(final UserDTO user, final long pid, final boolean onlyWrite,
+  public Roles checkProjectRoles(final UserDTO user, final long pid, final long studyid, final boolean onlyWrite,
       final boolean withDSRights) {
     log.trace(
         "Entering checkProjectRoles(SuperController) for user [id: {}], project [id: {}], with Rights to write only [{}] and Studyrights [{}] ",
@@ -260,11 +261,15 @@ public class ProjectUtil {
         } else if (!onlyWrite && uRole.equals(Roles.PROJECT_READER)) {
           log.debug("User {} has PROJECT_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
           return Roles.PROJECT_READER;
-        } else if (withDSRights && uRole.equals(Roles.DS_WRITER)) {
-          log.debug("User {} has DS_WRITER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+        } else if (withDSRights && uRole.equals(Roles.DS_WRITER)
+            && (studyid == 0 || (studyid > 0 && studyid == role.getStudyId()))) {
+          log.debug("User {} has DS_WRITER role for project [id: {}] and study [id: {}]", () -> user.getEmail(),
+              () -> pid, () -> studyid);
           return Roles.DS_WRITER;
-        } else if (!onlyWrite && withDSRights && uRole.equals(Roles.DS_READER)) {
-          log.debug("User {} has DS_READER role for project [id: {}]", () -> user.getEmail(), () -> pid);
+        } else if (!onlyWrite && withDSRights && uRole.equals(Roles.DS_READER)
+            && (studyid == 0 || (studyid > 0 && studyid == role.getStudyId()))) {
+          log.debug("User {} has DS_READER role for project [id: {}] and study [id: {}]", () -> user.getEmail(),
+              () -> pid, () -> studyid);
           return Roles.DS_READER;
         }
       }

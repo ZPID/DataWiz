@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -35,7 +36,7 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
 public class StudyController extends SuperController {
-  
+
   private static Logger log = LogManager.getLogger(StudyController.class);
 
   public StudyController() {
@@ -45,25 +46,19 @@ public class StudyController extends SuperController {
 
   @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.GET)
   public String showStudyPage(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      ModelMap model) {
+      ModelMap model, RedirectAttributes redirectAttributes) {
+    String ret;
     if (studyId.isPresent()) {
       log.trace("Entering showStudyPage(edit) for study [id: {}]", () -> studyId.get());
+      ret = checkStudyAccess(pid, studyId, redirectAttributes, false);
     } else {
       log.trace("Entering showStudyPage(create) study");
+      ret = checkStudyAccess(pid, studyId, redirectAttributes, true);
     }
-    if (!pid.isPresent()) {
-      // TODO ausstieg - pid fehlt!!!
-    }
-    final UserDTO user = UserUtil.getCurrentUser();
-    if (user == null) {
-      log.warn("Auth User Object == null - redirect to login");
-      return "redirect:/login";
-    }
+    if (ret != null)
+      return ret;
     StudyForm sForm = createStudyForm();
     try {
-      if (pUtil.checkProjectRoles(user, pid.get(), false, true) == null) {
-        // TODO
-      }
       ProjectDTO project = projectDAO.findById(pid.get());
       if (project == null) {
         // TODO loggin
@@ -72,12 +67,14 @@ public class StudyController extends SuperController {
       sForm.setProject(project);
       List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
       if (studyId.isPresent()) {
-        final StudyDTO study = studyDAO.findById(studyId.get());
-        setStudyDTO(studyId, study);
+        final StudyDTO study = studyDAO.findById(studyId.get(), pid.get());
+        if (study != null) {
+          setStudyDTO(studyId, study);
+          sForm.setStudy(study);
+          cleanContributorList(pContri, study.getContributors());
+        }
         sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
         sForm.setSourFormat(formTypeDAO.findAllByType(true, DWFieldTypes.DATAFORMAT));
-        sForm.setStudy(study);
-        cleanContributorList(pContri, study.getContributors());
       }
       sForm.setProjectContributors(pContri);
     } catch (Exception e) {
@@ -378,6 +375,34 @@ public class StudyController extends SuperController {
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYSAMPLE);
     return "study";
+  }
+
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param redirectAttributes
+   * @param onlyWrite
+   * @return
+   */
+  private String checkStudyAccess(final Optional<Long> pid, final Optional<Long> studyId,
+      final RedirectAttributes redirectAttributes, final boolean onlyWrite) {
+    final UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    if (!pid.isPresent() || pUtil.checkProjectRoles(user, pid.get(), studyId.isPresent() ? studyId.get() : -1,
+        onlyWrite, true) == null) {
+      log.warn(
+          "WARN: access denied because of: " + (!pid.isPresent() ? "missing project identifier"
+              : "user [id: {}] has no rights to read/write study [id: {}]"),
+          () -> user.getId(), () -> studyId.isPresent() ? studyId.get() : 0);
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
+      return !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
+    }
+    return null;
   }
 
   /**

@@ -39,7 +39,7 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/dmp")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class DMPController extends SuperController {
-  
+
   private static Logger log = LogManager.getLogger(DMPController.class);
 
   public DMPController() {
@@ -107,7 +107,7 @@ public class DMPController extends SuperController {
       return "redirect:/login";
     }
     try {
-      pUtil.getProjectForm(pForm, pid, user, PageState.DMP, pUtil.checkProjectRoles(user, pid, false, false));
+      pUtil.getProjectForm(pForm, pid, user, PageState.DMP, pUtil.checkProjectRoles(user, pid, 0, false, false));
     } catch (Exception e) {
       log.warn("Exception: " + e.getMessage());
       String redirectMessage = "";
@@ -136,7 +136,7 @@ public class DMPController extends SuperController {
     }
     UserDTO user = UserUtil.getCurrentUser();
     Boolean hasErrors = false;
-    if (!pid.isPresent() || pUtil.checkProjectRoles(user, pid.get(), true, false) == null) {
+    if (!pid.isPresent() || pUtil.checkProjectRoles(user, pid.get(), 0, true, false) == null) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;

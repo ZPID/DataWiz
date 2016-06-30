@@ -25,7 +25,7 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/export")
 @SessionAttributes({ "breadcrumpList" })
 public class ExportController extends SuperController {
-  
+
   private static Logger log = LogManager.getLogger(ExportController.class);
 
   @RequestMapping(value = { "", "/{projectId}" }, method = RequestMethod.GET)
@@ -46,7 +46,7 @@ public class ExportController extends SuperController {
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
       pUtil.getProjectForm(pForm, projectId.get(), user, PageState.EXPORT,
-          pUtil.checkProjectRoles(user, projectId.get(), false, false));
+          pUtil.checkProjectRoles(user, projectId.get(), 0, false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
 
       }
