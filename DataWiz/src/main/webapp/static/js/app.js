@@ -49,6 +49,7 @@ $tag_box = null;
       $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
     }
     $(".loader").fadeOut("slow");
+    $(".uploader").fadeOut("slow");
   });
 })(window.jQuery, window, document);
 
@@ -244,11 +245,9 @@ Dropzone.options.myDropzone = {
       }, 500);
     });
     this.on("error", function(files, serverResponse) {
-      $("body").removeClass("loading");
       $(".loader").fadeOut("slow");
     });
     this.on("processingmultiple", function(files, serverResponse) {
-      $("body").addClass("loading");
       $(".loader").fadeIn("slow");
     });
   }

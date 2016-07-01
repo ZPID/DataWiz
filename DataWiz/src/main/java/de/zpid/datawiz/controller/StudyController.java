@@ -61,7 +61,7 @@ public class StudyController extends SuperController {
     try {
       ProjectDTO project = projectDAO.findById(pid.get());
       if (project == null) {
-        // TODO loggin
+        log.trace("Entering showStudyPage(create) study");
         return "redirect:/panel";
       }
       sForm.setProject(project);

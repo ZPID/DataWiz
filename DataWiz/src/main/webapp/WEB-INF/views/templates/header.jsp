@@ -1,7 +1,8 @@
 <%@ include file="includes.jsp"%>
 <html>
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta charset="utf-8">
 <sec:csrfMetaTags />
 <title><s:eval expression="@environment.getProperty('application.name')" /></title>
 <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet"></link>

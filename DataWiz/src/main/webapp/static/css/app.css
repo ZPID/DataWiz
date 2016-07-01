@@ -405,14 +405,3 @@ textarea {
   background: rgba(255, 255, 255, .8) url('../images/Loading-data.gif') 50% 50% no-repeat;
 }
 
-/* When the body has the loading class, we turn
-   the scrollbar off with overflow:hidden */
-body.loading {
-  overflow: hidden;
-}
-
-/* Anytime the body has the loading class, our
-   modal element will be visible */
-body.loading .loader {
-  display: block;
-}

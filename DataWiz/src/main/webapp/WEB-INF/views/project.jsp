@@ -302,17 +302,37 @@
         <div class="well">
           <s:message code="project.edit.metadata.info" />
         </div>
-        <c:forEach items="${ProjectForm.studies}" var="cstud">
-          <a href="<c:url value="${ProjectForm.project.id}/study/${cstud.id}" />"><b>${cstud.id} -
-              ${cstud.title}</b></a>
-          <br />
-        </c:forEach>
-        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-        dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-        clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet,
-        consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed
-        diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-        takimata sanctus est Lorem ipsum dolor sit amet.
+        <c:set var="pRole_g" value="panel-primary" />
+        <c:if test="${principal.user.hasRole('PROJECT_READER', ProjectForm.project.id, false)}">
+          <c:set var="pRole_g" value="panel-warning" />
+        </c:if>
+        <div class="panel-group">
+          <c:forEach items="${ProjectForm.studies}" var="cstud">
+            <c:set var="pRole" value="${pRole_g}" />
+            <c:choose>
+              <c:when test="${principal.user.hasRole('DS_WRITER', cstud.id, true)}">
+                <c:set var="pRole" value="panel-primary" />
+              </c:when>
+            </c:choose>
+            <div class="panel <c:out value="${pRole}"/>">
+              <div class="panel-heading">
+                <div class="row">
+                  <div class="col-sm-11">
+                    <s:message text="${cstud.title}" />
+                  </div>
+                  <div class="col-sm-1">
+                    <a href='<c:url value="${ProjectForm.project.id}/study/${cstud.id}"/>' class="label label-success"><s:message
+                        code="gen.edit" /></a>
+                  </div>
+                </div>
+              </div>
+              <div class="panel-body">
+                <a href="<c:url value="${ProjectForm.project.id}/study/${cstud.id}" />">${cstud.id} - </a>
+              </div>
+            </div>
+            <br />
+          </c:forEach>
+        </div>
       </div>
       <!-- End Page Studies -->
       <!-- Start Page Material -->
