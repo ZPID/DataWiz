@@ -7,8 +7,13 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,6 +41,9 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
 public class StudyController extends SuperController {
+  
+  @Autowired
+  PlatformTransactionManager txManager;
 
   private static Logger log = LogManager.getLogger(StudyController.class);
 
@@ -101,7 +109,17 @@ public class StudyController extends SuperController {
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId) {
     log.trace("Entering saveStudy");
+    
+    //TODO TESTEN!!!!!!
+    TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
+    TransactionStatus status = txManager.getTransaction(transactionDefinition);
+    try{
+      
 
+      txManager.commit(status);
+    }catch (Exception e){
+      txManager.rollback(status);
+    }
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";

@@ -20,6 +20,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -39,7 +43,10 @@ import de.zpid.datawiz.util.UserUtil;
 @Controller
 @SessionAttributes("UserDTO")
 public class LoginController extends SuperController {
-  
+
+  @Autowired
+  PlatformTransactionManager txManager;
+
   private static Logger log = LogManager.getLogger(LoginController.class);
 
   public LoginController() {
@@ -188,9 +195,12 @@ public class LoginController extends SuperController {
       try {
         EmailUtil mail = new EmailUtil(env);
         mail.sendSSLMail(person.getEmail(),
-            messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
+            messageSource.getMessage("reg.mail.subject", null,
+                LocaleContextHolder.getLocale()),
             messageSource.getMessage("reg.mail.content",
-                new Object[] { request.getRequestURL(), person.getEmail(), person.getActivationCode() },
+                new Object[] {
+                    request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()),
+                    person.getEmail(), person.getActivationCode() },
                 LocaleContextHolder.getLocale()));
       } catch (Exception e) {
         log.error("Mail error during user registration: ", e);
@@ -211,18 +221,29 @@ public class LoginController extends SuperController {
    * @return
    */
   @RequestMapping(value = "/activate/{mail}/{activationCode}", method = RequestMethod.GET)
-  public String activateAccount(@PathVariable String mail, @PathVariable String activationCode, ModelMap model) {
+  public String activateAccount(@PathVariable final String mail, @PathVariable final String activationCode,
+      ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute activateAccount email: " + mail + " code: " + activationCode);
     }
+    TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
+    TransactionStatus status = txManager.getTransaction(transactionDefinition);
     try {
       UserDTO user = userDAO.findByMail(mail, false);
       if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
           && user.getActivationCode().equals(activationCode)) {
         userDAO.activateUserAccount(user);
         roleDAO.saveRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
+        long pid = Long.parseLong(projectDAO.findValFromInviteData(mail, activationCode, "project_id"));
+        if (pid > 0) {
+          UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), pid, 0, Roles.REL_ROLE.name());
+          roleDAO.saveRole(role);
+          projectDAO.deleteInvitationEntree(pid, mail);
+        }
       }
+      txManager.commit(status);
     } catch (Exception e) {
+      txManager.rollback(status);
       log.warn("DBS error during user registration: " + e);
       model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
       return "error";

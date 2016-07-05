@@ -20,9 +20,13 @@ public class StudyDTO implements Serializable {
   private long id;
   private long projectId;
   private long lastUserId;
-  private LocalDateTime timestamp;
+  private LocalDateTime lastEdit;
+  private boolean currentlyEdit;
+  private LocalDateTime editSince;
+  private long editUserId;
 
   public interface StGeneralVal {
+
   }
 
   /** Study01 */
@@ -267,6 +271,30 @@ public class StudyDTO implements Serializable {
 
   public void setProjectId(long projectId) {
     this.projectId = projectId;
+  }
+
+  public boolean isCurrentlyEdit() {
+    return currentlyEdit;
+  }
+
+  public void setCurrentlyEdit(boolean currentlyEdit) {
+    this.currentlyEdit = currentlyEdit;
+  }
+
+  public LocalDateTime getEditSince() {
+    return editSince;
+  }
+
+  public void setEditSince(LocalDateTime editSince) {
+    this.editSince = editSince;
+  }
+
+  public long getEditUserId() {
+    return editUserId;
+  }
+
+  public void setEditUserId(long editUserId) {
+    this.editUserId = editUserId;
   }
 
   public String getTitle() {
@@ -652,11 +680,11 @@ public class StudyDTO implements Serializable {
   }
 
   public LocalDateTime getTimestamp() {
-    return timestamp;
+    return lastEdit;
   }
 
   public void setTimestamp(LocalDateTime timestamp) {
-    this.timestamp = timestamp;
+    this.lastEdit = timestamp;
   }
 
   public String getResponsibility() {

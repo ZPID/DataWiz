@@ -26,7 +26,7 @@ import de.zpid.datawiz.dto.UserDTO;
 @Repository
 @Scope("singleton")
 public class ProjectDAO extends SuperDAO {
-  
+
   private static Logger log = LogManager.getLogger(ProjectDAO.class);
 
   public ProjectDAO() {
@@ -135,6 +135,23 @@ public class ProjectDAO extends SuperDAO {
         () -> email, () -> val);
     final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
     String ret = jdbcTemplate.query(sql, new Object[] { email, projectId }, new ResultSetExtractor<String>() {
+      @Override
+      public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+        if (rs.next()) {
+          return rs.getString(val);
+        }
+        return null;
+      }
+    });
+    log.debug("Transaction for getValFromInviteData returned [{}: {}]", () -> val, () -> ret);
+    return ret;
+  }
+
+  public String findValFromInviteData(final String email, final String linkhash, final String val) throws Exception {
+    log.trace("execute getValFromInviteData for project [id: {}], [linkhash : {}] and [val: {}]", () -> linkhash,
+        () -> email, () -> val);
+    final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND linkhash = ?";
+    String ret = jdbcTemplate.query(sql, new Object[] { email, linkhash }, new ResultSetExtractor<String>() {
       @Override
       public String extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (rs.next()) {

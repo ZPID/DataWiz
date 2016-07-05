@@ -30,10 +30,12 @@ public class StudyDAO extends SuperDAO {
   public List<StudyDTO> findAllStudiesByProjectId(final ProjectDTO project) throws Exception {
     log.trace("execute findAllStudiesByProjectId for project [id: {}; name: {}]", () -> project.getId(),
         () -> project.getTitle());
-    String sql = "SELECT * FROM dw_study WHERE dw_study.project_id = ?";
+    String sql = "SELECT id, project_id, last_user_id, lastEdit, currentlyEdit, editSince,"
+        + " editUserId, title, internalID, transTitle, sAbstract, sAbstractTrans"
+        + " FROM dw_study WHERE dw_study.project_id = ?";
     final List<StudyDTO> res = jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<StudyDTO>() {
       public StudyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return setStudyDTO(rs);
+        return setStudyDTO(rs, true);
       }
     });
     log.debug("leaving findAllStudiesByProjectId with size: {}", () -> res.size());
@@ -48,7 +50,7 @@ public class StudyDAO extends SuperDAO {
           @Override
           public StudyDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (rs.next()) {
-              return setStudyDTO(rs);
+              return setStudyDTO(rs, false);
             }
             return null;
           }
@@ -57,13 +59,27 @@ public class StudyDAO extends SuperDAO {
     return res;
   }
 
-  private StudyDTO setStudyDTO(final ResultSet rs) throws SQLException {
+  private StudyDTO setStudyDTO(final ResultSet rs, final boolean overview) throws SQLException {
     StudyDTO study = (StudyDTO) applicationContext.getBean("StudyDTO");
-    study.setId(rs.getInt("id"));
+    study.setId(rs.getLong("id"));
     study.setProjectId(rs.getLong("project_id"));
     study.setLastUserId(rs.getLong("last_user_id"));
-    study.setTimestamp(rs.getTimestamp("last_edit").toLocalDateTime());
+    study.setTimestamp(rs.getTimestamp("lastEdit") != null ? rs.getTimestamp("lastEdit").toLocalDateTime() : null);
+    study.setCurrentlyEdit(rs.getBoolean("currentlyEdit"));
+    study.setEditSince(rs.getTimestamp("editSince") != null ? rs.getTimestamp("editSince").toLocalDateTime() : null);
+    study.setEditUserId(rs.getLong("editUserId"));
+    // Administrative Data
     study.setTitle(rs.getString("title"));
+    study.setInternalID(rs.getString("internalID"));
+    study.setTransTitle(rs.getString("transTitle"));
+    study.setsAbstract(rs.getString("sAbstract"));
+    study.setsAbstractTrans(rs.getString("sAbstractTrans"));
+    if (!overview) {
+      study.setCompleteSel(rs.getString("completeSel"));
+      study.setExcerpt(rs.getString("excerpt"));
+      study.setPrevWork(rs.getString("prevWork"));
+      study.setPrevWorkStr(rs.getString("prevWorkStr"));
+    }
     return study;
   }
 

@@ -20,7 +20,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -109,6 +111,11 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
     log.info("dataSource succesfully loaded");
     return dataSource;
+  }
+  
+  @Bean
+  public PlatformTransactionManager txManager() {
+      return new DataSourceTransactionManager(getDataSource());
   }
 
   @Bean(name = "minioUtil")
