@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
+import de.zpid.datawiz.enumeration.InterventionTypes;
 
 @Repository
 @Scope("singleton")
@@ -79,6 +80,20 @@ public class StudyDAO extends SuperDAO {
       study.setExcerpt(rs.getString("excerpt"));
       study.setPrevWork(rs.getString("prevWork"));
       study.setPrevWorkStr(rs.getString("prevWorkStr"));
+      study.setRepMeasures(rs.getString("repMeasures"));
+      study.setTimeDim(rs.getString("timeDim"));
+      study.setSurveyIntervention(rs.getBoolean("surveyIntervention"));
+      study.setExperimentalIntervention(rs.getBoolean("experimentalIntervention"));
+      study.setTestIntervention(rs.getBoolean("testIntervention"));
+      study.setInterTypeExp(
+          rs.getString("interTypeExp") != null ? InterventionTypes.valueOf(rs.getString("interTypeExp")) : null);
+      study.setInterTypeDes(
+          rs.getString("interTypeDes") != null ? InterventionTypes.valueOf(rs.getString("interTypeDes")) : null);
+      study.setInterTypeLab(
+          rs.getString("interTypeLab") != null ? InterventionTypes.valueOf(rs.getString("interTypeLab")) : null);
+      study.setRandomization(
+          rs.getString("randomization") != null ? InterventionTypes.valueOf(rs.getString("randomization")) : null);
+
     }
     return study;
   }

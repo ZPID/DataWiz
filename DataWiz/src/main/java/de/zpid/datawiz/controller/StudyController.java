@@ -41,7 +41,7 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
 public class StudyController extends SuperController {
-  
+
   @Autowired
   PlatformTransactionManager txManager;
 
@@ -109,15 +109,14 @@ public class StudyController extends SuperController {
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId) {
     log.trace("Entering saveStudy");
-    
-    //TODO TESTEN!!!!!!
+
+    // TODO TESTEN!!!!!!
     TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
     TransactionStatus status = txManager.getTransaction(transactionDefinition);
-    try{
-      
+    try {
 
       txManager.commit(status);
-    }catch (Exception e){
+    } catch (Exception e) {
       txManager.rollback(status);
     }
     model.put("studySubMenu", true);
@@ -440,6 +439,7 @@ public class StudyController extends SuperController {
       study.setObjectives(studyObjectivesDAO.findAllByStudy(studyId.get()));
       study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
       study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get()));
+      study.setEligibilities(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.ELIGIBILITY));
     }
   }
 
