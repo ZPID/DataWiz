@@ -87,7 +87,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.prevWork"><s:message code="study.prevWork" /></label>
-      <sf:select path="study.completeSel" class="form-control" id="selectPrevWork"
+      <sf:select path="study.prevWork" class="form-control" id="selectPrevWork"
         onchange="switchViewIfSelected('selectPrevWork', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
