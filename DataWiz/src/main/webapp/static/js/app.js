@@ -31,6 +31,8 @@ $tag_box = null;
       startTagging();
     } // loading Study Content
     else if (window.location.pathname.search("/study") > 0) {
+      $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
+      $("#switchEditMode").attr("disabled", false);
       scrollToPosition();
       startAccordion();
       startDatePicker();
@@ -214,9 +216,9 @@ Dropzone.options.myDropzone = {
   init : function() {
     // upload button click event
     var myDropzone = this;
-    $('#dz-upload-button').on("click", function(e) {      
+    $('#dz-upload-button').on("click", function(e) {
       myDropzone.processQueue();
-      
+
     });
     // reset button click event
     $('#dz-reset-button').on("click", function(e) {

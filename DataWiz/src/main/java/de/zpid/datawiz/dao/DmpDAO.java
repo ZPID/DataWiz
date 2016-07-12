@@ -149,6 +149,7 @@ public class DmpDAO extends SuperDAO {
           dmp.setSpecificCostsTxt(rs.getString("specificCostsTxt"));
           dmp.setAriseCosts(rs.getString("ariseCosts"));
           dmp.setBearCost(rs.getString("bearCost"));
+          rs.close();
           return dmp;
         }
         return null;

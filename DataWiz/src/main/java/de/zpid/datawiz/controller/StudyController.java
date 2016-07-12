@@ -39,7 +39,7 @@ import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
-@SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
+@SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList", "disStudyContent" })
 public class StudyController extends SuperController {
 
   @Autowired
@@ -101,11 +101,12 @@ public class StudyController extends SuperController {
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
     model.put("subnaviActive", PageState.STUDY.name());
+    model.put("disStudyContent", "disabled");
     log.trace("Method showStudyPage successfully completed");
     return "study";
   }
 
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST)
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST)
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId) {
     log.trace("Entering saveStudy");
@@ -124,6 +125,20 @@ public class StudyController extends SuperController {
     return "study";
   }
 
+  @RequestMapping(value = {"/{studyId}/switchEditMode"})
+  public String switchEditMode(ModelMap model) {
+    log.trace("Entering changeStudyLock");
+    String actLock = (String) model.get("disStudyContent");
+    if (actLock == null || actLock.isEmpty() || actLock.equals("enabled"))
+      actLock = "disabled";
+    else
+      actLock = "enabled";
+    model.put("disStudyContent", actLock);
+    model.put("studySubMenu", true);
+    model.put("jQueryMap", model.get("jQueryMap"));
+    return "study";
+  }
+
   /**
    * Appends a ContributorDTO to the list of study contributors items taken from the existing project contributors.
    * After appending the item, it will be deleted from the project contributor list. If the study list is NULL, a new
@@ -135,7 +150,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addContri")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addContri")
   public String addContributor(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addContributor");
     if (sForm.getStudy().getContributors() == null)
@@ -162,7 +177,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "deleteContri")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "deleteContri")
   public String deleteContributor(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering deleteContributor");
     if (sForm.getDelPos() >= 0 && sForm.getStudy().getContributors().size() > 0) {
@@ -185,7 +200,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addSoftware")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addSoftware")
   public String addSoftware(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addSoftware");
     if (sForm.getStudy().getSoftware() == null)
@@ -207,7 +222,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addPubOnData")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addPubOnData")
   public String addPubOnData(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addPubOnData");
     if (sForm.getStudy().getPubOnData() == null)
@@ -229,7 +244,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addConflInterests")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addConflInterests")
   public String addConflInterests(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addConflInterests");
     if (sForm.getStudy().getConflInterests() == null)
@@ -251,7 +266,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addObjectives")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addObjectives")
   public String addObjectives(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addObjectives");
     if (sForm.getStudy().getObjectives() == null)
@@ -273,7 +288,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addRelTheorys")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addRelTheorys")
   public String addRelTheorys(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addRelTheorys");
     if (sForm.getStudy().getRelTheorys() == null)
@@ -295,7 +310,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addInterArms")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addInterArms")
   public String addInterArms(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addInterArms");
     if (sForm.getStudy().getInterArms() == null)
@@ -317,7 +332,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addMeasOccName")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addMeasOccName")
   public String addMeasOccName(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addMeasOccName");
     if (sForm.getStudy().getMeasOccName() == null)
@@ -339,7 +354,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addConstruct")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addConstruct")
   public String addConstruct(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addConstruct");
     if (sForm.getStudy().getConstructs() == null)
@@ -361,7 +376,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addInstrument")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addInstrument")
   public String addInstrument(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addInstrument");
     if (sForm.getStudy().getInstruments() == null)
@@ -383,7 +398,7 @@ public class StudyController extends SuperController {
    *          transporting the important parameter to the view
    * @return mapping to "study.jsp"
    */
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.POST, params = "addEligibilities")
+  @RequestMapping(value = { "", "/{studyId}"}, method = RequestMethod.POST, params = "addEligibilities")
   public String addEligibilities(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addEligibilities");
     if (sForm.getStudy().getEligibilities() == null)

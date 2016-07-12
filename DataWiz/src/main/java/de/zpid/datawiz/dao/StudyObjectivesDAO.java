@@ -16,7 +16,7 @@ import de.zpid.datawiz.enumeration.ObjectiveTypes;
 @Repository
 @Scope("singleton")
 public class StudyObjectivesDAO extends SuperDAO {
-  
+
   private static Logger log = LogManager.getLogger(StudyObjectivesDAO.class);
 
   public StudyObjectivesDAO() {

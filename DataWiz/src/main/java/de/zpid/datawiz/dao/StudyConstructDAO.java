@@ -16,7 +16,7 @@ import de.zpid.datawiz.enumeration.ConstructTypes;
 @Repository
 @Scope("singleton")
 public class StudyConstructDAO extends SuperDAO {
-  
+
   private static Logger log = LogManager.getLogger(StudyConstructDAO.class);
 
   public StudyConstructDAO() {

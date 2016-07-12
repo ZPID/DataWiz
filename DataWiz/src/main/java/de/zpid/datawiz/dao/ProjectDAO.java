@@ -134,15 +134,7 @@ public class ProjectDAO extends SuperDAO {
     log.trace("execute getValFromInviteData for project [id: {}], user [id: {}] and [val: {}]", () -> projectId,
         () -> email, () -> val);
     final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
-    String ret = jdbcTemplate.query(sql, new Object[] { email, projectId }, new ResultSetExtractor<String>() {
-      @Override
-      public String extractData(ResultSet rs) throws SQLException, DataAccessException {
-        if (rs.next()) {
-          return rs.getString(val);
-        }
-        return null;
-      }
-    });
+    String ret = jdbcTemplate.queryForObject(sql, new Object[] { email, projectId }, String.class);
     log.debug("Transaction for getValFromInviteData returned [{}: {}]", () -> val, () -> ret);
     return ret;
   }
@@ -151,15 +143,7 @@ public class ProjectDAO extends SuperDAO {
     log.trace("execute getValFromInviteData for project [id: {}], [linkhash : {}] and [val: {}]", () -> linkhash,
         () -> email, () -> val);
     final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND linkhash = ?";
-    String ret = jdbcTemplate.query(sql, new Object[] { email, linkhash }, new ResultSetExtractor<String>() {
-      @Override
-      public String extractData(ResultSet rs) throws SQLException, DataAccessException {
-        if (rs.next()) {
-          return rs.getString(val);
-        }
-        return null;
-      }
-    });
+    String ret = jdbcTemplate.queryForObject(sql, new Object[] { email, linkhash }, String.class);
     log.debug("Transaction for getValFromInviteData returned [{}: {}]", () -> val, () -> ret);
     return ret;
   }

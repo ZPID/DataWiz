@@ -16,9 +16,25 @@
             </div>
           </c:when>
           <c:otherwise>
-            <h4>
-              <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
-            </h4>
+            <div class="row">
+              <div class="col-sm-11">
+                <h4>
+                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
+                </h4>
+              </div>
+              <div class="col-sm-1">
+                <c:url var="accessUrl"
+                  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
+                <c:choose>
+                  <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
+                    <a href="${accessUrl}" class="btn btn-success">Checkin</a>
+                  </c:when>
+                  <c:otherwise>
+                    <a href="${accessUrl}" class="btn btn-warn">CheckOut</a>
+                  </c:otherwise>
+                </c:choose>
+              </div>
+            </div>
             <div>
               <s:message code="study.edit.basis.info" />
             </div>
@@ -43,10 +59,11 @@
         </ul>
       </c:if>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal">
+      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
+        <input type="hidden" id="disStudyContent" value="${disStudyContent}" />
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <sf:hidden path="delPos" />
-        <sf:hidden path="scrollPosition"/>
+        <sf:hidden path="scrollPosition" />
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
