@@ -46,13 +46,8 @@
 	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/io.minio/examples -->
-		<!-- <dependency>
-			<groupId>io.minio</groupId>
-			<artifactId>minio</artifactId>
-			<version>2.0.0</version>
-			<scope>system</scope>
-			<systemPath>C:\Users\ronny\Downloads\minio-java-master\build\libs\minio-2.0.0-all.jar</systemPath>
-		</dependency> -->
+		<!-- <dependency> <groupId>io.minio</groupId> <artifactId>minio</artifactId> <version>2.0.0</version> <scope>system</scope> 
+			<systemPath>C:\Users\ronny\Downloads\minio-java-master\build\libs\minio-2.0.0-all.jar</systemPath> </dependency> -->
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>

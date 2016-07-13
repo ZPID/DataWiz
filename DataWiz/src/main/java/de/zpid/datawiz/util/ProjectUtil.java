@@ -127,7 +127,7 @@ public class ProjectUtil {
         for (UserRoleDTO role : userRoles) {
           Roles uRole = Roles.valueOf(role.getType());
           if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
-            cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId()));
+            cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId(), false));
           }
         }
         pForm.setStudies(cStud);

@@ -12,14 +12,17 @@ import javax.sql.DataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -52,6 +55,24 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @Autowired
   private Environment env;
+
+  @Bean(name = "PropertiesFile")
+  public static PropertyPlaceholderConfigurer properties() {
+    PropertyPlaceholderConfigurer placeholder = new PropertyPlaceholderConfigurer();
+    ClassPathResource[] value = new ClassPathResource[] { new ClassPathResource("datawiz.properties") };
+    placeholder.setLocations(value);
+    return placeholder;
+  }
+
+  @Bean(name = "sessionTimeout")
+  @Scope("singleton")
+  public int getSessionTimeout() {
+    try {
+      return Integer.parseInt(env.getRequiredProperty("session.timeout").trim());
+    } catch (Exception e) {
+      return 600;
+    }
+  }
 
   @Bean(name = "DataWiz")
   public ViewResolver viewResolver() {
@@ -112,10 +133,10 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     log.info("dataSource succesfully loaded");
     return dataSource;
   }
-  
+
   @Bean
   public PlatformTransactionManager txManager() {
-      return new DataSourceTransactionManager(getDataSource());
+    return new DataSourceTransactionManager(getDataSource());
   }
 
   @Bean(name = "minioUtil")
