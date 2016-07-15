@@ -57,17 +57,19 @@ public class StudyController extends SuperController {
 
   @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.GET)
   public String showStudyPage(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      ModelMap model, RedirectAttributes redirectAttributes) {
+      final ModelMap model, final RedirectAttributes redirectAttributes) {
     String ret;
+    final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
       log.trace("Entering showStudyPage(edit) for study [id: {}]", () -> studyId.get());
-      ret = checkStudyAccess(pid, studyId, redirectAttributes, false);
+      ret = checkStudyAccess(pid, studyId, redirectAttributes, false, user);
     } else {
       log.trace("Entering showStudyPage(create) study");
-      ret = checkStudyAccess(pid, studyId, redirectAttributes, true);
+      ret = checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     }
     if (ret != null)
       return ret;
+    String accessState = "disabled";
     StudyForm sForm = createStudyForm();
     try {
       ProjectDTO project = projectDAO.findById(pid.get());
@@ -78,14 +80,17 @@ public class StudyController extends SuperController {
       sForm.setProject(project);
       List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
       if (studyId.isPresent()) {
-        final StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false);
+        StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false);
         if (study != null) {
           setStudyDTO(studyId, study);
           sForm.setStudy(study);
           cleanContributorList(pContri, study.getContributors());
+          accessState = updateAccessState(user, accessState, study);
         }
         sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
         sForm.setSourFormat(formTypeDAO.findAllByType(true, DWFieldTypes.DATAFORMAT));
+      } else {
+        accessState = "enabled";
       }
       sForm.setProjectContributors(pContri);
     } catch (Exception e) {
@@ -100,50 +105,83 @@ public class StudyController extends SuperController {
                     (sForm.getStudy() != null && sForm.getStudy().getTitle() != null
                         && !sForm.getStudy().getTitle().isEmpty() ? sForm.getStudy().getTitle() : "empty") },
                 pid.get()));
+    model.put("disStudyContent", accessState);
     model.put("StudyForm", sForm);
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
     model.put("subnaviActive", PageState.STUDY.name());
-    model.put("disStudyContent", "disabled");
     log.trace("Method showStudyPage successfully completed");
     return "study";
   }
 
+  /**
+   * @param user
+   * @param accessState
+   * @param study
+   * @return
+   */
+  private String updateAccessState(final UserDTO user, String accessState, StudyDTO study) {
+    if (study.isCurrentlyEdit() && study.getEditUserId() == user.getId()
+        && (study.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) >= 0)) {
+      studyDAO.switchStudyLock(study.getId(), user.getId(), false);
+      accessState = "enabled";
+    }
+    return accessState;
+  }
+
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST)
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
-      RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId) {
+      RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId,
+      @PathVariable final Optional<Long> pid) {
     log.trace("Entering saveStudy");
 
-    // TODO TESTEN!!!!!!
+    // TODO TESTEN!!!!!! - speichern und update
     TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
     TransactionStatus status = txManager.getTransaction(transactionDefinition);
     try {
-
+      final UserDTO user = UserUtil.getCurrentUser();
+      studyDAO.updateStudy(sForm.getStudy(), true, user.getId());
       txManager.commit(status);
     } catch (Exception e) {
+      log.error("{}", () -> e);
       txManager.rollback(status);
     }
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYGENERAL);
-    return "study";
+    return "redirect:/project/" + pid.get() + "/study/" + studyId.get();
   }
 
   @RequestMapping(value = { "/{studyId}/switchEditMode" })
-  public String switchEditMode(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
+  public String switchEditMode(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
+      RedirectAttributes redirectAttributes, @PathVariable final Optional<Long> pid,
+      @PathVariable final Optional<Long> studyId) {
     log.trace("Entering changeStudyLock");
     StudyDTO study = sForm.getStudy();
-    if (!study.isCurrentlyEdit() || study.getEditSince() == null
-        || (study.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) < 0)) {
-      String actLock = (String) model.get("disStudyContent");
-      if (actLock == null || actLock.isEmpty() || actLock.equals("enabled"))
-        actLock = "disabled";
-      else
-        actLock = "enabled";
+    UserDTO user = UserUtil.getCurrentUser();
+    String ret = checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    if (ret != null)
+      return ret;
+    String actLock = (String) model.get("disStudyContent");
+    StudyDTO currLock = null;
+    try {
+      currLock = studyDAO.findById(study.getId(), pid.get(), true);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    if (currLock != null && (!currLock.isCurrentlyEdit()
+        || (currLock.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) < 0)
+        || (currLock.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) >= 0
+            && user.getId() == currLock.getEditUserId()))) {
+      if (actLock == null || actLock.isEmpty() || actLock.equals("enabled")) {
+        if (studyDAO.switchStudyLock(study.getId(), user.getId(), true) > 0)
+          actLock = "disabled";
+      } else {
+        if (studyDAO.switchStudyLock(study.getId(), user.getId(), false) > 0)
+          actLock = "enabled";
+      }
       model.put("disStudyContent", actLock);
     }
-    final UserDTO user = UserUtil.getCurrentUser();
-    studyDAO.switchStudyLock(study.getId(), user.getId(), false);
-    
     model.put("studySubMenu", true);
     model.put("jQueryMap", model.get("jQueryMap"));
     return "study";
@@ -428,8 +466,7 @@ public class StudyController extends SuperController {
    * @return
    */
   private String checkStudyAccess(final Optional<Long> pid, final Optional<Long> studyId,
-      final RedirectAttributes redirectAttributes, final boolean onlyWrite) {
-    final UserDTO user = UserUtil.getCurrentUser();
+      final RedirectAttributes redirectAttributes, final boolean onlyWrite, final UserDTO user) {
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";

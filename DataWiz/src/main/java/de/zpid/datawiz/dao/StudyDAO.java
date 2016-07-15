@@ -26,8 +26,7 @@ public class StudyDAO extends SuperDAO {
 
   public StudyDAO() {
     super();
-    if (log.isInfoEnabled())
-      log.info("Loading StudyDAO as Singleton and Service");
+    log.info("Loading StudyDAO as Singleton and Service");
   }
 
   public List<StudyDTO> findAllStudiesByProjectId(final ProjectDTO project) throws Exception {
@@ -62,13 +61,6 @@ public class StudyDAO extends SuperDAO {
     return res;
   }
 
-  public int updateStudy(final StudyDTO study) throws Exception {
-    log.trace("execute updateStudy for [id: {}]", () -> study.getId());
-    int ret = this.jdbcTemplate.update("UPDATE dw_study SET last_user_id = ?" + " WHERE id = ?",
-        setParams(study, true).toArray());
-    return ret;
-  }
-
   public int switchStudyLock(final long studyid, final long userid, final boolean deleteLock) {
     log.trace("execute switchStudyLock for [studyid: {}, userid: {}, deleteLock: {}]", () -> studyid, () -> userid,
         () -> deleteLock);
@@ -85,8 +77,8 @@ public class StudyDAO extends SuperDAO {
     StudyDTO study = (StudyDTO) applicationContext.getBean("StudyDTO");
     study.setId(rs.getLong("id"));
     study.setProjectId(rs.getLong("project_id"));
-    study.setLastUserId(rs.getLong("last_user_id"));
     study.setTimestamp(rs.getTimestamp("lastEdit") != null ? rs.getTimestamp("lastEdit").toLocalDateTime() : null);
+    study.setLastUserId(rs.getLong("last_user_id"));
     study.setCurrentlyEdit(rs.getBoolean("currentlyEdit"));
     study.setEditSince(rs.getTimestamp("editSince") != null ? rs.getTimestamp("editSince").toLocalDateTime() : null);
     study.setEditUserId(rs.getLong("editUserId"));
@@ -165,16 +157,39 @@ public class StudyDAO extends SuperDAO {
     return study;
   }
 
-  private List<Object> setParams(StudyDTO study, boolean update) {
+  public int updateStudy(final StudyDTO study, final boolean unlock, final long userId) throws Exception {
+    log.trace("execute updateStudy for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
+        () -> userId);
+    int ret = this.jdbcTemplate
+        .update("UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
+            + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?"
+            + " WHERE id = ?", setParams(study, true, unlock, userId).toArray());
+    log.debug("leaving updateStudy with result: {}", () -> ret);
+    return ret;
+  }
+
+  private List<Object> setParams(StudyDTO study, final boolean update, final boolean unlock, final long userID) throws Exception{
     List<Object> oList = new LinkedList<Object>();
+    LocalDateTime now = LocalDateTime.now();
     if (!update) {
       oList.add(study.getProjectId());
     }
+    oList.add(now);
     oList.add(study.getLastUserId());
-    oList.add(study.getTimestamp());
-    oList.add(study.isCurrentlyEdit());
-    oList.add(study.getEditSince());
-    oList.add(study.getEditUserId() != 0 ? study.getEditUserId() : null);
+    if (unlock) {
+      oList.add(false);
+      oList.add(null);
+      oList.add(null);
+    } else {
+      oList.add(true);
+      oList.add(now);
+      oList.add(userID);
+    }
+    oList.add(study.getTitle());
+    oList.add(study.getInternalID());
+    oList.add(study.getTransTitle());
+    oList.add(study.getsAbstract());
+    oList.add(study.getsAbstractTrans());
     if (update)
       oList.add(study.getId());
     return oList;
