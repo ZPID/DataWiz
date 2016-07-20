@@ -72,6 +72,19 @@ public class StudyDAO extends SuperDAO {
     return ret;
   }
 
+  public int updateStudy(final StudyDTO study, final boolean unlock, final long userId) throws Exception {
+    log.trace("execute updateStudy for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
+        () -> userId);
+    int ret = this.jdbcTemplate.update(
+        "UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
+            + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?, completeSel = ?,"
+            + " excerpt = ?, prevWork = ?, prevWorkStr = ?, repMeasures = ?, timeDim = ?, surveyIntervention = ?,"
+            + " experimentalIntervention = ?, testIntervention = ?" + " WHERE id = ?",
+        setParams(study, true, unlock, userId).toArray());
+    log.debug("leaving updateStudy with result: {}", () -> ret);
+    return ret;
+  }
+
   private StudyDTO setStudyDTO(final ResultSet rs, final boolean overview, final boolean onlyLockInfo)
       throws SQLException {
     StudyDTO study = (StudyDTO) applicationContext.getBean("StudyDTO");
@@ -94,6 +107,7 @@ public class StudyDAO extends SuperDAO {
         study.setExcerpt(rs.getString("excerpt"));
         study.setPrevWork(rs.getString("prevWork"));
         study.setPrevWorkStr(rs.getString("prevWorkStr"));
+        // Design Data
         study.setRepMeasures(rs.getString("repMeasures"));
         study.setTimeDim(rs.getString("timeDim"));
         study.setSurveyIntervention(rs.getBoolean("surveyIntervention"));
@@ -157,18 +171,8 @@ public class StudyDAO extends SuperDAO {
     return study;
   }
 
-  public int updateStudy(final StudyDTO study, final boolean unlock, final long userId) throws Exception {
-    log.trace("execute updateStudy for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
-        () -> userId);
-    int ret = this.jdbcTemplate
-        .update("UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
-            + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?"
-            + " WHERE id = ?", setParams(study, true, unlock, userId).toArray());
-    log.debug("leaving updateStudy with result: {}", () -> ret);
-    return ret;
-  }
-
-  private List<Object> setParams(StudyDTO study, final boolean update, final boolean unlock, final long userID) throws Exception{
+  private List<Object> setParams(StudyDTO study, final boolean update, final boolean unlock, final long userID)
+      throws Exception {
     List<Object> oList = new LinkedList<Object>();
     LocalDateTime now = LocalDateTime.now();
     if (!update) {
@@ -190,6 +194,15 @@ public class StudyDAO extends SuperDAO {
     oList.add(study.getTransTitle());
     oList.add(study.getsAbstract());
     oList.add(study.getsAbstractTrans());
+    oList.add(study.getCompleteSel());
+    oList.add(study.getExcerpt());
+    oList.add(study.getPrevWork());
+    oList.add(study.getPrevWorkStr());
+    oList.add(study.getRepMeasures());
+    oList.add(study.getTimeDim());
+    oList.add(study.isSurveyIntervention());
+    oList.add(study.isExperimentalIntervention());
+    oList.add(study.isTestIntervention());
     if (update)
       oList.add(study.getId());
     return oList;

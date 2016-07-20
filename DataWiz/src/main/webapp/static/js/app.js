@@ -287,6 +287,10 @@ function showorHideDMPContent() {
   switchViewIfSelectedMulti('selectspecificCosts', 'reference,lifecycle,other');
 }
 
+function startloader(){
+  $(".loader").fadeIn("slow");
+}
+
 function showorHideStudyContent() {
   switchViewIfSelected('selectThirdParty', 1);
   switchViewIfSelected('selectCopyright', 1);

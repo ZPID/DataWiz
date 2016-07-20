@@ -16,10 +16,10 @@
         <c:forEach items="${StudyForm.study.objectives}" varStatus="loop">
           <div class="row margin-bottom-10">
             <div class="col-sm-10">
-              <sf:textarea rows="1" path="study.objectives[${loop.index}].objective" class="form-control " />
+              <sf:textarea rows="1" path="study.objectives[${loop.index}].text" class="form-control " />
             </div>
             <div class="col-sm-2">
-              <sf:select class="form-control col-sm-2" path="study.objectives[${loop.index}].type">
+              <sf:select class="form-control col-sm-2" path="study.objectives[${loop.index}].objectivetype">
                 <sf:option value="">
                   <s:message code="gen.select" />
                 </sf:option>

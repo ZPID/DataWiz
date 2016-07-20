@@ -109,7 +109,7 @@ public class DMPController extends SuperController {
     try {
       pUtil.getProjectForm(pForm, pid, user, PageState.DMP, pUtil.checkProjectRoles(user, pid, 0, false, false));
     } catch (Exception e) {
-      log.warn("Exception: " + e.getMessage());
+      log.warn("Exception: ", e);
       String redirectMessage = "";
       if (e instanceof DataWizException) {
         redirectMessage = "project.not.available";

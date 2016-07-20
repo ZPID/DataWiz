@@ -74,7 +74,7 @@ public class StudyDTO implements Serializable {
 
   /** Study14/15 */
   @Valid
-  private List<StudyObjectivesDTO> objectives;
+  private List<StudyListTypesDTO> objectives;
   /** Study16 */
   @Valid
   private List<StudyListTypesDTO> relTheorys;
@@ -401,11 +401,11 @@ public class StudyDTO implements Serializable {
     this.conflInterests = conflInterests;
   }
 
-  public List<StudyObjectivesDTO> getObjectives() {
+  public List<StudyListTypesDTO> getObjectives() {
     return objectives;
   }
 
-  public void setObjectives(List<StudyObjectivesDTO> objectives) {
+  public void setObjectives(List<StudyListTypesDTO> objectives) {
     this.objectives = objectives;
   }
 

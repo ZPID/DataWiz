@@ -19,19 +19,10 @@ public class StudyListTypesDTO implements Serializable {
   private DWFieldTypes type;
   private int sort;
   private boolean timetable;
+  private String objectivetype;
 
   public StudyListTypesDTO() {
     super();
-  }
-
-  public StudyListTypesDTO(long id, long studyid, String text, DWFieldTypes type, int sort, boolean timetable) {
-    super();
-    this.id = id;
-    this.studyid = studyid;
-    this.text = text;
-    this.type = type;
-    this.sort = sort;
-    this.timetable = timetable;
   }
 
   public long getId() {
@@ -66,10 +57,6 @@ public class StudyListTypesDTO implements Serializable {
     this.type = type;
   }
 
-  public static long getSerialversionuid() {
-    return serialVersionUID;
-  }
-
   public int getSort() {
     return sort;
   }
@@ -86,11 +73,20 @@ public class StudyListTypesDTO implements Serializable {
     this.timetable = timetable;
   }
 
+  public String getObjectivetype() {
+    return objectivetype;
+  }
+
+  public void setObjectivetype(String objectivetype) {
+    this.objectivetype = objectivetype;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + (int) (id ^ (id >>> 32));
+    result = prime * result + ((objectivetype == null) ? 0 : objectivetype.hashCode());
     result = prime * result + sort;
     result = prime * result + (int) (studyid ^ (studyid >>> 32));
     result = prime * result + ((text == null) ? 0 : text.hashCode());
@@ -109,6 +105,11 @@ public class StudyListTypesDTO implements Serializable {
       return false;
     StudyListTypesDTO other = (StudyListTypesDTO) obj;
     if (id != other.id)
+      return false;
+    if (objectivetype == null) {
+      if (other.objectivetype != null)
+        return false;
+    } else if (!objectivetype.equals(other.objectivetype))
       return false;
     if (sort != other.sort)
       return false;
@@ -129,7 +130,7 @@ public class StudyListTypesDTO implements Serializable {
   @Override
   public String toString() {
     return "StudyListTypesDTO [id=" + id + ", studyid=" + studyid + ", text=" + text + ", type=" + type + ", sort="
-        + sort + ", timetable=" + timetable + "]";
+        + sort + ", timetable=" + timetable + ", objectivetype=" + objectivetype + "]";
   }
 
 }

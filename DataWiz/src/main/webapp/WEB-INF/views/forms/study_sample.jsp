@@ -42,7 +42,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.obsUnit"><s:message code="study.obsUnit" /></label>
-      <sf:select path="study.completeSel" class="form-control" id="selectObsUnit"
+      <sf:select path="study.obsUnit" class="form-control" id="selectObsUnit"
         onchange="switchViewIfSelected('selectObsUnit', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />

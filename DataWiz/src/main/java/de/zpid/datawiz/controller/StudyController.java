@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -30,12 +31,12 @@ import de.zpid.datawiz.dto.StudyConstructDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.StudyInstrumentDTO;
 import de.zpid.datawiz.dto.StudyListTypesDTO;
-import de.zpid.datawiz.dto.StudyObjectivesDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
@@ -57,7 +58,8 @@ public class StudyController extends SuperController {
 
   @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.GET)
   public String showStudyPage(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      final ModelMap model, final RedirectAttributes redirectAttributes) {
+      final ModelMap model, final RedirectAttributes redirectAttributes,
+      @ModelAttribute("jQueryMapS") String jQueryMapS) {
     String ret;
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
@@ -108,7 +110,13 @@ public class StudyController extends SuperController {
     model.put("disStudyContent", accessState);
     model.put("StudyForm", sForm);
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
+
+    if (jQueryMapS == null || jQueryMapS.trim().isEmpty())
+      model.put("jQueryMap", PageState.STUDYGENERAL);
+    else {
+      model.put("jQueryMap", PageState.STUDYDESIGN);
+      System.out.println(" ****** " + jQueryMapS);
+    }
     model.put("subnaviActive", PageState.STUDY.name());
     log.trace("Method showStudyPage successfully completed");
     return "study";
@@ -132,23 +140,92 @@ public class StudyController extends SuperController {
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST)
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId,
-      @PathVariable final Optional<Long> pid) {
+      @PathVariable final Optional<Long> pid, @RequestParam("jQueryMap") String jQueryMap) {
     log.trace("Entering saveStudy");
-
-    // TODO TESTEN!!!!!! - speichern und update
-    TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
-    TransactionStatus status = txManager.getTransaction(transactionDefinition);
-    try {
-      final UserDTO user = UserUtil.getCurrentUser();
-      studyDAO.updateStudy(sForm.getStudy(), true, user.getId());
-      txManager.commit(status);
-    } catch (Exception e) {
-      log.error("{}", () -> e);
-      txManager.rollback(status);
+    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+    StudyDTO study = null;
+    if (sForm != null)
+      study = sForm.getStudy();
+    if (study != null && pid.isPresent()) {
+      try {
+        final UserDTO user = UserUtil.getCurrentUser();
+        if (studyId.isPresent() && study.getId() > 0) {
+          // update Study
+          studyDAO.updateStudy(sForm.getStudy(), false, user.getId());
+        } else {
+          // TODO insert Study
+        }
+        // update Contibutors
+        List<ContributorDTO> dbList = contributorDAO.findByStudy(studyId.get());
+        if (!ListUtil.equalsWithoutOrder(dbList, study.getContributors())) {
+          System.out.println("CONTRIBUTORS");
+          contributorDAO.deleteFromStudy(dbList);
+          contributorDAO.insertIntoStudy(study.getContributors(), study.getId());
+        }
+        // update SOFTWARE
+        updateStudyListItems(study.getId(), study.getSoftware(), DWFieldTypes.SOFTWARE);
+        // update PUBONDATA
+        updateStudyListItems(study.getId(), study.getPubOnData(), DWFieldTypes.PUBONDATA);
+        // update CONFLINTEREST
+        updateStudyListItems(study.getId(), study.getConflInterests(), DWFieldTypes.CONFLINTEREST);
+        // update CONFLINTEREST
+        updateStudyListItems(study.getId(), study.getConflInterests(), DWFieldTypes.CONFLINTEREST);
+        // update OBJECTIVES
+        updateStudyListItems(study.getId(), study.getObjectives(), DWFieldTypes.OBJECTIVES);
+        // update RELTHEORY
+        updateStudyListItems(study.getId(), study.getRelTheorys(), DWFieldTypes.RELTHEORY);
+        txManager.commit(status);
+      } catch (Exception e) {
+        log.error("ERROR", e);
+        txManager.rollback(status);
+      }
+    } else {
+      // TODO study null
     }
-    model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
+    redirectAttributes.addFlashAttribute("jQueryMapS", jQueryMap);
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get();
+  }
+
+  /**
+   * @param studyId
+   * @param study
+   * @param type
+   * @throws Exception
+   */
+  private void updateStudyListItems(final Long studyId, List<StudyListTypesDTO> list, DWFieldTypes type)
+      throws Exception {
+    List<StudyListTypesDTO> dbtmp = studyListTypesDAO.findAllByStudyAndType(studyId, type);
+    if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
+      List<StudyListTypesDTO> insert = new ArrayList<>();
+      List<StudyListTypesDTO> delete = new ArrayList<>();
+      List<StudyListTypesDTO> update = new ArrayList<>();
+      for (StudyListTypesDTO tmp : list) {
+        if (tmp.getId() <= 0 && !tmp.getText().trim().isEmpty()) {
+          tmp.setStudyid(studyId);
+          tmp.setType(type);
+          tmp.setSort(0);
+          tmp.setTimetable(false);
+          insert.add(tmp);
+        } else if (tmp.getId() > 0 && tmp.getText().trim().isEmpty()) {
+          dbtmp.remove(tmp);
+          delete.add(tmp);
+        } else if (tmp.getId() > 0 && !tmp.getText().trim().isEmpty()) {
+          for (ListIterator<StudyListTypesDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
+            StudyListTypesDTO tmp2 = iter.next();
+            if (tmp.getId() == tmp2.getId() && !tmp.getText().equals(tmp2.getText())) {
+              update.add(tmp);
+              iter.remove();
+            }
+          }
+        }
+      }
+      if (delete.size() > 0)
+        studyListTypesDAO.delete(delete);
+      if (update.size() > 0)
+        studyListTypesDAO.update(update);
+      if (insert.size() > 0)
+        studyListTypesDAO.insert(insert);
+    }
   }
 
   @RequestMapping(value = { "/{studyId}/switchEditMode" })
@@ -318,8 +395,8 @@ public class StudyController extends SuperController {
   public String addObjectives(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addObjectives");
     if (sForm.getStudy().getObjectives() == null)
-      sForm.getStudy().setObjectives(new ArrayList<StudyObjectivesDTO>());
-    sForm.getStudy().getObjectives().add((StudyObjectivesDTO) applicationContext.getBean("StudyObjectivesDTO"));
+      sForm.getStudy().setObjectives(new ArrayList<StudyListTypesDTO>());
+    sForm.getStudy().getObjectives().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -496,9 +573,9 @@ public class StudyController extends SuperController {
       study.setPubOnData(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
       study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
       study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
+      study.setObjectives(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.OBJECTIVES));
       study.setMeasOccName(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
       study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
-      study.setObjectives(studyObjectivesDAO.findAllByStudy(studyId.get()));
       study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
       study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get()));
       study.setEligibilities(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.ELIGIBILITY));

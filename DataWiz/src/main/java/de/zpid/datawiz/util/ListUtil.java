@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import de.zpid.datawiz.dto.StudyListTypesDTO;
+
 public class ListUtil {
 
   /**
@@ -43,5 +45,9 @@ public class ListUtil {
       return true;
     }
     return false;
+  }
+
+  public static void deleteEmptyStudyListTypes(final List<StudyListTypesDTO> fst) {
+    fst.removeIf(p -> p.getText().trim().equals(""));
   }
 }

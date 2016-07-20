@@ -13,7 +13,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.responsibility"><s:message code="study.responsibility" /></label>
-      <sf:select path="study.completeSel" class="form-control" id="selectResponsibility"
+      <sf:select path="study.responsibility" class="form-control" id="selectResponsibility"
         onchange="switchViewIfSelected('selectResponsibility', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
@@ -124,7 +124,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.sampMethod"><s:message code="study.sampMethod" /></label>
-      <sf:select path="study.completeSel" class="form-control" id="selectSampMethod"
+      <sf:select path="study.sampMethod" class="form-control" id="selectSampMethod"
         onchange="switchViewIfSelected('selectSampMethod', 'OTHER');">
         <sf:option value="">
           <s:message code="gen.select" />
