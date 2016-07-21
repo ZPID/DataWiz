@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
-import de.zpid.datawiz.enumeration.InterventionTypes;
 
 @Repository
 @Scope("singleton")
@@ -79,7 +78,8 @@ public class StudyDAO extends SuperDAO {
         "UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
             + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?, completeSel = ?,"
             + " excerpt = ?, prevWork = ?, prevWorkStr = ?, repMeasures = ?, timeDim = ?, surveyIntervention = ?,"
-            + " experimentalIntervention = ?, testIntervention = ?" + " WHERE id = ?",
+            + " experimentalIntervention = ?, testIntervention = ?, interTypeExp = ?, interTypeDes = ?,"
+            + " interTypeLab = ?, randomization = ?, surveyType = ?, description = ?" + " WHERE id = ?",
         setParams(study, true, unlock, userId).toArray());
     log.debug("leaving updateStudy with result: {}", () -> ret);
     return ret;
@@ -113,17 +113,13 @@ public class StudyDAO extends SuperDAO {
         study.setSurveyIntervention(rs.getBoolean("surveyIntervention"));
         study.setExperimentalIntervention(rs.getBoolean("experimentalIntervention"));
         study.setTestIntervention(rs.getBoolean("testIntervention"));
-        study.setInterTypeExp(
-            rs.getString("interTypeExp") != null ? InterventionTypes.valueOf(rs.getString("interTypeExp")) : null);
-        study.setInterTypeDes(
-            rs.getString("interTypeDes") != null ? InterventionTypes.valueOf(rs.getString("interTypeDes")) : null);
-        study.setInterTypeLab(
-            rs.getString("interTypeLab") != null ? InterventionTypes.valueOf(rs.getString("interTypeLab")) : null);
-        study.setRandomization(
-            rs.getString("randomization") != null ? InterventionTypes.valueOf(rs.getString("randomization")) : null);
-        study.setSurveyType(
-            rs.getString("surveyType") != null ? InterventionTypes.valueOf(rs.getString("surveyType")) : null);
+        study.setInterTypeExp(rs.getString("interTypeExp"));
+        study.setInterTypeDes(rs.getString("interTypeDes"));
+        study.setInterTypeLab(rs.getString("interTypeLab"));
+        study.setRandomization(rs.getString("randomization"));
+        study.setSurveyType(rs.getString("surveyType"));
         study.setDescription(rs.getString("description"));
+        // Sample Data
         study.setPopulation(rs.getString("population"));
         study.setSampleSize(rs.getString("sampleSize"));
         study.setPowerAnalysis(rs.getString("powerAnalysis"));
@@ -203,6 +199,12 @@ public class StudyDAO extends SuperDAO {
     oList.add(study.isSurveyIntervention());
     oList.add(study.isExperimentalIntervention());
     oList.add(study.isTestIntervention());
+    oList.add(study.getInterTypeExp());
+    oList.add(study.getInterTypeDes());
+    oList.add(study.getInterTypeLab());
+    oList.add(study.getRandomization());
+    oList.add(study.getSurveyType());
+    oList.add(study.getDescription());
     if (update)
       oList.add(study.getId());
     return oList;

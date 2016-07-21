@@ -206,27 +206,27 @@
   <!-- study.measOccName -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.measOccName"><s:message code="study.measOccName" /></label>
+      <label class="control-label " for="study.measOcc"><s:message code="study.measOcc" /></label>
       <div class="panel panel-default panel-body margin-bottom-0">
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
               <tr>
-                <th class="col-sm-10"><s:message code="study.measOccName.time" /></th>
-                <th class="col-sm-1 contentExperimentalIntervention"><s:message code="study.measOccName.dim" /></th>
-                <th class="col-sm-1"><s:message code="study.measOccName.sort" /></th>
+                <th class="col-sm-10"><s:message code="study.measOcc.time" /></th>
+                <th class="col-sm-1 contentExperimentalIntervention"><s:message code="study.measOcc.dim" /></th>
+                <th class="col-sm-1"><s:message code="study.measOcc.sort" /></th>
               </tr>
             </thead>
             <tbody>
-              <c:forEach items="${StudyForm.study.measOccName}" varStatus="loop">
+              <c:forEach items="${StudyForm.study.measOcc}" varStatus="loop">
                 <tr>
-                  <td><sf:textarea rows="1" path="study.measOccName[${loop.index}].text" class="form-control" /></td>
+                  <td><sf:textarea rows="1" path="study.measOcc[${loop.index}].text" class="form-control" /></td>
                   <td style="text-align: center;" class="contentExperimentalIntervention">
                     <div class="checkbox form-group-clean">
-                      <label><sf:checkbox path="study.measOccName[${loop.index}].timetable" /></label>
+                      <label><sf:checkbox path="study.measOcc[${loop.index}].timetable" /></label>
                     </div>
                   </td>
-                  <td><sf:input path="study.measOccName[${loop.index}].sort" class="form-control" /></td>
+                  <td><sf:input path="study.measOcc[${loop.index}].sort" class="form-control" /></td>
                 </tr>
               </c:forEach>
             </tbody>
@@ -238,7 +238,7 @@
           </sf:button>
         </div>
       </div>
-      <s:message code="study.measOccName.help" var="appresmess" />
+      <s:message code="study.measOcc.help" var="appresmess" />
       <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>

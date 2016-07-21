@@ -110,13 +110,10 @@ public class StudyController extends SuperController {
     model.put("disStudyContent", accessState);
     model.put("StudyForm", sForm);
     model.put("studySubMenu", true);
-
     if (jQueryMapS == null || jQueryMapS.trim().isEmpty())
       model.put("jQueryMap", PageState.STUDYGENERAL);
-    else {
+    else
       model.put("jQueryMap", PageState.STUDYDESIGN);
-      System.out.println(" ****** " + jQueryMapS);
-    }
     model.put("subnaviActive", PageState.STUDY.name());
     log.trace("Method showStudyPage successfully completed");
     return "study";
@@ -158,7 +155,6 @@ public class StudyController extends SuperController {
         // update Contibutors
         List<ContributorDTO> dbList = contributorDAO.findByStudy(studyId.get());
         if (!ListUtil.equalsWithoutOrder(dbList, study.getContributors())) {
-          System.out.println("CONTRIBUTORS");
           contributorDAO.deleteFromStudy(dbList);
           contributorDAO.insertIntoStudy(study.getContributors(), study.getId());
         }
@@ -174,6 +170,14 @@ public class StudyController extends SuperController {
         updateStudyListItems(study.getId(), study.getObjectives(), DWFieldTypes.OBJECTIVES);
         // update RELTHEORY
         updateStudyListItems(study.getId(), study.getRelTheorys(), DWFieldTypes.RELTHEORY);
+        // update INTERARMS
+        updateStudyListItems(study.getId(), study.getInterArms(), DWFieldTypes.INTERARMS);
+        // update MEASOCCNAME
+        updateStudyListItems(study.getId(), study.getMeasOcc(), DWFieldTypes.MEASOCCNAME);
+        // update CONSTRUCTS
+        updateConstructsItems(study.getId(), study.getConstructs());
+        // update INSTRUMENTS
+        updateInstrumentItems(study.getId(), study.getInstruments());
         txManager.commit(status);
       } catch (Exception e) {
         log.error("ERROR", e);
@@ -212,8 +216,11 @@ public class StudyController extends SuperController {
         } else if (tmp.getId() > 0 && !tmp.getText().trim().isEmpty()) {
           for (ListIterator<StudyListTypesDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
             StudyListTypesDTO tmp2 = iter.next();
-            if (tmp.getId() == tmp2.getId() && !tmp.getText().equals(tmp2.getText())) {
-              update.add(tmp);
+            if (tmp.getId() == tmp2.getId()) {
+              if (!tmp.getText().equals(tmp2.getText()) || (type.equals(DWFieldTypes.MEASOCCNAME)
+                  && (tmp.getSort() != tmp2.getSort() || tmp.isTimetable() == tmp2.isTimetable()))) {
+                update.add(tmp);
+              }
               iter.remove();
             }
           }
@@ -225,6 +232,79 @@ public class StudyController extends SuperController {
         studyListTypesDAO.update(update);
       if (insert.size() > 0)
         studyListTypesDAO.insert(insert);
+    }
+  }
+
+  private void updateConstructsItems(final Long studyId, List<StudyConstructDTO> list) throws Exception {
+    List<StudyConstructDTO> dbtmp = studyConstructDAO.findAllByStudy(studyId);
+    if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
+      List<StudyConstructDTO> insert = new ArrayList<>();
+      List<StudyConstructDTO> delete = new ArrayList<>();
+      List<StudyConstructDTO> update = new ArrayList<>();
+      for (StudyConstructDTO tmp : list) {
+        if (tmp.getId() <= 0 && !tmp.getName().trim().isEmpty()) {
+          tmp.setStudyId(studyId);
+          insert.add(tmp);
+        } else if (tmp.getId() > 0 && tmp.getName().trim().isEmpty()) {
+          delete.add(tmp);
+        } else if (tmp.getId() > 0 && !tmp.getName().trim().isEmpty()) {
+          for (ListIterator<StudyConstructDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
+            StudyConstructDTO tmp2 = iter.next();
+            if (tmp.getId() == tmp2.getId()) {
+              if (!tmp.getName().equals(tmp2.getName()) || !tmp.getType().equals(tmp2.getType())
+                  || !tmp.getOther().equals(tmp2.getOther())) {
+                update.add(tmp);
+              }
+              iter.remove();
+            }
+          }
+        }
+      }
+      if (delete.size() > 0)
+        studyConstructDAO.delete(delete);
+      if (update.size() > 0)
+        studyConstructDAO.update(update);
+      if (insert.size() > 0)
+        studyConstructDAO.insert(insert);
+    }
+  }
+
+  private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list) throws Exception {
+    List<StudyInstrumentDTO> dbtmp = studyInstrumentDAO.findAllByStudy(studyId);
+    if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
+      List<StudyInstrumentDTO> insert = new ArrayList<>();
+      List<StudyInstrumentDTO> delete = new ArrayList<>();
+      List<StudyInstrumentDTO> update = new ArrayList<>();
+      for (StudyInstrumentDTO tmp : list) {
+        if (tmp.getId() <= 0 && !tmp.getTitle().trim().isEmpty()) {
+          tmp.setStudyId(studyId);
+          insert.add(tmp);
+        } else if (tmp.getId() > 0 && tmp.getTitle().trim().isEmpty()) {
+          delete.add(tmp);
+        } else if (tmp.getId() > 0 && !tmp.getTitle().trim().isEmpty()) {
+          for (ListIterator<StudyInstrumentDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
+            StudyInstrumentDTO tmp2 = iter.next();
+            if (tmp.getId() == tmp2.getId()) {
+              if (!tmp.getTitle().equals(tmp2.getTitle()) || !tmp.getAuthor().equals(tmp2.getAuthor())
+                  || !tmp.getCitation().equals(tmp2.getCitation()) || !tmp.getSummary().equals(tmp2.getSummary())
+                  || !tmp.getTheoHint().equals(tmp2.getTheoHint()) || !tmp.getStructure().equals(tmp2.getStructure())
+                  || !tmp.getConstruction().equals(tmp2.getConstruction()) || !tmp.getNorm().equals(tmp2.getNorm())
+                  || !tmp.getObjectivity().equals(tmp2.getObjectivity())
+                  || !tmp.getReliability().equals(tmp2.getReliability())
+                  || !tmp.getValidity().equals(tmp2.getValidity())) {
+                update.add(tmp);
+              }
+              iter.remove();
+            }
+          }
+        }
+      }
+      if (delete.size() > 0)
+        studyInstrumentDAO.delete(delete);
+      if (update.size() > 0)
+        studyInstrumentDAO.update(update);
+      if (insert.size() > 0)
+        studyInstrumentDAO.insert(insert);
     }
   }
 
@@ -460,9 +540,9 @@ public class StudyController extends SuperController {
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addMeasOccName")
   public String addMeasOccName(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model) {
     log.trace("Entering addMeasOccName");
-    if (sForm.getStudy().getMeasOccName() == null)
-      sForm.getStudy().setMeasOccName(new ArrayList<StudyListTypesDTO>());
-    sForm.getStudy().getMeasOccName().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
+    if (sForm.getStudy().getMeasOcc() == null)
+      sForm.getStudy().setMeasOcc(new ArrayList<StudyListTypesDTO>());
+    sForm.getStudy().getMeasOcc().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
@@ -470,7 +550,7 @@ public class StudyController extends SuperController {
 
   /**
    * 
-   * appends a StudyConstructDTO to the List of Construct items. If the List is NULL, a new ArrayList is created before
+   * appends a studyInstrumentDAO to the List of Construct items. If the List is NULL, a new ArrayList is created before
    * the new item is appended.
    * 
    * @param sForm
@@ -574,7 +654,7 @@ public class StudyController extends SuperController {
       study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
       study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
       study.setObjectives(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.OBJECTIVES));
-      study.setMeasOccName(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
+      study.setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
       study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
       study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
       study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get()));

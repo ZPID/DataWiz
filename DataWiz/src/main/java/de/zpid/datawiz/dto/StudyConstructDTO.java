@@ -2,9 +2,10 @@ package de.zpid.datawiz.dto;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import de.zpid.datawiz.enumeration.ConstructTypes;
+import de.zpid.datawiz.dto.StudyDTO.StDesignVal;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -25,7 +26,8 @@ public class StudyConstructDTO implements Serializable {
   private String name;
 
   /** The type for the select box. */
-  private ConstructTypes type;
+  @Pattern(regexp = "(^$|INDEPENDENT|DEPENDENT|CONTROL|OTHER)", groups = StDesignVal.class)
+  private String type;
 
   /** The other -> if other is selected as type. */
   @Size(min = 0, max = 500, groups = StudyDTO.StDesignVal.class)
@@ -35,7 +37,7 @@ public class StudyConstructDTO implements Serializable {
     super();
   }
 
-  public StudyConstructDTO(long id, long studyId, String name, ConstructTypes type, String other) {
+  public StudyConstructDTO(long id, long studyId, String name, String type, String other) {
     super();
     this.id = id;
     StudyId = studyId;
@@ -68,11 +70,11 @@ public class StudyConstructDTO implements Serializable {
     this.name = name;
   }
 
-  public ConstructTypes getType() {
+  public String getType() {
     return type;
   }
 
-  public void setType(ConstructTypes type) {
+  public void setType(String type) {
     this.type = type;
   }
 

@@ -12,8 +12,6 @@ import javax.validation.constraints.Size;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import de.zpid.datawiz.enumeration.InterventionTypes;
-
 public class StudyDTO implements Serializable {
 
   private static final long serialVersionUID = -7300213401850684971L;
@@ -83,7 +81,7 @@ public class StudyDTO implements Serializable {
   private String repMeasures;
   /** Study18 */
   @Valid
-  private List<StudyListTypesDTO> measOccName;
+  private List<StudyListTypesDTO> measOcc;
   /** Study19 */
   @Size(min = 0, max = 2000, groups = StDesignVal.class)
   private String timeDim;
@@ -94,20 +92,25 @@ public class StudyDTO implements Serializable {
   /** Study20 test data */
   private boolean testIntervention;
   /** Study21 */
-  private InterventionTypes interTypeExp;
+  @Pattern(regexp = "(^$|EXPERIMENTAL|QUASIEXPERIMENTAL)", groups = StDesignVal.class)
+  private String interTypeExp;
   /** Study22 */
-  private InterventionTypes interTypeDes;
+  @Pattern(regexp = "(^$|REPEATEDMEASURES|GROUPCOMPARISON|MIXEDDESIGN)", groups = StDesignVal.class)
+  private String interTypeDes;
   /** Study23 */
-  private InterventionTypes interTypeLab;
+  @Pattern(regexp = "(^$|LABORATORY|FIELD)", groups = StDesignVal.class)
+  private String interTypeLab;
   /** Study24 */
-  private InterventionTypes randomization;
+  @Pattern(regexp = "(^$|RANDOMIZED|NONRANDOMIZED)", groups = StDesignVal.class)
+  private String randomization;
   /** Study25 */
   @Valid
   private List<StudyListTypesDTO> interArms;
   /** Study26 */
   /* private List<Boolean> interTimeTable; */
   /** Study27 */
-  private InterventionTypes surveyType;
+  @Pattern(regexp = "(^$|HARDLYINSTRUMENT|PARTIALLYINSTRUMENT|FULLYINSTRUMENT)", groups = StDesignVal.class)
+  private String surveyType;
   /** Study28/ Study29 */
   @Valid
   private List<StudyConstructDTO> constructs;
@@ -425,12 +428,12 @@ public class StudyDTO implements Serializable {
     this.repMeasures = repMeasures;
   }
 
-  public List<StudyListTypesDTO> getMeasOccName() {
-    return measOccName;
+  public List<StudyListTypesDTO> getMeasOcc() {
+    return measOcc;
   }
 
-  public void setMeasOccName(List<StudyListTypesDTO> measOccName) {
-    this.measOccName = measOccName;
+  public void setMeasOcc(List<StudyListTypesDTO> measOcc) {
+    this.measOcc = measOcc;
   }
 
   public String getTimeDim() {
@@ -465,35 +468,35 @@ public class StudyDTO implements Serializable {
     this.testIntervention = testIntervention;
   }
 
-  public InterventionTypes getInterTypeExp() {
+  public String getInterTypeExp() {
     return interTypeExp;
   }
 
-  public void setInterTypeExp(InterventionTypes interTypeExp) {
+  public void setInterTypeExp(String interTypeExp) {
     this.interTypeExp = interTypeExp;
   }
 
-  public InterventionTypes getInterTypeDes() {
+  public String getInterTypeDes() {
     return interTypeDes;
   }
 
-  public void setInterTypeDes(InterventionTypes interTypeDes) {
+  public void setInterTypeDes(String interTypeDes) {
     this.interTypeDes = interTypeDes;
   }
 
-  public InterventionTypes getInterTypeLab() {
+  public String getInterTypeLab() {
     return interTypeLab;
   }
 
-  public void setInterTypeLab(InterventionTypes interTypeLab) {
+  public void setInterTypeLab(String interTypeLab) {
     this.interTypeLab = interTypeLab;
   }
 
-  public InterventionTypes getRandomization() {
+  public String getRandomization() {
     return randomization;
   }
 
-  public void setRandomization(InterventionTypes randomization) {
+  public void setRandomization(String randomization) {
     this.randomization = randomization;
   }
 
@@ -511,11 +514,11 @@ public class StudyDTO implements Serializable {
    * public void setInterTimeTable(List<Boolean> interTimeTable) { this.interTimeTable = interTimeTable; }
    */
 
-  public InterventionTypes getSurveyType() {
+  public String getSurveyType() {
     return surveyType;
   }
 
-  public void setSurveyType(InterventionTypes surveyType) {
+  public void setSurveyType(String surveyType) {
     this.surveyType = surveyType;
   }
 

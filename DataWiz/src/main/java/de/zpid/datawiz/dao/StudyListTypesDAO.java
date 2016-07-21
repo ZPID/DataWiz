@@ -29,7 +29,8 @@ public class StudyListTypesDAO extends SuperDAO {
 
   public List<StudyListTypesDTO> findAllByStudyAndType(final long studyId, final DWFieldTypes type) throws Exception {
     log.trace("execute findAllByStudyAndType [id: {}; type: {}]", () -> studyId, () -> type.name());
-    String sql = "SELECT * FROM dw_study_listtypes WHERE dw_study_listtypes.studyid = ? AND dw_study_listtypes.type = ?";
+    String sql = "SELECT * FROM dw_study_listtypes WHERE dw_study_listtypes.studyid = ? AND dw_study_listtypes.type = ?"
+        + (type.equals(DWFieldTypes.MEASOCCNAME) ? "ORDER BY sort ASC" : "");
     final List<StudyListTypesDTO> ret = jdbcTemplate.query(sql, new Object[] { studyId, type.toString() },
         new RowMapper<StudyListTypesDTO>() {
           public StudyListTypesDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
