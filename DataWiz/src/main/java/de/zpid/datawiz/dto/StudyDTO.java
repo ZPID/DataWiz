@@ -121,66 +121,66 @@ public class StudyDTO implements Serializable {
   @Size(min = 0, max = 2000, groups = StDesignVal.class)
   private String description;
 
-  public interface StCharacteristicsVal {
+  public interface StSampleVal {
   }
 
   /** Study42 */
   @Valid
   private List<StudyListTypesDTO> eligibilities;
   /** Study43 */
-  @Size(min = 0, max = 1000, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 1000, groups = StSampleVal.class)
   private String population;
   /** Study44 */
-  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 500, groups = StSampleVal.class)
   private String sampleSize;
   /** Study45 */
-  @Size(min = 0, max = 1000, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 1000, groups = StSampleVal.class)
   private String powerAnalysis;
   /** Study46 */
-  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 500, groups = StSampleVal.class)
   private String intSampleSize;
   /** Study47 */
-  @Pattern(regexp = "(^$|INDIVIDUALS|DYADS|FAMILIES|GROUPS|ORGANIZATIONS|OTHER)", groups = StCharacteristicsVal.class)
+  @Pattern(regexp = "(^$|INDIVIDUALS|DYADS|FAMILIES|GROUPS|ORGANIZATIONS|OTHER)", groups = StSampleVal.class)
   private String obsUnit;
   /** Study47 */
-  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 250, groups = StSampleVal.class)
   private String obsUnitOther;
   /** Study48/49 */
-  @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 2000, groups = StSampleVal.class)
   private String multilevel;
   /** Study50 */
-  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 500, groups = StSampleVal.class)
   private String sex;
   /** Study51 */
-  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 500, groups = StSampleVal.class)
   private String age;
   /** Study52 */
-  @Size(min = 0, max = 500, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 500, groups = StSampleVal.class)
   private String specGroups;
   /** Study53 */
-  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 250, groups = StSampleVal.class)
   private String country;
   /** Study54 */
-  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 250, groups = StSampleVal.class)
   private String city;
   /** Study55 */
-  @Size(min = 0, max = 250, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 250, groups = StSampleVal.class)
   private String region;
   /** Study56 */
-  @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 2000, groups = StSampleVal.class)
   private String missings;
   /** Study57 */
-  @Size(min = 0, max = 2000, groups = StCharacteristicsVal.class)
+  @Size(min = 0, max = 2000, groups = StSampleVal.class)
   private String dataRerun;
 
-  public interface StCollectionVal {
+  public interface StSurveyVal {
   }
 
   /** Study58 */
-  @Pattern(regexp = "(^$|PRIMARY|OTHER)", groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|PRIMARY|OTHER)", groups = StSurveyVal.class)
   private String responsibility;
   /** Study58 */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 1000, groups = StSurveyVal.class)
   private String responsibilityOther;
   /** Study59 */
   @DateTimeFormat(pattern = "dd/MM/yyyy")
@@ -191,42 +191,42 @@ public class StudyDTO implements Serializable {
   /** Study61 -> DMP14 PsychData - META096 */
   private List<Integer> usedCollectionModes;
   /** Study61 -> DMP87 other Collection Modes with Invest. present */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 1000, groups = StSurveyVal.class)
   private String otherCMIP;
   /** Study61 -> DMP87 other Collection Modes with Invest. not present */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 1000, groups = StSurveyVal.class)
   private String otherCMINP;
   /** Study62 */
-  @Pattern(regexp = "(^$|ACCRUING|CENSUS|RANDOM|CLUSTER|STRATIFIED|QUOTA|OTHER)", groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|ACCRUING|CENSUS|RANDOM|CLUSTER|STRATIFIED|QUOTA|OTHER)", groups = StSurveyVal.class)
   private String sampMethod;
   /** Study62 */
-  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  @Size(min = 0, max = 500, groups = StSurveyVal.class)
   private String sampMethodOther;
   /** Study63 */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 1000, groups = StSurveyVal.class)
   private String recruiting;
   /** Study64 */
   private List<Integer> usedSourFormat;
   /** Study64 */
-  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  @Size(min = 0, max = 500, groups = StSurveyVal.class)
   private String otherSourFormat;
   /** Study65 select -> [null , simple, complex] */
-  @Pattern(regexp = "(^$|SIMPLE|COMPLEX|OTHER)", groups = StCollectionVal.class)
+  @Pattern(regexp = "(^$|SIMPLE|COMPLEX|OTHER)", groups = StSurveyVal.class)
   private String sourTrans;
   /** Study65 if select == complex */
-  @Size(min = 0, max = 500, groups = StCollectionVal.class)
+  @Size(min = 0, max = 500, groups = StSurveyVal.class)
   private String otherSourTrans;
   /** Study66 */
-  @Size(min = 0, max = 2000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 2000, groups = StSurveyVal.class)
   private String specCirc;
   /** Study67 */
-  @Size(min = 0, max = 2000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 2000, groups = StSurveyVal.class)
   private String transDescr;
   /** Study68 */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 1000, groups = StSurveyVal.class)
   private String qualInd;
   /** Study69 */
-  @Size(min = 0, max = 1000, groups = StCollectionVal.class)
+  @Size(min = 0, max = 1000, groups = StSurveyVal.class)
   private String qualLim;
 
   public interface StEthicalVal {

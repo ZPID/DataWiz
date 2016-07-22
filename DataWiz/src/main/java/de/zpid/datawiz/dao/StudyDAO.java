@@ -74,13 +74,15 @@ public class StudyDAO extends SuperDAO {
   public int updateStudy(final StudyDTO study, final boolean unlock, final long userId) throws Exception {
     log.trace("execute updateStudy for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
         () -> userId);
-    int ret = this.jdbcTemplate.update(
-        "UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
+    int ret = this.jdbcTemplate
+        .update("UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
             + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?, completeSel = ?,"
             + " excerpt = ?, prevWork = ?, prevWorkStr = ?, repMeasures = ?, timeDim = ?, surveyIntervention = ?,"
             + " experimentalIntervention = ?, testIntervention = ?, interTypeExp = ?, interTypeDes = ?,"
-            + " interTypeLab = ?, randomization = ?, surveyType = ?, description = ?" + " WHERE id = ?",
-        setParams(study, true, unlock, userId).toArray());
+            + " interTypeLab = ?, randomization = ?, surveyType = ?, description = ?, population = ?, sampleSize = ?,"
+            + " powerAnalysis = ?, intSampleSize = ?, obsUnit = ?, obsUnitOther = ?, multilevel = ?, sex = ?, age = ?,"
+            + " specGroups = ?, country = ?, city = ?, region = ?, missings = ?, dataRerun = ?, responsibility = ?, responsibilityOther = ?,"
+            + " collStart = ?, collEnd = ?" + " WHERE id = ?", setParams(study, true, unlock, userId).toArray());
     log.debug("leaving updateStudy with result: {}", () -> ret);
     return ret;
   }
@@ -135,10 +137,11 @@ public class StudyDAO extends SuperDAO {
         study.setRegion(rs.getString("region"));
         study.setMissings(rs.getString("missings"));
         study.setDataRerun(rs.getString("dataRerun"));
+        // Survey Data
         study.setResponsibility(rs.getString("responsibility"));
         study.setResponsibilityOther(rs.getString("responsibilityOther"));
         study.setCollStart(rs.getDate("collStart") != null ? rs.getDate("collStart").toLocalDate() : null);
-        study.setCollEnd(rs.getDate("collEnd") != null ? rs.getDate("collSEnd").toLocalDate() : null);
+        study.setCollEnd(rs.getDate("collEnd") != null ? rs.getDate("collEnd").toLocalDate() : null);
         study.setOtherCMIP(rs.getString("otherCMIP"));
         study.setOtherCMINP(rs.getString("otherCMINP"));
         study.setSampMethod(rs.getString("sampMethod"));
@@ -205,6 +208,25 @@ public class StudyDAO extends SuperDAO {
     oList.add(study.getRandomization());
     oList.add(study.getSurveyType());
     oList.add(study.getDescription());
+    oList.add(study.getPopulation());
+    oList.add(study.getSampleSize());
+    oList.add(study.getPowerAnalysis());
+    oList.add(study.getIntSampleSize());
+    oList.add(study.getObsUnit());
+    oList.add(study.getObsUnitOther());
+    oList.add(study.getMultilevel());
+    oList.add(study.getSex());
+    oList.add(study.getAge());
+    oList.add(study.getSpecGroups());
+    oList.add(study.getCountry());
+    oList.add(study.getCity());
+    oList.add(study.getRegion());
+    oList.add(study.getMissings());
+    oList.add(study.getDataRerun());
+    oList.add(study.getResponsibility());
+    oList.add(study.getResponsibilityOther());
+    oList.add(study.getCollStart());
+    oList.add(study.getCollEnd());
     if (update)
       oList.add(study.getId());
     return oList;

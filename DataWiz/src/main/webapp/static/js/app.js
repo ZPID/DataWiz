@@ -132,6 +132,10 @@ function setStudySubmenu(id) {
       $("#sampleActiveClick").addClass("active");
       $("#sampleActiveContent").show();
       break;
+    case "STUDYSURVEY":
+      $("#surveyActiveClick").addClass("active");
+      $("#surveyActiveContent").show();
+      break;
     default:
       $("#basisDataActiveClick").addClass("active");
       $("#basisDataActiveContent").show();

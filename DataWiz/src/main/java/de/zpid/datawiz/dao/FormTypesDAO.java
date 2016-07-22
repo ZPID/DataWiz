@@ -1,5 +1,6 @@
 package de.zpid.datawiz.dao;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +18,7 @@ import de.zpid.datawiz.enumeration.DWFieldTypes;
 @Repository
 @Scope("singleton")
 public class FormTypesDAO extends SuperDAO {
-  
+
   private static Logger log = LogManager.getLogger(FormTypesDAO.class);
 
   public FormTypesDAO() {
@@ -54,7 +56,7 @@ public class FormTypesDAO extends SuperDAO {
     if (isStudy)
       sql = "SELECT dw_study_formtypes.ftid FROM dw_study_formtypes "
           + "LEFT JOIN dw_formtypes ON dw_study_formtypes.ftid = dw_formtypes.id "
-          + "WHERE dw_study_formtypes.dmpid = ? AND dw_formtypes.type = ? ";
+          + "WHERE dw_study_formtypes.studyid = ? AND dw_formtypes.type = ? ";
     else
       sql = "SELECT dw_dmp_formtypes.ftid FROM dw_dmp_formtypes "
           + "LEFT JOIN dw_formtypes ON dw_dmp_formtypes.ftid = dw_formtypes.id "
@@ -68,27 +70,45 @@ public class FormTypesDAO extends SuperDAO {
     return ret;
   }
 
-  public int deleteSelectedFormType(final long id, final int ftid, final boolean isStudy) throws Exception {
-    log.trace("execute deleteSelectedFormType for [id: {}; ftid: {}; isStuddy {}]", () -> id, () -> ftid,
-        () -> isStudy);
-    int ret;
+  public int[] deleteSelectedFormType(final long dmpOrStudyID, final List<Integer> types, final boolean isStudy) {
+    log.trace("execute deleteSelectedFormType [size: {}]", () -> types.size());
+    String query = null;
     if (isStudy)
-      ret = this.jdbcTemplate.update("DELETE FROM dw_study_formtypes WHERE dmpid = ? AND ftid = ?", id, ftid);
+      query = "DELETE FROM dw_study_formtypes WHERE studyid = ? AND ftid = ?";
     else
-      ret = this.jdbcTemplate.update("DELETE FROM dw_dmp_formtypes WHERE dmpid = ? AND ftid = ?", id, ftid);
-    log.debug("Transaction for deleteSelectedFormType returned [result: {}]", () -> ret);
+      query = "DELETE FROM dw_dmp_formtypes WHERE dmpid = ? AND ftid = ?";
+    int[] ret = this.jdbcTemplate.batchUpdate(query, new BatchPreparedStatementSetter() {
+      public void setValues(PreparedStatement ps, int i) throws SQLException {
+        ps.setLong(1, dmpOrStudyID);
+        ps.setLong(2, types.get(i));
+      }
+
+      public int getBatchSize() {
+        return types.size();
+      }
+    });
+    log.debug("leaving deleteSelectedFormType with result: {}", () -> ret.length);
     return ret;
   }
 
-  public int insertSelectedFormType(final long id, final int ftid, final boolean isStudy) throws Exception {
-    log.trace("execute insertSelectedFormType for [id: {}; ftid: {}; isStuddy {}]", () -> id, () -> ftid,
-        () -> isStudy);
-    int ret;
+  public int[] insertSelectedFormType(final long dmpOrStudyID, final List<Integer> types, final boolean isStudy) {
+    log.trace("execute insertSelectedFormType [size: {}]", () -> types.size());
+    String query = null;
     if (isStudy)
-      ret = this.jdbcTemplate.update("INSERT INTO dw_study_formtypes (dmpid, ftid) VALUES(?,?)", id, ftid);
+      query = "INSERT INTO dw_study_formtypes (studyid, ftid) VALUES(?,?)";
     else
-      ret = this.jdbcTemplate.update("INSERT INTO dw_dmp_formtypes (dmpid, ftid) VALUES(?,?)", id, ftid);
-    log.debug("Transaction for insertSelectedFormType returned [result: {}]", () -> ret);
+      query = "INSERT INTO dw_dmp_formtypes (dmpid, ftid) VALUES(?,?)";
+    int[] ret = this.jdbcTemplate.batchUpdate(query, new BatchPreparedStatementSetter() {
+      public void setValues(PreparedStatement ps, int i) throws SQLException {
+        ps.setLong(1, dmpOrStudyID);
+        ps.setLong(2, types.get(i));
+      }
+
+      public int getBatchSize() {
+        return types.size();
+      }
+    });
+    log.debug("leaving insertSelectedFormType with result: {}", () -> ret.length);
     return ret;
   }
 }

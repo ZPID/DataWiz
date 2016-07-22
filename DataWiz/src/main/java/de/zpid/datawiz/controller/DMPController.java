@@ -307,33 +307,27 @@ public class DMPController extends SuperController {
         List<Integer> datatypes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
             DWFieldTypes.DATATYPE, false);
         if (datatypes != null && datatypes.size() > 0) {
-          for (Integer i : datatypes)
-            formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), i, false);
+          formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), datatypes, false);
         }
         if (pForm.getDmp().getUsedDataTypes() != null && pForm.getDmp().getUsedDataTypes().size() > 0) {
-          for (int i : pForm.getDmp().getUsedDataTypes())
-            formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
+          formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedDataTypes(), false);
         }
         List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
             DWFieldTypes.COLLECTIONMODE, false);
         if (collectionModes != null && collectionModes.size() > 0) {
-          for (Integer i : collectionModes)
-            formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), i, false);
+          formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), collectionModes, false);
         }
         if (pForm.getDmp().getUsedCollectionModes() != null && pForm.getDmp().getUsedCollectionModes().size() > 0) {
-          for (int i : pForm.getDmp().getUsedCollectionModes())
-            formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
+          formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedCollectionModes(), false);
         }
       } else if (cat.equals(DmpCategory.META)) {
         List<Integer> metaporpose = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(),
             DWFieldTypes.METAPORPOSE, false);
         if (metaporpose != null && metaporpose.size() > 0) {
-          for (Integer i : metaporpose)
-            formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), i, false);
+          formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), metaporpose, false);
         }
         if (pForm.getDmp().getSelectedMetaPurposes() != null && pForm.getDmp().getSelectedMetaPurposes().size() > 0) {
-          for (int i : pForm.getDmp().getSelectedMetaPurposes())
-            formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), i, false);
+          formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getSelectedMetaPurposes(), false);
         }
       }
     }

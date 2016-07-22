@@ -113,7 +113,7 @@ public class StudyController extends SuperController {
     if (jQueryMapS == null || jQueryMapS.trim().isEmpty())
       model.put("jQueryMap", PageState.STUDYGENERAL);
     else
-      model.put("jQueryMap", PageState.STUDYDESIGN);
+      model.put("jQueryMap", PageState.STUDYSURVEY);
     model.put("subnaviActive", PageState.STUDY.name());
     log.trace("Method showStudyPage successfully completed");
     return "study";
@@ -178,6 +178,30 @@ public class StudyController extends SuperController {
         updateConstructsItems(study.getId(), study.getConstructs());
         // update INSTRUMENTS
         updateInstrumentItems(study.getId(), study.getInstruments());
+        // update MEASOCCNAME
+        updateStudyListItems(study.getId(), study.getEligibilities(), DWFieldTypes.ELIGIBILITY);
+        // update usedCollectionModes
+        List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(),
+            DWFieldTypes.COLLECTIONMODE, true);
+        if (!ListUtil.equalsWithoutOrder(collectionModes, study.getUsedCollectionModes())) {
+          if (collectionModes != null && collectionModes.size() > 0) {
+            formTypeDAO.deleteSelectedFormType(study.getId(), collectionModes, true);
+          }
+          if (study.getUsedCollectionModes() != null && study.getUsedCollectionModes().size() > 0) {
+            formTypeDAO.insertSelectedFormType(study.getId(), study.getUsedCollectionModes(), true);
+          }
+        }
+        // update UsedSourFormat
+        List<Integer> sourFormat = formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.DATAFORMAT,
+            true);
+        if (!ListUtil.equalsWithoutOrder(sourFormat, study.getUsedSourFormat())) {
+          if (sourFormat != null && sourFormat.size() > 0) {
+            formTypeDAO.deleteSelectedFormType(study.getId(), sourFormat, true);
+          }
+          if (study.getUsedSourFormat() != null && study.getUsedSourFormat().size() > 0) {
+            formTypeDAO.insertSelectedFormType(study.getId(), study.getUsedSourFormat(), true);
+          }
+        }
         txManager.commit(status);
       } catch (Exception e) {
         log.error("ERROR", e);
@@ -659,6 +683,10 @@ public class StudyController extends SuperController {
       study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
       study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get()));
       study.setEligibilities(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.ELIGIBILITY));
+      study.setUsedCollectionModes(
+          formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.COLLECTIONMODE, true));
+      study.setUsedSourFormat(
+          formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.DATAFORMAT, true));
     }
   }
 

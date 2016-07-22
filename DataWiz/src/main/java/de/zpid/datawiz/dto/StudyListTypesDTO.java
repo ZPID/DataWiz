@@ -14,7 +14,7 @@ public class StudyListTypesDTO implements Serializable {
   private long studyid;
 
   @Size(min = 0, max = 1000, groups = { StudyDTO.StGeneralVal.class, StudyDTO.StDesignVal.class,
-      StudyDTO.StCharacteristicsVal.class })
+      StudyDTO.StSampleVal.class })
   private String text;
   private DWFieldTypes type;
   private int sort;
