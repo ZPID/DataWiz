@@ -36,10 +36,11 @@ public class ProjectDAO extends SuperDAO {
 
   public List<ProjectDTO> findAllByUserID(final UserDTO user) throws Exception {
     log.trace("execute findAllByUserID for user [email: {}]", () -> user.getEmail());
-    String sql = "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_user_roles "
+    String sql = "SELECT dw_project.* FROM dw_user_roles "
         + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
-        + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
-        + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 GROUP BY dw_project.id";
+        + "LEFT JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
+        + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 "
+        + "GROUP BY dw_project.id";
     List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] { user.getId() }, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");

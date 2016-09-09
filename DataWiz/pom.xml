@@ -45,9 +45,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<!-- https://mvnrepository.com/artifact/io.minio/examples -->
-		<!-- <dependency> <groupId>io.minio</groupId> <artifactId>minio</artifactId> <version>2.0.0</version> <scope>system</scope> 
-			<systemPath>C:\Users\ronny\Downloads\minio-java-master\build\libs\minio-2.0.0-all.jar</systemPath> </dependency> -->
+		<dependency>
+			<groupId>SPSS</groupId>
+			<artifactId>SPSS</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>io.minio</groupId>
+			<artifactId>minio</artifactId>
+			<version>2.0.1</version>
+		</dependency>
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -142,11 +149,13 @@
 			<version>${jstl.version}</version>
 		</dependency>
 		<!-- JSON -->
+		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>${json.version}</version>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
 		</dependency>
+		<!-- <dependency> <groupId>org.json</groupId> <artifactId>json</artifactId> <version>${json.version}</version> </dependency> -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>

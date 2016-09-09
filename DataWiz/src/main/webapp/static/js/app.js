@@ -247,7 +247,7 @@ Dropzone.options.myDropzone = {
     this.on("successmultiple", function(files, serverResponse) {
       // calls controller after successful multiple saving to reload the page"
       setTimeout(function() {
-        $("form#my-dropzone").attr("enctype", "").attr("action", $('#uploadPid').val() + "/multisaved").submit();
+        $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
       }, 500);
     });
     this.on("error", function(files, serverResponse) {

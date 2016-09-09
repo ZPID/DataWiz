@@ -5,7 +5,7 @@
 			<PatternLayout
 				pattern="%d{DEFAULT} [%t] %level: %c{3} --- %msg%n" />
 		</Console>
-		<File name="DataWizLog" fileName="C:/logs/DataWizLog.log">
+		<File name="DataWizLog" fileName="/logs/DataWizLog.log">
 			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
 		</File>
 <!-- 		<Async name="Async">

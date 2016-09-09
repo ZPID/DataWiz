@@ -1,5 +1,6 @@
 package de.zpid.datawiz.controller;
 
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -34,11 +35,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import com.sun.jna.Platform;
+
+import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
+import de.zpid.spss.SPSSIO;
 
 @Controller
 @SessionAttributes("UserDTO")
@@ -46,6 +51,9 @@ public class LoginController extends SuperController {
 
   @Autowired
   PlatformTransactionManager txManager;
+
+  @Autowired
+  SPSSIO spss;
 
   private static Logger log = LogManager.getLogger(LoginController.class);
 
@@ -73,7 +81,36 @@ public class LoginController extends SuperController {
   public String homePage(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute homePage()");
+      try {
+        log.info("SPSS LIB loaded: " + spss.isLibLoaded());
+        if (spss.isLibLoaded()) {
+          RecordDTO spssFile;
+          if (Platform.isWindows()) {
+            spssFile = new RecordDTO(
+                spss.readWholeSPSSFile(Paths.get("C:\\Users\\ronny\\OneDrive\\ZPID\\Test.sav").toString()));
+          } else {
+            spssFile = new RecordDTO(spss.readWholeSPSSFile(Paths.get("/home/rb/Downloads/Test.sav").toString()));
+
+          }
+          log.debug(spssFile);
+          spssFile.getVariables().forEach((s) -> log.debug(s));
+          spssFile.getErrors().forEach((s) -> System.out.println(s));
+        }
+      } catch (Error e) {
+        System.out.println("lol1");
+      } catch (Exception e) {
+        System.out.println("lol2");
+        e.printStackTrace();
+      }
     }
+    // CustomResourceLoader res = new CustomResourceLoader();
+    // try {
+    // res.loadResourceData();
+    // } catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+
     model.addAttribute("greeting", "Hi, Welcome to mysite");
     return "welcome";
   }

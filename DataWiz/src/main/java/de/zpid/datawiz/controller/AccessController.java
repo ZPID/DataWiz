@@ -590,22 +590,26 @@ public class AccessController extends SuperController {
    * @throws SQLException
    */
   private void cleanupRoles(final UserDTO user, final UserRoleDTO newRole) throws SQLException {
+    System.out.println(newRole);
     int chk = roleDAO.saveRole(newRole);
     if (chk > 0 && user.getGlobalRoles() != null) {
       for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
-        if (newRole.getType().equals(Roles.PROJECT_ADMIN.name()) && !roleTmp.getType().equals(Roles.REL_ROLE.name())
-            && roleTmp.getProjectId() > 0) {
-          roleDAO.deleteRole(roleTmp);
-        } else if (newRole.getType().equals(Roles.PROJECT_READER.name())
-            && roleTmp.getType().equals(Roles.DS_READER.name())) {
-          roleDAO.deleteRole(roleTmp);
-        } else if (newRole.getType().equals(Roles.PROJECT_WRITER.name())
-            && (roleTmp.getType().equals(Roles.DS_WRITER.name()) || roleTmp.getType().equals(Roles.DS_READER.name())
-                || roleTmp.getType().equals(Roles.PROJECT_READER.name()))) {
-          roleDAO.deleteRole(roleTmp);
-        } else if (newRole.getType().equals(Roles.DS_WRITER.name()) && newRole.getStudyId() == roleTmp.getStudyId()
-            && roleTmp.getType().equals(Roles.DS_READER.name())) {
-          roleDAO.deleteRole(roleTmp);
+        if (roleTmp.getProjectId() == newRole.getProjectId()) {
+          System.out.println(roleTmp);
+          if (newRole.getType().equals(Roles.PROJECT_ADMIN.name()) && !roleTmp.getType().equals(Roles.REL_ROLE.name())
+              && roleTmp.getProjectId() > 0) {
+            roleDAO.deleteRole(roleTmp);
+          } else if (newRole.getType().equals(Roles.PROJECT_READER.name())
+              && roleTmp.getType().equals(Roles.DS_READER.name())) {
+            roleDAO.deleteRole(roleTmp);
+          } else if (newRole.getType().equals(Roles.PROJECT_WRITER.name())
+              && (roleTmp.getType().equals(Roles.DS_WRITER.name()) || roleTmp.getType().equals(Roles.DS_READER.name())
+                  || roleTmp.getType().equals(Roles.PROJECT_READER.name()))) {
+            roleDAO.deleteRole(roleTmp);
+          } else if (newRole.getType().equals(Roles.DS_WRITER.name()) && newRole.getStudyId() == roleTmp.getStudyId()
+              && roleTmp.getType().equals(Roles.DS_READER.name())) {
+            roleDAO.deleteRole(roleTmp);
+          }
         }
       }
     }

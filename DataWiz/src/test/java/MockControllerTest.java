@@ -46,7 +46,7 @@ public class MockControllerTest {
   public void setup() throws Exception {
     System.out.println("************ START SETUP *************");
     this.mockMvc = webAppContextSetup(this.wac).apply(springSecurity()).build();
-    MvcResult result = mockMvc.perform(formLogin().user("email", "samy@xyz.com").password("abc125"))
+    MvcResult result = mockMvc.perform(formLogin().user("email", "datawiz@zpid.de").password("abc125"))
         .andExpect(authenticated()).andReturn();
     this.session = (MockHttpSession) result.getRequest().getSession();
     System.out.println("************ END SETUP *************");

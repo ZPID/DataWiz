@@ -5,6 +5,8 @@ public enum PageState {
   PROJECT,
   DMP,
   ACCESS,
+  STUDIES,
+  MATERIAL,
   STUDY,
   EXPORT,
   USERSETTING,

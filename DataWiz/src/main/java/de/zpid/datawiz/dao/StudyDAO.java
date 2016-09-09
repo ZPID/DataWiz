@@ -1,17 +1,24 @@
 package de.zpid.datawiz.dao;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.ProjectDTO;
@@ -71,20 +78,62 @@ public class StudyDAO extends SuperDAO {
     return ret;
   }
 
-  public int updateStudy(final StudyDTO study, final boolean unlock, final long userId) throws Exception {
-    log.trace("execute updateStudy for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
-        () -> userId);
-    int ret = this.jdbcTemplate
-        .update("UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
-            + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?, completeSel = ?,"
-            + " excerpt = ?, prevWork = ?, prevWorkStr = ?, repMeasures = ?, timeDim = ?, surveyIntervention = ?,"
-            + " experimentalIntervention = ?, testIntervention = ?, interTypeExp = ?, interTypeDes = ?,"
-            + " interTypeLab = ?, randomization = ?, surveyType = ?, description = ?, population = ?, sampleSize = ?,"
-            + " powerAnalysis = ?, intSampleSize = ?, obsUnit = ?, obsUnitOther = ?, multilevel = ?, sex = ?, age = ?,"
-            + " specGroups = ?, country = ?, city = ?, region = ?, missings = ?, dataRerun = ?, responsibility = ?, responsibilityOther = ?,"
-            + " collStart = ?, collEnd = ?" + " WHERE id = ?", setParams(study, true, unlock, userId).toArray());
-    log.debug("leaving updateStudy with result: {}", () -> ret);
+  public int update(final StudyDTO study, final boolean unlock) throws Exception {
+    log.trace("execute update for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
+        () -> study.getLastUserId());
+    String stmt = "UPDATE dw_study SET lastEdit = ?, last_user_id = ?, currentlyEdit = ?, editSince = ?, editUserId = ?,"
+        + " title = ?, internalID = ?, transTitle = ?, sAbstract = ?, sAbstractTrans = ?, completeSel = ?,"
+        + " excerpt = ?, prevWork = ?, prevWorkStr = ?, repMeasures = ?, timeDim = ?, surveyIntervention = ?,"
+        + " experimentalIntervention = ?, testIntervention = ?, interTypeExp = ?, interTypeDes = ?,"
+        + " interTypeLab = ?, randomization = ?, surveyType = ?, description = ?, population = ?, sampleSize = ?,"
+        + " powerAnalysis = ?, intSampleSize = ?, obsUnit = ?, obsUnitOther = ?, multilevel = ?, sex = ?, age = ?,"
+        + " specGroups = ?, country = ?, city = ?, region = ?, missings = ?, dataRerun = ?, responsibility = ?, responsibilityOther = ?,"
+        + " collStart = ?, collEnd = ?, otherCMIP = ?, otherCMINP = ?, sampMethod = ?, sampMethodOther = ?, recruiting = ?,"
+        + " otherSourFormat = ?, sourTrans = ?, otherSourTrans = ?, specCirc = ?, transDescr = ?, qualInd = ?, qualLim = ?,"
+        + " irb = ?, irbName = ?, consent = ?, consentShare = ?, persDataColl = ?, persDataPres = ?, anonymProc = ?, copyright = ?,"
+        + " copyrightHolder = ?, thirdParty = ?, thirdPartyHolder = ? WHERE id = ?";
+    int ret = this.jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(stmt);
+        setPSTMT(ps, study, true, unlock);
+        return ps;
+      }
+    });
+    log.debug("leaving update with result: {}", () -> ret);
     return ret;
+  }
+
+  public long insert(final StudyDTO study, final boolean unlock) throws Exception {
+    log.trace("execute insert for [id: {}] with unlock [{}] for user [{}]", () -> study.getId(), () -> unlock,
+        () -> study.getLastUserId());
+    final KeyHolder holder = new GeneratedKeyHolder();
+    String stmt = "INSERT INTO dw_study (project_id, lastEdit, last_user_id, currentlyEdit, editSince, editUserId,"
+        + " title, internalID, transTitle, sAbstract, sAbstractTrans, completeSel,"
+        + " excerpt, prevWork, prevWorkStr, repMeasures, timeDim, surveyIntervention,"
+        + " experimentalIntervention, testIntervention, interTypeExp, interTypeDes,"
+        + " interTypeLab, randomization, surveyType, description, population, sampleSize,"
+        + " powerAnalysis, intSampleSize, obsUnit, obsUnitOther, multilevel, sex, age,"
+        + " specGroups, country, city, region, missings, dataRerun, responsibility, responsibilityOther,"
+        + " collStart, collEnd, otherCMIP, otherCMINP, sampMethod, sampMethodOther, recruiting,"
+        + " otherSourFormat, sourTrans, otherSourTrans, specCirc, transDescr, qualInd, qualLim,"
+        + " irb, irbName, consent, consentShare, persDataColl, persDataPres, anonymProc, copyright,"
+        + " copyrightHolder, thirdParty, thirdPartyHolder)"
+        + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    int ret = this.jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+        setPSTMT(ps, study, false, unlock);
+        return ps;
+      }
+    }, holder);
+    final long key = (holder.getKey().longValue() > 0) ? holder.getKey().longValue() : -1;
+    if (key > 0 && ret > 0) {
+      study.setId(key);
+    }
+    log.debug("leaving insert with changes: {} and key: {}", () -> ret, () -> key);
+    return key;
   }
 
   private StudyDTO setStudyDTO(final ResultSet rs, final boolean overview, final boolean onlyLockInfo)
@@ -154,6 +203,7 @@ public class StudyDAO extends SuperDAO {
         study.setTransDescr(rs.getString("transDescr"));
         study.setQualInd(rs.getString("qualInd"));
         study.setQualLim(rs.getString("qualLim"));
+        // Ethical Data
         study.setIrb(rs.getBoolean("irb"));
         study.setIrbName(rs.getString("irbName"));
         study.setConsent(rs.getBoolean("consent"));
@@ -170,65 +220,87 @@ public class StudyDAO extends SuperDAO {
     return study;
   }
 
-  private List<Object> setParams(StudyDTO study, final boolean update, final boolean unlock, final long userID)
-      throws Exception {
-    List<Object> oList = new LinkedList<Object>();
+  private void setPSTMT(PreparedStatement ps, StudyDTO s, final boolean update, final boolean unlock)
+      throws SQLException {
     LocalDateTime now = LocalDateTime.now();
+    int i = 1;
     if (!update) {
-      oList.add(study.getProjectId());
+      ps.setLong(i++, s.getProjectId());
     }
-    oList.add(now);
-    oList.add(study.getLastUserId());
+    ps.setTimestamp(i++, Timestamp.valueOf(now));
+    ps.setLong(i++, s.getLastUserId());
     if (unlock) {
-      oList.add(false);
-      oList.add(null);
-      oList.add(null);
+      ps.setBoolean(i++, false);
+      ps.setTimestamp(i++, null);
+      ps.setString(i++, null);
     } else {
-      oList.add(true);
-      oList.add(now);
-      oList.add(userID);
+      ps.setBoolean(i++, true);
+      ps.setTimestamp(i++, Timestamp.valueOf(now));
+      ps.setLong(i++, s.getLastUserId());
     }
-    oList.add(study.getTitle());
-    oList.add(study.getInternalID());
-    oList.add(study.getTransTitle());
-    oList.add(study.getsAbstract());
-    oList.add(study.getsAbstractTrans());
-    oList.add(study.getCompleteSel());
-    oList.add(study.getExcerpt());
-    oList.add(study.getPrevWork());
-    oList.add(study.getPrevWorkStr());
-    oList.add(study.getRepMeasures());
-    oList.add(study.getTimeDim());
-    oList.add(study.isSurveyIntervention());
-    oList.add(study.isExperimentalIntervention());
-    oList.add(study.isTestIntervention());
-    oList.add(study.getInterTypeExp());
-    oList.add(study.getInterTypeDes());
-    oList.add(study.getInterTypeLab());
-    oList.add(study.getRandomization());
-    oList.add(study.getSurveyType());
-    oList.add(study.getDescription());
-    oList.add(study.getPopulation());
-    oList.add(study.getSampleSize());
-    oList.add(study.getPowerAnalysis());
-    oList.add(study.getIntSampleSize());
-    oList.add(study.getObsUnit());
-    oList.add(study.getObsUnitOther());
-    oList.add(study.getMultilevel());
-    oList.add(study.getSex());
-    oList.add(study.getAge());
-    oList.add(study.getSpecGroups());
-    oList.add(study.getCountry());
-    oList.add(study.getCity());
-    oList.add(study.getRegion());
-    oList.add(study.getMissings());
-    oList.add(study.getDataRerun());
-    oList.add(study.getResponsibility());
-    oList.add(study.getResponsibilityOther());
-    oList.add(study.getCollStart());
-    oList.add(study.getCollEnd());
+    ps.setString(i++, s.getTitle());
+    ps.setString(i++, s.getInternalID());
+    ps.setString(i++, s.getTransTitle());
+    ps.setString(i++, s.getsAbstract());
+    ps.setString(i++, s.getsAbstractTrans());
+    ps.setString(i++, s.getCompleteSel());
+    ps.setString(i++, s.getExcerpt());
+    ps.setString(i++, s.getPrevWork());
+    ps.setString(i++, s.getPrevWorkStr());
+    ps.setString(i++, s.getRepMeasures());
+    ps.setString(i++, s.getTimeDim());
+    ps.setBoolean(i++, s.isSurveyIntervention());
+    ps.setBoolean(i++, s.isExperimentalIntervention());
+    ps.setBoolean(i++, s.isTestIntervention());
+    ps.setString(i++, s.getInterTypeExp());
+    ps.setString(i++, s.getInterTypeDes());
+    ps.setString(i++, s.getInterTypeLab());
+    ps.setString(i++, s.getRandomization());
+    ps.setString(i++, s.getSurveyType());
+    ps.setString(i++, s.getDescription());
+    ps.setString(i++, s.getPopulation());
+    ps.setString(i++, s.getSampleSize());
+    ps.setString(i++, s.getPowerAnalysis());
+    ps.setString(i++, s.getIntSampleSize());
+    ps.setString(i++, s.getObsUnit());
+    ps.setString(i++, s.getObsUnitOther());
+    ps.setString(i++, s.getMultilevel());
+    ps.setString(i++, s.getSex());
+    ps.setString(i++, s.getAge());
+    ps.setString(i++, s.getSpecGroups());
+    ps.setString(i++, s.getCountry());
+    ps.setString(i++, s.getCity());
+    ps.setString(i++, s.getRegion());
+    ps.setString(i++, s.getMissings());
+    ps.setString(i++, s.getDataRerun());
+    ps.setString(i++, s.getResponsibility());
+    ps.setString(i++, s.getResponsibilityOther());
+    ps.setDate(i++, s.getCollStart() != null ? Date.valueOf(s.getCollStart()) : null);
+    ps.setDate(i++, s.getCollEnd() != null ? Date.valueOf(s.getCollEnd()) : null);
+    ps.setString(i++, s.getOtherCMIP());
+    ps.setString(i++, s.getOtherCMINP());
+    ps.setString(i++, s.getSampMethod());
+    ps.setString(i++, s.getSampMethodOther());
+    ps.setString(i++, s.getRecruiting());
+    ps.setString(i++, s.getOtherSourFormat());
+    ps.setString(i++, s.getSourTrans());
+    ps.setString(i++, s.getOtherSourTrans());
+    ps.setString(i++, s.getSpecCirc());
+    ps.setString(i++, s.getTransDescr());
+    ps.setString(i++, s.getQualInd());
+    ps.setString(i++, s.getQualLim());
+    ps.setBoolean(i++, s.isIrb());
+    ps.setString(i++, s.getIrbName());
+    ps.setBoolean(i++, s.isConsent());
+    ps.setBoolean(i++, s.isConsentShare());
+    ps.setBoolean(i++, s.isPersDataColl());
+    ps.setString(i++, s.getPersDataPres());
+    ps.setString(i++, s.getAnonymProc());
+    ps.setBoolean(i++, s.isCopyright());
+    ps.setString(i++, s.getCopyrightHolder());
+    ps.setBoolean(i++, s.isThirdParty());
+    ps.setString(i++, s.getThirdPartyHolder());
     if (update)
-      oList.add(study.getId());
-    return oList;
+      ps.setLong(i++, s.getId());
   }
 }

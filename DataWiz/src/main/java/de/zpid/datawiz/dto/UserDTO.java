@@ -29,7 +29,7 @@ public class UserDTO implements Serializable {
   private String secEmail;
   @NotNull
   private String password;
-  @Pattern(regexp = RegexUtil.emptyOr +RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to50)
+  @Pattern(regexp = RegexUtil.emptyOr + RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to50)
   @Size(min = 0, max = 25)
   private String title;
   @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to250)
@@ -270,16 +270,16 @@ public class UserDTO implements Serializable {
     this.activationCode = activationCode;
   }
 
-  public boolean hasRole(Object rol) {
-    return hasRole(rol, Optional.empty(), false);
-  }
-
   public String getPassword_old() {
     return password_old;
   }
 
   public void setPassword_old(String password_old) {
     this.password_old = password_old;
+  }
+
+  public boolean hasRole(Object rol) {
+    return hasRole(rol, Optional.empty(), false);
   }
 
   public boolean hasRole(Object rol, Object id, boolean isStudy) {

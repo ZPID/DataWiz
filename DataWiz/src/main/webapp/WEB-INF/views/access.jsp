@@ -50,7 +50,8 @@
                         </div>
                         <div class="col-md-8 col-xs-12">
                           <c:if
-                            test="${user.id eq principal.user.id || principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)}">
+                            test="${user.id eq principal.user.id || principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)
+                            || principal.user.hasRole('ADMIN')}">
                             <ul class="list-group">
                               <!-- user roles -->
                               <c:forEach items="${user.globalRoles}" var="role" varStatus="rState">
@@ -72,8 +73,9 @@
                                         </div>
                                         <div class="col-md-2 col-xs-2">
                                           <c:if
-                                            test="${!(user.id eq ProjectForm.project.ownerId) &&!(user.id eq principal.user.id) 
-                                                    && principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)}">
+                                            test="${principal.user.hasRole('ADMIN') && !(user.id eq ProjectForm.project.ownerId) 
+                                                    || (!(user.id eq ProjectForm.project.ownerId) &&!(user.id eq principal.user.id) 
+                                                        && principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false))}">
                                             <a
                                               href="<c:url value="/access/${ProjectForm.project.id}/delete/${user.id}/${role.roleId}/${role.studyId}" />"
                                               class="btn btn-danger btn-xs" style="vertical-align: bottom;"> <s:message
@@ -88,8 +90,8 @@
                                     <li class="list-group-item list-group-item-warning"><s:message
                                         code="roles.delete.user" /> <a
                                       href="<c:url value="/access/${ProjectForm.project.id}/deleteUser/${user.id}" />"><s:message
-                                          code="roles.delete.user.link" /></a>
-                                    <s:message code="roles.delete.user.link.post" /></li>
+                                          code="roles.delete.user.link" /></a> <s:message
+                                        code="roles.delete.user.link.post" /></li>
                                   </c:when>
                                 </c:choose>
                               </c:forEach>
@@ -139,7 +141,8 @@
                         </div>
                         <div class="col-md-3">
                           <c:if
-                            test="${!(user.id eq principal.user.id) && principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false)}">
+                            test="${principal.user.hasRole('ADMIN') 
+                                    || (!(user.id eq principal.user.id) && principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false))}">
                             <sf:button type="submit" name="addRole" class="btn btn-success">
                               <s:message code="roles.add.role" />
                             </sf:button>

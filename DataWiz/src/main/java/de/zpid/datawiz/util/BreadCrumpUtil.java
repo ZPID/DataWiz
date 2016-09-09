@@ -17,7 +17,7 @@ public class BreadCrumpUtil {
     case PROJECT:
       bcl.add(new BreadCrump("Home", "/"));
       bcl.add(new BreadCrump("Panel", "/panel"));
-      bcl.add(new BreadCrump("Projekt", ""));
+      bcl.add(new BreadCrump(name[0], ""));
       break;
     case DMP:
       bcl.add(new BreadCrump("Home", "/"));

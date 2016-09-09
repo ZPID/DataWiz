@@ -149,11 +149,15 @@ public class ProjectUtil {
       throws Exception {
     // load /project data
     if (call == null || call.equals(PageState.PROJECT)) {
-      pForm.setFiles(fileDAO.findProjectFiles(pdto));
       pForm.setTags(new ArrayList<String>(tagDAO.findTagsByProjectID(pdto).values()));
-      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
       pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+    } // load /project/xx/studies
+    else if (call.equals(PageState.STUDIES)) {
+      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+    } // load /project/xx/material
+    else if (call.equals(PageState.MATERIAL)) {
+      pForm.setFiles(fileDAO.findProjectFiles(pdto));
     } // load /dmp data
     else if (call.equals(PageState.DMP)) {
       DmpDTO dmp = dmpDAO.findByID(pForm.getProject());

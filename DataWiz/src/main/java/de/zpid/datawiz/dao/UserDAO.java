@@ -117,9 +117,9 @@ public class UserDAO extends SuperDAO {
    */
   public List<UserDTO> findGroupedByProject(final long pid) throws SQLException {
     log.trace("Entering findGroupedByProject [projectID: {}], exptractPWD[{}]", () -> pid);
-    String sql = "SELECT dw_user.* FROM dw_user " + "LEFT JOIN dw_user_roles ON dw_user.id = dw_user_roles.user_id "
+    String sql = "SELECT dw_user.* FROM dw_user LEFT JOIN dw_user_roles ON dw_user.id = dw_user_roles.user_id "
         + "LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id "
-        + "WHERE dw_user_roles.project_id = ? GROUP BY dw_user_roles.user_id";
+        + "WHERE dw_user_roles.project_id = ? GROUP BY dw_user.id";
     List<UserDTO> ret = this.jdbcTemplate.query(sql, new Object[] { pid }, new RowMapper<UserDTO>() {
       public UserDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         return setUserDTO(false, rs);

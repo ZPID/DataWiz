@@ -44,6 +44,7 @@ import org.springframework.web.servlet.view.JstlView;
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 
 import de.zpid.datawiz.util.MinioUtil;
+import de.zpid.spss.SPSSIO;
 
 @Configuration
 @EnableWebMvc
@@ -74,6 +75,20 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     }
   }
 
+  @Bean(name = "spss")
+  @Scope("prototype")
+  public SPSSIO getSPSSDLL() {
+    String OS = System.getProperty("os.name").toLowerCase();
+    String path;
+    if (OS.contains("win"))
+      path = env.getRequiredProperty("spss.absoluth.path").trim();
+    else
+      path = env.getRequiredProperty("spss.absoluth.path.test").trim();
+    log.info("Loading SPSSDLL with path: {}", () -> path);
+    SPSSIO.setAbsoluteLibPath(path);
+    return new SPSSIO();
+  }
+
   @Bean(name = "DataWiz")
   public ViewResolver viewResolver() {
     InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
@@ -94,9 +109,12 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     return resolver;
   }
 
+  private ClassPathXmlApplicationContext context;
+
   @Bean(name = "applicationContext")
   public ClassPathXmlApplicationContext applicationContext() {
-    return new ClassPathXmlApplicationContext("spring.xml");
+    this.context = new ClassPathXmlApplicationContext("spring.xml");
+    return this.context;
   }
 
   @Bean
@@ -165,6 +183,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public void destroy() {
     try {
       AbandonedConnectionCleanupThread.shutdown();
+      context.close();
     } catch (Throwable t) {
     }
     Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -174,7 +193,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
         DriverManager.deregisterDriver(driver);
       } catch (SQLException e) {
         e.printStackTrace();
-
+        
       }
     }
   }

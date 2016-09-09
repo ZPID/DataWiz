@@ -2,11 +2,7 @@ package de.zpid.datawiz.controller;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Optional;
@@ -75,13 +71,21 @@ public class ProjectController extends SuperController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
+
     // create new pform!
-    Roles role = null;
     ProjectForm pForm = createProjectForm();
+    // TODO
+    String name = "New Project";
     if (pid.isPresent()) {
       try {
-        role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
+        Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
+        if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
+            && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
+          redirectAttributes.addFlashAttribute("hideMenu", true);
+          return "redirect:/project/" + pid.get() + "/studies";
+        }
         pUtil.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
+        name = pForm.getProject().getTitle();
       } catch (Exception e) {
         // TODO
         log.warn(e.getMessage());
@@ -97,16 +101,95 @@ public class ProjectController extends SuperController {
             messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
         return "redirect:/panel";
       }
-      if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
-          && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
-        model.put("jQueryMap", "study");
-        model.put("hideMenu", true);
-      }
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, null, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, 0));
     model.put("subnaviActive", PageState.PROJECT.name());
     model.put("ProjectForm", pForm);
     return "project";
+  }
+
+  @RequestMapping(value = { "/{pid}/studies" }, method = RequestMethod.GET)
+  public String showStudiesPage(@PathVariable Optional<Long> pid, ModelMap model,
+      RedirectAttributes redirectAttributes) {
+    log.debug("execute showStudiesPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    ProjectForm pForm = createProjectForm();
+    if (!pid.isPresent()) {
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    try {
+      Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
+      if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
+          && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
+        model.put("hideMenu", true);
+      }
+      pUtil.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
+    } catch (Exception e) {
+      // TODO
+      log.warn(e.getMessage());
+      String redirectMessage = "";
+      if (e instanceof DataWizException) {
+        redirectMessage = "project.not.available";
+      } else if (e instanceof DataWizSecurityException) {
+        redirectMessage = "project.access.denied";
+      } else {
+        redirectMessage = "dbs.sql.exception";
+      }
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, 0));
+    model.put("subnaviActive", PageState.STUDIES.name());
+    model.put("ProjectForm", pForm);
+    return "studies";
+  }
+
+  @RequestMapping(value = { "/{pid}/material" }, method = RequestMethod.GET)
+  public String showMaterialPage(@PathVariable Optional<Long> pid, ModelMap model,
+      RedirectAttributes redirectAttributes) {
+    log.debug("execute showMaterialPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
+    UserDTO user = UserUtil.getCurrentUser();
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return "redirect:/login";
+    }
+    ProjectForm pForm = createProjectForm();
+    if (!pid.isPresent()) {
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    try {
+      Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
+      pUtil.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
+    } catch (Exception e) {
+      // TODO
+      log.warn(e.getMessage());
+      String redirectMessage = "";
+      if (e instanceof DataWizException) {
+        redirectMessage = "project.not.available";
+      } else if (e instanceof DataWizSecurityException) {
+        redirectMessage = "project.access.denied";
+      } else {
+        redirectMessage = "dbs.sql.exception";
+      }
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+      return "redirect:/panel";
+    }
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, 0));
+    model.put("subnaviActive", PageState.MATERIAL.name());
+    model.put("ProjectForm", pForm);
+    return "material";
   }
 
   /**
@@ -158,7 +241,6 @@ public class ProjectController extends SuperController {
     }
     pForm.getContributors().add(0, (ContributorDTO) applicationContext.getBean("ContributorDTO"));
     // pForm.getContributors().add(new ContributorDTO());
-    model.put("jQueryMap", "contri");
     return "project";
   }
 
@@ -179,7 +261,6 @@ public class ProjectController extends SuperController {
     ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
     pForm.getContributors().remove(pForm.getDelPos());
     // TODO DELETE FUNCTION
-    model.put("jQueryMap", "contri");
     return "project";
   }
 
@@ -251,7 +332,7 @@ public class ProjectController extends SuperController {
     redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
     redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
-    return "redirect:/project/" + pForm.getProject().getId();
+    return "redirect:/project/" + pForm.getProject().getId() + "/material";
   }
 
   /**
@@ -318,13 +399,13 @@ public class ProjectController extends SuperController {
         msg = "Erfolgreich gelöscht";
         log.trace("Method deleteDocument [id: {}] successfully completed", () -> docId);
       }
-    } catch (Exception e) {      
+    } catch (Exception e) {
       log.warn("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e);
     }
     redirectAttributes.addFlashAttribute("saveState", state.name());
     redirectAttributes.addFlashAttribute("saveStateMsg", msg);
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
-    return "redirect:/project/" + pid;
+    return "redirect:/project/" + pid + "/material";
   }
 
   /**

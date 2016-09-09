@@ -111,7 +111,7 @@
           </c:forEach>
           <!-- study.otherCMINP -->
           <div id="contentCollectionModesINP">
-            <c:set var="input_vars" value="study.otherCMIP;study.otherCMINP; ; ;row margin-bottom-0" />
+            <c:set var="input_vars" value="study.otherCMINP;study.otherCMINP; ; ;row margin-bottom-0" />
             <%@ include file="../templates/gen_textarea.jsp"%>
           </div>
         </div>
@@ -185,7 +185,7 @@
         </c:forEach>
         <!-- study.sourFormatOther -->
         <div id="contentUsedSourFormat">
-          <c:set var="input_vars" value="study.otherCMIP;study.otherCMIP; ; ;row margin-bottom-0" />
+          <c:set var="input_vars" value="study.otherSourFormat;study.otherSourFormat; ; ;row margin-bottom-0" />
           <%@ include file="../templates/gen_textarea.jsp"%>
         </div>
         <s:message code="study.usedSourFormat.help" var="appresmess" />
