@@ -553,3 +553,15 @@ function scrollToPosition() {
     $("#scrollPosition").val(0);
   }
 }
+
+
+$(function(){
+  $(".popup").click(function(event){
+  event.preventDefault();
+  var href = $(this).attr("href");
+  var width = $(this).attr("data-width");
+  var height = $(this).attr("data-height");
+  var popup = window.open(href,"popup",
+  "toolbar=no, location=no, directories=no, status=no, menubar=no, top=20, left=20, height=" + height +", width=" + width + "");
+  });
+  });
