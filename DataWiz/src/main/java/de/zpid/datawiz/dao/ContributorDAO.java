@@ -36,7 +36,7 @@ public class ContributorDAO extends SuperDAO {
         + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
         + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ")
         + (withPrimary ? "" : "dw_contributors.primaryContributor IS FALSE AND ")
-        + "dw_study_contributors.project_id = ? ORDER BY dw_contributors.id DESC";
+        + "dw_study_contributors.project_id = ? ORDER BY dw_contributors.sort ASC";
     List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { project.getId() },
         new RowMapper<ContributorDTO>() {
           public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {

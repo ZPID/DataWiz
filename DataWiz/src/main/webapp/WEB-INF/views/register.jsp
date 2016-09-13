@@ -53,7 +53,8 @@
             <div class="control-label col-sm-2 required"></div>
             <div class="col-sm-10">
               <sf:checkbox path="checkedGTC" value="true" />
-              <span><s:message code="reg.gtc.checkbox" /></span>
+              <c:url var="gtc_link" value="/static/html/terms.html" />
+              <span><s:message code="reg.gtc.checkbox" arguments="${gtc_link}" /></span>
               <sf:errors path="checkedGTC" cssClass="alert alert-danger" element="div" />
             </div>
           </div>

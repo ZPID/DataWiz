@@ -19,9 +19,8 @@
         <div class="panel-group" id="accordion">
           <div class="panel">
             <div class="row">
-              <div class="col-xs-9"></div>
-              <div class="col-xs-3">
-                <a href="${projectUrl}/" class="btn btn-success">neues Projekt anlegen</a>
+              <div class="col-xs-12 clearfix">
+                <a href="${projectUrl}/" class="btn btn-success pull-right"><s:message code="project.create.button" /></a>
               </div>
             </div>
           </div>

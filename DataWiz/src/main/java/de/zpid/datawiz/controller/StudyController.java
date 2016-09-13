@@ -106,7 +106,7 @@ public class StudyController extends SuperController {
                 new String[] { sForm.getProject().getTitle(),
                     (sForm.getStudy() != null && sForm.getStudy().getTitle() != null
                         && !sForm.getStudy().getTitle().isEmpty() ? sForm.getStudy().getTitle() : "empty") },
-                pid.get()));
+                pid.get(), messageSource));
     model.put("disStudyContent", accessState);
     model.put("StudyForm", sForm);
     model.put("studySubMenu", true);

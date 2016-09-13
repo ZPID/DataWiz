@@ -1,6 +1,5 @@
 package de.zpid.datawiz.controller;
 
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -35,9 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import com.sun.jna.Platform;
-
-import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
@@ -111,8 +107,8 @@ public class LoginController extends SuperController {
     // e.printStackTrace();
     // }
 
-    model.addAttribute("greeting", "Hi, Welcome to mysite");
-    return "welcome";
+    //model.addAttribute("greeting", "Hi, Welcome to mysite");
+    return "redirect:/panel";
   }
 
   /**

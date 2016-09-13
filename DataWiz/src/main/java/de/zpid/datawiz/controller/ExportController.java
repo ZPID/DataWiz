@@ -43,12 +43,15 @@ public class ExportController extends SuperController {
       return "redirect:/login";
     }
     final ProjectForm pForm = createProjectForm();
+    String pName = "";
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
       pUtil.getProjectForm(pForm, projectId.get(), user, PageState.EXPORT,
           pUtil.checkProjectRoles(user, projectId.get(), 0, false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
-
+        if (pForm.getProject().getTitle() != null && !pForm.getProject().getTitle().trim().isEmpty()) {
+          pName = pForm.getProject().getTitle();
+        }
       }
     } catch (Exception e) {
       String redirectMessage;
@@ -68,7 +71,7 @@ public class ExportController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.EXPORT, null, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, 0, messageSource));
     model.put("subnaviActive", PageState.EXPORT.name());
     model.put("ProjectForm", pForm);
     log.trace("Method showExportPage successfully completed");

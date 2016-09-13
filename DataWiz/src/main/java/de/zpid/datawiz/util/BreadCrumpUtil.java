@@ -3,46 +3,35 @@ package de.zpid.datawiz.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import de.zpid.datawiz.enumeration.PageState;
 
-public class BreadCrumpUtil {
 
-  public static List<BreadCrump> generateBC(final PageState position, final String[] name, final long id) {
+public class BreadCrumpUtil {
+  
+  public static List<BreadCrump> generateBC(final PageState position, final String[] name, final long id, final MessageSource messageSource) {
     List<BreadCrump> bcl = new ArrayList<BreadCrump>();
     switch (position) {
     case PANEL:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("Panel", ""));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.panel", null, LocaleContextHolder.getLocale()), ""));
       break;
     case PROJECT:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("Panel", "/panel"));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.panel", null, LocaleContextHolder.getLocale()), "/panel"));
       bcl.add(new BreadCrump(name[0], ""));
       break;
-    case DMP:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("Panel", "/panel"));
-      bcl.add(new BreadCrump("DMP", ""));
-      break;
-    case ACCESS:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("Panel", "/panel"));
-      bcl.add(new BreadCrump("Access", ""));
-      break;
     case STUDY:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("Panel", "/panel"));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.panel", null, LocaleContextHolder.getLocale()), "/panel"));
       bcl.add(new BreadCrump(name[0], "/project/" + id));
       bcl.add(new BreadCrump(name[1], ""));
       break;
-    case EXPORT:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("Panel", "/panel"));
-      bcl.add(new BreadCrump("Export", ""));
-      break;
     case USERSETTING:
-      bcl.add(new BreadCrump("Home", "/"));
-      bcl.add(new BreadCrump("User Settings", ""));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
+      bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.user.settings", null, LocaleContextHolder.getLocale()), ""));
       break;
     default:
       break;

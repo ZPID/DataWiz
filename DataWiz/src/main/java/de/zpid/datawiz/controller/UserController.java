@@ -89,7 +89,7 @@ public class UserController extends SuperController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.USERSETTING, null, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.USERSETTING, null, 0, messageSource));
     model.put("UserDTO", user);
     log.trace("Method showUserSettingPage successfully completed");
     return "usersettings";

@@ -75,7 +75,7 @@ public class ProjectController extends SuperController {
     // create new pform!
     ProjectForm pForm = createProjectForm();
     // TODO
-    String name = "New Project";
+    String name = messageSource.getMessage("breadcrumb.new.project", null, LocaleContextHolder.getLocale());
     if (pid.isPresent()) {
       try {
         Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
@@ -102,7 +102,7 @@ public class ProjectController extends SuperController {
         return "redirect:/panel";
       }
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, 0, messageSource));
     model.put("subnaviActive", PageState.PROJECT.name());
     model.put("ProjectForm", pForm);
     return "project";
@@ -146,7 +146,7 @@ public class ProjectController extends SuperController {
       return "redirect:/panel";
     }
     model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, 0));
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, 0, messageSource));
     model.put("subnaviActive", PageState.STUDIES.name());
     model.put("ProjectForm", pForm);
     return "studies";
@@ -186,7 +186,7 @@ public class ProjectController extends SuperController {
       return "redirect:/panel";
     }
     model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, 0));
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, 0, messageSource));
     model.put("subnaviActive", PageState.MATERIAL.name());
     model.put("ProjectForm", pForm);
     return "material";

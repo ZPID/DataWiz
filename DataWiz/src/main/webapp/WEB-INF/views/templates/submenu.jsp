@@ -7,9 +7,9 @@
               code="submenu.studydoc" /></a></li>
         <c:if test="${not empty StudyForm.project.id}">
           <li role="presentation" class="<c:out value="${subnaviActive eq 'DATA' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}" />"><s:message code="submenu.record" /></a></li>
+            href="<c:url value="#" />"><s:message code="submenu.record" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'STUDMATERIAL' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}" />"><s:message code="submenu.studymaterial" /></a></li>
+            href="<c:url value="#" />"><s:message code="submenu.studymaterial" /></a></li>
         </c:if>
       </ul>
     </c:when>
@@ -28,9 +28,9 @@
                 code="project.submenu.material" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'ACCESS' ? 'active' : ''}" /> "><a
             href="<c:url value="/access/${ProjectForm.project.id}" />"><s:message code="submenu.sharing" /></a></li>
+          <li role="presentation" class="<c:out value="${subnaviActive eq 'EXPORT' ? 'active' : ''}" /> "><a
+            href="<c:url value="/export/${ProjectForm.project.id}" />"><s:message code="submenu.export" /></a></li>
         </c:if>
-        <li role="presentation" class="<c:out value="${subnaviActive eq 'EXPORT' ? 'active' : ''}" /> "><a
-          href="<c:url value="/export/${ProjectForm.project.id}" />"><s:message code="submenu.export" /></a></li>
         <%--         <li role="presentation"><a href="#"><s:message code="submenu.knowlegdebase" /></a></li> --%>
       </ul>
     </c:otherwise>

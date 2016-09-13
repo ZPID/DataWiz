@@ -10,7 +10,7 @@
     </div>
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
+      <%-- <ul class="nav navbar-nav">
         <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
         <li><a href="<c:url value="/login" />">Link</a></li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
@@ -25,7 +25,7 @@
             <li role="separator" class="divider"></li>
             <li><a href="#">One more separated link</a></li>
           </ul></li>
-      </ul>
+      </ul> --%>
       <ul class="nav navbar-nav navbar-right">
         <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
             <c:when test="${localeCode eq 'de'}">
@@ -41,7 +41,7 @@
             <ul class="dropdown-menu">
               <li><a href="<c:url value="/panel" />">Projekte</a></li>
               <li><a href="<c:url value="/usersettings" />">Eigene Daten</a></li>
-              <li><a href="#">Placeholder</a></li>
+              <!-- <li><a href="#">Placeholder</a></li> -->
               <li role="separator" class="divider"></li>
               <li><a href="<c:url value="/logout" />">Logout</a></li>
             </ul></li>

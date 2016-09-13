@@ -134,7 +134,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.thirdParty"><s:message code="study.thirdParty" /></label>
-      <sf:select path="study.copyright" class="form-control" id="selectThirdParty"
+      <sf:select path="study.thirdParty" class="form-control" id="selectThirdParty"
         onchange="switchViewIfSelected('selectThirdParty', 1);">
         <sf:option value="0">
           <s:message code="gen.no" />

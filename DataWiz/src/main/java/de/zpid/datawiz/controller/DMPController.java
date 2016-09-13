@@ -79,7 +79,10 @@ public class DMPController extends SuperController {
       model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.DMP, null, 0));
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.PROJECT,
+            new String[] { messageSource.getMessage("breadcrumb.new.project", null, LocaleContextHolder.getLocale()) },
+            0, messageSource));
     model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     if (log.isEnabled(Level.DEBUG)) {
@@ -106,8 +109,13 @@ public class DMPController extends SuperController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
+    String pName = "";
     try {
       pUtil.getProjectForm(pForm, pid, user, PageState.DMP, pUtil.checkProjectRoles(user, pid, 0, false, false));
+      if (pForm != null && pForm.getProject() != null && pForm.getProject().getTitle() != null
+          && !pForm.getProject().getTitle().trim().isEmpty()) {
+        pName = pForm.getProject().getTitle();
+      }
     } catch (Exception e) {
       log.warn("Exception: ", e);
       String redirectMessage = "";
@@ -122,7 +130,7 @@ public class DMPController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.DMP, null, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, 0, messageSource));
     model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     return "dmp";

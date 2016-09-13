@@ -86,6 +86,7 @@ public class AccessController extends SuperController {
       return "redirect:/login";
     }
     final ProjectForm pForm = createProjectForm();
+    String pName = "";
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
       pUtil.getProjectForm(pForm, projectId.get(), user, PageState.ACCESS,
@@ -96,6 +97,9 @@ public class AccessController extends SuperController {
         pForm.setPendingMails(projectDAO.findPendingInvitesByProjectID(projectId.get()));
         for (UserDTO tuser : pForm.getSharedUser()) {
           tuser.setGlobalRoles(roleDAO.findRolesByUserIDAndProjectID(tuser.getId(), projectId.get()));
+        }
+        if (pForm.getProject().getTitle() != null && !pForm.getProject().getTitle().trim().isEmpty()) {
+          pName = pForm.getProject().getTitle();
         }
       }
     } catch (Exception e) {
@@ -116,7 +120,7 @@ public class AccessController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.ACCESS, null, 0));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, 0, messageSource));
     model.put("subnaviActive", PageState.ACCESS.name());
     model.put("ProjectForm", pForm);
     log.trace("Method showAccessPage successfully completed");
