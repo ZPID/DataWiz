@@ -7,10 +7,10 @@
     <div class="content-padding">
       <div class="page-header">
         <h4>
-          <s:message code="project.studies.headline" />
+          <s:message code="project.material.headline" />
         </h4>
         <div>
-          <s:message code="project.studies.info" />
+          <s:message code="project.material.info" />
         </div>
       </div>
       <!-- Messages -->

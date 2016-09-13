@@ -81,27 +81,27 @@ public class LoginController extends SuperController {
   public String homePage(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute homePage()");
-      try {
-        log.info("SPSS LIB loaded: " + spss.isLibLoaded());
-        if (spss.isLibLoaded()) {
-          RecordDTO spssFile;
-          if (Platform.isWindows()) {
-            spssFile = new RecordDTO(
-                spss.readWholeSPSSFile(Paths.get("C:\\Users\\ronny\\OneDrive\\ZPID\\Test.sav").toString()));
-          } else {
-            spssFile = new RecordDTO(spss.readWholeSPSSFile(Paths.get("/home/rb/Downloads/Test.sav").toString()));
-
-          }
-          log.debug(spssFile);
-          spssFile.getVariables().forEach((s) -> log.debug(s));
-          spssFile.getErrors().forEach((s) -> System.out.println(s));
-        }
-      } catch (Error e) {
-        System.out.println("lol1");
-      } catch (Exception e) {
-        System.out.println("lol2");
-        e.printStackTrace();
-      }
+//      try {
+//        log.info("SPSS LIB loaded: " + spss.isLibLoaded());
+//        if (spss.isLibLoaded()) {
+//          RecordDTO spssFile;
+//          if (Platform.isWindows()) {
+//            spssFile = new RecordDTO(
+//                spss.readWholeSPSSFile(Paths.get("C:\\Users\\ronny\\OneDrive\\ZPID\\Test.sav").toString()));
+//          } else {
+//            spssFile = new RecordDTO(spss.readWholeSPSSFile(Paths.get("/home/rb/Downloads/Test.sav").toString()));
+//
+//          }
+//          log.debug(spssFile);
+//          spssFile.getVariables().forEach((s) -> log.debug(s));
+//          spssFile.getErrors().forEach((s) -> System.out.println(s));
+//        }
+//      } catch (Error e) {
+//        System.out.println("lol1");
+//      } catch (Exception e) {
+//        System.out.println("lol2");
+//        e.printStackTrace();
+//      }
     }
     // CustomResourceLoader res = new CustomResourceLoader();
     // try {

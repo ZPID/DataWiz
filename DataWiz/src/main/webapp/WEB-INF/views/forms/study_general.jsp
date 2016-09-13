@@ -25,7 +25,7 @@
         <c:forEach items="${StudyForm.study.contributors}" var="contri" varStatus="coloop">
           <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
           <div class="input-group margin-bottom-10">
-            <input type="text" class="form-control" value="${fn:trim(contriName)}" disabled="disabled" /><span
+            <span class="form-control"><s:message text="${fn:trim(contriName)}" /></span><span
               class="input-group-btn"> <sf:button class="btn btn-danger" name="deleteContri"
                 onclick="document.getElementById('delPos').value=${coloop.count-1}; setScrollPosition();">
                 <s:message code="gen.delete" />
@@ -41,7 +41,7 @@
               </sf:option>
               <c:forEach items="${StudyForm.projectContributors}" var="contri" varStatus="coloop">
                 <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
-                <sf:option value="${coloop.index}">${fn:trim(contriName)}</sf:option>
+                <sf:option value="${coloop.index}"><s:message text="${fn:trim(contriName)}"/></sf:option>
               </c:forEach>
             </sf:select>
             <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri" onclick="setScrollPosition();">
