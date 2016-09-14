@@ -100,13 +100,12 @@ public class StudyController extends SuperController {
       log.warn(e);
     }
     // TODO Empty in ressoures
-    model
-        .put("breadcrumpList",
-            BreadCrumpUtil.generateBC(PageState.STUDY,
-                new String[] { sForm.getProject().getTitle(),
-                    (sForm.getStudy() != null && sForm.getStudy().getTitle() != null
-                        && !sForm.getStudy().getTitle().isEmpty() ? sForm.getStudy().getTitle() : "empty") },
-                pid.get(), messageSource));
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.STUDY,
+            new String[] { sForm.getProject().getTitle(),
+                (sForm.getStudy() != null && sForm.getStudy().getTitle() != null
+                    && !sForm.getStudy().getTitle().isEmpty() ? sForm.getStudy().getTitle() : "empty") },
+            pid.get(), messageSource));
     model.put("disStudyContent", accessState);
     model.put("StudyForm", sForm);
     model.put("studySubMenu", true);
@@ -221,7 +220,14 @@ public class StudyController extends SuperController {
     } else {
       // TODO study null
     }
-    redirectAttributes.addFlashAttribute("jQueryMapS", jQueryMap);
+    // System.out.println(jQueryMap);
+    // switch (jQueryMap) {
+    // case "ethicalActiveClick":
+    // redirectAttributes.addFlashAttribute("jQueryMap", jQueryMap);
+    // break;
+    // }
+    // TODO
+    redirectAttributes.addFlashAttribute("jQueryMap", model.get("jQueryMap"));
     return "redirect:/project/" + pid.get() + "/study/" + study.getId();
   }
 

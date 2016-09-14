@@ -30,17 +30,23 @@
           <div class="panel <c:out value="${pRole}"/>">
             <div class="panel-heading">
               <div class="row">
-                <div class="col-sm-11">
+                <div class="col-sm-12">
                   <s:message text="${cstud.title}" />
-                </div>
-                <div class="col-sm-1">
-                  <a href='<c:url value="study/${cstud.id}"/>' class="label label-success"><s:message
-                      code="gen.edit" /></a>
                 </div>
               </div>
             </div>
             <div class="panel-body">
-              <a href="<c:url value="${ProjectForm.project.id}/study/${cstud.id}" />">${cstud.id} - </a>
+              <s:message text="${cstud.sAbstract}" />
+            </div>
+            <div class="panel-footer">
+              <div class="row">
+                <div class="col-sm-12">
+                  <span class="label label-success" data-toggle="tooltip" data-placement="top">Status</span> <span
+                    class="label label-default" data-toggle="tooltip" data-placement="top" title="Shared">Shared</span>
+                  <a href='<c:url value="study/${cstud.id}"/>' class="label label-primary"><s:message
+                      code="gen.edit" /></a>
+                </div>
+              </div>
             </div>
           </div>
           <br />
