@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyDTO;
 
 @Repository
 @Scope("singleton")
@@ -33,12 +34,30 @@ public class FileDAO extends SuperDAO {
    * @return
    * @throws Exception
    */
-  public List<FileDTO> findProjectFiles(final ProjectDTO project) throws Exception {
+  public List<FileDTO> findProjectMaterialFiles(final ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute getProjectFiles for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
-    String sql = "SELECT dw_files.id, dw_files.project_id, dw_files.user_id, dw_files.name, dw_files.size, dw_files.contentType,"
-        + "dw_files.sha1, dw_files.md5, dw_files.uploadDate, dw_files.filePath FROM dw_files WHERE dw_files.project_id = ? ORDER BY dw_files.uploadDate DESC";
+    String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id IS NULL "
+        + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
     return jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<FileDTO>() {
+      public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return setFileDTO(rs);
+      }
+    });
+  }
+
+  /**
+   * 
+   * @param project
+   * @return
+   * @throws Exception
+   */
+  public List<FileDTO> findStudyMaterialFiles(final StudyDTO study) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute findStudyFiles for study [id: " + study.getId() + " name: " + study.getTitle() + "]");
+    String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id = ? "
+        + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
+    return jdbcTemplate.query(sql, new Object[] { study.getProjectId(), study.getId() }, new RowMapper<FileDTO>() {
       public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         return setFileDTO(rs);
       }
@@ -76,9 +95,12 @@ public class FileDAO extends SuperDAO {
     if (log.isDebugEnabled())
       log.debug("execute saveFile file: " + file.getFileName());
     return this.jdbcTemplate.update(
-        "INSERT INTO dw_files (project_id, user_id, name, size, contentType, sha1, md5, uploadDate, filePath) VALUES (?,?,?,?,?,?,?,?,?)",
-        file.getProjectId(), file.getUserId(), file.getFileName(), file.getFileSize(), file.getContentType(),
-        file.getSha1Checksum(), file.getMd5checksum(), file.getUploadDate(), file.getFilePath());
+        "INSERT INTO dw_files (project_id, study_id, record_id, version_id, user_id, name, size, contentType, sha1, md5, uploadDate, filePath) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
+        file.getProjectId(), file.getStudyId() == 0 ? null : file.getStudyId(),
+        file.getRecordID() == 0 ? null : file.getRecordID(), file.getVersion() == 0 ? null : file.getVersion(),
+        file.getUserId(), file.getFileName(), file.getFileSize(), file.getContentType(), file.getSha1Checksum(),
+        file.getMd5checksum(), file.getUploadDate(), file.getFilePath());
   }
 
   /**
@@ -102,6 +124,9 @@ public class FileDAO extends SuperDAO {
     FileDTO file = (FileDTO) applicationContext.getBean("FileDTO");
     file.setId(rs.getInt("id"));
     file.setProjectId(rs.getInt("project_id"));
+    file.setStudyId(rs.getLong("study_id"));
+    file.setRecordID(rs.getLong("record_id"));
+    file.setVersion(rs.getLong("version_id"));
     file.setUserId(rs.getInt("user_id"));
     file.setFileName(rs.getString("name"));
     file.setFileSize(rs.getLong("size"));

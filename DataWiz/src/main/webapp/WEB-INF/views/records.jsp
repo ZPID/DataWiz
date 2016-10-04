@@ -7,43 +7,82 @@
     <div class="content-padding">
       <div class="page-header">
         <h4>
-          <s:message code="project.studies.headline" />
+          <s:message code="record.overview.headline" />
         </h4>
         <div>
-          <s:message code="project.studies.info" />
+          <s:message code="record.overview.info" />
         </div>
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <c:set var="pRole_g" value="panel-primary" />
-      <c:if test="${principal.user.hasRole('PROJECT_READER', ProjectForm.project.id, false)}">
-        <c:set var="pRole_g" value="panel-warning" />
-      </c:if>
       <div class="panel-group">
-        <c:forEach items="${ProjectForm.studies}" var="cstud">
-          <c:set var="pRole" value="${pRole_g}" />
-          <c:choose>
-            <c:when test="${principal.user.hasRole('DS_WRITER', cstud.id, true)}">
-              <c:set var="pRole" value="panel-primary" />
-            </c:when>
-          </c:choose>
-          <div class="panel <c:out value="${pRole}"/>">
+        <c:forEach items="${StudyForm.records}" var="rec">
+          <div class="panel panel-primary">
             <div class="panel-heading">
               <div class="row">
                 <div class="col-sm-11">
-                  <s:message text="${cstud.title}" />
+                  <s:message text="${rec.recordName}" />
                 </div>
                 <div class="col-sm-1">
-                  <a href='<c:url value="study/${cstud.id}"/>' class="label label-success"><s:message
-                      code="gen.edit" /></a>
+                  <a href='<c:url value="record/${rec.id}"/>' class="label label-success"><s:message code="gen.edit" /></a>
                 </div>
               </div>
             </div>
             <div class="panel-body">
-              <a href="<c:url value="${ProjectForm.project.id}/study/${cstud.id}" />">${cstud.id} - </a>
+              <form class="form-horizontal">
+                <div class="form-group">
+                  <label class="control-label col-sm-2" for="${rec.description}"><s:message
+                      code="study.records.description" /></label>
+                  <div class="col-sm-10 margin-top-7">
+                    <s:message text="${rec.description}" />
+                  </div>
+                </div>
+                <c:choose>
+                  <c:when test="${not empty rec.changed}">
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="${rec.changed}"><s:message
+                          code="study.records.version.info" /></label>
+                      <c:set var="date" value="${fn:split(rec.changed, 'T')}" />
+                      <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate"
+                        type="date" />
+                      <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm:ss" var="strDate" />
+                      <div class="col-sm-10 margin-top-7">
+                        <s:message code="panel.last.commit" arguments="${strDate};${rec.changedBy}" htmlEscape="false"
+                          argumentSeparator=";" />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-sm-2" for="${rec.changeLog}"><s:message
+                          code="study.records.version.changelog" /></label>
+                      <div class="col-sm-10 margin-top-7">
+                        <s:message text="${rec.changeLog}" />
+                      </div>
+                    </div>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="form-group">
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <s:message code="study.records.version.noinfo" />
+                      </div>
+                    </div>
+                  </c:otherwise>
+                </c:choose>
+              </form>
+            </div>
+            <div class="panel-footer">
+              <c:set var="date" value="${fn:split(rec.created, 'T')}" />
+              <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate" type="date" />
+              <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm:ss" var="strDate" />
+              <div class="row">
+                <div class="col-sm-12 clearfix">
+                  <div class="pull-right">
+                    <s:message code="record.first.submit" arguments="${strDate};${rec.createdBy}" htmlEscape="false"
+                      argumentSeparator=";" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <br />
         </c:forEach>
       </div>
     </div>

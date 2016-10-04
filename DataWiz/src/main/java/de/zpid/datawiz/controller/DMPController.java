@@ -82,7 +82,7 @@ public class DMPController extends SuperController {
     model.put("breadcrumpList",
         BreadCrumpUtil.generateBC(PageState.PROJECT,
             new String[] { messageSource.getMessage("breadcrumb.new.project", null, LocaleContextHolder.getLocale()) },
-            0, messageSource));
+            null, messageSource));
     model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     if (log.isEnabled(Level.DEBUG)) {
@@ -130,7 +130,7 @@ public class DMPController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, 0, messageSource));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
     model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     return "dmp";

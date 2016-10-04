@@ -103,7 +103,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public MessageSource resourceBundleMessageSource() {
     ReloadableResourceBundleMessageSource resolver = new ReloadableResourceBundleMessageSource();
     resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale/DMPResources",
-        "classpath:locale/EmailResources", "classpath:locale/StudyResources");
+        "classpath:locale/EmailResources", "classpath:locale/StudyResources", "classpath:locale/RecordResources");
     resolver.setDefaultEncoding("UTF-8");
     log.info("messageSource succesfully loaded");
     return resolver;
@@ -193,7 +193,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
         DriverManager.deregisterDriver(driver);
       } catch (SQLException e) {
         e.printStackTrace();
-        
+
       }
     }
   }

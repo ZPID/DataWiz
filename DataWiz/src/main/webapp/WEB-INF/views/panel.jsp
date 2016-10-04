@@ -79,9 +79,8 @@
                         <h4 class="list-group-item-heading">
                           <c:out value="${study.title}"></c:out>
                         </h4>
-                        <c:out value="${study.id}"></c:out>
                         <br />
-                        <c:out value="${study.timestamp}"></c:out>
+                        <c:out value="${study.sAbstract}"></c:out>
                       </div>
                     </c:forEach>
                   </div>

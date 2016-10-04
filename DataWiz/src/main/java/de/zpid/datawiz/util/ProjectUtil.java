@@ -127,7 +127,7 @@ public class ProjectUtil {
         for (UserRoleDTO role : userRoles) {
           Roles uRole = Roles.valueOf(role.getType());
           if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
-            cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId(), false));
+            cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId(), true, false));
           }
         }
         pForm.setStudies(cStud);
@@ -157,7 +157,7 @@ public class ProjectUtil {
       pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
     } // load /project/xx/material
     else if (call.equals(PageState.MATERIAL)) {
-      pForm.setFiles(fileDAO.findProjectFiles(pdto));
+      pForm.setFiles(fileDAO.findProjectMaterialFiles(pdto));
     } // load /dmp data
     else if (call.equals(PageState.DMP)) {
       DmpDTO dmp = dmpDAO.findByID(pForm.getProject());

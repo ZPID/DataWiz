@@ -71,7 +71,7 @@ public class ExportController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, 0, messageSource));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
     model.put("subnaviActive", PageState.EXPORT.name());
     model.put("ProjectForm", pForm);
     log.trace("Method showExportPage successfully completed");

@@ -65,7 +65,7 @@ public class PanelController extends SuperController {
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PANEL, null, 0, messageSource));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PANEL, null, null, messageSource));
     model.put("CProjectForm", cpform);
     return "panel";
   }

@@ -10,49 +10,64 @@ $tag_box = null;
  */
 
 (function($, window, document, undefined) {
-  $(document).ready(function() {
-    $('[data-toggle="tooltip"]').tooltip()
-    // loading DMP Content
-    if (window.location.pathname.search("/dmp") > 0) {
-      $("#dmpForm :input").prop("disabled", false);
-      setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
-      showorHideDMPContent();
-      $("#dmpForm").trackChanges();
-      $(window).on('beforeunload', function(e) {
-        if ($("#dmpForm").isChanged()) {
-          var msg = 'You are about to leave the page.  Continue?';
-          (e || window.event).returnValue = msg; // IE + Gecko
-          return msg; // Webkit
+  $(document).ready(
+      function() {
+        $('[data-toggle="tooltip"]').tooltip()
+        // loading DMP Content
+        if (window.location.pathname.search("/dmp") > 0) {
+          $("#dmpForm :input").prop("disabled", false);
+          setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
+          showorHideDMPContent();
+          $("#dmpForm").trackChanges();
+          $(window).on('beforeunload', function(e) {
+            if ($("#dmpForm").isChanged()) {
+              var msg = 'You are about to leave the page.  Continue?';
+              (e || window.event).returnValue = msg; // IE + Gecko
+              return msg; // Webkit
+            }
+          });
+        } // loading Project Content without study!
+        else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
+          setProjectSubmenu(null);
+          startTagging();
+        } // loading Study Content
+        else if (window.location.pathname.search("/study") > 0
+            && (window.location.pathname.search("/record") <= 0 || window.location.pathname.search("/records") > 0)) {
+          $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
+          $("#switchEditMode").attr("disabled", false);
+          scrollToPosition();
+          startAccordion();
+          startDatePicker();
+          setStudySubmenu(null);
+          showorHideStudyContent();
+        } // loading Record Content
+        else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
+          $("#spssSelected").show();
+          $("#csvSelected").hide();
+          $("#selectedFileType").change(function() {
+            if ($("#selectedFileType").val() === 'SPSS') {
+              $("#spssSelected").show();
+              $("#csvSelected").hide();
+            } else {
+              $("#spssSelected").hide();
+              $("#csvSelected").show();
+            }
+          });
+        }// loading Panel Content
+        else if (window.location.pathname.search("/panel") > 0) {
+          startAccordion();
+        } // loading access Content
+        else if (window.location.pathname.search("/access") > 0) {
+          showHideNewRole();
+        } // loading usersetings Content
+        else if (window.location.pathname.search("/usersettings") > 0) {
+          if ($('#passwd_error').val())
+            $('.user-pswd-button, #user-pswd-content').toggle();
+          $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
         }
+        $(".loader").fadeOut("slow");
+        $(".uploader").fadeOut("slow");
       });
-    } // loading Project Content without study!
-    else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
-      setProjectSubmenu(null);
-      startTagging();
-    } // loading Study Content
-    else if (window.location.pathname.search("/study") > 0) {
-      $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
-      $("#switchEditMode").attr("disabled", false);
-      scrollToPosition();
-      startAccordion();
-      startDatePicker();
-      setStudySubmenu(null);
-      showorHideStudyContent();
-    } // loading Panel Content
-    else if (window.location.pathname.search("/panel") > 0) {
-      startAccordion();
-    } // loading access Content
-    else if (window.location.pathname.search("/access") > 0) {
-      showHideNewRole();
-    } // loading usersetings Content
-    else if (window.location.pathname.search("/usersettings") > 0) {
-      if ($('#passwd_error').val())
-        $('.user-pswd-button, #user-pswd-content').toggle();
-      $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
-    }
-    $(".loader").fadeOut("slow");
-    $(".uploader").fadeOut("slow");
-  });
 })(window.jQuery, window, document);
 
 $(".projectContentClick").click(function() {
@@ -291,7 +306,7 @@ function showorHideDMPContent() {
   switchViewIfSelectedMulti('selectspecificCosts', 'reference,lifecycle,other');
 }
 
-function startloader(){
+function startloader() {
   $(".loader").fadeIn("slow");
 }
 
@@ -554,14 +569,19 @@ function scrollToPosition() {
   }
 }
 
+$(function() {
+  $(".popup").click(
+      function(event) {
+        event.preventDefault();
+        var href = $(this).attr("href");
+        var width = $(this).attr("data-width");
+        var height = $(this).attr("data-height");
+        var popup = window.open(href, "popup",
+            "toolbar=no, location=no, directories=no, status=no, menubar=no, top=20, left=20, height=" + height
+                + ", width=" + width + "");
+      });
+});
 
-$(function(){
-  $(".popup").click(function(event){
-  event.preventDefault();
-  var href = $(this).attr("href");
-  var width = $(this).attr("data-width");
-  var height = $(this).attr("data-height");
-  var popup = window.open(href,"popup",
-  "toolbar=no, location=no, directories=no, status=no, menubar=no, top=20, left=20, height=" + height +", width=" + width + "");
-  });
-  });
+function shortFilename(spanName, filePath) {
+  $('#' + spanName).html(filePath.replace(/^.*\\/, ''));
+}

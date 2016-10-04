@@ -34,6 +34,8 @@ textarea {
   resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
+
+
 .form-group .required:BEFORE {
   content: "*";
   color: red;
@@ -62,6 +64,22 @@ textarea {
 
 .clean_label:AFTER {
   content: "";
+}
+
+.checkbox-codebook>.btn span.glyphicon {
+  opacity: 0;
+}
+
+[type="checkbox"].btn::after{
+  content: "";
+}
+
+label.btn::after{
+  content: "";
+}
+
+.checkbox-codebook>.btn.active span.glyphicon {
+  opacity: 1;
 }
 
 .projectContentClick {
@@ -113,6 +131,10 @@ textarea {
 
 .margin-bottom-0 {
   margin-bottom: 0px;
+}
+
+.margin-top-7 {
+  margin-top: 7px;
 }
 
 /**************** END CONTENT ****************/
@@ -393,8 +415,6 @@ textarea {
 /* .list-group-item:nth-of-type(even) {
     background: #eee;
 } */
-
-
 .loader {
   position: fixed;
   z-index: 9999;
@@ -405,3 +425,7 @@ textarea {
   background: rgba(255, 255, 255, .8) url('../images/Loading-data.gif') 50% 50% no-repeat;
 }
 
+.modal-content>.panel-heading {
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}

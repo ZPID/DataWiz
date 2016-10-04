@@ -75,7 +75,22 @@ public class MinioUtil {
    */
   public MinioResult putFile(final FileDTO file) {
     log.trace("Entering putFile for file: [name: {}]", () -> file.getFileName());
-    final String bucket = this.bucketPrefix + file.getProjectId();
+    StringBuffer sb = new StringBuffer();
+    sb.append(this.bucketPrefix);
+    sb.append(file.getProjectId());
+    if (file.getStudyId() > 0) {
+      sb.append(".");
+      sb.append(file.getStudyId());
+      if (file.getRecordID() > 0) {
+        sb.append(".");
+        sb.append(file.getRecordID());
+        if (file.getVersion() > 0) {
+          sb.append(".");
+          sb.append(file.getVersion());
+        }
+      }
+    }
+    final String bucket = sb.toString();
     String filePath = UUID.randomUUID().toString();
     try {
       if (!this.minioClient.bucketExists(bucket)) {

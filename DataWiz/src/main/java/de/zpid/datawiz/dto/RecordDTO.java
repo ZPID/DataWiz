@@ -13,6 +13,7 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
   private long studyId;
   private String recordName;
   private LocalDateTime created;
+  private String createdBy;
   private String description;
   private String fileName;
   // DB Table dw_record_metadata
@@ -72,6 +73,14 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
 
   public void setCreated(LocalDateTime created) {
     this.created = created;
+  }
+
+  public String getCreatedBy() {
+    return createdBy;
+  }
+
+  public void setCreatedBy(String createdBy) {
+    this.createdBy = createdBy;
   }
 
   public String getDescription() {
@@ -155,6 +164,7 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
     result = prime * result + ((changedBy == null) ? 0 : changedBy.hashCode());
     result = prime * result + ((checksum == null) ? 0 : checksum.hashCode());
     result = prime * result + ((created == null) ? 0 : created.hashCode());
+    result = prime * result + ((createdBy == null) ? 0 : createdBy.hashCode());
     result = prime * result + ((description == null) ? 0 : description.hashCode());
     result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
     result = prime * result + fileSize;
@@ -200,6 +210,11 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
         return false;
     } else if (!created.equals(other.created))
       return false;
+    if (createdBy == null) {
+      if (other.createdBy != null)
+        return false;
+    } else if (!createdBy.equals(other.createdBy))
+      return false;
     if (description == null) {
       if (other.description != null)
         return false;
@@ -231,9 +246,9 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
   @Override
   public String toString() {
     return "RecordDTO [id=" + id + ", studyId=" + studyId + ", recordName=" + recordName + ", created=" + created
-        + ", description=" + description + ", fileName=" + fileName + ", versionId=" + versionId + ", changeLog="
-        + changeLog + ", changed=" + changed + ", changedBy=" + changedBy + ", fileSize=" + fileSize + ", checksum="
-        + checksum + ", masterRecord=" + masterRecord + "]" + super.toString();
+        + ", createdBy=" + createdBy + ", description=" + description + ", fileName=" + fileName + ", versionId="
+        + versionId + ", changeLog=" + changeLog + ", changed=" + changed + ", changedBy=" + changedBy + ", fileSize="
+        + fileSize + ", checksum=" + checksum + ", masterRecord=" + masterRecord + "]" + super.toString();
   }
 
 }

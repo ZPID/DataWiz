@@ -56,7 +56,16 @@ public class StudyController extends SuperController {
     log.info("Loading StudyController for mapping /study");
   }
 
-  @RequestMapping(value = { "", "/{studyId}", }, method = RequestMethod.GET)
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param model
+   * @param redirectAttributes
+   * @param jQueryMapS
+   * @return
+   */
+  @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.GET)
   public String showStudyPage(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       final ModelMap model, final RedirectAttributes redirectAttributes,
       @ModelAttribute("jQueryMapS") String jQueryMapS) {
@@ -76,18 +85,25 @@ public class StudyController extends SuperController {
     try {
       ProjectDTO project = projectDAO.findById(pid.get());
       if (project == null) {
-        log.trace("Entering showStudyPage(create) study");
+        log.warn("No Project found for projectId {}", () -> pid.get());
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
         return "redirect:/panel";
       }
       sForm.setProject(project);
       List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
       if (studyId.isPresent()) {
-        StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false);
+        StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false, false);
         if (study != null) {
           setStudyDTO(studyId, study);
           sForm.setStudy(study);
           cleanContributorList(pContri, study.getContributors());
           accessState = updateAccessState(user, accessState, study);
+        } else {
+          log.warn("No Study found for studyId {}", () -> studyId.get());
+          redirectAttributes.addFlashAttribute("errorMSG",
+              messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
+          return "redirect:/project/" + pid.get() + "/studies";
         }
         sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
         sForm.setSourFormat(formTypeDAO.findAllByType(true, DWFieldTypes.DATAFORMAT));
@@ -105,7 +121,7 @@ public class StudyController extends SuperController {
             new String[] { sForm.getProject().getTitle(),
                 (sForm.getStudy() != null && sForm.getStudy().getTitle() != null
                     && !sForm.getStudy().getTitle().isEmpty() ? sForm.getStudy().getTitle() : "empty") },
-            pid.get(), messageSource));
+            new long[] { pid.get() }, messageSource));
     model.put("disStudyContent", accessState);
     model.put("StudyForm", sForm);
     model.put("studySubMenu", true);
@@ -116,6 +132,56 @@ public class StudyController extends SuperController {
     model.put("subnaviActive", PageState.STUDY.name());
     log.trace("Method showStudyPage successfully completed");
     return "study";
+  }
+
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param model
+   * @param redirectAttributes
+   * @return
+   */
+  @RequestMapping(value = { "/{studyId}/records" }, method = RequestMethod.GET)
+  public String showRecordOverview(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+      final ModelMap model, final RedirectAttributes redirectAttributes) {
+    final UserDTO user = UserUtil.getCurrentUser();
+    log.trace("Entering showRecordOverview for study [id: {}] and user [email: {}]", () -> studyId.get(),
+        () -> user.getEmail());
+    String ret = checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+    if (ret != null)
+      return ret;
+    StudyForm sForm = createStudyForm();
+    try {
+      ProjectDTO project = projectDAO.findById(pid.get());
+      if (project == null) {
+        log.warn("No Project found for projectId {}", () -> pid.get());
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
+        return "redirect:/panel";
+      }
+      sForm.setProject(project);
+      StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
+      if (study == null || study.getId() <= 0) {
+        log.warn("No Study found for studyId {}", () -> studyId.get());
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
+        return "redirect:/project/" + pid.get() + "/studies";
+      }
+      sForm.setStudy(study);
+      sForm.setRecords(recordDAO.findRecordsWithStudyID(studyId.get()));
+    } catch (Exception e) {
+      // TODO
+      log.warn(e);
+    }
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.STUDY,
+            new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() }, new long[] { pid.get() },
+            messageSource));
+    model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.RECORDS.name());
+    model.put("StudyForm", sForm);
+    return "records";
   }
 
   /**
@@ -365,7 +431,7 @@ public class StudyController extends SuperController {
     String actLock = (String) model.get("disStudyContent");
     StudyDTO currLock = null;
     try {
-      currLock = studyDAO.findById(study.getId(), pid.get(), true);
+      currLock = studyDAO.findById(study.getId(), pid.get(), true, true);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -656,33 +722,6 @@ public class StudyController extends SuperController {
     model.put("studySubMenu", true);
     model.put("jQueryMap", PageState.STUDYSAMPLE);
     return "study";
-  }
-
-  /**
-   * 
-   * @param pid
-   * @param studyId
-   * @param redirectAttributes
-   * @param onlyWrite
-   * @return
-   */
-  private String checkStudyAccess(final Optional<Long> pid, final Optional<Long> studyId,
-      final RedirectAttributes redirectAttributes, final boolean onlyWrite, final UserDTO user) {
-    if (user == null) {
-      log.warn("Auth User Object == null - redirect to login");
-      return "redirect:/login";
-    }
-    if (!pid.isPresent() || pUtil.checkProjectRoles(user, pid.get(), studyId.isPresent() ? studyId.get() : -1,
-        onlyWrite, true) == null) {
-      log.warn(
-          "WARN: access denied because of: " + (!pid.isPresent() ? "missing project identifier"
-              : "user [id: {}] has no rights to read/write study [id: {}]"),
-          () -> user.getId(), () -> studyId.isPresent() ? studyId.get() : 0);
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
-      return !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
-    }
-    return null;
   }
 
   /**
