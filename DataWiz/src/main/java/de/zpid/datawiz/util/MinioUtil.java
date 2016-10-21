@@ -75,23 +75,11 @@ public class MinioUtil {
    */
   public MinioResult putFile(final FileDTO file) {
     log.trace("Entering putFile for file: [name: {}]", () -> file.getFileName());
-    StringBuffer sb = new StringBuffer();
-    sb.append(this.bucketPrefix);
-    sb.append(file.getProjectId());
-    if (file.getStudyId() > 0) {
-      sb.append(".");
-      sb.append(file.getStudyId());
-      if (file.getRecordID() > 0) {
-        sb.append(".");
-        sb.append(file.getRecordID());
-        if (file.getVersion() > 0) {
-          sb.append(".");
-          sb.append(file.getVersion());
-        }
-      }
-    }
-    final String bucket = sb.toString();
+    final String bucket = setBucket(file);
     String filePath = UUID.randomUUID().toString();
+    if (file.getVersion() > 0) {
+      filePath += "_" + file.getVersion();
+    }
     try {
       if (!this.minioClient.bucketExists(bucket)) {
         log.debug("Bucket [name: {}] does not exists - new bucket created", () -> bucket);
@@ -133,7 +121,7 @@ public class MinioUtil {
    */
   public MinioResult getFile(final FileDTO file) {
     log.trace("Entering getFile for file: [name: {}; path: {}]", () -> file.getFileName(), () -> file.getFilePath());
-    String bucket = this.bucketPrefix + file.getProjectId();
+    final String bucket = setBucket(file);
     try {
       if (!this.minioClient.bucketExists(bucket)) {
         log.fatal("FATAL: Bucket [name: {}] not exists in Minio FileSystem - Please check file system consistency!",
@@ -170,6 +158,26 @@ public class MinioUtil {
   }
 
   /**
+   * @param file
+   * @return
+   */
+  private String setBucket(final FileDTO file) {
+    StringBuffer sb = new StringBuffer();
+    sb.append(this.bucketPrefix);
+    sb.append(file.getProjectId());
+    if (file.getStudyId() > 0) {
+      sb.append(".");
+      sb.append(file.getStudyId());
+      if (file.getRecordID() > 0) {
+        sb.append(".");
+        sb.append(file.getRecordID());
+      }
+    }
+    final String bucket = sb.toString();
+    return bucket;
+  }
+
+  /**
    * Delete a file from Minio file system. The project identifier and the file path must be given in the FileDTO,
    * because the is is used as bucket identifier and the unique path as file identifier.
    * 
@@ -178,7 +186,7 @@ public class MinioUtil {
    */
   public MinioResult deleteFile(final FileDTO file) {
     log.trace("Entering deleteFile  file: [name: {}; path: {}]", () -> file.getFileName(), () -> file.getFilePath());
-    final String bucket = this.bucketPrefix + file.getProjectId();
+    final String bucket = setBucket(file);
     try {
       if (!this.minioClient.bucketExists(bucket)) {
         log.fatal("FATAL: Bucket [name: {}] not exists in Minio FileSystem - Please check file system consistency!",

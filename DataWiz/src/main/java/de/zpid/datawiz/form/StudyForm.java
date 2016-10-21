@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 
 import de.zpid.datawiz.dto.ContributorDTO;
+import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.RecordDTO;
@@ -37,6 +38,13 @@ public class StudyForm implements Serializable {
   private char csvQuoteChar;
   private char csvDecChar;
   private String newChangeLog;
+  private boolean headerRow;
+  private RecordDTO record;
+  private FileDTO file;
+  private List<String[]> importMatrix;
+  private Boolean parsingError;
+  private List<String> warnings;
+  private List<String> errors;
 
   public StudyDTO getStudy() {
     return study;
@@ -180,6 +188,62 @@ public class StudyForm implements Serializable {
 
   public void setCsvDecChar(char csvDecChar) {
     this.csvDecChar = csvDecChar;
+  }
+
+  public boolean isHeaderRow() {
+    return headerRow;
+  }
+
+  public void setHeaderRow(boolean headerRow) {
+    this.headerRow = headerRow;
+  }
+
+  public RecordDTO getRecord() {
+    return record;
+  }
+
+  public void setRecord(RecordDTO record) {
+    this.record = record;
+  }
+
+  public List<String[]> getImportMatrix() {
+    return importMatrix;
+  }
+
+  public void setImportMatrix(List<String[]> importMatrix) {
+    this.importMatrix = importMatrix;
+  }
+
+  public FileDTO getFile() {
+    return file;
+  }
+
+  public void setFile(FileDTO file) {
+    this.file = file;
+  }
+
+  public Boolean getParsingError() {
+    return parsingError;
+  }
+
+  public void setParsingError(Boolean parsingError) {
+    this.parsingError = parsingError;
+  }
+
+  public List<String> getWarnings() {
+    return warnings;
+  }
+
+  public void setWarnings(List<String> warnings) {
+    this.warnings = warnings;
+  }
+
+  public List<String> getErrors() {
+    return errors;
+  }
+
+  public void setErrors(List<String> errors) {
+    this.errors = errors;
   }
 
 }

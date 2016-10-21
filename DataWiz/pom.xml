@@ -46,9 +46,14 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>3.8</version>
+		</dependency>
+		<dependency>
 			<groupId>SPSS</groupId>
 			<artifactId>SPSS</artifactId>
-			<version>1.0</version>
+			<version>2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.minio</groupId>

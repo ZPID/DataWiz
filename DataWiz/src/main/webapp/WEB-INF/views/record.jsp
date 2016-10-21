@@ -132,6 +132,17 @@
                     </div>
                   </div>
                   <div class="form-group">
+                    <!-- headerRow -->
+                    <div class="col-sm-12">
+                      <sf:label class="control-label" path="headerRow">
+                        <s:message code="record.headerRow" />
+                      </sf:label>
+                      <sf:checkbox path="headerRow" />
+                      <s:message code="record.headerRow.help" var="appresmess" />
+                      <%@ include file="templates/helpblock.jsp"%>
+                    </div>
+                  </div>
+                  <div class="form-group">
                     <!-- seperator -->
                     <div class="col-sm-4">
                       <sf:label class="control-label" path="csvSeperator">
@@ -153,7 +164,7 @@
                         <sf:option value=":">
                           <s:message code="record.csvSeperator.colon" />
                         </sf:option>
-                        <sf:option value="s">
+                        <sf:option value=" ">
                           <s:message code="record.csvSeperator.space" />
                         </sf:option>
                       </sf:select>

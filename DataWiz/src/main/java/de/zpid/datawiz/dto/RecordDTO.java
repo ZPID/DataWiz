@@ -21,8 +21,6 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
   private String changeLog;
   private LocalDateTime changed;
   private String changedBy;
-  private int fileSize;
-  private String checksum;
   private boolean masterRecord;
 
   public RecordDTO() {
@@ -131,22 +129,6 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
     this.changedBy = changedBy;
   }
 
-  public int getFileSize() {
-    return fileSize;
-  }
-
-  public void setFileSize(int fileSize) {
-    this.fileSize = fileSize;
-  }
-
-  public String getChecksum() {
-    return checksum;
-  }
-
-  public void setChecksum(String checksum) {
-    this.checksum = checksum;
-  }
-
   public boolean isMasterRecord() {
     return masterRecord;
   }
@@ -162,12 +144,10 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
     result = prime * result + ((changeLog == null) ? 0 : changeLog.hashCode());
     result = prime * result + ((changed == null) ? 0 : changed.hashCode());
     result = prime * result + ((changedBy == null) ? 0 : changedBy.hashCode());
-    result = prime * result + ((checksum == null) ? 0 : checksum.hashCode());
     result = prime * result + ((created == null) ? 0 : created.hashCode());
     result = prime * result + ((createdBy == null) ? 0 : createdBy.hashCode());
     result = prime * result + ((description == null) ? 0 : description.hashCode());
     result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
-    result = prime * result + fileSize;
     result = prime * result + (int) (id ^ (id >>> 32));
     result = prime * result + (masterRecord ? 1231 : 1237);
     result = prime * result + ((recordName == null) ? 0 : recordName.hashCode());
@@ -200,11 +180,6 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
         return false;
     } else if (!changedBy.equals(other.changedBy))
       return false;
-    if (checksum == null) {
-      if (other.checksum != null)
-        return false;
-    } else if (!checksum.equals(other.checksum))
-      return false;
     if (created == null) {
       if (other.created != null)
         return false;
@@ -224,8 +199,6 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
       if (other.fileName != null)
         return false;
     } else if (!fileName.equals(other.fileName))
-      return false;
-    if (fileSize != other.fileSize)
       return false;
     if (id != other.id)
       return false;
@@ -247,8 +220,8 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
   public String toString() {
     return "RecordDTO [id=" + id + ", studyId=" + studyId + ", recordName=" + recordName + ", created=" + created
         + ", createdBy=" + createdBy + ", description=" + description + ", fileName=" + fileName + ", versionId="
-        + versionId + ", changeLog=" + changeLog + ", changed=" + changed + ", changedBy=" + changedBy + ", fileSize="
-        + fileSize + ", checksum=" + checksum + ", masterRecord=" + masterRecord + "]" + super.toString();
+        + versionId + ", changeLog=" + changeLog + ", changed=" + changed + ", changedBy=" + changedBy
+        + ", masterRecord=" + masterRecord + "]";
   }
 
 }

@@ -39,7 +39,6 @@ import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
-import de.zpid.spss.SPSSIO;
 
 @Controller
 @SessionAttributes("UserDTO")
@@ -48,8 +47,7 @@ public class LoginController extends SuperController {
   @Autowired
   PlatformTransactionManager txManager;
 
-  @Autowired
-  SPSSIO spss;
+  
 
   private static Logger log = LogManager.getLogger(LoginController.class);
 

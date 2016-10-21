@@ -102,7 +102,8 @@ public class ProjectController extends SuperController {
         return "redirect:/panel";
       }
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, null, messageSource));
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, null, messageSource));
     model.put("subnaviActive", PageState.PROJECT.name());
     model.put("ProjectForm", pForm);
     return "project";
@@ -145,8 +146,8 @@ public class ProjectController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
+        new String[] { pForm.getProject().getTitle() }, null, messageSource));
     model.put("subnaviActive", PageState.STUDIES.name());
     model.put("ProjectForm", pForm);
     return "studies";
@@ -185,8 +186,8 @@ public class ProjectController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
+        new String[] { pForm.getProject().getTitle() }, null, messageSource));
     model.put("subnaviActive", PageState.MATERIAL.name());
     model.put("ProjectForm", pForm);
     return "material";
