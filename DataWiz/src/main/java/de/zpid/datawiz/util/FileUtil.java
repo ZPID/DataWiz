@@ -158,12 +158,12 @@ public class FileUtil {
     try {
       Files.delete(path);
     } catch (NoSuchFileException x) {
-      System.err.format("%s: no such" + " file or directory%n", path);
+      log.warn("NoSuchFileException: no such file or directory path: {}", () -> path);
     } catch (DirectoryNotEmptyException x) {
-      System.err.format("%s not empty%n", path);
+      log.warn("DirectoryNotEmptyException path: {}", () -> path, () -> x);
     } catch (IOException x) {
       // File permission problems are caught here.
-      System.err.println(x);
+      log.warn("IOException during file delete Exception: {}", () -> x);
     }
     try {
       DirectoryStream<Path> ds = Files.newDirectoryStream(path.getParent());

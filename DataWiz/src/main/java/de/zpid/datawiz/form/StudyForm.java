@@ -11,6 +11,7 @@ import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.RecordCompareDTO;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 
@@ -40,11 +41,13 @@ public class StudyForm implements Serializable {
   private String newChangeLog;
   private boolean headerRow;
   private RecordDTO record;
+  private RecordDTO previousRecordVersion;
   private FileDTO file;
   private List<String[]> importMatrix;
   private Boolean parsingError;
   private List<String> warnings;
   private List<String> errors;
+  List<RecordCompareDTO> compList;
 
   public StudyDTO getStudy() {
     return study;
@@ -244,6 +247,22 @@ public class StudyForm implements Serializable {
 
   public void setErrors(List<String> errors) {
     this.errors = errors;
+  }
+
+  public RecordDTO getPreviousRecordVersion() {
+    return previousRecordVersion;
+  }
+
+  public void setPreviousRecordVersion(RecordDTO previousRecordVersion) {
+    this.previousRecordVersion = previousRecordVersion;
+  }
+
+  public List<RecordCompareDTO> getCompList() {
+    return compList;
+  }
+
+  public void setCompList(List<RecordCompareDTO> compList) {
+    this.compList = compList;
   }
 
 }

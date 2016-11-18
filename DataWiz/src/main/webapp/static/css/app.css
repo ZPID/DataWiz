@@ -34,8 +34,6 @@ textarea {
   resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
-
-
 .form-group .required:BEFORE {
   content: "*";
   color: red;
@@ -70,11 +68,11 @@ textarea {
   opacity: 0;
 }
 
-[type="checkbox"].btn::after{
+[type="checkbox"].btn::after {
   content: "";
 }
 
-label.btn::after{
+label.btn::after {
   content: "";
 }
 
@@ -135,6 +133,11 @@ label.btn::after{
 
 .margin-top-7 {
   margin-top: 7px;
+}
+
+.pre-xy-scrollable {
+    overflow: auto;
+    max-height: 400px;
 }
 
 /**************** END CONTENT ****************/
@@ -428,4 +431,11 @@ label.btn::after{
 .modal-content>.panel-heading {
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
+}
+
+.table {
+  font-size: 12px
+}
+.matrixtable td {
+   text-align: center;   
 }

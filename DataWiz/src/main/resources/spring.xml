@@ -15,6 +15,7 @@
 	<bean id="StudyConstructDTO" class="de.zpid.datawiz.dto.StudyConstructDTO" scope="prototype" />
 	<bean id="StudyInstrumentDTO" class="de.zpid.datawiz.dto.StudyInstrumentDTO" scope="prototype" />
 	<bean id="RecordDTO" class="de.zpid.datawiz.dto.RecordDTO" scope="prototype" />
+	<bean id="RecordCompareDTO" class="de.zpid.datawiz.dto.RecordCompareDTO" scope="prototype" />
 	<!-- FORM -->
 	<bean id="ProjectForm" class="de.zpid.datawiz.form.ProjectForm" scope="prototype" />
 	<bean id="StudyForm" class="de.zpid.datawiz.form.StudyForm" scope="prototype" />

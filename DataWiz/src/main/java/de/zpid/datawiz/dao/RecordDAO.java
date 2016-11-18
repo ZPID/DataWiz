@@ -26,6 +26,11 @@ import org.springframework.stereotype.Repository;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarTDO;
+import de.zpid.spss.util.SPSSAligment;
+import de.zpid.spss.util.SPSSMeasLevel;
+import de.zpid.spss.util.SPSSMissing;
+import de.zpid.spss.util.SPSSRoleCodes;
+import de.zpid.spss.util.SPSSVarTypes;
 
 @Repository
 @Scope("singleton")
@@ -78,7 +83,7 @@ public class RecordDAO extends SuperDAO {
     return cRecords;
   }
 
-  public RecordDTO findRecordWithID(final long recordId) throws Exception {
+  public RecordDTO findRecordWithID(final long recordId, final long versionId) throws Exception {
     log.trace("Entering findRecordWithID [recordId: {}]", () -> recordId);
     final RecordDTO cRecords = jdbcTemplate.query("SELECT * FROM dw_record WHERE dw_record.id  = ?",
         new Object[] { recordId }, new ResultSetExtractor<RecordDTO>() {
@@ -87,8 +92,11 @@ public class RecordDAO extends SuperDAO {
             if (rs.next()) {
               long recordId = rs.getLong("id");
               RecordDTO record = jdbcTemplate.query(
-                  "SELECT * FROM dw_record_metadata WHERE dw_record_metadata.record_id = ? ORDER BY dw_record_metadata.version_id DESC LIMIT 1",
-                  new Object[] { recordId }, new ResultSetExtractor<RecordDTO>() {
+                  "SELECT * FROM dw_record_metadata WHERE dw_record_metadata.record_id = ? "
+                      + (versionId == 0 ? "ORDER BY dw_record_metadata.version_id DESC LIMIT 1"
+                          : "AND dw_record_metadata.version_id = ?"),
+                  (versionId == 0 ? new Object[] { recordId } : new Object[] { recordId, versionId }),
+                  new ResultSetExtractor<RecordDTO>() {
                     @Override
                     public RecordDTO extractData(ResultSet rs2) throws SQLException, DataAccessException {
                       if (rs2.next()) {
@@ -121,6 +129,77 @@ public class RecordDAO extends SuperDAO {
     return cRecords;
   }
 
+  public List<SPSSVarTDO> findVariablesByVersionID(final long versionId) throws SQLException {
+    log.trace("Entering findVariablesByVersionID [versionId: {}]", () -> versionId);
+    String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables "
+        + "ON dw_record_version_variables.var_id = dw_record_variables.id "
+        + "WHERE dw_record_version_variables.version_id = ? ORDER BY dw_record_variables.position ASC";
+    final List<SPSSVarTDO> cVars = this.jdbcTemplate.query(sql, new Object[] { versionId },
+        new RowMapper<SPSSVarTDO>() {
+          public SPSSVarTDO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SPSSVarTDO var = new SPSSVarTDO();
+            var.setId(rs.getLong("id"));
+            var.setName(rs.getString("name"));
+            var.setType(SPSSVarTypes.fromInt(rs.getInt("type")));
+            var.setVarType(rs.getInt("varType"));
+            var.setDecimals(rs.getInt("decimals"));
+            var.setWidth(rs.getInt("width"));
+            var.setLabel(rs.getString("label"));
+            var.setMissingFormat(SPSSMissing.fromInt(rs.getInt("missingFormat")));
+            var.setMissingVal1(rs.getString("missingVal1"));
+            var.setMissingVal2(rs.getString("missingVal2"));
+            var.setMissingVal3(rs.getString("missingVal3"));
+            var.setColumns(rs.getInt("columns"));
+            var.setAligment(SPSSAligment.fromInt(rs.getInt("aligment")));
+            var.setMeasureLevel(SPSSMeasLevel.fromInt(rs.getInt("measureLevel")));
+            var.setRole(SPSSRoleCodes.fromInt(rs.getInt("role")));
+            var.setNumOfAttributes(rs.getInt("numOfAttributes"));
+            var.setPosition(rs.getInt("position"));
+            var.setValues(findVariableValues(var.getId(), false));
+            var.setAttributes(findVariableAttributes(var.getId(), false));
+            return var;
+          }
+        });
+    log.debug("leaving findVariablesByVersionID with size: {}", () -> cVars.size());
+    return cVars;
+  }
+
+  public List<SPSSValueLabelDTO> findVariableValues(final long varId, final boolean withId) throws SQLException {
+    log.trace("Entering findVariablesValues [varId: {}]", () -> varId);
+    String sql = "SELECT * FROM dw_record_var_vallabel WHERE record_var_id = ?";
+    final List<SPSSValueLabelDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { varId },
+        new RowMapper<SPSSValueLabelDTO>() {
+          public SPSSValueLabelDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SPSSValueLabelDTO var = new SPSSValueLabelDTO();
+            if (withId)
+              var.setId(rs.getLong("id"));
+            var.setLabel(rs.getString("label"));
+            var.setValue(rs.getString("value"));
+            return var;
+          }
+        });
+    log.debug("leaving findVariablesValues with size: {}", () -> cVars.size());
+    return cVars;
+  }
+
+  public List<SPSSValueLabelDTO> findVariableAttributes(final long varId, final boolean withId) throws SQLException {
+    log.trace("Entering findVariablesAttributes [varId: {}]", () -> varId);
+    String sql = "SELECT * FROM dw_record_attributes WHERE var_id = ?";
+    final List<SPSSValueLabelDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { varId },
+        new RowMapper<SPSSValueLabelDTO>() {
+          public SPSSValueLabelDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SPSSValueLabelDTO var = new SPSSValueLabelDTO();
+            if (withId)
+              var.setId(rs.getLong("id"));
+            var.setLabel(rs.getString("label"));
+            var.setValue(rs.getString("text"));
+            return var;
+          }
+        });
+    log.debug("leaving findVariablesAttributes with size: {}", () -> cVars.size());
+    return cVars;
+  }
+
   /**
    * Insert the important SPSS MetaData to dw_record_metadata. File Metadata such as fileSize is saved in dw_files
    * 
@@ -128,7 +207,7 @@ public class RecordDAO extends SuperDAO {
    * @return
    * @throws Exception
    */
-  public int insertMetaData(final RecordDTO record) throws Exception {
+  public int insertMetaData(final RecordDTO record) throws SQLException {
     log.trace("Entering insertMetaData [recordId: {}]", () -> record.getId());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_record_metadata (record_id, changeLog, changed, changedBy, masterRec, password, "
@@ -192,7 +271,7 @@ public class RecordDAO extends SuperDAO {
    * @throws Exception
    */
   public int insertAttributes(final List<SPSSValueLabelDTO> attr, final long versionId, final long varId)
-      throws Exception {
+      throws SQLException {
     log.trace("execute insertAttributes [size: {}]", () -> attr.size());
     int[] ret = this.jdbcTemplate.batchUpdate(
         "INSERT INTO dw_record_attributes (version_id, var_id, label, text) VALUES (?,?,?,?)",
@@ -224,36 +303,46 @@ public class RecordDAO extends SuperDAO {
    * @return
    * @throws SQLException
    */
-  public long insertVariable(final SPSSVarTDO var, final long versionId) throws SQLException {
-    log.trace("Entering insertVariable [varName: {}, versionId: {}]", () -> var.getName(), () -> versionId);
+  public long insertVariable(final SPSSVarTDO var, final int position) throws SQLException {
+    log.trace("Entering insertVariable [varName: {}, versionId: {}]", () -> var.getName());
     KeyHolder holder = new GeneratedKeyHolder();
-    final String stmt = "INSERT INTO dw_record_variables (version_id, name, type, varType, decimals, width, missingFormat, "
-        + "missingVal1, missingVal2, missingVal3, aligment, measureLevel, role, numOfAttributes) "
-        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    final String stmt = "INSERT INTO dw_record_variables (name, type, varType, decimals, width, label, missingFormat, "
+        + "missingVal1, missingVal2, missingVal3, columns, aligment, measureLevel, role, numOfAttributes, position) "
+        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     int res = this.jdbcTemplate.update(new PreparedStatementCreator() {
       @Override
       public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
         PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
-        ps.setLong(1, versionId);
-        ps.setString(2, var.getName());
-        ps.setInt(3, var.getType().getNumber());
-        ps.setInt(4, var.getVarType());
-        ps.setInt(5, var.getDecimals());
-        ps.setInt(6, var.getWidth());
+        ps.setString(1, var.getName());
+        ps.setInt(2, var.getType().getNumber());
+        ps.setInt(3, var.getVarType());
+        ps.setInt(4, var.getDecimals());
+        ps.setInt(5, var.getWidth());
+        ps.setString(6, var.getLabel());
         ps.setInt(7, var.getMissingFormat() == null ? 0 : var.getMissingFormat().getNumber());
         ps.setString(8, var.getMissingVal1());
         ps.setString(9, var.getMissingVal2());
         ps.setString(10, var.getMissingVal3());
-        ps.setInt(11, var.getAligment() == null ? 0 : var.getAligment().getNumber());
-        ps.setInt(12, var.getMeasureLevel() == null ? 0 : var.getMeasureLevel().getNumber());
-        ps.setInt(13, var.getRole() == null ? 0 : var.getRole().getNumber());
-        ps.setInt(14, var.getNumOfAttributes());
+        ps.setInt(11, var.getColumns());
+        ps.setInt(12, var.getAligment() == null ? 0 : var.getAligment().getNumber());
+        ps.setInt(13, var.getMeasureLevel() == null ? 0 : var.getMeasureLevel().getNumber());
+        ps.setInt(14, var.getRole() == null ? 0 : var.getRole().getNumber());
+        ps.setInt(15, var.getNumOfAttributes());
+        ps.setInt(16, position);
         return ps;
       }
     }, holder);
     final long key = (holder.getKey().intValue() > 0) ? holder.getKey().longValue() : -1;
     log.debug("Transaction for insertVariable returned [res: {}, key: {}]", () -> res, () -> key);
     return key;
+  }
+
+  public long insertVariableVersionRelation(final long varId, final long versionId) throws SQLException {
+    log.trace("Entering insertVariableVersionRelation[versionId: {}, varid: {}]", () -> versionId, () -> varId);
+    final int ret = this.jdbcTemplate
+        .update("INSERT INTO dw_record_version_variables (version_id, var_id) VALUES (?,?)", versionId, varId);
+    log.debug("Transaction for insertVariableVersionRelation returned [{}]", () -> ret);
+    return ret;
   }
 
   /**
