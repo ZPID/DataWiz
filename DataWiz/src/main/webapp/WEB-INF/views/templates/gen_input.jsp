@@ -12,7 +12,7 @@
 <s:message text="" var="input_class" />
 <div class="form-group">
   <div class="col-sm-12">
-    <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message code="${input_vars[1]}" /></label>
+    <label class="control-label ${input_vars[2]}" for="${input_vars[0]}" style="width: 100%; text-align:left;"><s:message code="${input_vars[1]}" /></label>
     <s:message code="${input_vars[1]}.ph" var="placeholder_txt" />
     <div class="${input_vars[3]}">
       <s:bind path="${input_vars[0]}">
