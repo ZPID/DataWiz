@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +23,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import com.google.gson.Gson;
 
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -133,7 +136,7 @@ public class RecordDAO extends SuperDAO {
     log.trace("Entering findVariablesByVersionID [versionId: {}]", () -> versionId);
     String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables "
         + "ON dw_record_version_variables.var_id = dw_record_variables.id "
-        + "WHERE dw_record_version_variables.version_id = ? ORDER BY dw_record_variables.position ASC";
+        + "WHERE dw_record_version_variables.version_id = ? ORDER BY dw_record_version_variables.position ASC";
     final List<SPSSVarTDO> cVars = this.jdbcTemplate.query(sql, new Object[] { versionId },
         new RowMapper<SPSSVarTDO>() {
           public SPSSVarTDO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -262,6 +265,22 @@ public class RecordDAO extends SuperDAO {
     return ret;
   }
 
+  public String findMatrixByVersionId(final long versionId) throws SQLException {
+    log.trace("Entering findMatrixByVersionId [versionId: {}]", () -> versionId);
+    String sql = "SELECT datamatrix FROM dw_record_matrix WHERE version_id = ?";
+    String matrixJSON = jdbcTemplate.query(sql, new Object[] { versionId }, new ResultSetExtractor<String>() {
+      @Override
+      public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+        if (rs.next()) {
+          return rs.getString("datamatrix");
+        }
+        return null;
+      }
+    });
+    log.debug("leaving findMatrixByVersionId with size: {}", () -> (matrixJSON != null ? matrixJSON.length() : "null"));
+    return matrixJSON;
+  }
+
   /**
    * 
    * @param attr
@@ -303,12 +322,12 @@ public class RecordDAO extends SuperDAO {
    * @return
    * @throws SQLException
    */
-  public long insertVariable(final SPSSVarTDO var, final int position) throws SQLException {
+  public long insertVariable(final SPSSVarTDO var) throws SQLException {
     log.trace("Entering insertVariable [varName: {}, versionId: {}]", () -> var.getName());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_record_variables (name, type, varType, decimals, width, label, missingFormat, "
-        + "missingVal1, missingVal2, missingVal3, columns, aligment, measureLevel, role, numOfAttributes, position) "
-        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        + "missingVal1, missingVal2, missingVal3, columns, aligment, measureLevel, role, numOfAttributes) "
+        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     int res = this.jdbcTemplate.update(new PreparedStatementCreator() {
       @Override
       public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -328,7 +347,6 @@ public class RecordDAO extends SuperDAO {
         ps.setInt(13, var.getMeasureLevel() == null ? 0 : var.getMeasureLevel().getNumber());
         ps.setInt(14, var.getRole() == null ? 0 : var.getRole().getNumber());
         ps.setInt(15, var.getNumOfAttributes());
-        ps.setInt(16, position);
         return ps;
       }
     }, holder);
@@ -337,10 +355,13 @@ public class RecordDAO extends SuperDAO {
     return key;
   }
 
-  public long insertVariableVersionRelation(final long varId, final long versionId) throws SQLException {
-    log.trace("Entering insertVariableVersionRelation[versionId: {}, varid: {}]", () -> versionId, () -> varId);
-    final int ret = this.jdbcTemplate
-        .update("INSERT INTO dw_record_version_variables (version_id, var_id) VALUES (?,?)", versionId, varId);
+  public long insertVariableVersionRelation(final long varId, final long versionId, final int position,
+      final String changelog) throws SQLException {
+    log.trace("Entering insertVariableVersionRelation[versionId: {}, varid: {}, position: {}, changelog: {}]",
+        () -> versionId, () -> varId, () -> position, () -> changelog);
+    final int ret = this.jdbcTemplate.update(
+        "INSERT INTO dw_record_version_variables (version_id, var_id, position, changelog) VALUES (?,?,?,?)", versionId,
+        varId, position, changelog);
     log.debug("Transaction for insertVariableVersionRelation returned [{}]", () -> ret);
     return ret;
   }

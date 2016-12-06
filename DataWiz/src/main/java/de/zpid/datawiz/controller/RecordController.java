@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.RecordCompareDTO;
@@ -51,9 +53,10 @@ public class RecordController extends SuperController {
     log.info("Loading RecordController for mapping /project/{pid}/study/{sid}/record");
   }
 
-  @RequestMapping(value = { "", "/{recordId}" }, method = RequestMethod.GET)
+  @RequestMapping(value = { "", "/{recordId}", "/{recordId}/{subpage}" }, method = RequestMethod.GET)
   public String showRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes) {
+      @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
+      @PathVariable final Optional<String> subpage) {
     final UserDTO user = UserUtil.getCurrentUser();
     String ret;
     if (recordId.isPresent()) {
@@ -68,42 +71,71 @@ public class RecordController extends SuperController {
       return ret;
     String accessState = "disabled";
     StudyForm sForm = createStudyForm();
-    if (recordId.isPresent()) {
-      try {
-        sForm.setProject(projectDAO.findById(pid.get()));
-        if (sForm.getProject() == null) {
-          log.warn("No Project found for projectId {}", () -> pid.get());
-          redirectAttributes.addFlashAttribute("errorMSG",
-              messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
-          return "redirect:/panel";
-        }
-        sForm.setStudy(studyDAO.findById(studyId.get(), pid.get(), true, false));
-        if (sForm.getStudy() == null) {
-          log.warn("No Study found for studyId {}", () -> studyId.get());
+    try {
+      sForm.setProject(projectDAO.findById(pid.get()));
+      if (sForm.getProject() == null) {
+        log.warn("No Project found for projectId {}", () -> pid.get());
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
+        return "redirect:/panel";
+      }
+      sForm.setStudy(studyDAO.findById(studyId.get(), pid.get(), true, false));
+      if (sForm.getStudy() == null) {
+        log.warn("No Study found for studyId {}", () -> studyId.get());
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
+        return "redirect:/project/" + pid.get() + "/studies";
+      }
+      List<RecordDTO> rList = new ArrayList<RecordDTO>();
+      if (recordId.isPresent()) {
+        RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(), 0));
+        if (rec != null) {
+          rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+          rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
+          if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
+            rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
+            }.getType()));
+        } else {
+          log.warn("No Record found for recordId {}", () -> recordId.get());
           redirectAttributes.addFlashAttribute("errorMSG",
               messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
-          return "redirect:/project/" + pid.get() + "/studies";
+          return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
         }
-        List<RecordDTO> rList = new ArrayList<RecordDTO>();
-        rList.add(recordDAO.findRecordWithID(recordId.get(), 0));
-        sForm.setRecords(rList);
-      } catch (Exception e) {
-        // TODO: handle exception
+        sForm.setPreviousRecordVersion(rec);
       }
+      sForm.setRecords(rList);
+    } catch (Exception e) {
+      // TODO: handle exception
     }
-    model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.RECORDS,
-            new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
-                (sForm.getRecords() != null && sForm.getRecords().get(0) != null
-                    ? sForm.getRecords().get(0).getRecordName() : "TEST") },
-            new long[] { pid.get(), studyId.get() }, messageSource));
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.RECORDS,
+        new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
+            (sForm.getPreviousRecordVersion() != null ? sForm.getPreviousRecordVersion().getRecordName() : "TEST") },
+        new long[] { pid.get(), studyId.get() }, messageSource));
     model.put("StudyForm", sForm);
     model.put("recordSubMenu", true);
-    model.put("subnaviActive", PageState.RECORDMETA.name());
     log.trace("Method showRecord successfully completed");
-    return "record";
+    if (subpage.isPresent() && subpage.get().equals("codebook")) {
+      model.put("subnaviActive", PageState.RECORDVAR.name());
+      return "codebook";
+    } else if (subpage.isPresent() && subpage.get().equals("data")) {
+      model.put("subnaviActive", PageState.RECORDDATA.name());
+      return "datamatrix";
+    } else {
+      model.put("subnaviActive", PageState.RECORDMETA.name());
+      return "record";
+    }
   }
 
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param recordId
+   * @param model
+   * @param redirectAttributes
+   * @param sForm
+   * @return
+   */
   @RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST, params = { "upload" })
   public String uploadFile(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
@@ -141,6 +173,16 @@ public class RecordController extends SuperController {
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get() + "/importReport";
   }
 
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param recordId
+   * @param model
+   * @param redirectAttributes
+   * @param sForm
+   * @return
+   */
   @RequestMapping(value = { "/{recordId}/importReport" }, method = RequestMethod.GET)
   public String showImportReport(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
@@ -153,57 +195,70 @@ public class RecordController extends SuperController {
       return ret;
     try {
       RecordDTO lastVersion = recordDAO.findRecordWithID(recordId.get(), 0);
-      List<SPSSVarTDO> vars = recordDAO.findVariablesByVersionID(lastVersion.getVersionId());
-      lastVersion.setVariables(vars);
-      if (vars != null) {
-        if (vars.size() < sForm.getRecord().getVariables().size())
-          sForm.getWarnings().add("Variablen hinzugefügt");
-        else if (vars.size() > sForm.getRecord().getVariables().size())
-          sForm.getWarnings().add("Variablen gelöscht");
-        int position = 0;
-        List<RecordCompareDTO> compList = new ArrayList<RecordCompareDTO>();
-        for (SPSSVarTDO curr : sForm.getRecord().getVariables()) {
-          RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
-          curr.setVarHandle(0.0);
-          importUtil.compareVariable(vars, position, curr, comp, sForm.getSelectedFileType());
-          comp.setMessage(messageSource.getMessage("import.check." + comp.getVarStatus().name(),
-              new Object[] { comp.getMovedFrom(), comp.getMovedTo() }, LocaleContextHolder.getLocale()));
-          compList.add(comp);
-          position++;
-        }
-        if (vars.size() > sForm.getRecord().getVariables().size()) {
-          for (int i = sForm.getRecord().getVariables().size() - 1; i < vars.size(); i++) {
-            RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
-            if (!importUtil.findVarInList(sForm.getRecord().getVariables(), vars.get(i), comp,
-                sForm.getSelectedFileType())) {
-              comp.setVarStatus(VariableStatus.DELETED_VAR);
-              comp.setBootstrapItemColor("warning");
-              comp.setMessage("deleted variable");
-            }
-            comp.setMessage(messageSource.getMessage("import.check." + comp.getVarStatus().name(),
-                new Object[] { comp.getMovedFrom(), comp.getMovedTo() }, LocaleContextHolder.getLocale()));
-            compList.add(comp);
-          }
-        }
-        // compList.forEach((s) -> System.out.println(s.toString()));
-        sForm.setCompList(compList);
-      }
+      lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
       sForm.setPreviousRecordVersion(lastVersion);
-      // sForm.getRecord().getVariables().forEach((s) -> System.out.println(s));
+      importUtil.compareVarVersion(sForm);
     } catch (Exception e) {
       e.printStackTrace();
     }
 
-    // saveRecordToDBAndMinio(sForm);
     return "importRep";
   }
 
   @RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST)
   public String save(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
-      final MultipartHttpServletRequest request) {
+      @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("Entering  save for [recordId: {}; studyId {}; projectId {}]", () -> recordId.get(), () -> studyId.get(),
         () -> pid.get());
+
+    List<RecordCompareDTO> compList = sForm.getCompList();
+    List<SPSSVarTDO> newVars = sForm.getRecord().getVariables();
+    List<SPSSVarTDO> prevVars = sForm.getPreviousRecordVersion().getVariables();
+    Boolean CSV = sForm.getSelectedFileType() == null ? false
+        : sForm.getSelectedFileType().equals("CSV") ? true : false;
+    if (compList != null) {
+      int position = 0;
+      for (RecordCompareDTO comp : compList) {
+        SPSSVarTDO newVar = null, prevVar = null;
+        if (comp.getVarStatus().equals(VariableStatus.EQUAL) || comp.getVarStatus().equals(VariableStatus.EQUAL_CSV)) {
+          newVars.get(position).setId(prevVars.get(position).getId());
+        } else if (comp.getVarStatus().equals(VariableStatus.MOVED)
+            || comp.getVarStatus().equals(VariableStatus.MOVED_CSV)
+            || comp.getVarStatus().equals(VariableStatus.MOVED)) {
+          newVars.get(position).setId(prevVars.get(comp.getMovedFrom() - 1).getId());
+        } else if (comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED)
+            || comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
+            || comp.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)) {
+          newVar = newVars.get(position);
+          prevVar = prevVars.get(comp.getMovedFrom() - 1);
+        } else {
+          newVar = newVars.get(position);
+          prevVar = position < prevVars.size() ? prevVars.get(position) : null;
+        }
+
+        if (comp.isKeepExpMeta() && newVar != null && prevVar != null) {
+          if (CSV) {
+            newVar.setLabel(prevVar.getLabel());
+            newVar.setMissingFormat(prevVar.getMissingFormat());
+            newVar.setMissingVal1(prevVar.getMissingVal1());
+            newVar.setMissingVal2(prevVar.getMissingVal2());
+            newVar.setMissingVal3(prevVar.getMissingVal3());
+            newVar.setColumns(prevVar.getColumns());
+            newVar.setAligment(prevVar.getAligment());
+            newVar.setMeasureLevel(prevVar.getMeasureLevel());
+            newVar.setRole(prevVar.getRole());
+            newVar.setNumOfAttributes(prevVar.getNumOfAttributes());
+            newVar.setValues(prevVar.getValues());
+            newVar.setAttributes(prevVar.getAttributes());
+          }
+        }
+
+        position++;
+      }
+    }
+    sForm.getRecord().getVariables().forEach((s) -> System.out.println(s));
+    saveRecordToDBAndMinio(sForm);
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
   }
 
@@ -222,16 +277,29 @@ public class RecordController extends SuperController {
           recordDAO.insertAttributes(spssFile.getAttributes(), spssFile.getVersionId(), 0);
         if (spssFile.getVersionId() > 0) {
           recordDAO.insertMatrix(spssFile);
-          int position = 1;
+          int position = 0;
           for (SPSSVarTDO var : spssFile.getVariables()) {
             if (var.getColumns() == 0)
               var.setColumns(var.getWidth());
-            long varId = recordDAO.insertVariable(var, position++);
-            recordDAO.insertVariableVersionRelation(varId, spssFile.getVersionId());
-            if (var.getAttributes() != null)
-              recordDAO.insertAttributes(var.getAttributes(), spssFile.getVersionId(), varId);
-            if (var.getValues() != null)
-              recordDAO.insertVarLabels(var.getValues(), varId);
+            if (!sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.EQUAL)
+                && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.EQUAL_CSV)
+                && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.MOVED)
+                && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.MOVED_CSV)) {
+              // TODO POSITION UND ÄNDERUNGEN/Warnungen IN REL TABLE !!!!!
+              long varId = recordDAO.insertVariable(var);
+              recordDAO.insertVariableVersionRelation(varId, spssFile.getVersionId(), var.getPosition(),
+                  sForm.getCompList().get(position).getMessage());
+              if (var.getAttributes() != null)
+                recordDAO.insertAttributes(var.getAttributes(), spssFile.getVersionId(), varId);
+              if (var.getValues() != null)
+                recordDAO.insertVarLabels(var.getValues(), varId);
+            } else {
+              System.out.println(var.getId() + " - " + spssFile.getVersionId() + " - " + var.getName() + " - "
+                  + sForm.getCompList().get(position).getVarStatus());
+              recordDAO.insertVariableVersionRelation(var.getId(), spssFile.getVersionId(), var.getPosition(),
+                  sForm.getCompList().get(position).getMessage());
+            }
+            position++;
           }
           file.setVersion(spssFile.getVersionId());
           MinioResult res = minioUtil.putFile(file);

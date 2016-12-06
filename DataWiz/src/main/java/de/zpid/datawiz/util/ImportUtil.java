@@ -158,6 +158,7 @@ public class ImportUtil {
           List<Object> vector = new ArrayList<Object>();
           int column = 0;
           for (String s : nextLine) {
+            s = s.trim();
             if (s.startsWith("\uFEFF")) {
               s = s.substring(1);
             }
@@ -268,12 +269,10 @@ public class ImportUtil {
           comp.setEqualVarId(savedId);
           comp.setKeepExpMeta(true);
           comp.setBootstrapItemColor("success");
-          comp.setMessage("no changes CSV");
         } else {
           comp.setVarStatus(VariableStatus.META_CHANGED);
           comp.setKeepExpMeta(true);
           comp.setEqualVarId(savedId);
-          comp.setMessage("Name & Type equal - Var MetaData changed");
           comp.setBootstrapItemColor("success");
         }
       } else {
@@ -283,7 +282,6 @@ public class ImportUtil {
           comp.setVarStatus(VariableStatus.TYPE_CHANGED);
           comp.setKeepExpMeta(true);
           comp.setEqualVarId(savedId);
-          comp.setMessage("Name equal, Type changed - Var MetaData changed");
           comp.setBootstrapItemColor("warning");
           found = true;
         } else {
@@ -291,16 +289,16 @@ public class ImportUtil {
           found = findVarInList(vars, curr, comp, selectedFileType);
         }
         // maybe renamed - type is equal and name not found in list of variables
-        if (!found && curr.getType().equals(savedVar.getType())) {
+        if (!found && curr.getType().equals(savedVar.getType()) 
+            //&& curr.getWidth() == savedVar.getWidth() && curr.getDecimals() == savedVar.getDecimals()
+            ) {
           comp.setVarStatus(VariableStatus.NAME_CHANGED);
           comp.setKeepExpMeta(true);
           comp.setEqualVarId(savedId);
           comp.setBootstrapItemColor("danger");
-          comp.setMessage("renamed?!?!");
         } else if (!found) {
           comp.setVarStatus(VariableStatus.NEW_VAR);
           comp.setBootstrapItemColor("warning");
-          comp.setMessage("new variable");
         }
       }
     } else {
@@ -308,7 +306,6 @@ public class ImportUtil {
       comp.setEqualVarId(savedId);
       comp.setKeepExpMeta(true);
       comp.setBootstrapItemColor("success");
-      comp.setMessage("no changes");
     }
     savedVar.setId(savedId);
   }
@@ -338,9 +335,7 @@ public class ImportUtil {
         comp.setKeepExpMeta(true);
         comp.setEqualVarId(id);
         comp.setBootstrapItemColor("info");
-        comp.setMessage("var moved");
         found = true;
-        break;
       } else if (selectedFileType.equals("CSV") && var.getType().equals(savedtmp.getType())
           && var.getName().equals(savedtmp.getName()) && var.getDecimals() == savedtmp.getDecimals()
           && var.getWidth() == savedtmp.getWidth()) {
@@ -350,9 +345,7 @@ public class ImportUtil {
         comp.setKeepExpMeta(true);
         comp.setEqualVarId(id);
         comp.setBootstrapItemColor("info");
-        comp.setMessage("var moved CSV");
         found = true;
-        break;
       } else if (var.getName().equals(savedtmp.getName())) {
         if (!var.getType().equals(savedtmp.getType())) {
           comp.setVarStatus(VariableStatus.MOVED_AND_TYPE_CHANGED);
@@ -361,7 +354,6 @@ public class ImportUtil {
           comp.setKeepExpMeta(true);
           comp.setEqualVarId(id);
           comp.setBootstrapItemColor("warning");
-          comp.setMessage("var moved and type changed");
         } else {
           comp.setVarStatus(VariableStatus.MOVED_AND_META_CHANGED);
           comp.setMovedFrom(lastPos);
@@ -369,14 +361,15 @@ public class ImportUtil {
           comp.setKeepExpMeta(true);
           comp.setEqualVarId(id);
           comp.setBootstrapItemColor("info");
-          comp.setMessage("var moved and meta data changes");
         }
         found = true;
-        break;
       }
       savedtmp.setId(id);
       var.setPosition(newPos);
       savedtmp.setPosition(lastPos);
+      if (found) {
+        break;
+      }
     }
     return found;
   }
@@ -608,6 +601,72 @@ public class ImportUtil {
       // not empty and not parseable, set to ALPHANUMERIC as default
       types.set(column, SPSSVarTypes.SPSS_FMT_A);
     }
+  }
+
+  /**
+   * @param sForm
+   * @throws Exception
+   */
+  public void compareVarVersion(StudyForm sForm) throws Exception {
+    List<SPSSVarTDO> vars = new ArrayList<>();
+    for (SPSSVarTDO tmp : sForm.getPreviousRecordVersion().getVariables()) {
+      vars.add((SPSSVarTDO) ObjectCloner.deepCopy(tmp));
+    }
+    int listDiff = vars.size() - sForm.getRecord().getVariables().size();
+    // TODO
+    if (listDiff != 0 && sForm.getWarnings().stream()
+        .filter(match -> "Variablenanzahl geändert hinzugefügt".trim().equals(match)).count() == 0) {
+      sForm.getWarnings().add("Variablenanzahl geändert hinzugefügt".trim());
+    }
+    int position = 0;
+    List<RecordCompareDTO> compList = new ArrayList<RecordCompareDTO>();
+    for (SPSSVarTDO curr : sForm.getRecord().getVariables()) {
+      RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
+      curr.setVarHandle(0.0);
+      compareVariable(vars, position, curr, comp, sForm.getSelectedFileType());
+      comp.setMessage(messageSource.getMessage("import.check." + comp.getVarStatus().name(),
+          new Object[] { comp.getMovedFrom(), comp.getMovedTo() }, LocaleContextHolder.getLocale()));
+      compList.add(comp);
+      position++;
+    }
+    position = 0;
+    List<RecordCompareDTO> compList2 = new ArrayList<RecordCompareDTO>();
+    for (SPSSVarTDO curr : vars) {
+      RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
+      compareVariable(sForm.getRecord().getVariables(), position, curr, comp, sForm.getSelectedFileType());
+      compList2.add(comp);
+      position++;
+    }
+    position = 0;
+    List<SPSSVarTDO> delVars = new ArrayList<>();
+    int delcount = 0;
+    for (RecordCompareDTO comp : compList2) {
+      if (comp.getVarStatus().equals(VariableStatus.NEW_VAR)
+          && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
+        SPSSVarTDO del = vars.get(position - delcount++);
+        delVars.add(del);
+        vars.remove(del);
+      }
+      position++;
+    }
+    sForm.setDelVars(delVars);
+    for (RecordCompareDTO rc : compList) {
+      if (rc.getVarStatus().equals(VariableStatus.MOVED)
+          || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED)
+          || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
+          || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
+          || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
+        SPSSVarTDO moved = sForm.getPreviousRecordVersion().getVariables().get(rc.getMovedFrom() - 1);
+        vars.remove(moved);
+        if (vars.size() < rc.getMovedTo() - 1) {
+          for (int i = vars.size(); i < rc.getMovedTo() - 1; i++)
+            vars.add(new SPSSVarTDO());
+        }
+        vars.add(rc.getMovedTo() - 1, moved);
+      }
+    }
+    sForm.setCompList(compList);
+    sForm.setViewVars(vars);
   }
 
 }
