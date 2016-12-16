@@ -12,6 +12,11 @@ $tag_box = null;
 (function($, window, document, undefined) {
   $(document).ready(
       function() {
+        $.ajaxSetup({
+          headers : {
+            'X-CSRF-TOKEN' : $('input[name="_csrf"]').val()
+          }
+        });
         $('[data-toggle="tooltip"]').tooltip()
         // loading DMP Content
         if (window.location.pathname.search("/dmp") > 0) {
@@ -41,7 +46,7 @@ $tag_box = null;
           setStudySubmenu(null);
           showorHideStudyContent();
         } // loading Record Content
-        else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
+        else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {          
           $("#spssSelected").show();
           $("#csvSelected").hide();
           $("#selectedFileType").change(function() {
@@ -584,4 +589,82 @@ $(function() {
 
 function shortFilename(spanName, filePath) {
   $('#' + spanName).html(filePath.replace(/^.*\\/, ''));
+}
+
+function showAjaxModal(url) {
+  jQuery('#valueModal').modal('show', {
+    backdrop : 'static'
+  });
+  jQuery('#valueModal .modal-dialog').load(url);
+}
+
+function showMissingsModal(url, id) {
+  url = url + "/missings?varId=" + id;
+  jQuery('#valueModal').modal('show', {
+    backdrop : 'static'
+  });
+  jQuery('#valueModal .modal-dialog').load(url);
+}
+
+function delVarValues(position) {
+  $('#values' + position + 'val').val("");
+  $('#values' + position + 'label').val("");
+  $('#values' + position).hide();
+  return false;
+}
+
+function addValueLabel(count) {
+  var wrapper = $(".valvar_wrap");
+  count = wrapper.children().length;
+  $(wrapper).append(
+      '<div class="form-group" id="values' + (count) + '">' + '<div class="col-sm-12">' + '<div class="col-sm-3">'
+          + '<input id="values' + (count) + 'val" class="form-control" type="text" name="values[' + (count)
+          + '].value" />' + '</div>' + '<div class="col-sm-1">' + '=' + '</div>' + '<div class="col-sm-6">'
+          + '<input id="values' + (count) + 'label" class="form-control" type="text" name="values[' + (count)
+          + '].label" />' + '</div>' + '<div class="col-sm-2">'
+          + '<button class="btn btn-danger" onclick="delVarValues(' + (count) + ');return false;">X</button>'
+          + '</div>' + '</div>' + '</div>')
+
+}
+
+function changeMissingFields() {
+  var selected = $("#missingFormat option:selected").val();
+  console.log(selected);
+  switch (selected) {
+  case 'SPSS_NO_MISSVAL':
+    $("#missingVal1, #missingVal2, #missingVal3").hide();
+    $("#missingSep1").text(',').hide();
+    $("#missingSep2").hide();
+    break;
+  case 'SPSS_ONE_MISSVAL':
+    $("#missingVal1").show();
+    $("#missingVal2, #missingVal3").hide();
+    $("#missingSep1").text(',').hide();
+    $("#missingSep2").hide();
+    break;
+  case 'SPSS_TWO_MISSVAL':
+    $("#missingVal1, #missingVal2").show();
+    $("#missingVal3").hide();
+    $("#missingSep1").text(',').show();
+    $("#missingSep2").hide();
+    break;
+  case 'SPSS_THREE_MISSVAL':
+    $("#missingVal1, #missingVal2, #missingVal3").show();
+    $("#missingSep1").text(',').show();
+    $("#missingSep2").show();
+    break;
+  case 'SPSS_MISS_RANGE':
+    $("#missingVal1, #missingVal2").show();
+    $("#missingVal3").hide();
+    $("#missingSep1").text('-').show();
+    $("#missingSep2").hide();
+    break;
+  case 'SPSS_MISS_RANGEANDVAL':
+    $("#missingVal1, #missingVal2, #missingVal3").show();
+    $("#missingSep1").text('-').show();
+    $("#missingSep2").show();
+    break;
+
+  }
+
 }

@@ -140,6 +140,19 @@ label.btn::after {
     max-height: 400px;
 }
 
+.pre-x-scrollable {
+    overflow: auto;    
+}
+
+
+.pre-x-scrollable table td {
+  word-wrap: break-word;
+}
+
+.pre-x-scrollable table {
+  table-layout: fixed;
+}
+
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */

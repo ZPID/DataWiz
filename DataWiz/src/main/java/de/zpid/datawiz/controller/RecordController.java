@@ -3,6 +3,7 @@ package de.zpid.datawiz.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Iterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,8 +16,11 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -34,6 +38,7 @@ import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ImportUtil;
 import de.zpid.datawiz.util.UserUtil;
+import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarTDO;
 
 @Controller
@@ -91,6 +96,15 @@ public class RecordController extends SuperController {
         RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(), 0));
         if (rec != null) {
           rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+          rec.setAttributes(recordDAO.findVariableAttributes(rec.getVersionId(), true));
+          if (rec.getVariables() != null && rec.getVariables().size() > 0) {
+            for (SPSSVarTDO var : rec.getVariables()) {
+              if (subpage.isPresent() && subpage.get().equals("codebook"))
+                var.setValues(recordDAO.findVariableValues(var.getId(), true));
+              else
+                var.setValues(recordDAO.findVariableValues(var.getId(), false));
+            }
+          }
           rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
           if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
             rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
@@ -114,6 +128,7 @@ public class RecordController extends SuperController {
     model.put("StudyForm", sForm);
     model.put("recordSubMenu", true);
     log.trace("Method showRecord successfully completed");
+    sForm.getPreviousRecordVersion().getAttributes().forEach((s) -> System.out.println(s));
     if (subpage.isPresent() && subpage.get().equals("codebook")) {
       model.put("subnaviActive", PageState.RECORDVAR.name());
       return "codebook";
@@ -201,7 +216,6 @@ public class RecordController extends SuperController {
     } catch (Exception e) {
       e.printStackTrace();
     }
-
     return "importRep";
   }
 
@@ -260,6 +274,115 @@ public class RecordController extends SuperController {
     sForm.getRecord().getVariables().forEach((s) -> System.out.println(s));
     saveRecordToDBAndMinio(sForm);
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+  }
+
+  @RequestMapping(value = { "/{recordId}/modal" })
+  public String loadAjaxModal(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
+      @RequestParam(value = "varId", required = true) long varId,
+      @RequestParam(value = "modal", required = true) String modal) {
+    log.trace("loadAjaxModal [{}] for variable [id: {}]", () -> modal, () -> varId);
+    for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      if (var.getId() == varId) {
+        model.put("VarValues", var);
+        break;
+      }
+    }
+    model.put("modalView", modal);
+    return "forms/codebookModalContent";
+  }
+
+  @RequestMapping(value = { "/{recordId}" }, params = "setValues")
+  public String setVariables(final ModelMap model, @ModelAttribute("VarValues") SPSSVarTDO varVal,
+      @ModelAttribute("StudyForm") StudyForm sForm) {
+    log.trace("setVariables for Variable [id: {}" + varVal.getId() + "]");
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    Iterator<SPSSValueLabelDTO> itt = varVal.getValues().iterator();
+    while (itt.hasNext()) {
+      SPSSValueLabelDTO val = itt.next();
+      if ((val.getLabel() == null || val.getLabel().trim().isEmpty())
+          && (val.getValue() == null || val.getValue().trim().isEmpty())) {
+        itt.remove();
+      }
+    }
+    for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      if (var.getId() == varVal.getId()) {
+        var.setValues(varVal.getValues());
+        model.remove("VarValues");
+        break;
+      }
+    }
+    return "codebook";
+  }
+
+  @RequestMapping(value = { "/{recordId}" }, params = "setType")
+  public String setType(final ModelMap model, @ModelAttribute("VarValues") SPSSVarTDO varVal,
+      @ModelAttribute("StudyForm") StudyForm sForm) {
+    log.trace("setType for Variable [id: {}" + varVal.getId() + "]");
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    System.out.println(varVal.getType());
+    return "codebook";
+  }
+
+  @RequestMapping(value = { "/{recordId}" }, params = "setMissings")
+  public String setMissings(final ModelMap model, @ModelAttribute("VarValues") SPSSVarTDO varVal,
+      @ModelAttribute("StudyForm") StudyForm sForm) {
+    log.trace("setMissings for Variable [id: {}" + varVal.getId() + "]");
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    Iterator<SPSSValueLabelDTO> itt = varVal.getValues().iterator();
+    for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      if (var.getId() == varVal.getId()) {
+        var.setMissingFormat(varVal.getMissingFormat());
+        switch (varVal.getMissingFormat()) {
+        case SPSS_NO_MISSVAL:
+          var.setMissingVal1(null);
+          var.setMissingVal2(null);
+          var.setMissingVal3(null);
+          break;
+        case SPSS_ONE_MISSVAL:
+          var.setMissingVal1(varVal.getMissingVal1());
+          var.setMissingVal2(null);
+          var.setMissingVal3(null);
+          break;
+        case SPSS_TWO_MISSVAL:
+          var.setMissingVal1(varVal.getMissingVal1());
+          var.setMissingVal2(varVal.getMissingVal2());
+          var.setMissingVal3(null);
+          break;
+        case SPSS_THREE_MISSVAL:
+          var.setMissingVal1(varVal.getMissingVal1());
+          var.setMissingVal2(varVal.getMissingVal2());
+          var.setMissingVal3(varVal.getMissingVal3());
+          break;
+        case SPSS_MISS_RANGE:
+          var.setMissingVal1(varVal.getMissingVal1());
+          var.setMissingVal2(varVal.getMissingVal2());
+          var.setMissingVal3(null);
+          break;
+        case SPSS_MISS_RANGEANDVAL:
+          var.setMissingVal1(varVal.getMissingVal1());
+          var.setMissingVal2(varVal.getMissingVal2());
+          var.setMissingVal3(varVal.getMissingVal3());
+          break;
+        default:
+          log.warn("MissingFormat not known - " + varVal.getMissingFormat());
+          break;
+        }
+        model.remove("VarValues");
+        break;
+      }
+    }
+    return "codebook";
+  }
+
+  @RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST, params = "saveCodebook")
+  public String saveCodebook(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm) {
+    log.trace("saveCodebook");
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    return "codebook";
   }
 
   /**
@@ -326,6 +449,6 @@ public class RecordController extends SuperController {
         }
       }
     }
-  }
 
+  }
 }

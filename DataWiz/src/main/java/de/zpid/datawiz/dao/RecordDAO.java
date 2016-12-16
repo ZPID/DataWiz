@@ -157,8 +157,7 @@ public class RecordDAO extends SuperDAO {
             var.setMeasureLevel(SPSSMeasLevel.fromInt(rs.getInt("measureLevel")));
             var.setRole(SPSSRoleCodes.fromInt(rs.getInt("role")));
             var.setNumOfAttributes(rs.getInt("numOfAttributes"));
-            var.setPosition(rs.getInt("position"));
-            var.setValues(findVariableValues(var.getId(), false));
+            var.setPosition(rs.getInt("position"));            
             var.setAttributes(findVariableAttributes(var.getId(), false));
             return var;
           }

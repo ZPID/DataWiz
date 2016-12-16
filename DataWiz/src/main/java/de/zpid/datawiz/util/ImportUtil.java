@@ -517,7 +517,7 @@ public class ImportUtil {
             (file == null) ? "null" : "not null", (spssFile == null) ? "null" : "not null");
         error = true;
         errors.add(messageSource.getMessage("error.upload.internal.error", null, LocaleContextHolder.getLocale()));
-      }
+      }     
       if (!error) {
         file.setFilePath(null);
         spssFile.setId(recordId.get());

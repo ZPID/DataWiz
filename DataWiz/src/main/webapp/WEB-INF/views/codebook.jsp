@@ -46,9 +46,8 @@
         </c:choose>
       </div>
       <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.records[0].id}" />
+        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
-        <c:set var="selectedType" value="${StudyForm.selectedFileType}" scope="request" />
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
         <div class="form-group">
@@ -60,34 +59,50 @@
               <table class="table table-striped table-bordered">
                 <thead>
                   <tr>
-                    <th><s:message code="dataset.import.report.codebook.name" /></th>
-                    <th><s:message code="dataset.import.report.codebook.type" /></th>
-                    <th><s:message code="dataset.import.report.codebook.width" /></th>
-                    <th><s:message code="dataset.import.report.codebook.dec" /></th>
-                    <th><s:message code="dataset.import.report.codebook.label" /></th>
-                    <th><s:message code="dataset.import.report.codebook.values" /></th>
-                    <th><s:message code="dataset.import.report.codebook.missings" /></th>
-                    <th><s:message code="dataset.import.report.codebook.cols" /></th>
-                    <th><s:message code="dataset.import.report.codebook.aligment" /></th>
-                    <th><s:message code="dataset.import.report.codebook.measureLevel" /></th>
-                    <th><s:message code="dataset.import.report.codebook.role" /></th>
-                    <th><s:message code="dataset.import.report.codebook.userAtt" /></th>
+                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.name" /></th>
+                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.type" /></th>
+                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.label" /></th>
+                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.values" /></th>
+                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.missings" /></th>
+                    <th style="width: 60px;" class="codebookTableHide"><s:message
+                        code="dataset.import.report.codebook.width" /></th>
+                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                        code="dataset.import.report.codebook.dec" /></th>
+                    <th style="width: 60px;" class="codebookTableHide"><s:message
+                        code="dataset.import.report.codebook.cols" /></th>
+                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                        code="dataset.import.report.codebook.aligment" /></th>
+                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                        code="dataset.import.report.codebook.measureLevel" /></th>
+                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                        code="dataset.import.report.codebook.role" /></th>
+                    <th style="width: 20px;" onclick="$('.codebookTableHide').toggle();">...</th>
+                    <th style="width: 300px;"><s:message code="dataset.import.report.codebook.userAtt" /></th>
+                    <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val">
+                      <th>${val}</th>
+                    </c:forEach>
                   </tr>
                 </thead>
                 <tbody>
-                  <c:forEach items="${StudyForm.previousRecordVersion.variables}" var="var">
+                  <c:forEach items="${StudyForm.previousRecordVersion.variables}" var="var" varStatus="loop">
                     <tr>
-                      <td><strong><s:message text="${var.name}" /></strong></td>
-                      <td><s:message code="spss.type.${var.type}" /></td>
-                      <td><s:message text="${var.width}" /></td>
-                      <td><s:message text="${var.decimals}" /></td>
-                      <td><s:message text="${var.label}" /></td>
-                      <td><c:forEach items="${var.values}" var="val">
+                      <td><strong><sf:input class="form-control"
+                            path="previousRecordVersion.variables[${loop.count-1}].name" /></strong></td>
+                      <td style="cursor: pointer;"
+                        onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=type');"><s:message
+                          code="spss.type.${var.type}" /></td>
+                      <td><sf:textarea class="form-control"
+                          path="previousRecordVersion.variables[${loop.count-1}].label" /></td>
+                      <td style="cursor: pointer;"
+                        onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=values');"><c:forEach
+                          items="${var.values}" var="val">
                           <div>
                             <s:message text="${val.value}&nbsp;=&nbsp;&quot;${val.label}&quot;" />
+                            <br />
                           </div>
                         </c:forEach></td>
-                      <td><c:choose>
+                      <td style="cursor: pointer;"
+                        onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=missings');"><c:choose>
                           <c:when test="${var.missingFormat eq 'SPSS_ONE_MISSVAL'}">
                             <s:message text="${var.missingVal1}" />
                           </c:when>
@@ -104,10 +119,13 @@
                             <s:message text="${var.missingVal1}&nbsp;-&nbsp;${var.missingVal2},&nbsp;${var.missingVal3}" />
                           </c:when>
                         </c:choose></td>
-                      <td><s:message text="${var.columns}" /></td>
-                      <td><s:message code="spss.aligment.${var.aligment}" /></td>
-                      <td><s:message code="spss.measureLevel.${var.measureLevel}" /></td>
-                      <td><s:message code="spss.role.${var.role}" /></td>
+                      <td class="codebookTableHide"><s:message text="${var.width}" /></td>
+                      <td class="codebookTableHide"><s:message text="${var.decimals}" /></td>
+                      <td class="codebookTableHide"><s:message text="${var.columns}" /></td>
+                      <td class="codebookTableHide"><s:message code="spss.aligment.${var.aligment}" /></td>
+                      <td class="codebookTableHide"><s:message code="spss.measureLevel.${var.measureLevel}" /></td>
+                      <td class="codebookTableHide"><s:message code="spss.role.${var.role}" /></td>
+                      <td></td>
                       <td>
                         <table class="table"
                           style="margin: 0px; padding: 0px; background-color: rgba(0, 0, 0, 0.0) !important;">
@@ -140,13 +158,23 @@
           <div class="col-sm-12 text-right">
             <a href="${accessUrl}" class="btn btn-default"> <s:message code="dataset.cancel.import" />
             </a>
-            <button type="submit" class="btn btn-success" name="saveWithNewCodeBook">
+            <button type="submit" class="btn btn-success" name="saveCodebook">
               <s:message code="dataset.submit.import" />
             </button>
           </div>
         </div>
       </sf:form>
     </div>
+  </div>
+</div>
+<div class="modal fade" id="valueModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+  </div>
+</div>
+<div class="modal fade" id="missingModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
   </div>
 </div>
 <%@ include file="templates/footer.jsp"%>
