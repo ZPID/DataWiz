@@ -289,9 +289,9 @@ public class ImportUtil {
           found = findVarInList(vars, curr, comp, selectedFileType);
         }
         // maybe renamed - type is equal and name not found in list of variables
-        if (!found && curr.getType().equals(savedVar.getType()) 
-            //&& curr.getWidth() == savedVar.getWidth() && curr.getDecimals() == savedVar.getDecimals()
-            ) {
+        if (!found && curr.getType().equals(savedVar.getType())
+        // && curr.getWidth() == savedVar.getWidth() && curr.getDecimals() == savedVar.getDecimals()
+        ) {
           comp.setVarStatus(VariableStatus.NAME_CHANGED);
           comp.setKeepExpMeta(true);
           comp.setEqualVarId(savedId);
@@ -517,7 +517,7 @@ public class ImportUtil {
             (file == null) ? "null" : "not null", (spssFile == null) ? "null" : "not null");
         error = true;
         errors.add(messageSource.getMessage("error.upload.internal.error", null, LocaleContextHolder.getLocale()));
-      }     
+      }
       if (!error) {
         file.setFilePath(null);
         spssFile.setId(recordId.get());
@@ -641,11 +641,17 @@ public class ImportUtil {
     List<SPSSVarTDO> delVars = new ArrayList<>();
     int delcount = 0;
     for (RecordCompareDTO comp : compList2) {
-      if (comp.getVarStatus().equals(VariableStatus.NEW_VAR)
-          && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
+      if (position >= compList.size()) {
         SPSSVarTDO del = vars.get(position - delcount++);
         delVars.add(del);
         vars.remove(del);
+      } else {
+        if (comp.getVarStatus().equals(VariableStatus.NEW_VAR)
+            && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
+          SPSSVarTDO del = vars.get(position - delcount++);
+          delVars.add(del);
+          vars.remove(del);
+        }
       }
       position++;
     }

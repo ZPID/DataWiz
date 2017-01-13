@@ -1,5 +1,7 @@
 // the project tag_box
 $tag_box = null;
+
+var dateTimeRegex = /^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$/g;
 /**
  * Onload function
  * 
@@ -46,7 +48,7 @@ $tag_box = null;
           setStudySubmenu(null);
           showorHideStudyContent();
         } // loading Record Content
-        else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {          
+        else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
           $("#spssSelected").show();
           $("#csvSelected").hide();
           $("#selectedFileType").change(function() {
@@ -592,14 +594,15 @@ function shortFilename(spanName, filePath) {
 }
 
 function showAjaxModal(url) {
+  $(".modal-dialog").removeClass("modalWidth")
   jQuery('#valueModal').modal('show', {
     backdrop : 'static'
   });
   jQuery('#valueModal .modal-dialog').load(url);
 }
 
-function showMissingsModal(url, id) {
-  url = url + "/missings?varId=" + id;
+function showGlobalAjaxModal(url) {
+  $(".modal-dialog").addClass("modalWidth")
   jQuery('#valueModal').modal('show', {
     backdrop : 'static'
   });
@@ -613,58 +616,172 @@ function delVarValues(position) {
   return false;
 }
 
-function addValueLabel(count) {
+function addValueLabel() {
   var wrapper = $(".valvar_wrap");
-  count = wrapper.children().length;
+  var type = $("#type").val();
+  var count = wrapper.children().length;
+  var checkfunc = (type === 'SPSS_FMT_F' ? 'onkeyup = "checkNumberField(\'values' + (count) + 'val\')"'
+      : type === 'SPSS_FMT_DATE' ? 'onkeyup = "checkDateField(\'values' + (count) + 'val\')"' : '');
   $(wrapper).append(
       '<div class="form-group" id="values' + (count) + '">' + '<div class="col-sm-12">' + '<div class="col-sm-3">'
           + '<input id="values' + (count) + 'val" class="form-control" type="text" name="values[' + (count)
-          + '].value" />' + '</div>' + '<div class="col-sm-1">' + '=' + '</div>' + '<div class="col-sm-6">'
-          + '<input id="values' + (count) + 'label" class="form-control" type="text" name="values[' + (count)
-          + '].label" />' + '</div>' + '<div class="col-sm-2">'
-          + '<button class="btn btn-danger" onclick="delVarValues(' + (count) + ');return false;">X</button>'
-          + '</div>' + '</div>' + '</div>')
+          + '].value" ' + checkfunc + ' />' + '</div>' + '<div class="col-sm-1">' + '=' + '</div>'
+          + '<div class="col-sm-6">' + '<input id="values' + (count)
+          + 'label" class="form-control" type="text" name="values[' + (count) + '].label"  />' + '</div>'
+          + '<div class="col-sm-2">' + '<button class="btn btn-danger" onclick="delVarValues(' + (count)
+          + ');return false;">X</button>' + '</div>' + '</div>' + '</div>')
 
 }
 
-function changeMissingFields() {
-  var selected = $("#missingFormat option:selected").val();
-  console.log(selected);
+function addGlobalValueLabel(string, number, date) {
+  var wrapper = $(".valvar_wrap");
+  var count = wrapper.children().length;
+  $(wrapper).append(
+      '<div class="form-group" id="values' + (count) + '">' + '<div class="col-sm-12">' + '<div class="col-sm-3">'
+          + '<select name="values[' + (count) + '].id" class="form-control" id="values' + (count)
+          + 'id" onchange="checkType(' + (count) + ');">' + '<option value="1">' + string + '</option>'
+          + '<option value="5">' + number + '</option>' + '<option value="20">' + date + '</option>' + '</select>'
+          + '</div>' + '<div class="col-sm-3">' + '<input id="values' + (count)
+          + 'val" class="form-control" type="text" name="values[' + (count) + '].value" onkeyup="checkType(' + (count)
+          + ');" onblur="checkType(' + (count) + ');" />' + '</div>' + '<div class="col-sm-1">' + '=' + '</div>'
+          + '<div class="col-sm-4">' + '<input id="values' + (count)
+          + 'label" class="form-control" type="text" name="values[' + (count) + '].label" />' + '</div>'
+          + '<div class="col-sm-1">' + '<button class="btn btn-danger" onclick="delVarValues(' + (count)
+          + ');return false;">X</button>' + '</div>' + '</div>' + '</div>')
+}
+
+function changeMissingFields(i) {
+  if (i !== null) {
+    var selected = $("#missingFormat_" + i + " option:selected").val();
+    var missingVal1 = $("#missingVal1_" + i);
+    var missingVal2 = $("#missingVal2_" + i);
+    var missingVal3 = $("#missingVal3_" + i);
+    var missingSep1 = $("#missingSep1_" + i);
+    var missingSep2 = $("#missingSep2_" + i);
+  } else {
+    var selected = $("#missingFormat option:selected").val();
+    var missingVal1 = $("#missingVal1")
+    var missingVal2 = $("#missingVal2")
+    var missingVal3 = $("#missingVal3")
+    var missingSep1 = $("#missingSep1")
+    var missingSep2 = $("#missingSep2")
+  }
   switch (selected) {
   case 'SPSS_NO_MISSVAL':
-    $("#missingVal1, #missingVal2, #missingVal3").hide();
-    $("#missingSep1").text(',').hide();
-    $("#missingSep2").hide();
+    missingVal1.hide();
+    missingVal2.hide();
+    missingVal3.hide();
+    missingSep1.text(',').hide();
+    missingSep2.hide();
     break;
   case 'SPSS_ONE_MISSVAL':
-    $("#missingVal1").show();
-    $("#missingVal2, #missingVal3").hide();
-    $("#missingSep1").text(',').hide();
-    $("#missingSep2").hide();
+    missingVal1.show();
+    missingVal2.hide();
+    missingVal3.hide();
+    missingSep1.text(',').hide();
+    missingSep2.hide();
     break;
   case 'SPSS_TWO_MISSVAL':
-    $("#missingVal1, #missingVal2").show();
-    $("#missingVal3").hide();
-    $("#missingSep1").text(',').show();
-    $("#missingSep2").hide();
+    missingVal1.show();
+    missingVal2.show();
+    missingVal3.hide();
+    missingSep1.text(',').show();
+    missingSep2.hide();
     break;
   case 'SPSS_THREE_MISSVAL':
-    $("#missingVal1, #missingVal2, #missingVal3").show();
-    $("#missingSep1").text(',').show();
-    $("#missingSep2").show();
+    missingVal1.show();
+    missingVal2.show();
+    missingVal3.show();
+    missingSep1.text(',').show();
+    missingSep2.show();
     break;
   case 'SPSS_MISS_RANGE':
-    $("#missingVal1, #missingVal2").show();
-    $("#missingVal3").hide();
-    $("#missingSep1").text('-').show();
-    $("#missingSep2").hide();
+    missingVal1.show();
+    missingVal2.show();
+    missingVal3.hide();
+    missingSep1.text('-').show();
+    missingSep2.hide();
     break;
   case 'SPSS_MISS_RANGEANDVAL':
-    $("#missingVal1, #missingVal2, #missingVal3").show();
-    $("#missingSep1").text('-').show();
-    $("#missingSep2").show();
+    missingVal1.show();
+    missingVal2.show();
+    missingVal3.show();
+    missingSep1.text('-').show();
+    missingSep2.show();
     break;
-
   }
+}
 
+function checkValueForm() {
+  var count = $(".valvar_wrap").children().length;
+  var success = true;
+  for (var i = 0; i < count; i++) {
+    var corrType = true;
+    if (checkType(i) == false) {
+      success, corrtype = false;
+    }
+    if (checklabel(i, corrType) == false)
+      success = false;
+  }
+  return success;
+}
+
+function checklabel(pos, type) {
+  var label = $("#values" + pos + "label").val().trim();
+  var value = $("#values" + pos + "val").val().trim();
+  $("#values" + pos + "label").removeClass("redborder");
+  if ((value != null && value != "") && (label == null || label == "")) {
+    $("#values" + pos + "label").addClass("redborder");
+    return false;
+  } else if (type && (value == null || value == "") && (label != null && label != "")) {
+    $("#values" + pos + "val").addClass("redborder");
+    return false;
+  }
+  return true;
+}
+
+function checkType(pos) {
+  var type = $("#values" + pos + "id").val();
+  var value = $("#values" + pos + "val").val();
+  $("#values" + pos + "val").removeClass("redborder");
+  if (value != null && value != "") {
+    if (type === "5" && !isNumber(value)) {
+      $("#values" + pos + "val").addClass("redborder");
+      return false;
+    }
+    if (type === "20" && !checkDate) {
+      $("#values" + pos + "val").addClass("redborder");
+      return false;
+    }
+    return true;
+  }
+  return true;
+}
+
+function checkDateField(fieldId) {
+  var field = $("#" + fieldId)
+  field.removeClass("redborder");
+  if (field.val() != null && field.val() != "" && !checkDate(field.val())) {
+    field.addClass("redborder");
+  }
+}
+
+function checkNumberField(fieldId) {
+  var field = $("#" + fieldId)
+  field.removeClass("redborder");
+  if (field.val() != null && field.val() != "" && !isNumber(field.val())) {
+    field.addClass("redborder");
+  }
+}
+
+function checkDate(value) {
+  dateTimeRegex.lastIndex = 0;
+  if (dateTimeRegex.exec(value) === null)
+    return false;
+  else
+    return true;
+}
+
+function isNumber(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }

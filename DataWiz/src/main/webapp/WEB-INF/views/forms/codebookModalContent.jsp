@@ -3,6 +3,8 @@
   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
 <sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form">
   <sf:hidden path="id" />
+  <c:set var="simplifiedType" value="${StudyForm.previousRecordVersion.simplifyVarTypes(VarValues.type)}" />
+  <sf:hidden path="type" value="${simplifiedType}" />
   <c:choose>
     <c:when test="${modalView eq 'values'}">
       <div class="modal-content panel-primary">
@@ -25,7 +27,20 @@
                 <sf:hidden path="values[${loop.count-1}].id" id="values${loop.count-1}id" />
                 <div class="col-sm-12">
                   <div class="col-sm-3">
-                    <sf:input id="values${loop.count-1}val" class="form-control" path="values[${loop.count-1}].value" />
+                    <c:choose>
+                      <c:when test="${simplifiedType == 'SPSS_FMT_F'}">
+                        <sf:input id="values${loop.count-1}val" class="form-control"
+                          path="values[${loop.count-1}].value" onkeyup="checkNumberField('values${loop.count-1}val')" />
+                      </c:when>
+                      <c:when test="${simplifiedType == 'SPSS_FMT_DATE'}">
+                        <sf:input id="values${loop.count-1}val" class="form-control"
+                          path="values[${loop.count-1}].value" onkeyup="checkDateField('values${loop.count-1}val')" />
+                      </c:when>
+                      <c:otherwise>
+                        <sf:input id="values${loop.count-1}val" class="form-control"
+                          path="values[${loop.count-1}].value" />
+                      </c:otherwise>
+                    </c:choose>
                   </div>
                   <div class="col-sm-1">
                     <s:message text="=" />
@@ -42,7 +57,7 @@
           </div>
           <div class="form-group">
             <div class="col-sm-12">
-              <button class="btn btn-success" onclick="addValueLabel(4);return false;">+</button>
+              <button class="btn btn-success" onclick="addValueLabel();return false;">+</button>
             </div>
           </div>
         </div>
@@ -67,7 +82,7 @@
         <div class="modal-body">
           <div class="form-group">
             <div class="col-sm-12">
-              <sf:select path="missingFormat" class="form-control" onchange="changeMissingFields();">
+              <sf:select path="missingFormat" class="form-control" onchange="changeMissingFields(null);">
                 <sf:option value="SPSS_NO_MISSVAL">
                   <s:message code="spss.missings.SPSS_NO_MISSVAL" />
                 </sf:option>
@@ -88,7 +103,7 @@
                 </sf:option>
               </sf:select>
               <script>
-              	changeMissingFields();
+              	changeMissingFields(null);
 			  </script>
             </div>
           </div>

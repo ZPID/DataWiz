@@ -88,9 +88,10 @@
                     <tr>
                       <td><strong><sf:input class="form-control"
                             path="previousRecordVersion.variables[${loop.count-1}].name" /></strong></td>
-                      <td style="cursor: pointer;"
-                        onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=type');"><s:message
-                          code="spss.type.${var.type}" /></td>
+                      <td><c:set var="simplifiedType"
+                          value="${StudyForm.previousRecordVersion.simplifyVarTypes(var.type)}" /> <s:message
+                          code="spss.type.${simplifiedType}" /> <c:if test="${simplifiedType ne var.type}">(<s:message
+                            code="spss.type.${var.type}" />)</c:if></td>
                       <td><sf:textarea class="form-control"
                           path="previousRecordVersion.variables[${loop.count-1}].label" /></td>
                       <td style="cursor: pointer;"
@@ -155,6 +156,14 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-sm-12">
+            <div class="btn btn-default" onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=values');">
+              Werte global setzen</div>
+              <div class="btn btn-default" onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=missings');">
+              Missings global setzen</div>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-sm-12 text-right">
             <a href="${accessUrl}" class="btn btn-default"> <s:message code="dataset.cancel.import" />
             </a>
@@ -168,11 +177,6 @@
   </div>
 </div>
 <div class="modal fade" id="valueModal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-  </div>
-</div>
-<div class="modal fade" id="missingModal" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content-->
   </div>

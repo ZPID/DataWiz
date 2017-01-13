@@ -136,14 +136,13 @@ label.btn::after {
 }
 
 .pre-xy-scrollable {
-    overflow: auto;
-    max-height: 400px;
+  overflow: auto;
+  max-height: 400px;
 }
 
 .pre-x-scrollable {
-    overflow: auto;    
+  overflow: auto;
 }
-
 
 .pre-x-scrollable table td {
   word-wrap: break-word;
@@ -182,6 +181,9 @@ label.btn::after {
   #mainWrapper .form-group {
     padding: 0% 1% 0% 1%;
   }
+  .modalWidth {
+    width: 100%;
+  }
 }
 /* Breite ab 766 pixel */
 @media ( min-width : 766px) and (max-width:1599px) {
@@ -209,6 +211,9 @@ label.btn::after {
   #mainWrapper .form-group {
     padding: 0% 1% 0% 1%;
   }
+  .modalWidth {
+    width: 90%;
+  }
 }
 /* Breite ab 1200 pixel */
 @media ( min-width : 1600px) {
@@ -229,6 +234,9 @@ label.btn::after {
     background-color: white;
     width: 80%;
     margin: auto;
+  }
+  .modalWidth {
+    width: 60%;
   }
 }
 /**************** END RESPONSIVE ****************/
@@ -449,6 +457,24 @@ label.btn::after {
 .table {
   font-size: 12px
 }
+
 .matrixtable td {
-   text-align: center;   
+  text-align: center;
+}
+
+.redborder:FOCUS {
+  border: 1px solid red;
+}
+
+.redborder {
+  border: 1px solid red;
+}
+
+.hideonload {
+  display: none;
+}
+
+.seperatormodal {
+  font-size: 26px;
+  text-align: center;
 }

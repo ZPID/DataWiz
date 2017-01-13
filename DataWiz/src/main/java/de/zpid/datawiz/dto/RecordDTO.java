@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import de.zpid.spss.dto.SPSSFileDTO;
+import de.zpid.spss.util.SPSSVarTypes;
 
 public class RecordDTO extends SPSSFileDTO implements Serializable {
 
@@ -22,6 +23,34 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
   private LocalDateTime changed;
   private String changedBy;
   private boolean masterRecord;
+
+  public static SPSSVarTypes simplifyVarTypes(SPSSVarTypes spssType) {
+    if (spssType == null || spssType.equals(SPSSVarTypes.SPSS_UNKNOWN)) {
+      return SPSSVarTypes.SPSS_UNKNOWN;
+    } else if (spssType.equals(SPSSVarTypes.SPSS_FMT_COMMA) || spssType.equals(SPSSVarTypes.SPSS_FMT_DOT)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_PCT) || spssType.equals(SPSSVarTypes.SPSS_FMT_F)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_N) || spssType.equals(SPSSVarTypes.SPSS_FMT_E)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_DOLLAR) || spssType.equals(SPSSVarTypes.SPSS_FMT_IB)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_PIBHEX) || spssType.equals(SPSSVarTypes.SPSS_FMT_P)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_PIB) || spssType.equals(SPSSVarTypes.SPSS_FMT_PK)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_RB) || spssType.equals(SPSSVarTypes.SPSS_FMT_RBHEX)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_Z) || spssType.equals(SPSSVarTypes.SPSS_FMT_CCA)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_CCB) || spssType.equals(SPSSVarTypes.SPSS_FMT_CCC)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_CCD) || spssType.equals(SPSSVarTypes.SPSS_FMT_CCE)) {
+      return SPSSVarTypes.SPSS_FMT_F;
+    } else if (spssType.equals(SPSSVarTypes.SPSS_FMT_DATE) || spssType.equals(SPSSVarTypes.SPSS_FMT_TIME)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_DATE_TIME) || spssType.equals(SPSSVarTypes.SPSS_FMT_ADATE)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_JDATE) || spssType.equals(SPSSVarTypes.SPSS_FMT_DTIME)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_WKDAY) || spssType.equals(SPSSVarTypes.SPSS_FMT_MONTH)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_MOYR) || spssType.equals(SPSSVarTypes.SPSS_FMT_QYR)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_WKYR) || spssType.equals(SPSSVarTypes.SPSS_FMT_EDATE)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_SDATE) || spssType.equals(SPSSVarTypes.SPSS_FMT_MTIME)
+        || spssType.equals(SPSSVarTypes.SPSS_FMT_YMDHMS)) {
+      return SPSSVarTypes.SPSS_FMT_DATE;
+    } else {
+      return SPSSVarTypes.SPSS_FMT_A;
+    }
+  }
 
   public RecordDTO() {
     super();
