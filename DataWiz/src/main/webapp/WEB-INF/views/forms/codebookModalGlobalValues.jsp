@@ -23,7 +23,7 @@
         <div class="form-group" id="values0">
           <div class="col-sm-12">
             <div class="col-sm-3">
-              <sf:select path="values[0].id" class="form-control" id="values0id" onchange="checkType(0);">
+              <sf:select path="values[0].id" class="form-control" id="values0id" onchange="checkType(0, null);">
                 <sf:option value="1">
                   <s:message code="spss.type.SPSS_FMT_A" />
                 </sf:option>
@@ -36,7 +36,7 @@
               </sf:select>
             </div>
             <div class="col-sm-3">
-              <sf:input id="values0val" class="form-control" path="values[0].value" onkeyup="checkType(0);" />
+              <sf:input id="values0val" class="form-control" path="values[0].value" onkeyup="checkType(0, null);" />
             </div>
             <div class="col-sm-1">
               <s:message text="=" />

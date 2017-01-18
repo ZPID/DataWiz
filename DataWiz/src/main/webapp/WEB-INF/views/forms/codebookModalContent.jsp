@@ -1,7 +1,8 @@
 <%@ include file="../templates/includes.jsp"%>
 <c:url var="accessUrl"
   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
-<sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form">
+<sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form"
+  onsubmit="return checkValueMissingForm('${modalView}')">
   <sf:hidden path="id" />
   <c:set var="simplifiedType" value="${StudyForm.previousRecordVersion.simplifyVarTypes(VarValues.type)}" />
   <sf:hidden path="type" value="${simplifiedType}" />
@@ -95,12 +96,14 @@
                 <sf:option value="SPSS_THREE_MISSVAL">
                   <s:message code="spss.missings.SPSS_THREE_MISSVAL" />
                 </sf:option>
-                <sf:option value="SPSS_MISS_RANGE">
-                  <s:message code="spss.missings.SPSS_MISS_RANGE" />
-                </sf:option>
-                <sf:option value="SPSS_MISS_RANGEANDVAL">
-                  <s:message code="spss.missings.SPSS_MISS_RANGEANDVAL" />
-                </sf:option>
+                <c:if test="${simplifiedType ne 'SPSS_FMT_A'}">
+                  <sf:option value="SPSS_MISS_RANGE">
+                    <s:message code="spss.missings.SPSS_MISS_RANGE" />
+                  </sf:option>
+                  <sf:option value="SPSS_MISS_RANGEANDVAL">
+                    <s:message code="spss.missings.SPSS_MISS_RANGEANDVAL" />
+                  </sf:option>
+                </c:if>
               </sf:select>
               <script>
               	changeMissingFields(null);
@@ -110,15 +113,15 @@
           <div class="form-group">
             <div class="col-sm-12">
               <div class="col-sm-3" style="white-space: nowrap;">
-                <sf:input path="missingVal1" class="form-control" />
+                <sf:input path="missingVal1" class="form-control" onkeyup="checkMissingField('missingVal1');" />
               </div>
               <div class="col-sm-1" id="missingSep1" style="font-size: 26px;">,</div>
               <div class="col-sm-3">
-                <sf:input path="missingVal2" class="form-control" />
+                <sf:input path="missingVal2" class="form-control" onkeyup="checkMissingField('missingVal2');" />
               </div>
               <div class="col-sm-1" id="missingSep2" style="font-size: 26px;">,</div>
               <div class="col-sm-3">
-                <sf:input path="missingVal3" class="form-control" />
+                <sf:input path="missingVal3" class="form-control" onkeyup="checkMissingField('missingVal3');" />
               </div>
             </div>
           </div>
@@ -135,7 +138,7 @@
         </div>
       </div>
     </c:when>
-    <c:when test="${modalView eq 'type'}">
+    <%--     <c:when test="${modalView eq 'type'}">
       <div class="modal-content panel-primary">
         <div class="modal-header panel-heading">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -183,6 +186,6 @@
           </div>
         </div>
       </div>
-    </c:when>
+    </c:when> --%>
   </c:choose>
 </sf:form>

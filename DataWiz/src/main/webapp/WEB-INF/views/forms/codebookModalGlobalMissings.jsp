@@ -2,7 +2,7 @@
 <c:url var="accessUrl"
   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
 <sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form"
-  onsubmit="return checkValueForm()">
+  onsubmit="return checkMissingForm()">
   <div class="modal-content panel-primary">
     <div class="modal-header panel-heading">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
