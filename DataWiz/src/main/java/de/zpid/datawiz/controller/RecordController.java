@@ -57,10 +57,11 @@ public class RecordController extends SuperController {
     log.info("Loading RecordController for mapping /project/{pid}/study/{sid}/record");
   }
 
-  @RequestMapping(value = { "", "/{recordId}", "/{recordId}/{subpage}" }, method = RequestMethod.GET)
+  @RequestMapping(value = { "", "/{recordId}", "/{recordId}/{subpage}", "/{recordId}/version/{versionId}",
+      "/{recordId}/version/{versionId}/{subpage}" }, method = RequestMethod.GET)
   public String showRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
-      @PathVariable final Optional<String> subpage) {
+      @PathVariable final Optional<Long> recordId, @PathVariable final Optional<Long> versionId, final ModelMap model,
+      final RedirectAttributes redirectAttributes, @PathVariable final Optional<String> subpage) {
     final UserDTO user = UserUtil.getCurrentUser();
     String ret;
     if (recordId.isPresent()) {
@@ -92,12 +93,14 @@ public class RecordController extends SuperController {
       }
       List<RecordDTO> rList = new ArrayList<RecordDTO>();
       if (recordId.isPresent()) {
-        RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(), 0));
+        RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(),
+            (versionId.isPresent() && versionId.get() > 0 ? versionId.get() : 0)));
         if (rec != null) {
           rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
-          rec.setAttributes(recordDAO.findVariableAttributes(rec.getVersionId(), true));
+          rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
           if (rec.getVariables() != null && rec.getVariables().size() > 0) {
             for (SPSSVarTDO var : rec.getVariables()) {
+              var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
               if (subpage.isPresent() && subpage.get().equals("codebook"))
                 var.setValues(recordDAO.findVariableValues(var.getId(), true));
               else
@@ -224,7 +227,6 @@ public class RecordController extends SuperController {
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("Entering  save for [recordId: {}; studyId {}; projectId {}]", () -> recordId.get(), () -> studyId.get(),
         () -> pid.get());
-
     List<RecordCompareDTO> compList = sForm.getCompList();
     List<SPSSVarTDO> newVars = sForm.getRecord().getVariables();
     List<SPSSVarTDO> prevVars = sForm.getPreviousRecordVersion().getVariables();
@@ -391,46 +393,76 @@ public class RecordController extends SuperController {
     for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
       if (var.getId() == varVal.getId()) {
         var.setMissingFormat(varVal.getMissingFormat());
-        switch (varVal.getMissingFormat()) {
-        case SPSS_NO_MISSVAL:
-          var.setMissingVal1(null);
-          var.setMissingVal2(null);
-          var.setMissingVal3(null);
-          break;
-        case SPSS_ONE_MISSVAL:
-          var.setMissingVal1(varVal.getMissingVal1());
-          var.setMissingVal2(null);
-          var.setMissingVal3(null);
-          break;
-        case SPSS_TWO_MISSVAL:
-          var.setMissingVal1(varVal.getMissingVal1());
-          var.setMissingVal2(varVal.getMissingVal2());
-          var.setMissingVal3(null);
-          break;
-        case SPSS_THREE_MISSVAL:
-          var.setMissingVal1(varVal.getMissingVal1());
-          var.setMissingVal2(varVal.getMissingVal2());
-          var.setMissingVal3(varVal.getMissingVal3());
-          break;
-        case SPSS_MISS_RANGE:
-          var.setMissingVal1(varVal.getMissingVal1());
-          var.setMissingVal2(varVal.getMissingVal2());
-          var.setMissingVal3(null);
-          break;
-        case SPSS_MISS_RANGEANDVAL:
-          var.setMissingVal1(varVal.getMissingVal1());
-          var.setMissingVal2(varVal.getMissingVal2());
-          var.setMissingVal3(varVal.getMissingVal3());
-          break;
-        default:
-          log.warn("MissingFormat not known - " + varVal.getMissingFormat());
-          break;
-        }
+        switchMissingType(varVal, var);
         model.remove("VarValues");
         break;
       }
     }
     return "codebook";
+  }
+
+  @RequestMapping(value = { "/{recordId}" }, params = "setGlobalMissings")
+  public String setGlobalMissings(final ModelMap model, @ModelAttribute("VarValues") StudyForm varVal,
+      @ModelAttribute("StudyForm") StudyForm sForm) {
+    log.trace("setGlobalMissings for record [id: {}]", () -> sForm.getRecord().getId());
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    List<SPSSVarTDO> missings = varVal.getViewVars();
+    for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_A)) {
+        var.setMissingFormat(missings.get(0).getMissingFormat());
+        switchMissingType(missings.get(0), var);
+      } else if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F)) {
+        var.setMissingFormat(missings.get(1).getMissingFormat());
+        switchMissingType(missings.get(1), var);
+      } else if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE)) {
+        var.setMissingFormat(missings.get(2).getMissingFormat());
+        switchMissingType(missings.get(2), var);
+      }
+    }
+    return "codebook";
+  }
+
+  /**
+   * @param varVal
+   * @param var
+   */
+  private void switchMissingType(SPSSVarTDO varVal, SPSSVarTDO var) {
+    switch (varVal.getMissingFormat()) {
+    case SPSS_NO_MISSVAL:
+      var.setMissingVal1(null);
+      var.setMissingVal2(null);
+      var.setMissingVal3(null);
+      break;
+    case SPSS_ONE_MISSVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(null);
+      var.setMissingVal3(null);
+      break;
+    case SPSS_TWO_MISSVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(null);
+      break;
+    case SPSS_THREE_MISSVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(varVal.getMissingVal3());
+      break;
+    case SPSS_MISS_RANGE:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(null);
+      break;
+    case SPSS_MISS_RANGEANDVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(varVal.getMissingVal3());
+      break;
+    default:
+      log.warn("MissingFormat not known - " + varVal.getMissingFormat());
+      break;
+    }
   }
 
   @RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST, params = "saveCodebook")

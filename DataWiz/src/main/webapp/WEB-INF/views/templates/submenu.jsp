@@ -18,14 +18,14 @@
     <c:when test="${recordSubMenu}">
       <ul class="nav nav-tabs nav-justified">
         <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDMETA' ? 'active' : ''}" /> "><a
-          href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" /> "><s:message
+          href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}/version/${StudyForm.previousRecordVersion.versionId}" /> "><s:message
               code="record.submenu.meta" /></a></li>
         <c:if test="${not empty StudyForm.project.id && not empty StudyForm.previousRecordVersion}">
           <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDVAR' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}/codebook" /> "><s:message
+            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}/version/${StudyForm.previousRecordVersion.versionId}/codebook" /> "><s:message
                 code="record.submenu.var" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDDATA' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}/data" /> "><s:message
+            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}/version/${StudyForm.previousRecordVersion.versionId}/data" /> "><s:message
                 code="record.submenu.data" /></a></li>
         </c:if>
       </ul>

@@ -478,3 +478,18 @@ label.btn::after {
   font-size: 26px;
   text-align: center;
 }
+.th-width-300{
+  width: 300px;
+}
+.th-width-200{
+  width: 200px;
+}
+.th-width-100{
+  width: 100px;
+}
+.th-width-60{
+  width: 60px;
+}
+.th-width-20{
+  width: 20px;
+}

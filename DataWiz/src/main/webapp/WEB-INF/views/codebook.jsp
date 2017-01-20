@@ -6,44 +6,12 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <c:choose>
-          <c:when test="${empty StudyForm.record.id}">
-            <h4>
-              <s:message code="study.create.basis.headline" />
-            </h4>
-            <div>
-              <s:message code="study.create.basis.info" />
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div class="row">
-              <div class="col-sm-9">
-                <h4>
-                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.record.recordName}" />
-                </h4>
-              </div>
-              <div class="col-sm-3">
-                <c:url var="accessUrl"
-                  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
-                <c:choose>
-                  <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
-                    <a href="${accessUrl}" class="btn btn-success">Checkin</a>
-                  </c:when>
-                  <c:otherwise>
-                    <a href="${accessUrl}" class="btn btn-danger">CheckOut</a>
-                  </c:otherwise>
-                </c:choose>
-                <!-- Trigger the modal with a button -->
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">Upload
-                  File</button>
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#historyModal">History</button>
-              </div>
-            </div>
-            <div>
-              <s:message code="study.edit.basis.info" />
-            </div>
-          </c:otherwise>
-        </c:choose>
+        <h4>
+          <s:message code="record.codebook.headline" />
+        </h4>
+        <div>
+          <s:message code="record.codebook.info" />
+        </div>
       </div>
       <c:url var="accessUrl"
         value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
@@ -59,35 +27,32 @@
               <table class="table table-striped table-bordered">
                 <thead>
                   <tr>
-                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.name" /></th>
-                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.type" /></th>
-                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.label" /></th>
-                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.values" /></th>
-                    <th style="width: 200px;"><s:message code="dataset.import.report.codebook.missings" /></th>
-                    <th style="width: 60px;" class="codebookTableHide"><s:message
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.name" /></th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.type" /></th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.label" /></th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.values" /></th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.missings" /></th>
+                    <th class="codebookTableHide th-width-60"><s:message
                         code="dataset.import.report.codebook.width" /></th>
-                    <th style="width: 100px;" class="codebookTableHide"><s:message
-                        code="dataset.import.report.codebook.dec" /></th>
-                    <th style="width: 60px;" class="codebookTableHide"><s:message
-                        code="dataset.import.report.codebook.cols" /></th>
-                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                    <th class="codebookTableHide th-width-100"><s:message code="dataset.import.report.codebook.dec" /></th>
+                    <th class="codebookTableHide th-width-60"><s:message code="dataset.import.report.codebook.cols" /></th>
+                    <th class="codebookTableHide th-width-100"><s:message
                         code="dataset.import.report.codebook.aligment" /></th>
-                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                    <th class="codebookTableHide th-width-100"><s:message
                         code="dataset.import.report.codebook.measureLevel" /></th>
-                    <th style="width: 100px;" class="codebookTableHide"><s:message
+                    <th class="codebookTableHide th-width-100"><s:message
                         code="dataset.import.report.codebook.role" /></th>
-                    <th style="width: 20px;" onclick="$('.codebookTableHide').toggle();">...</th>
-                    <th style="width: 300px;"><s:message code="dataset.import.report.codebook.userAtt" /></th>
-                    <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val">
-                      <th>${val}</th>
+                    <th class="th-width-20" onclick="$('.codebookTableHide').toggle();">...</th>
+                    <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val" varStatus="attnameloop">
+                      <th class="th-width-100"><s:message text="[${fn:substringAfter(val.value, '@')}]" /></th>
                     </c:forEach>
                   </tr>
                 </thead>
                 <tbody>
                   <c:forEach items="${StudyForm.previousRecordVersion.variables}" var="var" varStatus="loop">
                     <tr>
-                      <td><strong><sf:input class="form-control"
-                            path="previousRecordVersion.variables[${loop.count-1}].name" /></strong></td>
+                      <td><strong><sf:input class="form-control varNames"
+                            path="previousRecordVersion.variables[${loop.count-1}].name" id="varNameId_${loop.count-1}" /></strong></td>
                       <td><c:set var="simplifiedType"
                           value="${StudyForm.previousRecordVersion.simplifyVarTypes(var.type)}" /> <s:message
                           code="spss.type.${simplifiedType}" /> <c:if test="${simplifiedType ne var.type}">(<s:message
@@ -127,25 +92,13 @@
                       <td class="codebookTableHide"><s:message code="spss.measureLevel.${var.measureLevel}" /></td>
                       <td class="codebookTableHide"><s:message code="spss.role.${var.role}" /></td>
                       <td></td>
-                      <td>
-                        <table class="table"
-                          style="margin: 0px; padding: 0px; background-color: rgba(0, 0, 0, 0.0) !important;">
-                          <thead>
-                            <tr>
-                              <c:forEach items="${var.attributes}" var="att">
-                                <th><s:message text="[${att.label}]" /></th>
-                              </c:forEach>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <c:forEach items="${var.attributes}" var="att">
-                                <td><s:message text="${att.value}" /></td>
-                              </c:forEach>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </td>
+                      <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val" varStatus="attnameloop">
+                        <td><c:forEach items="${var.attributes}" var="att">
+                            <c:if test="${fn:substringAfter(val.value, '@') == att.label}">
+                              <s:message text="${att.value}" />
+                            </c:if>
+                          </c:forEach></td>
+                      </c:forEach>
                     </tr>
                   </c:forEach>
                 </tbody>
@@ -158,9 +111,11 @@
         <div class="row">
           <div class="col-sm-12">
             <div class="btn btn-default" onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=values');">
-              Werte global setzen</div>
-              <div class="btn btn-default" onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=missings');">
-              Missings global setzen</div>
+              <s:message code="record.codebook.set.values" />
+            </div>
+            <div class="btn btn-default" onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=missings');">
+              <s:message code="record.codebook.set.missings" />
+            </div>
           </div>
         </div>
         <div class="row">

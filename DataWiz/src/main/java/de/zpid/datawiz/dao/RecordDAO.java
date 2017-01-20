@@ -87,7 +87,7 @@ public class RecordDAO extends SuperDAO {
   }
 
   public RecordDTO findRecordWithID(final long recordId, final long versionId) throws Exception {
-    log.trace("Entering findRecordWithID [recordId: {}]", () -> recordId);
+    log.trace("Entering findRecordWithID [recordId: {}; version: {}]", () -> recordId, () -> versionId);
     final RecordDTO cRecords = jdbcTemplate.query("SELECT * FROM dw_record WHERE dw_record.id  = ?",
         new Object[] { recordId }, new ResultSetExtractor<RecordDTO>() {
           @Override
@@ -157,8 +157,7 @@ public class RecordDAO extends SuperDAO {
             var.setMeasureLevel(SPSSMeasLevel.fromInt(rs.getInt("measureLevel")));
             var.setRole(SPSSRoleCodes.fromInt(rs.getInt("role")));
             var.setNumOfAttributes(rs.getInt("numOfAttributes"));
-            var.setPosition(rs.getInt("position"));            
-            var.setAttributes(findVariableAttributes(var.getId(), false));
+            var.setPosition(rs.getInt("position"));
             return var;
           }
         });
@@ -199,6 +198,25 @@ public class RecordDAO extends SuperDAO {
           }
         });
     log.debug("leaving findVariablesAttributes with size: {}", () -> cVars.size());
+    return cVars;
+  }
+
+  public List<SPSSValueLabelDTO> findRecordAttributes(final long versionId, boolean onlyUserAttributes)
+      throws SQLException {
+    log.trace("Entering findRecordAttributes [version: {}]", () -> versionId);
+    String sql = "SELECT * FROM dw_record_attributes WHERE version_id = ? AND var_id IS NULL "
+        + (onlyUserAttributes ? "AND text LIKE '@%'" : "");
+    final List<SPSSValueLabelDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { versionId },
+        new RowMapper<SPSSValueLabelDTO>() {
+          public SPSSValueLabelDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SPSSValueLabelDTO var = new SPSSValueLabelDTO();
+            var.setId(rs.getLong("id"));
+            var.setLabel(rs.getString("label"));
+            var.setValue(rs.getString("text"));
+            return var;
+          }
+        });
+    log.debug("leaving findRecordAttributes with size: {}", () -> cVars.size());
     return cVars;
   }
 

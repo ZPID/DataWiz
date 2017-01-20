@@ -1,12 +1,55 @@
-/**
- * global debugging variable
- */
-var MODALDEBUG = true;
+//jsdoc c:\Users\ronny\git\DataWiz\DataWiz\src\main\webapp\static\js\modalform.js -t templates\minami READMEDW.md
 
 /**
- * This function adds a "Value-Label" row to the value modal. It is called from codebookModalContent.jsp
+ * debugging variable
+ */
+var MODALDEBUG = false;
+
+/**
+ * jQuery Listener for "propertychange" on input fields which belongs to class ".varNames"
+ */
+$('.varNames').bind("input propertychange", function(e) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering $('.varNames').bind(\"input propertychange\", function(e) ");
+  }
+  findNameDoublets();
+  if (MODALDEBUG) {
+    console.log("Leaving $('.varNames').bind(\"input propertychange\", function(e) ");
+    console.groupEnd();
+  }
+});
+
+/**
+ * This function searches for name field doublets in the codebook form and returns true if doublets have been found
  * 
- * @returns
+ * @returns true, if doublets are existing <br />
+ *          false, if doublets haven't been found
+ */
+function findNameDoublets() {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering findNameDoublets()");
+  }
+  var falseCount = 0;
+  $('.varNames').each(function(i, obj) {
+    obj.classList.remove("redborder");
+    $('.varNames').each(function(i, obj1) {
+      if (obj.value == obj1.value && obj.id != obj1.id) {
+        obj.classList.add("redborder");
+        obj1.classList.add("redborder");
+        falseCount += 1;
+      }
+    });
+  });
+  if (MODALDEBUG) {
+    console.log("Leaving findNameDoublets with result: ", (falseCount > 0 ? true : false));
+    console.groupEnd();
+  }
+  return (falseCount > 0 ? true : false);
+}
+/**
+ * This function adds a "Value-Label" row to the value modal. It is called from codebookModalContent.jsp
  */
 function addValueLabel() {
   if (MODALDEBUG) {
@@ -41,7 +84,6 @@ function addValueLabel() {
  *          Application-Resource name for the number variable types (SPSS_FMT_F)
  * @param date
  *          Application-Resource name for the number date types (SPSS_FMT_DATE)
- * @returns
  */
 function addGlobalValueLabel(string, number, date) {
   if (MODALDEBUG) {
@@ -68,6 +110,12 @@ function addGlobalValueLabel(string, number, date) {
   }
 }
 
+/**
+ * This function changes the amount of the input fields in the missing modal according to the selected missing type
+ * 
+ * @param i
+ *          position
+ */
 function changeMissingFields(i) {
   if (MODALDEBUG) {
     console.group();
@@ -141,10 +189,24 @@ function changeMissingFields(i) {
   }
 }
 
+/**
+ * This function returns checkValueForm(null)
+ * 
+ * @returns checkValueForm(null)
+ */
 function checkValueForm() {
   return checkValueForm(null);
 }
 
+/**
+ * This function is called from codebookModalContent.jsp and validates all values of the single value-label and missing
+ * fields
+ * 
+ * @param form
+ *          String, which includes "missings" or "values", to start the correct validation process
+ * @returns true, if validation is successful <br />
+ *          false, if an error has occurred
+ */
 function checkValueMissingForm(form) {
   var ret = false;
   var type = $("#type").val().trim();
@@ -169,6 +231,14 @@ function checkValueMissingForm(form) {
   return ret;
 }
 
+/**
+ * This function checks if the input field value matches to the variable type
+ * 
+ * @param id
+ *          HTML input field identifier
+ * @returns true, if the value matches the variable type <br />
+ *          false, if the field contains a restricted value
+ */
 function checkMissingField(id) {
   var ret = false;
   var type = $("#type").val().trim();
@@ -191,6 +261,53 @@ function checkMissingField(id) {
   return ret;
 }
 
+/**
+ * 
+ * @returns
+ */
+function checkMissingForm() {
+  var falseCount = 0;
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkMissingForm()");
+  }
+  for (var i = 0; i <= 2; i++) {
+    $("#missingVal1_" + i).removeClass("redborder");
+    $("#missingVal2_" + i).removeClass("redborder");
+    $("#missingVal3_" + i).removeClass("redborder");
+    if (i == 1) {
+      falseCount += checkNumberField("missingVal1_" + i) ? 0 : 1;
+      falseCount += checkNumberField("missingVal2_" + i) ? 0 : 1;
+      falseCount += checkNumberField("missingVal3_" + i) ? 0 : 1;
+    } else if (i == 2) {
+      falseCount += checkDateField("missingVal1_" + i) ? 0 : 1;
+      falseCount += checkDateField("missingVal2_" + i) ? 0 : 1;
+      falseCount += checkDateField("missingVal3_" + i) ? 0 : 1;
+    }
+    falseCount += (checkMissingVal($("#missingFormat_" + i), $("#missingVal1_" + i), $("#missingVal2_" + i),
+        $("#missingVal3_" + i)) ? 0 : 1);
+  }
+  if (MODALDEBUG) {
+    console.log("Leaving checkMissingForm with result: ", falseCount);
+    console.groupEnd();
+  }
+  return (falseCount > 0 ? false : true);
+}
+
+/**
+ * This function selects the correct validation for the missing value by the type which has been selected by the user
+ * 
+ * @param missingType
+ *          HTML type select box
+ * @param missVal1
+ *          HTML input field
+ * @param missVal2
+ *          HTML input field
+ * @param missVal3
+ *          HTML input field
+ * @returns true, if no error has occurred <br />
+ *          false, if a validation error has occurred
+ */
 function checkMissingVal(missingType, missVal1, missVal2, missVal3) {
   if (MODALDEBUG) {
     console.group();
