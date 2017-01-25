@@ -35,9 +35,13 @@
           </div>
           <div class="form-group">
             <div class="col-sm-12">
-              <div class="col-sm-3">WERT</div>
+              <div class="col-sm-3">
+                <s:message code="record.codebook.modal.value" />
+              </div>
               <div class="col-sm-1"></div>
-              <div class="col-sm-6">Beschriftung</div>
+              <div class="col-sm-6">
+                <s:message code="record.codebook.modal.label" />
+              </div>
               <div class="col-sm-2"></div>
             </div>
           </div>
@@ -77,16 +81,20 @@
           </div>
           <div class="form-group">
             <div class="col-sm-12">
-              <button class="btn btn-success" onclick="addValueLabel();return false;">+</button>
+              <div class="col-sm-offset-10 col-sm-2">
+                <button class="btn btn-success" onclick="addValueLabel();return false;">+</button>
+              </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <div class="form-group">
             <div class="col-sm-offset-0 col-md-12">
-              <button class="btn btn-default" data-dismiss="modal">Close</button>
-              <sf:button type="submit" class="btn btn-success" name="setValues">
-                <s:message code="gen.submit" />
+              <button class="btn btn-default" data-dismiss="modal">
+                <s:message code="gen.close" />
+              </button>
+              <sf:button type="record.codebook.modal.set" class="btn btn-success" name="setValues">
+                <s:message code="record.codebook.modal.values.set" />
               </sf:button>
             </div>
           </div>
@@ -97,9 +105,26 @@
       <div class="modal-content panel-primary">
         <div class="modal-header panel-heading">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Fehlende Werte</h4>
+          <h4 class="modal-title"><s:message code="record.codebook.modal.missings.header" arguments="${VarValues.name}"/></h4>
         </div>
         <div class="modal-body">
+        <div class="form-group">
+            <div class="col-sm-12">
+              <div class="well marginTop1">
+                <c:choose>
+                  <c:when test="${simplifiedType == 'SPSS_FMT_F'}">
+                    <s:message code="record.codebook.modal.missings.info.number" />
+                  </c:when>
+                  <c:when test="${simplifiedType == 'SPSS_FMT_DATE'}">
+                    <s:message code="record.codebook.modal.missings.info.date" />
+                  </c:when>
+                  <c:otherwise>
+                    <s:message code="record.codebook.modal.missings.info.string" />
+                  </c:otherwise>
+                </c:choose>
+              </div>
+            </div>
+          </div>
           <div class="form-group">
             <div class="col-sm-12">
               <sf:select path="missingFormat" class="form-control" onchange="changeMissingFields(null);">
@@ -125,8 +150,8 @@
                 </c:if>
               </sf:select>
               <script>
-              	changeMissingFields(null);
-			  </script>
+                changeMissingFields(null);
+        	  </script>
             </div>
           </div>
           <div class="form-group">
@@ -148,63 +173,16 @@
         <div class="modal-footer">
           <div class="form-group">
             <div class="col-sm-offset-0 col-md-12">
-              <button class="btn btn-default" data-dismiss="modal">Close</button>
+              <button class="btn btn-default" data-dismiss="modal">
+                <s:message code="gen.close" />
+              </button>
               <sf:button type="submit" class="btn btn-success" name="setMissings">
-                <s:message code="gen.submit" />
+                <s:message code="record.codebook.modal.missings.set" />
               </sf:button>
             </div>
           </div>
         </div>
       </div>
     </c:when>
-    <%--     <c:when test="${modalView eq 'type'}">
-      <div class="modal-content panel-primary">
-        <div class="modal-header panel-heading">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title">Type</h4>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <div class="col-sm-6">
-              <div>
-                <sf:label path="type">
-                  <s:message code="spss.type.SPSS_FMT_A" />
-                </sf:label>
-                <sf:radiobutton path="type" value="SPSS_FMT_A" />
-              </div>
-              <div>
-                <sf:label path="type">
-                  <s:message code="spss.type.SPSS_FMT_F" />
-                </sf:label>
-                <sf:radiobutton path="type" value="SPSS_FMT_F" />
-              </div>
-              <div>
-                <sf:label path="type">
-                  <s:message code="spss.type.SPSS_FMT_DOLLAR" />
-                </sf:label>
-                <sf:radiobutton path="type" value="" />
-              </div>
-            </div>
-            <div class="col-sm-6">
-              <sf:select path="type">
-                <sf:option value="SPSS_FMT_DOLLAR">
-                  <s:message code="spss.type.SPSS_FMT_DOLLAR" />
-                </sf:option>
-              </sf:select>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <div class="form-group">
-            <div class="col-sm-offset-0 col-md-12">
-              <button class="btn btn-default" data-dismiss="modal">Close</button>
-              <sf:button type="submit" class="btn btn-success" name="setType">
-                <s:message code="gen.submit" />
-              </sf:button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </c:when> --%>
   </c:choose>
 </sf:form>

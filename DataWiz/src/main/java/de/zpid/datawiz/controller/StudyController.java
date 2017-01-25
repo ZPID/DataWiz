@@ -379,7 +379,7 @@ public class StudyController extends SuperController {
   }
 
   private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list) throws Exception {
-    List<StudyInstrumentDTO> dbtmp = studyInstrumentDAO.findAllByStudy(studyId);
+    List<StudyInstrumentDTO> dbtmp = studyInstrumentDAO.findAllByStudy(studyId, false);
     if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
       List<StudyInstrumentDTO> insert = new ArrayList<>();
       List<StudyInstrumentDTO> delete = new ArrayList<>();
@@ -395,15 +395,8 @@ public class StudyController extends SuperController {
             for (ListIterator<StudyInstrumentDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
               StudyInstrumentDTO tmp2 = iter.next();
               if (tmp.getId() == tmp2.getId()) {
-                if (!tmp.getTitle().equals(tmp2.getTitle()) || !tmp.getAuthor().equals(tmp2.getAuthor())
-                    || !tmp.getCitation().equals(tmp2.getCitation()) || !tmp.getSummary().equals(tmp2.getSummary())
-                    || !tmp.getTheoHint().equals(tmp2.getTheoHint()) || !tmp.getStructure().equals(tmp2.getStructure())
-                    || !tmp.getConstruction().equals(tmp2.getConstruction()) || !tmp.getNorm().equals(tmp2.getNorm())
-                    || !tmp.getObjectivity().equals(tmp2.getObjectivity())
-                    || !tmp.getReliability().equals(tmp2.getReliability())
-                    || !tmp.getValidity().equals(tmp2.getValidity())) {
+                if (!tmp2.equals(tmp))
                   update.add(tmp);
-                }
                 iter.remove();
               }
             }
@@ -740,7 +733,7 @@ public class StudyController extends SuperController {
       study.setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
       study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
       study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
-      study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get()));
+      study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get(), false));
       study.setEligibilities(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.ELIGIBILITY));
       study.setUsedCollectionModes(
           formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.COLLECTIONMODE, true));

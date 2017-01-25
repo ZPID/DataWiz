@@ -6,7 +6,9 @@
   <div class="modal-content panel-primary">
     <div class="modal-header panel-heading">
       <button type="button" class="close" data-dismiss="modal">&times;</button>
-      <h4 class="modal-title">Missings</h4>
+      <h4 class="modal-title">
+        <s:message code="record.codebook.modal.global.missings.header" />
+      </h4>
     </div>
     <div class="modal-body">
       <ul class="list-group">
@@ -88,9 +90,11 @@
     <div class="modal-footer">
       <div class="form-group">
         <div class="col-sm-offset-0 col-md-12">
-          <button class="btn btn-default" data-dismiss="modal">Close</button>
+          <button class="btn btn-default" data-dismiss="modal">
+            <s:message code="gen.close" />
+          </button>
           <sf:button type="submit" class="btn btn-success" name="setGlobalMissings">
-            <s:message code="gen.submit" />
+            <s:message code="record.codebook.modal.missings.set" />
           </sf:button>
         </div>
       </div>

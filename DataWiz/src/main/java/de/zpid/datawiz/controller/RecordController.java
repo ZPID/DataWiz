@@ -29,6 +29,7 @@ import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.RecordCompareDTO;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.VariableStatus;
@@ -91,6 +92,11 @@ public class RecordController extends SuperController {
             messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
         return "redirect:/project/" + pid.get() + "/studies";
       }
+      if (subpage.isPresent() && subpage.get().equals("codebook")) {
+        sForm.getStudy().setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
+        sForm.getStudy().setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
+        sForm.getStudy().setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get(), true));
+      }
       List<RecordDTO> rList = new ArrayList<RecordDTO>();
       if (recordId.isPresent()) {
         RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(),
@@ -100,7 +106,9 @@ public class RecordController extends SuperController {
           rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
           if (rec.getVariables() != null && rec.getVariables().size() > 0) {
             for (SPSSVarTDO var : rec.getVariables()) {
-              var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
+              List<SPSSValueLabelDTO> attributes = recordDAO.findVariableAttributes(var.getId(), false);
+              setDataWizAttributes(attributes);
+              var.setAttributes(attributes);
               if (subpage.isPresent() && subpage.get().equals("codebook"))
                 var.setValues(recordDAO.findVariableValues(var.getId(), true));
               else
@@ -212,7 +220,12 @@ public class RecordController extends SuperController {
       return ret;
     try {
       RecordDTO lastVersion = recordDAO.findRecordWithID(recordId.get(), 0);
-      lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
+      List<SPSSVarTDO> vars = recordDAO.findVariablesByVersionID(lastVersion.getVersionId());
+      for (SPSSVarTDO var : vars) {
+        var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
+        var.setValues(recordDAO.findVariableValues(var.getId(), false));
+      }
+      lastVersion.setVariables(vars);
       sForm.setPreviousRecordVersion(lastVersion);
       importUtil.compareVarVersion(sForm);
     } catch (Exception e) {
@@ -272,7 +285,6 @@ public class RecordController extends SuperController {
         position++;
       }
     }
-    sForm.getRecord().getVariables().forEach((s) -> System.out.println(s));
     saveRecordToDBAndMinio(sForm);
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
   }
@@ -470,6 +482,8 @@ public class RecordController extends SuperController {
     log.trace("saveCodebook");
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
+    sForm.getPreviousRecordVersion().getVariables()
+        .forEach((s) -> s.getAttributes().forEach((t) -> System.out.println(t)));
     return "codebook";
   }
 
@@ -484,8 +498,8 @@ public class RecordController extends SuperController {
       TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
       try {
         recordDAO.insertMetaData(spssFile);
-        if (spssFile.getAttributes() != null)
-          recordDAO.insertAttributes(spssFile.getAttributes(), spssFile.getVersionId(), 0);
+        setRecordDWAttributes(spssFile.getAttributes());
+        recordDAO.insertAttributes(spssFile.getAttributes(), spssFile.getVersionId(), 0);
         if (spssFile.getVersionId() > 0) {
           recordDAO.insertMatrix(spssFile);
           int position = 0;
@@ -500,13 +514,12 @@ public class RecordController extends SuperController {
               long varId = recordDAO.insertVariable(var);
               recordDAO.insertVariableVersionRelation(varId, spssFile.getVersionId(), var.getPosition(),
                   sForm.getCompList().get(position).getMessage());
-              if (var.getAttributes() != null)
+              if (var.getAttributes() != null) {
                 recordDAO.insertAttributes(var.getAttributes(), spssFile.getVersionId(), varId);
+              }
               if (var.getValues() != null)
                 recordDAO.insertVarLabels(var.getValues(), varId);
             } else {
-              System.out.println(var.getId() + " - " + spssFile.getVersionId() + " - " + var.getName() + " - "
-                  + sForm.getCompList().get(position).getVarStatus());
               recordDAO.insertVariableVersionRelation(var.getId(), spssFile.getVersionId(), var.getPosition(),
                   sForm.getCompList().get(position).getMessage());
             }
@@ -537,6 +550,55 @@ public class RecordController extends SuperController {
         }
       }
     }
+  }
 
+  private void setRecordDWAttributes(List<SPSSValueLabelDTO> attr) {
+    if (attr == null) {
+      attr = new ArrayList<SPSSValueLabelDTO>();
+    }
+    Iterator<SPSSValueLabelDTO> itt = attr.iterator();
+    while (itt.hasNext()) {
+      SPSSValueLabelDTO attribute = itt.next();
+      if (!attribute.getValue().startsWith("@") || attribute.getValue().equals("@dw_construct")
+          || attribute.getValue().equals("@dw_measocc") || attribute.getValue().equals("@dw_instrument")
+          || attribute.getValue().equals("@dw_itemtextt") || attribute.getValue().equals("@dw_filtervar")) {
+        itt.remove();
+      }
+    }
+  }
+
+  /**
+   * @param attributes
+   */
+  private void setDataWizAttributes(List<SPSSValueLabelDTO> attributes) {
+    boolean dw_construct = false, dw_measocc = false, dw_instrument = false, dw_itemtext = false, dw_filtervar = false;
+    for (SPSSValueLabelDTO att : attributes) {
+      if (att.getLabel().equals("dw_construct")) {
+        dw_construct = true;
+      } else if (att.getLabel().equals("dw_measocc")) {
+        dw_measocc = true;
+      } else if (att.getLabel().equals("dw_instrument")) {
+        dw_instrument = true;
+      } else if (att.getLabel().equals("dw_itemtext")) {
+        dw_itemtext = true;
+      } else if (att.getLabel().equals("dw_filtervar")) {
+        dw_filtervar = true;
+      }
+    }
+    if (!dw_construct) {
+      attributes.add(new SPSSValueLabelDTO("dw_construct", "k4"));
+    }
+    if (!dw_measocc) {
+      attributes.add(new SPSSValueLabelDTO("dw_measocc", "drei"));
+    }
+    if (!dw_instrument) {
+      attributes.add(new SPSSValueLabelDTO("dw_instrument", "Instrument 3"));
+    }
+    if (!dw_itemtext) {
+      attributes.add(new SPSSValueLabelDTO("dw_itemtext", ""));
+    }
+    if (!dw_filtervar) {
+      attributes.add(new SPSSValueLabelDTO("dw_filtervar", "0"));
+    }
   }
 }

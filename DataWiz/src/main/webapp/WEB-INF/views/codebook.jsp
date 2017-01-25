@@ -46,6 +46,11 @@
                     <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val" varStatus="attnameloop">
                       <th class="th-width-100"><s:message text="[${fn:substringAfter(val.value, '@')}]" /></th>
                     </c:forEach>
+                    <th class="th-width-200">Konstrukt</th>
+                    <th class="th-width-200">Messzeitpunkt</th>
+                    <th class="th-width-200">Instrument</th>
+                    <th class="th-width-300">Itemtext</th>
+                    <th class="th-width-100">Filtervariable</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -99,6 +104,81 @@
                             </c:if>
                           </c:forEach></td>
                       </c:forEach>
+                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                          <c:if test="${val.label == 'dw_construct'}">
+                            <sf:select class="form-control"
+                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              <sf:option value="">Kein Konstrukt</sf:option>
+                              <sf:options items="${StudyForm.study.constructs}" itemLabel="name" itemValue="name" />
+                            </sf:select>
+                            <c:set var="contains" value="false" />
+                            <c:forEach items="${StudyForm.study.constructs}" var="construct">
+                              <c:if test="${construct.name eq val.value}">
+                                <c:set var="contains" value="true" />
+                              </c:if>
+                            </c:forEach>
+                            <c:if test="${not contains && val.value ne ''}">
+                              <div style="color: red;">
+                                <s:message text="Konstrukt '${val.value}' nicht vorhanden" />
+                              </div>
+                            </c:if>
+                          </c:if>
+                        </c:forEach></td>
+                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                          <c:if test="${val.label == 'dw_measocc'}">
+                            <sf:select class="form-control"
+                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              <sf:option value="">Kein Messzeitpunkt</sf:option>
+                              <sf:options items="${StudyForm.study.measOcc}" itemLabel="text" itemValue="text" />
+                            </sf:select>
+                            <c:set var="contains" value="false" />
+                            <c:forEach items="${StudyForm.study.measOcc}" var="construct">
+                              <c:if test="${construct.text eq val.value}">
+                                <c:set var="contains" value="true" />
+                              </c:if>
+                            </c:forEach>
+                            <c:if test="${not contains && val.value ne ''}">
+                              <div style="color: red;">
+                                <s:message text="Zeitpunkt '${val.value}' nicht vorhanden" />
+                              </div>
+                            </c:if>
+                          </c:if>
+                        </c:forEach></td>
+                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                          <c:if test="${val.label == 'dw_instrument'}">
+                            <sf:select class="form-control"
+                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              <sf:option value="">Kein Instrument</sf:option>
+                              <sf:options items="${StudyForm.study.instruments}" itemLabel="title" itemValue="title" />
+                            </sf:select>
+                            <c:set var="contains" value="false" />
+                            <c:forEach items="${StudyForm.study.instruments}" var="construct">
+                              <c:if test="${construct.title eq val.value}">
+                                <c:set var="contains" value="true" />
+                              </c:if>
+                            </c:forEach>
+                            <c:if test="${not contains && val.value ne ''}">
+                              <div style="color: red;">
+                                <s:message text="Instrument '${val.value}' nicht vorhanden" />
+                              </div>
+                            </c:if>
+                          </c:if>
+                        </c:forEach></td>
+                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                          <c:if test="${val.label == 'dw_itemtext'}">
+                            <sf:textarea class="form-control"
+                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value" />
+                          </c:if>
+                        </c:forEach></td>
+                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                          <c:if test="${val.label == 'dw_filtervar'}">
+                            <sf:select class="form-control"
+                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              <sf:option value="0">nein</sf:option>
+                              <sf:option value="1">ja</sf:option>
+                            </sf:select>
+                          </c:if>
+                        </c:forEach></td>
                     </tr>
                   </c:forEach>
                 </tbody>
