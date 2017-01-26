@@ -106,9 +106,8 @@ public class RecordController extends SuperController {
           rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
           if (rec.getVariables() != null && rec.getVariables().size() > 0) {
             for (SPSSVarTDO var : rec.getVariables()) {
-              List<SPSSValueLabelDTO> attributes = recordDAO.findVariableAttributes(var.getId(), false);
-              setDataWizAttributes(attributes);
-              var.setAttributes(attributes);
+              var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
+              importUtil.sortVariableAttributes(var);
               if (subpage.isPresent() && subpage.get().equals("codebook"))
                 var.setValues(recordDAO.findVariableValues(var.getId(), true));
               else
@@ -125,16 +124,17 @@ public class RecordController extends SuperController {
               messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
           return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
         }
-        sForm.setPreviousRecordVersion(rec);
+        sForm.setRecord(rec);
       }
       sForm.setRecords(rList);
     } catch (Exception e) {
       // TODO: handle exception
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.RECORDS,
-        new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
-            (sForm.getPreviousRecordVersion() != null ? sForm.getPreviousRecordVersion().getRecordName() : "TEST") },
-        new long[] { pid.get(), studyId.get() }, messageSource));
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.RECORDS,
+            new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
+                (sForm.getRecord() != null ? sForm.getRecord().getRecordName() : "TEST") },
+            new long[] { pid.get(), studyId.get() }, messageSource));
     model.put("StudyForm", sForm);
     model.put("recordSubMenu", true);
     log.trace("Method showRecord successfully completed");
@@ -224,11 +224,13 @@ public class RecordController extends SuperController {
       for (SPSSVarTDO var : vars) {
         var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
         var.setValues(recordDAO.findVariableValues(var.getId(), false));
+        importUtil.sortVariableAttributes(var);
       }
       lastVersion.setVariables(vars);
       sForm.setPreviousRecordVersion(lastVersion);
       importUtil.compareVarVersion(sForm);
     } catch (Exception e) {
+      // TODO
       e.printStackTrace();
     }
     return "importRep";
@@ -279,14 +281,30 @@ public class RecordController extends SuperController {
             newVar.setNumOfAttributes(prevVar.getNumOfAttributes());
             newVar.setValues(prevVar.getValues());
             newVar.setAttributes(prevVar.getAttributes());
+          } else {
+            if (prevVar.getDw_attributes() != null)
+              removeEmptyDWAttributes(prevVar.getDw_attributes());
+            newVar.getAttributes().addAll(prevVar.getDw_attributes());
           }
+        } else if (!comp.isKeepExpMeta() && !CSV) {
+          if (newVar.getDw_attributes() != null)
+            removeEmptyDWAttributes(newVar.getDw_attributes());
+          newVar.getAttributes().addAll(newVar.getDw_attributes());
         }
-
         position++;
       }
     }
     saveRecordToDBAndMinio(sForm);
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+  }
+
+  private void removeEmptyDWAttributes(List<SPSSValueLabelDTO> attributes) {
+    Iterator<SPSSValueLabelDTO> itt = attributes.iterator();
+    while (itt.hasNext()) {
+      SPSSValueLabelDTO att = itt.next();
+      if (att.getValue() == null || att.getValue().trim().isEmpty())
+        itt.remove();
+    }
   }
 
   @RequestMapping(value = { "/{recordId}/modal" })
@@ -296,7 +314,7 @@ public class RecordController extends SuperController {
       @RequestParam(value = "modal", required = true) String modal) {
     log.trace("loadAjaxModal [{}] for variable [id: {}]", () -> modal, () -> varId);
     String ret = "forms/codebookModalContent";
-    if (sForm == null || sForm.getPreviousRecordVersion() == null) {
+    if (sForm == null || sForm.getRecord() == null) {
       log.warn("WARN: StudyForm is empty - Session timed out");
       model.put("modalPid", pid);
       model.put("modalStudyId", studyId);
@@ -304,7 +322,7 @@ public class RecordController extends SuperController {
       return "forms/modalError";
     }
     if (varId != -1) {
-      for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      for (SPSSVarTDO var : sForm.getRecord().getVariables()) {
         if (var.getId() == varId) {
           model.put("VarValues", var);
           break;
@@ -346,7 +364,7 @@ public class RecordController extends SuperController {
       }
     }
     if (varVal.getId() > 0) {
-      for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      for (SPSSVarTDO var : sForm.getRecord().getVariables()) {
         if (var.getId() == varVal.getId()) {
           var.setValues(varVal.getValues());
           model.remove("VarValues");
@@ -354,7 +372,7 @@ public class RecordController extends SuperController {
         }
       }
     } else if (varVal.getId() == -1) {
-      for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+      for (SPSSVarTDO var : sForm.getRecord().getVariables()) {
         List<SPSSValueLabelDTO> global = new ArrayList<>();
         boolean setGlobal = false;
         for (SPSSValueLabelDTO val : varVal.getValues()) {
@@ -402,7 +420,7 @@ public class RecordController extends SuperController {
     log.trace("setMissings for variable [id: {}]", () -> varVal.getId());
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
-    for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+    for (SPSSVarTDO var : sForm.getRecord().getVariables()) {
       if (var.getId() == varVal.getId()) {
         var.setMissingFormat(varVal.getMissingFormat());
         switchMissingType(varVal, var);
@@ -420,7 +438,7 @@ public class RecordController extends SuperController {
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     List<SPSSVarTDO> missings = varVal.getViewVars();
-    for (SPSSVarTDO var : sForm.getPreviousRecordVersion().getVariables()) {
+    for (SPSSVarTDO var : sForm.getRecord().getVariables()) {
       if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_A)) {
         var.setMissingFormat(missings.get(0).getMissingFormat());
         switchMissingType(missings.get(0), var);
@@ -435,55 +453,12 @@ public class RecordController extends SuperController {
     return "codebook";
   }
 
-  /**
-   * @param varVal
-   * @param var
-   */
-  private void switchMissingType(SPSSVarTDO varVal, SPSSVarTDO var) {
-    switch (varVal.getMissingFormat()) {
-    case SPSS_NO_MISSVAL:
-      var.setMissingVal1(null);
-      var.setMissingVal2(null);
-      var.setMissingVal3(null);
-      break;
-    case SPSS_ONE_MISSVAL:
-      var.setMissingVal1(varVal.getMissingVal1());
-      var.setMissingVal2(null);
-      var.setMissingVal3(null);
-      break;
-    case SPSS_TWO_MISSVAL:
-      var.setMissingVal1(varVal.getMissingVal1());
-      var.setMissingVal2(varVal.getMissingVal2());
-      var.setMissingVal3(null);
-      break;
-    case SPSS_THREE_MISSVAL:
-      var.setMissingVal1(varVal.getMissingVal1());
-      var.setMissingVal2(varVal.getMissingVal2());
-      var.setMissingVal3(varVal.getMissingVal3());
-      break;
-    case SPSS_MISS_RANGE:
-      var.setMissingVal1(varVal.getMissingVal1());
-      var.setMissingVal2(varVal.getMissingVal2());
-      var.setMissingVal3(null);
-      break;
-    case SPSS_MISS_RANGEANDVAL:
-      var.setMissingVal1(varVal.getMissingVal1());
-      var.setMissingVal2(varVal.getMissingVal2());
-      var.setMissingVal3(varVal.getMissingVal3());
-      break;
-    default:
-      log.warn("MissingFormat not known - " + varVal.getMissingFormat());
-      break;
-    }
-  }
-
-  @RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST, params = "saveCodebook")
+  @RequestMapping(value = { "/{recordId}/version/{versionId}" }, method = RequestMethod.POST, params = "saveCodebook")
   public String saveCodebook(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("saveCodebook");
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
-    sForm.getPreviousRecordVersion().getVariables()
-        .forEach((s) -> s.getAttributes().forEach((t) -> System.out.println(t)));
+    sForm.getRecord().getVariables().forEach((s) -> s.getAttributes().forEach((t) -> System.out.println(t)));
     return "codebook";
   }
 
@@ -568,37 +543,45 @@ public class RecordController extends SuperController {
   }
 
   /**
-   * @param attributes
+   * @param varVal
+   * @param var
    */
-  private void setDataWizAttributes(List<SPSSValueLabelDTO> attributes) {
-    boolean dw_construct = false, dw_measocc = false, dw_instrument = false, dw_itemtext = false, dw_filtervar = false;
-    for (SPSSValueLabelDTO att : attributes) {
-      if (att.getLabel().equals("dw_construct")) {
-        dw_construct = true;
-      } else if (att.getLabel().equals("dw_measocc")) {
-        dw_measocc = true;
-      } else if (att.getLabel().equals("dw_instrument")) {
-        dw_instrument = true;
-      } else if (att.getLabel().equals("dw_itemtext")) {
-        dw_itemtext = true;
-      } else if (att.getLabel().equals("dw_filtervar")) {
-        dw_filtervar = true;
-      }
-    }
-    if (!dw_construct) {
-      attributes.add(new SPSSValueLabelDTO("dw_construct", "k4"));
-    }
-    if (!dw_measocc) {
-      attributes.add(new SPSSValueLabelDTO("dw_measocc", "drei"));
-    }
-    if (!dw_instrument) {
-      attributes.add(new SPSSValueLabelDTO("dw_instrument", "Instrument 3"));
-    }
-    if (!dw_itemtext) {
-      attributes.add(new SPSSValueLabelDTO("dw_itemtext", ""));
-    }
-    if (!dw_filtervar) {
-      attributes.add(new SPSSValueLabelDTO("dw_filtervar", "0"));
+  private void switchMissingType(SPSSVarTDO varVal, SPSSVarTDO var) {
+    switch (varVal.getMissingFormat()) {
+    case SPSS_NO_MISSVAL:
+      var.setMissingVal1(null);
+      var.setMissingVal2(null);
+      var.setMissingVal3(null);
+      break;
+    case SPSS_ONE_MISSVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(null);
+      var.setMissingVal3(null);
+      break;
+    case SPSS_TWO_MISSVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(null);
+      break;
+    case SPSS_THREE_MISSVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(varVal.getMissingVal3());
+      break;
+    case SPSS_MISS_RANGE:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(null);
+      break;
+    case SPSS_MISS_RANGEANDVAL:
+      var.setMissingVal1(varVal.getMissingVal1());
+      var.setMissingVal2(varVal.getMissingVal2());
+      var.setMissingVal3(varVal.getMissingVal3());
+      break;
+    default:
+      log.warn("MissingFormat not known - " + varVal.getMissingFormat());
+      break;
     }
   }
+
 }

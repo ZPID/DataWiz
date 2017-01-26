@@ -1,10 +1,10 @@
 <%@ include file="../templates/includes.jsp"%>
 <c:url var="accessUrl"
-  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
+  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
 <sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form"
   onsubmit="return checkValueMissingForm('${modalView}')">
   <sf:hidden path="id" />
-  <c:set var="simplifiedType" value="${StudyForm.previousRecordVersion.simplifyVarTypes(VarValues.type)}" />
+  <c:set var="simplifiedType" value="${StudyForm.record.simplifyVarTypes(VarValues.type)}" />
   <sf:hidden path="type" value="${simplifiedType}" />
   <c:choose>
     <c:when test="${modalView eq 'values'}">

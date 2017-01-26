@@ -41,7 +41,7 @@
   </c:otherwise>
 </c:choose>
 <td>
-  <table class="table" style="margin: 0px; padding: 0px; background-color: rgba(0,0,0, 0.0) !important;">
+  <table class="table" style="margin: 0px; padding: 0px; background-color: rgba(0, 0, 0, 0.0) !important;">
     <thead>
       <tr>
         <c:forEach items="${currVAR.attributes}" var="att">
@@ -58,3 +58,28 @@
     </tbody>
   </table>
 </td>
+<td><c:forEach items="${currVAR.dw_attributes}" var="att">
+    <c:if test="${att.label eq 'dw_construct'}">
+      <s:message text="${att.value}" />
+    </c:if>
+  </c:forEach></td>
+<td><c:forEach items="${currVAR.dw_attributes}" var="att">
+    <c:if test="${att.label eq 'dw_measocc'}">
+      <s:message text="${att.value}" />
+    </c:if>
+  </c:forEach></td>
+<td><c:forEach items="${currVAR.dw_attributes}" var="att">
+    <c:if test="${att.label eq 'dw_instrument'}">
+      <s:message text="${att.value}" />
+    </c:if>
+  </c:forEach></td>
+<td><c:forEach items="${currVAR.dw_attributes}" var="att">
+    <c:if test="${att.label eq 'dw_itemtext'}">
+      <s:message text="${att.value}" />
+    </c:if>
+  </c:forEach></td>
+<td><c:forEach items="${currVAR.dw_attributes}" var="att">
+    <c:if test="${att.label eq 'dw_filtervar'}">
+      <s:message text="${att.value}" />
+    </c:if>
+  </c:forEach></td>

@@ -1,6 +1,6 @@
 <%@ include file="../templates/includes.jsp"%>
 <c:url var="accessUrl"
-  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
+  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
 <sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form"
   onsubmit="return checkValueForm()">
   <sf:hidden path="id" />

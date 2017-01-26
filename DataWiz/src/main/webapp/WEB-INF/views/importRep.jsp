@@ -118,7 +118,7 @@
                                 </c:otherwise>
                               </c:choose>
                             <tr>
-                              <td colspan="13"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
+                              <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
                                   label="Erweitere Metadaten übernehmen: " /> <s:message
                                   text="${StudyForm.compList[loop.count-1].message}" /></td>
                             </tr>
@@ -148,7 +148,7 @@
                                   <jsp:include page="templates/importTable.jsp" />
                                 </tr>
                                 <tr>
-                                  <td colspan="13"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
+                                  <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
                                       label="Erweitere Metadaten übernehmen: " /> <s:message
                                       text="${StudyForm.compList[loop.count-1].message}" /></td>
                                 </tr>

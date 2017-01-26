@@ -7,7 +7,7 @@
     <div class="content-padding">
       <div class="page-header">
         <c:choose>
-          <c:when test="${empty StudyForm.previousRecordVersion.id}">
+          <c:when test="${empty StudyForm.record.id}">
             <h4>
               <s:message code="study.create.basis.headline" />
             </h4>
@@ -19,7 +19,7 @@
             <div class="row">
               <div class="col-sm-9">
                 <h4>
-                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.previousRecordVersion.recordName}" />
+                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.record.recordName}" />
                 </h4>
               </div>
               <div class="col-sm-3">
@@ -48,14 +48,14 @@
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
       <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}?${_csrf.parameterName}=${_csrf.token}" />
+        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}?${_csrf.parameterName}=${_csrf.token}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST"
         enctype="multipart/form-data" role="form">
         <!-- records[0].recordName -->
-        <c:set var="input_vars" value="previousRecordVersion.recordName;record.recordName;required; ;row" />
+        <c:set var="input_vars" value="record.recordName;record.recordName;required; ;row" />
         <%@ include file="templates/gen_input.jsp"%>
         <!-- study.sAbstract -->
-        <c:set var="input_vars" value="previousRecordVersion.description;record.description; ; ;row" />
+        <c:set var="input_vars" value="record.description;record.description; ; ;row" />
         <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
           <div class="col-sm-offset-0 col-md-12">

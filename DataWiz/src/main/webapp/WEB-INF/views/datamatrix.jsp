@@ -47,18 +47,18 @@
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <c:if test="${not empty StudyForm.previousRecordVersion.dataMatrix}">
+      <c:if test="${not empty StudyForm.record.dataMatrix}">
         <div class="pre-xy-scrollable">
           <table class="table table-striped table-bordered table-condensed matrixtable">
             <thead>
               <tr>
-                <c:forEach items="${StudyForm.previousRecordVersion.variables}" var="var">
+                <c:forEach items="${StudyForm.record.variables}" var="var">
                   <th><s:message text="${var.name}" /></th>
                 </c:forEach>
               </tr>
             </thead>
             <tbody>
-              <c:forEach items="${StudyForm.previousRecordVersion.dataMatrix}" var="row" varStatus="rowNum">
+              <c:forEach items="${StudyForm.record.dataMatrix}" var="row" varStatus="rowNum">
                 <tr>
                   <c:forEach items="${row}" var="value">
                     <td><s:message text="${value}" /></td>

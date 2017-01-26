@@ -10,6 +10,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -36,6 +37,7 @@ import de.zpid.datawiz.enumeration.VariableStatus;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSFileDTO;
+import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarTDO;
 import de.zpid.spss.util.SPSSAligment;
 import de.zpid.spss.util.SPSSMeasLevel;
@@ -523,6 +525,9 @@ public class ImportUtil {
         spssFile.setId(recordId.get());
         spssFile.setChangedBy(user.getEmail());
         spssFile.setChangeLog(sForm.getNewChangeLog());
+        for (SPSSVarTDO var : spssFile.getVariables()) {
+          sortVariableAttributes(var);
+        }
         sForm.setRecord(spssFile);
         sForm.setFile(file);
 
@@ -533,6 +538,52 @@ public class ImportUtil {
       error = true;
     }
     return error;
+  }
+
+  public void sortVariableAttributes(SPSSVarTDO var) {
+    boolean dw_construct = false, dw_measocc = false, dw_instrument = false, dw_itemtext = false, dw_filtervar = false;
+    Iterator<SPSSValueLabelDTO> itt = var.getAttributes().iterator();
+    List<SPSSValueLabelDTO> dw_attr = new ArrayList<>();
+    while (itt.hasNext()) {
+      SPSSValueLabelDTO att = itt.next();
+      if (att.getLabel().equals("dw_construct")) {
+        dw_attr.add(att);
+        dw_construct = true;
+        itt.remove();
+      } else if (att.getLabel().equals("dw_measocc")) {
+        dw_attr.add(att);
+        dw_measocc = true;
+        itt.remove();
+      } else if (att.getLabel().equals("dw_instrument")) {
+        dw_attr.add(att);
+        dw_instrument = true;
+        itt.remove();
+      } else if (att.getLabel().equals("dw_itemtext")) {
+        dw_attr.add(att);
+        dw_itemtext = true;
+        itt.remove();
+      } else if (att.getLabel().equals("dw_filtervar")) {
+        dw_attr.add(att);
+        dw_filtervar = true;
+        itt.remove();
+      }
+    }
+    if (!dw_construct) {
+      dw_attr.add(new SPSSValueLabelDTO("dw_construct", ""));
+    }
+    if (!dw_measocc) {
+      dw_attr.add(new SPSSValueLabelDTO("dw_measocc", ""));
+    }
+    if (!dw_instrument) {
+      dw_attr.add(new SPSSValueLabelDTO("dw_instrument", ""));
+    }
+    if (!dw_itemtext) {
+      dw_attr.add(new SPSSValueLabelDTO("dw_itemtext", ""));
+    }
+    if (!dw_filtervar) {
+      dw_attr.add(new SPSSValueLabelDTO("dw_filtervar", ""));
+    }
+    var.setDw_attributes(dw_attr);
   }
 
   /**

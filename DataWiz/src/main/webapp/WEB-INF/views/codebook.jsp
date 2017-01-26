@@ -14,7 +14,7 @@
         </div>
       </div>
       <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
+        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
@@ -43,27 +43,25 @@
                     <th class="codebookTableHide th-width-100"><s:message
                         code="dataset.import.report.codebook.role" /></th>
                     <th class="th-width-20" onclick="$('.codebookTableHide').toggle();">...</th>
-                    <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val" varStatus="attnameloop">
+                    <c:forEach items="${StudyForm.record.attributes}" var="val" varStatus="attnameloop">
                       <th class="th-width-100"><s:message text="[${fn:substringAfter(val.value, '@')}]" /></th>
                     </c:forEach>
-                    <th class="th-width-200">Konstrukt</th>
-                    <th class="th-width-200">Messzeitpunkt</th>
-                    <th class="th-width-200">Instrument</th>
-                    <th class="th-width-300">Itemtext</th>
-                    <th class="th-width-100">Filtervariable</th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.construct" /></th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.measocc" /></th>
+                    <th class="th-width-200"><s:message code="dataset.import.report.codebook.instrument" /></th>
+                    <th class="th-width-300"><s:message code="dataset.import.report.codebook.itemtext" /></th>
+                    <th class="th-width-100"><s:message code="dataset.import.report.codebook.filtervar" /></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <c:forEach items="${StudyForm.previousRecordVersion.variables}" var="var" varStatus="loop">
+                  <c:forEach items="${StudyForm.record.variables}" var="var" varStatus="loop">
                     <tr>
                       <td><strong><sf:input class="form-control varNames"
-                            path="previousRecordVersion.variables[${loop.count-1}].name" id="varNameId_${loop.count-1}" /></strong></td>
-                      <td><c:set var="simplifiedType"
-                          value="${StudyForm.previousRecordVersion.simplifyVarTypes(var.type)}" /> <s:message
+                            path="record.variables[${loop.count-1}].name" id="varNameId_${loop.count-1}" /></strong></td>
+                      <td><c:set var="simplifiedType" value="${StudyForm.record.simplifyVarTypes(var.type)}" /> <s:message
                           code="spss.type.${simplifiedType}" /> <c:if test="${simplifiedType ne var.type}">(<s:message
                             code="spss.type.${var.type}" />)</c:if></td>
-                      <td><sf:textarea class="form-control"
-                          path="previousRecordVersion.variables[${loop.count-1}].label" /></td>
+                      <td><sf:textarea class="form-control" path="record.variables[${loop.count-1}].label" /></td>
                       <td style="cursor: pointer;"
                         onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=values');"><c:forEach
                           items="${var.values}" var="val">
@@ -97,17 +95,17 @@
                       <td class="codebookTableHide"><s:message code="spss.measureLevel.${var.measureLevel}" /></td>
                       <td class="codebookTableHide"><s:message code="spss.role.${var.role}" /></td>
                       <td></td>
-                      <c:forEach items="${StudyForm.previousRecordVersion.attributes}" var="val" varStatus="attnameloop">
+                      <c:forEach items="${StudyForm.record.attributes}" var="val" varStatus="attnameloop">
                         <td><c:forEach items="${var.attributes}" var="att">
                             <c:if test="${fn:substringAfter(val.value, '@') == att.label}">
                               <s:message text="${att.value}" />
                             </c:if>
                           </c:forEach></td>
                       </c:forEach>
-                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                      <td><c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                           <c:if test="${val.label == 'dw_construct'}">
                             <sf:select class="form-control"
-                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
                               <sf:option value="">Kein Konstrukt</sf:option>
                               <sf:options items="${StudyForm.study.constructs}" itemLabel="name" itemValue="name" />
                             </sf:select>
@@ -119,15 +117,15 @@
                             </c:forEach>
                             <c:if test="${not contains && val.value ne ''}">
                               <div style="color: red;">
-                                <s:message text="Konstrukt '${val.value}' nicht vorhanden" />
+                                <s:message code="record.codebook.construct.missing" arguments="${val.value}" />
                               </div>
                             </c:if>
                           </c:if>
                         </c:forEach></td>
-                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                      <td><c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                           <c:if test="${val.label == 'dw_measocc'}">
                             <sf:select class="form-control"
-                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
                               <sf:option value="">Kein Messzeitpunkt</sf:option>
                               <sf:options items="${StudyForm.study.measOcc}" itemLabel="text" itemValue="text" />
                             </sf:select>
@@ -139,15 +137,15 @@
                             </c:forEach>
                             <c:if test="${not contains && val.value ne ''}">
                               <div style="color: red;">
-                                <s:message text="Zeitpunkt '${val.value}' nicht vorhanden" />
+                                <s:message code="record.codebook.measocc.missing" arguments="${val.value}" />
                               </div>
                             </c:if>
                           </c:if>
                         </c:forEach></td>
-                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                      <td><c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                           <c:if test="${val.label == 'dw_instrument'}">
                             <sf:select class="form-control"
-                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
+                              path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
                               <sf:option value="">Kein Instrument</sf:option>
                               <sf:options items="${StudyForm.study.instruments}" itemLabel="title" itemValue="title" />
                             </sf:select>
@@ -159,23 +157,27 @@
                             </c:forEach>
                             <c:if test="${not contains && val.value ne ''}">
                               <div style="color: red;">
-                                <s:message text="Instrument '${val.value}' nicht vorhanden" />
+                                <s:message code="record.codebook.instrument.missing" arguments="${val.value}" />
                               </div>
                             </c:if>
                           </c:if>
                         </c:forEach></td>
-                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                      <td><c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                           <c:if test="${val.label == 'dw_itemtext'}">
                             <sf:textarea class="form-control"
-                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value" />
+                              path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value" />
                           </c:if>
                         </c:forEach></td>
-                      <td><c:forEach items="${var.attributes}" var="val" varStatus="attloop">
+                      <td><c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                           <c:if test="${val.label == 'dw_filtervar'}">
                             <sf:select class="form-control"
-                              path="previousRecordVersion.variables[${loop.count-1}].attributes[${attloop.count-1}].value">
-                              <sf:option value="0">nein</sf:option>
-                              <sf:option value="1">ja</sf:option>
+                              path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                              <sf:option value="0">
+                                <s:message code="gen.no" />
+                              </sf:option>
+                              <sf:option value="1">
+                                <s:message code="gen.yes" />
+                              </sf:option>
                             </sf:select>
                           </c:if>
                         </c:forEach></td>
@@ -200,10 +202,9 @@
         </div>
         <div class="row">
           <div class="col-sm-12 text-right">
-            <a href="${accessUrl}" class="btn btn-default"> <s:message code="dataset.cancel.import" />
-            </a>
+            <a href="${accessUrl}/codebook" class="btn btn-default"><s:message code="codebook.cancel.save" /></a>
             <button type="submit" class="btn btn-success" name="saveCodebook">
-              <s:message code="dataset.submit.import" />
+              <s:message code="codebook.submit.save" />
             </button>
           </div>
         </div>
