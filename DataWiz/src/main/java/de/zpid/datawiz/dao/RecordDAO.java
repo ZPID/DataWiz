@@ -356,9 +356,9 @@ public class RecordDAO extends SuperDAO {
         ps.setInt(5, var.getWidth());
         ps.setString(6, var.getLabel());
         ps.setInt(7, var.getMissingFormat() == null ? 0 : var.getMissingFormat().getNumber());
-        ps.setString(8, var.getMissingVal1());
-        ps.setString(9, var.getMissingVal2());
-        ps.setString(10, var.getMissingVal3());
+        ps.setString(8, var.getMissingVal1() == null ? "" : var.getMissingVal1());
+        ps.setString(9, var.getMissingVal2() == null ? "" : var.getMissingVal2());
+        ps.setString(10, var.getMissingVal3() == null ? "" : var.getMissingVal3());
         ps.setInt(11, var.getColumns());
         ps.setInt(12, var.getAligment() == null ? 0 : var.getAligment().getNumber());
         ps.setInt(13, var.getMeasureLevel() == null ? 0 : var.getMeasureLevel().getNumber());

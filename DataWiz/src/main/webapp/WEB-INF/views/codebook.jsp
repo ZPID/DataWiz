@@ -172,7 +172,7 @@
                           <c:if test="${val.label == 'dw_filtervar'}">
                             <sf:select class="form-control"
                               path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                              <sf:option value="0">
+                              <sf:option value="">
                                 <s:message code="gen.no" />
                               </sf:option>
                               <sf:option value="1">

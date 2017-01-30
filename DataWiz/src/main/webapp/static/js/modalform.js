@@ -4,6 +4,8 @@
  * debugging variable
  */
 var MODALDEBUG = false;
+var datawizDateTimePattern = /^((\d{2}.\d{2}.\d{4}(\s\d{2}:\d{2}(:\d{2})?)?)$)|(\d{2}:\d{2}(:\d{2})?)$/;
+var dateTimeRegex = /^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$/g;
 
 /**
  * jQuery Listener for "propertychange" on input fields which belongs to class ".varNames"
@@ -660,6 +662,9 @@ function checkDate(value) {
   }
   var ret = true;
   dateTimeRegex.lastIndex = 0;
+  datawizDateTimePattern.lastIndex = 0; 
+  if(datawizDateTimePattern.exec(value) === null)
+    ret = false;
   if (dateTimeRegex.exec(value) === null)
     ret = false;
   if (MODALDEBUG) {

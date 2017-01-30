@@ -97,7 +97,6 @@ public class RecordController extends SuperController {
         sForm.getStudy().setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
         sForm.getStudy().setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get(), true));
       }
-      List<RecordDTO> rList = new ArrayList<RecordDTO>();
       if (recordId.isPresent()) {
         RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(),
             (versionId.isPresent() && versionId.get() > 0 ? versionId.get() : 0)));
@@ -126,7 +125,6 @@ public class RecordController extends SuperController {
         }
         sForm.setRecord(rec);
       }
-      sForm.setRecords(rList);
     } catch (Exception e) {
       // TODO: handle exception
     }
@@ -307,7 +305,7 @@ public class RecordController extends SuperController {
     }
   }
 
-  @RequestMapping(value = { "/{recordId}/modal" })
+  @RequestMapping(value = { "{recordId}/version/{versionId}/modal" })
   public String loadAjaxModal(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
       @PathVariable final Long pid, @PathVariable final Long studyId, @PathVariable final Long recordId,
       @RequestParam(value = "varId", required = true) long varId,
@@ -454,12 +452,51 @@ public class RecordController extends SuperController {
   }
 
   @RequestMapping(value = { "/{recordId}/version/{versionId}" }, method = RequestMethod.POST, params = "saveCodebook")
-  public String saveCodebook(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm) {
+  public String saveCodebook(@ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("saveCodebook");
-    model.put("recordSubMenu", true);
-    model.put("subnaviActive", PageState.RECORDVAR.name());
-    sForm.getRecord().getVariables().forEach((s) -> s.getAttributes().forEach((t) -> System.out.println(t)));
-    return "codebook";
+    RecordDTO lastVersion = null;
+    RecordDTO currentVersion = sForm.getRecord();
+    try {
+      lastVersion = (recordDAO.findRecordWithID(sForm.getRecord().getId(), 0));
+      lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
+      lastVersion.setAttributes(recordDAO.findRecordAttributes(lastVersion.getVersionId(), true));
+      lastVersion.setDataMatrixJson(recordDAO.findMatrixByVersionId(lastVersion.getVersionId()));
+      if (lastVersion.getVariables() != null && lastVersion.getVariables().size() > 0) {
+        for (SPSSVarTDO var : lastVersion.getVariables()) {
+          var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
+          importUtil.sortVariableAttributes(var);
+          var.setValues(recordDAO.findVariableValues(var.getId(), true));
+        }
+      }
+
+      if (currentVersion != null && lastVersion != null && currentVersion.getVariables() != null
+          && lastVersion.getVariables() != null && !currentVersion.getVariables().equals(lastVersion.getVariables())) {
+        recordDAO.insertMetaData(currentVersion);
+        int i = 0;
+        for (SPSSVarTDO var : currentVersion.getVariables()) {
+          if (var.equals(lastVersion.getVariables().get(i++))) {
+            recordDAO.insertVariableVersionRelation(var.getId(), currentVersion.getVersionId(), var.getPosition(),
+                "alt");
+          } else {
+            // TODO "" was wurde geändert hinzufügen!
+            long varId = recordDAO.insertVariable(var);
+            recordDAO.insertVariableVersionRelation(varId, currentVersion.getVersionId(), var.getPosition(), "new");
+            if (var.getAttributes() != null) {
+              removeEmptyDWAttributes(var.getDw_attributes());
+              var.getAttributes().addAll(var.getDw_attributes());
+              recordDAO.insertAttributes(var.getAttributes(), currentVersion.getVersionId(), varId);
+            }
+            if (var.getValues() != null)
+              recordDAO.insertVarLabels(var.getValues(), varId);
+          }
+        }
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return "redirect:/project/" + sForm.getProject().getId() + "/study/" + sForm.getStudy().getId() + "/record/"
+        + currentVersion.getId() + "/version/" + currentVersion.getVersionId() + "/codebook";
   }
 
   /**
