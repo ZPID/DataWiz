@@ -152,6 +152,23 @@ label.btn::after {
   table-layout: fixed;
 }
 
+.breadcrumb {
+  position: absolute;
+  top: 8px;
+  padding: 10px 5px;
+  font-size: 12px;
+  background-color: #337ab7;
+  color: white;
+}
+
+.breadcrumb a {
+  color: white;
+}
+
+.bractive {
+  color: red;
+}
+
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
@@ -184,6 +201,10 @@ label.btn::after {
   .modalWidth {
     width: 100%;
   }
+  .breadcrumb {
+    left: 0%;
+    top: 8px;
+  }
 }
 /* Breite ab 766 pixel */
 @media ( min-width : 766px) and (max-width:1599px) {
@@ -214,6 +235,9 @@ label.btn::after {
   .modalWidth {
     width: 90%;
   }
+  .breadcrumb {
+    left: 0%;
+  }
 }
 /* Breite ab 1200 pixel */
 @media ( min-width : 1600px) {
@@ -237,6 +261,9 @@ label.btn::after {
   }
   .modalWidth {
     width: 60%;
+  }
+  .breadcrumb {
+    left: 10%;
   }
 }
 /**************** END RESPONSIVE ****************/
@@ -478,18 +505,23 @@ label.btn::after {
   font-size: 26px;
   text-align: center;
 }
-.th-width-300{
+
+.th-width-300 {
   width: 300px;
 }
-.th-width-200{
+
+.th-width-200 {
   width: 200px;
 }
-.th-width-100{
+
+.th-width-100 {
   width: 100px;
 }
-.th-width-60{
+
+.th-width-60 {
   width: 60px;
 }
-.th-width-20{
+
+.th-width-20 {
   width: 20px;
 }

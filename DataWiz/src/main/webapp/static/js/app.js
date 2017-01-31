@@ -592,6 +592,7 @@ function shortFilename(spanName, filePath) {
 }
 
 function showAjaxModal(url) {
+  asyncSumbit();
   $(".modal-dialog").removeClass("modalWidth")
   jQuery('#valueModal').modal('show', {
     backdrop : 'static'
@@ -600,6 +601,7 @@ function showAjaxModal(url) {
 }
 
 function showGlobalAjaxModal(url) {
+  asyncSumbit();
   $(".modal-dialog").addClass("modalWidth")
   jQuery('#valueModal').modal('show', {
     backdrop : 'static'
@@ -614,3 +616,15 @@ function delVarValues(position) {
   return false;
 }
 
+function asyncSumbit() {
+  var str = $("#StudyForm").serialize();
+  $.ajax({
+    type : "post",
+    data : str,
+    url : "asyncSubmit",
+    async : true,
+    dataType : "json",
+    success : function() {
+    }
+  });
+}

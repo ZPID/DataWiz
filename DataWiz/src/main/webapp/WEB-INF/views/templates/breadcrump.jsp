@@ -1,5 +1,5 @@
 <%@ include file="../templates/includes.jsp"%>
-<ol class="breadcrumb">
+<%-- <ol class="breadcrumb">
   <c:forEach var="map" items="${breadcrumpList}">
     <c:choose>
       <c:when test="${empty map.uri}">
@@ -10,5 +10,5 @@
       </c:otherwise>
     </c:choose>
   </c:forEach>
-</ol>
+</ol> --%>
 <%-- ${requestScope['javax.servlet.forward.servlet_path']} --%>

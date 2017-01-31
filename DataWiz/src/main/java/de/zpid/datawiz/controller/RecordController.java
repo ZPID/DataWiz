@@ -9,6 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -349,7 +352,7 @@ public class RecordController extends SuperController {
     return ret;
   }
 
-  @RequestMapping(value = { "/{recordId}" }, params = "setValues")
+  @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setValues")
   public String setValues(final ModelMap model, @ModelAttribute("VarValues") SPSSVarTDO varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("setValues for variable [id: {}]", () -> varVal.getId());
@@ -412,7 +415,7 @@ public class RecordController extends SuperController {
     return "codebook";
   }
 
-  @RequestMapping(value = { "/{recordId}" }, params = "setMissings")
+  @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setMissings")
   public String setMissings(final ModelMap model, @ModelAttribute("VarValues") SPSSVarTDO varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("setMissings for variable [id: {}]", () -> varVal.getId());
@@ -429,7 +432,20 @@ public class RecordController extends SuperController {
     return "codebook";
   }
 
-  @RequestMapping(value = { "/{recordId}" }, params = "setGlobalMissings")
+  @RequestMapping(value = { "{recordId}/version/{versionId}/asyncSubmit" })
+  public @ResponseBody ResponseEntity<String> setFormAsync(final ModelMap model,
+      @ModelAttribute("StudyForm") StudyForm sForm) {
+    log.trace("setFormAsync");
+    if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
+      log.warn(
+          "Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
+      return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+    }
+    // model.put("StudyForm", sForm);
+    return new ResponseEntity<String>(HttpStatus.OK);
+  }
+
+  @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setGlobalMissings")
   public String setGlobalMissings(final ModelMap model, @ModelAttribute("VarValues") StudyForm varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("setGlobalMissings for record [id: {}]", () -> sForm.getRecord().getId());
@@ -452,10 +468,12 @@ public class RecordController extends SuperController {
   }
 
   @RequestMapping(value = { "/{recordId}/version/{versionId}" }, method = RequestMethod.POST, params = "saveCodebook")
-  public String saveCodebook(@ModelAttribute("StudyForm") StudyForm sForm) {
+  public String saveCodebook(@ModelAttribute("StudyForm") StudyForm sForm,
+      final RedirectAttributes redirectAttributes) {
     log.trace("saveCodebook");
     RecordDTO lastVersion = null;
     RecordDTO currentVersion = sForm.getRecord();
+    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
     try {
       lastVersion = (recordDAO.findRecordWithID(sForm.getRecord().getId(), 0));
       lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
@@ -468,7 +486,6 @@ public class RecordController extends SuperController {
           var.setValues(recordDAO.findVariableValues(var.getId(), true));
         }
       }
-
       if (currentVersion != null && lastVersion != null && currentVersion.getVariables() != null
           && lastVersion.getVariables() != null && !currentVersion.getVariables().equals(lastVersion.getVariables())) {
         recordDAO.insertMetaData(currentVersion);
@@ -476,9 +493,8 @@ public class RecordController extends SuperController {
         for (SPSSVarTDO var : currentVersion.getVariables()) {
           if (var.equals(lastVersion.getVariables().get(i++))) {
             recordDAO.insertVariableVersionRelation(var.getId(), currentVersion.getVersionId(), var.getPosition(),
-                "alt");
+                messageSource.getMessage("import.check.EQUAL", null, LocaleContextHolder.getLocale()));
           } else {
-            // TODO "" was wurde geändert hinzufügen!
             long varId = recordDAO.insertVariable(var);
             recordDAO.insertVariableVersionRelation(varId, currentVersion.getVersionId(), var.getPosition(), "new");
             if (var.getAttributes() != null) {
@@ -490,10 +506,20 @@ public class RecordController extends SuperController {
               recordDAO.insertVarLabels(var.getValues(), varId);
           }
         }
+        recordDAO.insertMatrix(currentVersion);
+        txManager.commit(status);
+        redirectAttributes.addFlashAttribute("infoMSG",
+            messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
+      } else {
+        redirectAttributes.addFlashAttribute("infoMSG",
+            messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
       }
+
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      log.error("ERROR", e);
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
+      txManager.rollback(status);
     }
     return "redirect:/project/" + sForm.getProject().getId() + "/study/" + sForm.getStudy().getId() + "/record/"
         + currentVersion.getId() + "/version/" + currentVersion.getVersionId() + "/codebook";
