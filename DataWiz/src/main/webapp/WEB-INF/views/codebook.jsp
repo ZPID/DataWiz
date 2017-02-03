@@ -217,4 +217,27 @@
     <!-- Modal content-->
   </div>
 </div>
+<div class="modal fade" id="errorModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content panel-primary">
+      <div class="modal-header panel-heading">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">YOU FAILED</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="col-sm-12">Bist du der Depp des Tages?</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="form-group">
+          <div class="col-sm-offset-0 col-md-12">
+            <a href="${accessUrl}/codebook" class="btn btn-success"> <s:message code="gen.yes" />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <%@ include file="templates/footer.jsp"%>

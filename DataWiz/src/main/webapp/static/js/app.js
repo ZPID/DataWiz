@@ -591,24 +591,6 @@ function shortFilename(spanName, filePath) {
   $('#' + spanName).html(filePath.replace(/^.*\\/, ''));
 }
 
-function showAjaxModal(url) {
-  asyncSumbit();
-  $(".modal-dialog").removeClass("modalWidth")
-  jQuery('#valueModal').modal('show', {
-    backdrop : 'static'
-  });
-  jQuery('#valueModal .modal-dialog').load(url);
-}
-
-function showGlobalAjaxModal(url) {
-  asyncSumbit();
-  $(".modal-dialog").addClass("modalWidth")
-  jQuery('#valueModal').modal('show', {
-    backdrop : 'static'
-  });
-  jQuery('#valueModal .modal-dialog').load(url);
-}
-
 function delVarValues(position) {
   $('#values' + position + 'val').val("");
   $('#values' + position + 'label').val("");
@@ -616,7 +598,15 @@ function delVarValues(position) {
   return false;
 }
 
-function asyncSumbit() {
+function showAjaxModal(url) {
+  asyncSumbit(url, false);
+}
+
+function showGlobalAjaxModal(url) {
+  asyncSumbit(url, true);
+}
+
+function asyncSumbit(uri, global) {
   var str = $("#StudyForm").serialize();
   $.ajax({
     type : "post",
@@ -625,6 +615,31 @@ function asyncSumbit() {
     async : true,
     dataType : "json",
     success : function() {
+      console.log("success - 2");
+      loadAjaxModal(uri, global)
+    },
+    error : function(result) {
+      console.log("lol");
+      loadAjaxModal(null, true);
     }
   });
+}
+
+function loadAjaxModal(url, global) {
+  if (url != null) {
+
+    if (!global) {
+      $(".modal-dialog").removeClass("modalWidth")
+    } else {
+      $(".modal-dialog").addClass("modalWidth")
+    }
+    jQuery('#valueModal').modal('show', {
+      backdrop : 'static'
+    });
+    jQuery('#valueModal .modal-dialog').load(url);
+  } else {
+    jQuery('#errorModal').modal('show', {
+      backdrop : 'static'
+    });
+  }
 }

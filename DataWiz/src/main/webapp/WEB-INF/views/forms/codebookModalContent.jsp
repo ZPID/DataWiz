@@ -93,7 +93,7 @@
               <button class="btn btn-default" data-dismiss="modal">
                 <s:message code="gen.close" />
               </button>
-              <sf:button type="record.codebook.modal.set" class="btn btn-success" name="setValues">
+              <sf:button class="btn btn-success" name="setValues">
                 <s:message code="record.codebook.modal.values.set" />
               </sf:button>
             </div>

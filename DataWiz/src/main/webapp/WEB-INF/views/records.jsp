@@ -43,9 +43,9 @@
                       <label class="control-label col-sm-2" for="${rec.changed}"><s:message
                           code="study.records.version.info" /></label>
                       <c:set var="date" value="${fn:split(rec.changed, 'T')}" />
-                      <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate"
+                      <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm" var="parsedDate"
                         type="date" />
-                      <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm:ss" var="strDate" />
+                      <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm" var="strDate" />
                       <div class="col-sm-10 margin-top-7">
                         <s:message code="panel.last.commit" arguments="${strDate};${rec.changedBy}" htmlEscape="false"
                           argumentSeparator=";" />

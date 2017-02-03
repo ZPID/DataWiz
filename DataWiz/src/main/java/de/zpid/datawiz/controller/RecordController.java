@@ -441,8 +441,7 @@ public class RecordController extends SuperController {
           "Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
       return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
     }
-    // model.put("StudyForm", sForm);
-    return new ResponseEntity<String>(HttpStatus.OK);
+    return new ResponseEntity<String>("{}", HttpStatus.OK);
   }
 
   @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setGlobalMissings")
