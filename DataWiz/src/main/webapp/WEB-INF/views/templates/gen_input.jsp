@@ -9,10 +9,22 @@
  input_vars[6] = optional type arguments - password for example
  --%>
 <c:set var="input_vars" value="${fn:split(input_vars, ';')}" />
+<c:set var="valimages" value="${fn:split(valimages, ';')}" />
 <s:message text="" var="input_class" />
 <div class="form-group">
   <div class="col-sm-12">
-    <label class="control-label ${input_vars[2]}" for="${input_vars[0]}" style="width: 100%; text-align:left;"><s:message code="${input_vars[1]}" /></label>
+    <div class="row">
+      <div class="col-sm-11">
+        <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message code="${input_vars[1]}" /></label>
+      </div>
+      <div class="col-sm-1 text-align-right">
+        <c:forEach items="${valimages}" var="imglabel">
+          <c:if test="${imglabel ne '' && imglabel ne ' '}">
+            <img src="/DataWiz/static/images/${imglabel}" class="infoImages" />
+          </c:if>
+        </c:forEach>
+      </div>
+    </div>
     <s:message code="${input_vars[1]}.ph" var="placeholder_txt" />
     <div class="${input_vars[3]}">
       <s:bind path="${input_vars[0]}">
@@ -34,9 +46,11 @@
       <div class="help-block ${input_vars[4]}">
         <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
         <div class="col-sm-10">
-          <s:message text="${appresmess}"/>
+          <s:message text="${appresmess}" />
         </div>
       </div>
     </c:if>
   </div>
 </div>
+<c:set var="valimages" value="" />
+<c:set var="input_vars" value="" />

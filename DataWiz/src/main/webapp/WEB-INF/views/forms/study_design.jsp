@@ -11,7 +11,15 @@
   <!-- study.objectives -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.objectives"><s:message code="study.objectives" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.objectives"><s:message code="study.objectives" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.objectives}" varStatus="loop">
           <div class="row margin-bottom-10">
@@ -49,7 +57,14 @@
   <!-- study.relTheorys -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.relTheorys"><s:message code="study.relTheorys" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.relTheorys"><s:message code="study.relTheorys" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.relTheorys}" varStatus="loop">
           <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10" />
@@ -67,7 +82,15 @@
   <!-- study.repMeasures -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.repMeasures"><s:message code="study.repMeasures" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.repMeasures"><s:message code="study.repMeasures" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.repMeasures" class="form-control">
         <sf:option value="">
           <s:message code="gen.select" />
@@ -85,11 +108,20 @@
   </div>
   <!-- study.timeDim -->
   <c:set var="input_vars" value="study.timeDim;study.timeDim;required; ;row" />
+  <c:set var="valimages" value="${valimag1}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.intervention -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.surveyIntervention"><s:message code="study.intervention" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.surveyIntervention"><s:message code="study.intervention" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0 form-group-clean">
         <label class="btn btn-default col-sm-3"> <sf:checkbox path="study.surveyIntervention" /> <s:message
             code="study.intervention.survey" />
@@ -108,7 +140,15 @@
     <!-- study.interTypeExp -->
     <div class="form-group">
       <div class="col-sm-12">
-        <label class="control-label " for="study.interTypeExp"><s:message code="study.interTypeExp" /></label>
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.interTypeExp"><s:message code="study.interTypeExp" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          </div>
+        </div>
         <sf:select path="study.interTypeExp" class="form-control">
           <sf:option value="">
             <s:message code="gen.select" />
@@ -127,7 +167,15 @@
     <!-- study.interTypeDes -->
     <div class="form-group">
       <div class="col-sm-12">
-        <label class="control-label " for="study.interTypeDes"><s:message code="study.interTypeDes" /></label>
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.interTypeDes"><s:message code="study.interTypeDes" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          </div>
+        </div>
         <sf:select path="study.interTypeDes" class="form-control">
           <sf:option value="">
             <s:message code="gen.select" />
@@ -149,7 +197,15 @@
     <!-- study.interTypeLab -->
     <div class="form-group">
       <div class="col-sm-12">
-        <label class="control-label " for="study.interTypeLab"><s:message code="study.interTypeLab" /></label>
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.interTypeLab"><s:message code="study.interTypeLab" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          </div>
+        </div>
         <sf:select path="study.interTypeLab" class="form-control">
           <sf:option value="">
             <s:message code="gen.select" />
@@ -168,7 +224,15 @@
     <!-- study.randomization -->
     <div class="form-group">
       <div class="col-sm-12">
-        <label class="control-label " for="study.randomization"><s:message code="study.randomization" /></label>
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.randomization"><s:message code="study.randomization" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          </div>
+        </div>
         <sf:select path="study.randomization" class="form-control">
           <sf:option value="">
             <s:message code="gen.select" />
@@ -187,7 +251,14 @@
     <!-- study.interArms -->
     <div class="form-group">
       <div class="col-sm-12">
-        <label class="control-label " for="study.interArms"><s:message code="study.interArms" /></label>
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.interArms"><s:message code="study.interArms" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          </div>
+        </div>
         <div class="panel panel-default panel-body margin-bottom-0">
           <c:forEach items="${StudyForm.study.interArms}" varStatus="loop">
             <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
@@ -206,7 +277,14 @@
   <!-- study.measOccName -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.measOcc"><s:message code="study.measOcc" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.measOcc"><s:message code="study.measOcc" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <div class="table-responsive">
           <table class="table table-hover">

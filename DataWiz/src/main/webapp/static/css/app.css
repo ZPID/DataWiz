@@ -169,6 +169,14 @@ label.btn::after {
   color: #bbb;
 }
 
+.infoImages {
+  width: 20px;
+}
+
+.text-align-right {
+  text-align: right;
+}
+
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */

@@ -10,23 +10,32 @@
   </div>
   <!-- study.title -->
   <c:set var="input_vars" value="study.title;study.title;required; ;row" />
+  <c:set var="valimages" value="${valimag1};${valimag2}" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.internalID -->
   <c:set var="input_vars" value="study.internalID;study.internalID; ; ;row" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.transTitle -->
   <c:set var="input_vars" value="study.transTitle;study.transTitle; ; ;row" />
+  <c:set var="valimages" value="${valimag1};${valimag2}" />
   <%@ include file="../templates/gen_input.jsp"%>
   <!-- study.contributors -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label" for=""><s:message code="study.contributors" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label" for=""><s:message code="study.contributors" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.contributors}" var="contri" varStatus="coloop">
           <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
           <div class="input-group margin-bottom-10">
-            <span class="form-control"><s:message text="${fn:trim(contriName)}" /></span><span
-              class="input-group-btn"> <sf:button class="btn btn-danger" name="deleteContri"
+            <span class="form-control"><s:message text="${fn:trim(contriName)}" /></span><span class="input-group-btn">
+              <sf:button class="btn btn-danger" name="deleteContri"
                 onclick="document.getElementById('delPos').value=${coloop.count-1}; setScrollPosition();">
                 <s:message code="gen.delete" />
               </sf:button>
@@ -41,10 +50,13 @@
               </sf:option>
               <c:forEach items="${StudyForm.projectContributors}" var="contri" varStatus="coloop">
                 <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
-                <sf:option value="${coloop.index}"><s:message text="${fn:trim(contriName)}"/></sf:option>
+                <sf:option value="${coloop.index}">
+                  <s:message text="${fn:trim(contriName)}" />
+                </sf:option>
               </c:forEach>
             </sf:select>
-            <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri" onclick="setScrollPosition();">
+            <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri"
+                onclick="setScrollPosition();">
                 <s:message code="gen.add" />
               </sf:button>
             </span>
@@ -57,14 +69,23 @@
   </div>
   <!-- study.sAbstract -->
   <c:set var="input_vars" value="study.sAbstract;study.sAbstract; ; ;row" />
+  <c:set var="valimages" value="${valimag1};${valimag2}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.sAbstractTrans -->
   <c:set var="input_vars" value="study.sAbstractTrans;study.sAbstractTrans; ; ;row" />
+  <c:set var="valimages" value="${valimag1};${valimag2}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.completeSel -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label" for="study.completeSel"><s:message code="study.completeSel" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label" for="study.completeSel"><s:message code="study.completeSel" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.completeSel" class="form-control">
         <sf:option value="">
           <s:message code="gen.select" />
@@ -81,6 +102,7 @@
     </div>
   </div>
   <!-- study.excerpt -->
+  <c:set var="valimages" value="${valimag1}" />
   <c:set var="input_vars" value="study.excerpt;study.excerpt; ; ;row" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.prevWork -->
@@ -135,7 +157,14 @@
   <!-- study.pubOnData -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.pubOnData"><s:message code="study.pubOnData" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.pubOnData"><s:message code="study.pubOnData" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.pubOnData}" varStatus="loop">
           <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />

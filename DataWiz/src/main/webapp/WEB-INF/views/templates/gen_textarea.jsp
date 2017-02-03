@@ -14,9 +14,21 @@
 <div class="form-group ${input_vars[7]}">
   <div class="col-sm-12">
     <s:message code="${input_vars[1]}" var="labeltxt" />
-    <c:if test="${not empty labeltxt}">
-      <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message text="${labeltxt}" /></label>
-    </c:if>
+    <div class="row">
+      <div class="col-sm-11">
+        <c:if test="${not empty labeltxt}">
+          <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message text="${labeltxt}" /></label>
+        </c:if>
+      </div>
+      <div class="col-sm-1 text-align-right">
+        <c:set var="valimages" value="${fn:split(valimages, ';')}" />
+        <c:forEach items="${valimages}" var="imglabel">
+          <c:if test="${imglabel ne '' && imglabel ne ' '}">
+            <img src="/DataWiz/static/images/${imglabel}" class="infoImages" />
+          </c:if>
+        </c:forEach>
+      </div>
+    </div>
     <div class="${input_vars[3]}">
       <s:bind path="${input_vars[0]}">
         <c:choose>
@@ -42,3 +54,5 @@
     </c:if>
   </div>
 </div>
+<c:set var="valimages" value="" />
+<c:set var="input_vars" value="" />

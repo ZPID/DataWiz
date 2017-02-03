@@ -1,5 +1,7 @@
 <%@ include file="templates/header.jsp"%>
 <%@ include file="templates/navbar.jsp"%>
+<c:set var="valimag1" value="zpid.png" scope="session"/>
+<c:set var="valimag2" value="check-mark-20px.png" scope="session"/>
 <div id="mainWrapper">
   <div class="content-container">
     <%@ include file="templates/breadcrump.jsp"%>
@@ -59,7 +61,7 @@
         </ul>
       </c:if>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis" >
+      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
         <input type="hidden" id="disStudyContent" value="${disStudyContent}" />
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <sf:hidden path="delPos" />
@@ -67,7 +69,7 @@
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
-        <jsp:include page="forms/study_general.jsp" />
+        <jsp:include page="forms/study_general.jsp" />          
         <!-- START Design Data Content -->
         <jsp:include page="forms/study_design.jsp" />
         <!-- START Sample Characteristics Content -->
