@@ -1,9 +1,12 @@
 package de.zpid.datawiz.controller;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import de.zpid.datawiz.dto.FileDTO;
@@ -38,6 +43,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.VariableStatus;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.ExportUtil;
 import de.zpid.datawiz.util.ImportUtil;
 import de.zpid.datawiz.util.UserUtil;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -55,6 +61,8 @@ public class RecordController extends SuperController {
   private PlatformTransactionManager txManager;
   @Autowired
   private ImportUtil importUtil;
+  @Autowired
+  private ExportUtil exportUtil;
 
   public RecordController() {
     super();
@@ -432,6 +440,53 @@ public class RecordController extends SuperController {
     return "codebook";
   }
 
+  @RequestMapping(value = { "{recordId}/version/{versionId}/export/{exportType}" })
+  public @ResponseBody ResponseEntity<String> exportRecord(final ModelMap model, HttpServletResponse response,
+      RedirectAttributes redirectAttributes, @PathVariable long versionId, @PathVariable long recordId,
+      @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+      @PathVariable String exportType) {
+    log.trace("exportRecord - " + recordId + " - " + versionId + " - " + exportType);
+    UserDTO user = UserUtil.getCurrentUser();
+    ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
+    if (user == null || checkStudyAccess(pid, studyId, redirectAttributes, false, user) != null) {
+      log.warn("Auth User Object == null - redirect to login");
+      resp = new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
+    } else {
+      try {
+        RecordDTO record = recordDAO.findRecordWithID(recordId, versionId);
+        record.setDataMatrixJson(recordDAO.findMatrixByVersionId(versionId));
+        record.setVariables(recordDAO.findVariablesByVersionID(versionId));
+        record.setErrors(null);
+        for (SPSSVarTDO var : record.getVariables()) {
+          var.setAttributes(recordDAO.findVariableAttributes(var.getId(), true));
+          importUtil.sortVariableAttributes(var);
+          var.setValues(recordDAO.findVariableValues(var.getId(), true));
+        }
+        if (record.getDataMatrixJson() != null && !record.getDataMatrixJson().isEmpty()) {
+          record.setDataMatrix(new Gson().fromJson(record.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
+          }.getType()));
+          record.setDataMatrixJson(null);
+        }
+        if (exportType.equals("CSVMatrix")) {
+          resp = exportUtil.exportCSVMatrix(record, response);
+        } else if (exportType.equals("CSVCodebook")) {
+          resp = exportUtil.exportCSVCodeBook(record, response);
+        } else if (exportType.equals("JSON")) {
+          response.setContentType("application/json");
+          response.setHeader("Content-Disposition", "attachment; filename=\"test.json\"");
+          Gson gson = new GsonBuilder().setPrettyPrinting().create();
+          String bla = gson.toJson(record);
+          response.setContentLength(bla.length());
+          FileCopyUtils.copy(bla.getBytes(Charset.forName("UTF-8")), response.getOutputStream());
+        }
+      } catch (Exception e) {
+        resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
+        e.printStackTrace();
+      }
+    }
+    return resp;
+  }
+
   @RequestMapping(value = { "{recordId}/version/{versionId}/asyncSubmit" })
   public @ResponseBody ResponseEntity<String> setFormAsync(final ModelMap model,
       @ModelAttribute("StudyForm") StudyForm sForm) {
@@ -598,7 +653,7 @@ public class RecordController extends SuperController {
       SPSSValueLabelDTO attribute = itt.next();
       if (!attribute.getValue().startsWith("@") || attribute.getValue().equals("@dw_construct")
           || attribute.getValue().equals("@dw_measocc") || attribute.getValue().equals("@dw_instrument")
-          || attribute.getValue().equals("@dw_itemtextt") || attribute.getValue().equals("@dw_filtervar")) {
+          || attribute.getValue().equals("@dw_itemtext") || attribute.getValue().equals("@dw_filtervar")) {
         itt.remove();
       }
     }

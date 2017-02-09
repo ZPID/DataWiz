@@ -25,14 +25,14 @@
               <div class="col-sm-3">
                 <c:url var="accessUrl"
                   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
-                <c:choose>
+                <%-- TODO <c:choose>
                   <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
                     <a href="${accessUrl}" class="btn btn-success">Checkin</a>
                   </c:when>
                   <c:otherwise>
                     <a href="${accessUrl}" class="btn btn-danger">CheckOut</a>
                   </c:otherwise>
-                </c:choose>
+                </c:choose> --%>
                 <!-- Trigger the modal with a button -->
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">Upload
                   File</button>

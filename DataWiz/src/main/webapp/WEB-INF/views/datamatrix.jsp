@@ -17,12 +17,12 @@
           </c:when>
           <c:otherwise>
             <div class="row">
-              <div class="col-sm-9">
+              <div class="col-sm-12">
                 <h4>
                   <s:message code="study.edit.basis.headline" arguments="${StudyForm.record.recordName}" />
                 </h4>
               </div>
-              <div class="col-sm-3">
+              <%-- <div class="col-sm-3">
                 <c:url var="accessUrl"
                   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                 <c:choose>
@@ -37,7 +37,7 @@
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">Upload
                   File</button>
                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#historyModal">History</button>
-              </div>
+              </div> --%>
             </div>
             <div>
               <s:message code="study.edit.basis.info" />

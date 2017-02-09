@@ -30,8 +30,10 @@ import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarTDO;
 import de.zpid.spss.util.SPSSAligment;
+import de.zpid.spss.util.SPSSCompression;
 import de.zpid.spss.util.SPSSMeasLevel;
 import de.zpid.spss.util.SPSSMissing;
+import de.zpid.spss.util.SPSSPageEncoding;
 import de.zpid.spss.util.SPSSRoleCodes;
 import de.zpid.spss.util.SPSSVarTypes;
 
@@ -108,6 +110,22 @@ public class RecordDAO extends SuperDAO {
                         rectmp.setChangeLog(rs2.getString("changeLog"));
                         rectmp.setChangedBy(rs2.getString("changedBy"));
                         rectmp.setVersionId(rs2.getLong("version_id"));
+                        rectmp.setMasterRecord(rs2.getBoolean("masterRec"));
+                        rectmp.setPassword(rs2.getString("password"));
+                        rectmp.setNumberOfVariables(rs2.getInt("numberOfVariables"));
+                        rectmp.setNumberOfFileAttributes(rs2.getInt("numberOfFileAttributes"));
+                        rectmp.setNumberOfCases(rs2.getLong("numberOfCases"));
+                        rectmp.setEstimatedNofCases(rs2.getLong("estimatedNofCases"));
+                        rectmp.setCaseSize(rs2.getLong("caseSize"));
+                        rectmp.setCaseWeightVar(rs2.getString("caseWeightVar"));
+                        rectmp.setCompression(SPSSCompression.fromInt(rs2.getInt("compression")));
+                        rectmp.setDateNumOfElements(rs2.getInt("dateNumOfElements"));
+                        rectmp.setDateInfo(rs2.getLong("dateInfo"));
+                        rectmp.setFileCodePage(rs2.getInt("fileCodePage"));
+                        rectmp.setFileEncoding(rs2.getString("fileEncoding"));
+                        rectmp.setFileIdString(rs2.getString("fileIdString"));
+                        rectmp.setInterfaceEncoding(SPSSPageEncoding.fromInt(rs2.getInt("interfaceEncoding")));
+                        rectmp.setMultRespDefsEx(rs2.getString("multRespDefsEx"));
                         return rectmp;
                       }
                       return null;

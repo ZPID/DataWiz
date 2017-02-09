@@ -6,9 +6,16 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <h4>
-          <s:message code="record.codebook.headline" />
-        </h4>
+        <div class="row">
+          <div class="col-sm-11">
+            <h4>
+              <s:message code="record.codebook.headline" />
+            </h4>
+          </div>
+          <div class="col-sm-1">
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exportModal">EXPORT</button>
+          </div>
+        </div>
         <div>
           <s:message code="record.codebook.info" />
         </div>
@@ -235,6 +242,30 @@
             <a href="${accessUrl}/codebook" class="btn btn-success"> <s:message code="gen.yes" />
             </a>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="exportModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content panel-primary">
+      <div class="modal-header panel-heading">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Export</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="col-sm-12">
+            <a href="${accessUrl}/export/CSVMatrix" target="_blank">CSVMatrix</a><br /> <a
+              href="${accessUrl}/export/CSVCodebook" target="_blank">CSVCodebook</a><br /> <a
+              href="${accessUrl}/export/JSON" target="_blank">JSON</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="form-group">
+          <div class="col-sm-offset-0 col-md-12"></div>
         </div>
       </div>
     </div>
