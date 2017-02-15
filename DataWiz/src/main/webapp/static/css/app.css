@@ -137,7 +137,7 @@ label.btn::after {
 
 .pre-xy-scrollable {
   overflow: auto;
-  max-height: 400px;
+  max-height: 800px;
 }
 
 .pre-x-scrollable {
@@ -515,21 +515,57 @@ label.btn::after {
 }
 
 .th-width-300 {
-  width: 300px;
+  min-width: 300px;
 }
 
 .th-width-200 {
-  width: 200px;
+  min-width: 200px;
 }
 
 .th-width-100 {
-  width: 100px;
+  min-width: 100px;
+}
+
+.th-width-102 {
+  min-width: 102px;
 }
 
 .th-width-60 {
-  width: 60px;
+  min-width: 60px;
 }
 
 .th-width-20 {
-  width: 20px;
+  min-width: : 20px;
+}
+
+.th-width-30 {
+  min-width: : 30px;
+}
+
+.hidefirst {
+  display: none;
+}
+
+.scrollTable {
+  border-collapse: collapse;
+  overflow-x: scroll;
+  display: block;
+}
+
+.scrollTable thead {
+  
+}
+
+.scrollTable thead, .scrollTable tbody {
+  display: block;
+}
+
+.scrollTable tbody {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 600px;
+}
+
+.scrollTable td, .scrollTable th {
+  
 }

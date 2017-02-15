@@ -6,9 +6,16 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <h4>
-          <s:message code="record.overview.headline" />
-        </h4>
+        <div class="row">
+          <div class="col-sm-10">
+            <h4>
+              <s:message code="record.overview.headline" />
+            </h4>
+          </div>
+          <div class="col-sm-2 text-align-right">
+            <a href='<c:url value="record/"/>' class="btn btn-success"><s:message code="record.create.new.record" /></a>
+          </div>
+        </div>
         <div>
           <s:message code="record.overview.info" />
         </div>
@@ -17,14 +24,12 @@
       <%@ include file="templates/message.jsp"%>
       <div class="panel-group">
         <c:forEach items="${StudyForm.records}" var="rec">
-          <div class="panel panel-primary">
+          <div class="panel panel-primary projectContentClick"
+            onclick="location.href='<c:url value="record/${rec.id}"/>';">
             <div class="panel-heading">
               <div class="row">
-                <div class="col-sm-11">
+                <div class="col-sm-12">
                   <s:message text="${rec.recordName}" />
-                </div>
-                <div class="col-sm-1">
-                  <a href='<c:url value="record/${rec.id}"/>' class="label label-success"><s:message code="gen.edit" /></a>
                 </div>
               </div>
             </div>

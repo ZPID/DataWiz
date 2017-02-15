@@ -9,20 +9,20 @@
         <c:choose>
           <c:when test="${empty StudyForm.record.id}">
             <h4>
-              <s:message code="study.create.basis.headline" />
+              <s:message code="record.create.headline" />
             </h4>
             <div>
-              <s:message code="study.create.basis.info" />
+              <s:message code="record.create.info" />
             </div>
           </c:when>
           <c:otherwise>
             <div class="row">
               <div class="col-sm-9">
                 <h4>
-                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.record.recordName}" />
+                  <s:message code="record.edit.headline" arguments="${StudyForm.record.recordName}" />
                 </h4>
               </div>
-              <div class="col-sm-3">
+              <div class="col-sm-3 text-align-right">
                 <c:url var="accessUrl"
                   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                 <%-- TODO <c:choose>
@@ -34,13 +34,16 @@
                   </c:otherwise>
                 </c:choose> --%>
                 <!-- Trigger the modal with a button -->
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">Upload
-                  File</button>
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#historyModal">History</button>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">
+                  <s:message code="record.upload.new.file" />
+                </button>
+                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#historyModal">
+                  <s:message code="record.history.show" />
+                </button>
               </div>
             </div>
             <div>
-              <s:message code="study.edit.basis.info" />
+              <s:message code="record.edit.info" />
             </div>
           </c:otherwise>
         </c:choose>
@@ -58,11 +61,11 @@
         <c:set var="input_vars" value="record.description;record.description; ; ;row" />
         <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
-          <div class="col-sm-offset-0 col-md-12">
+          <div class="col-md-12 text-align-right">
             <button type="reset" class="btn btn-default">
               <s:message code="gen.reset" />
             </button>
-            <sf:button type="submit" class="btn btn-success">
+            <sf:button type="submit" class="btn btn-success" name="saveMetaData">
               <s:message code="gen.submit" />
             </sf:button>
           </div>

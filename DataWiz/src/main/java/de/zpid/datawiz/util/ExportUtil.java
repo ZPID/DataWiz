@@ -95,7 +95,7 @@ public class ExportUtil {
         StringBuilder csv = recordCodebookToCSVString(record);
         if (csv != null && csv.length() > 0) {
           response.setContentType("application/csv");
-          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".json\"");
+          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".csv\"");
           response.setContentLength(csv.toString().length());
           response.getOutputStream().write(csv.toString().getBytes(Charset.forName("UTF-8")));
         } else {

@@ -307,6 +307,41 @@ public class RecordController extends SuperController {
     return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
   }
 
+  @RequestMapping(value = { "", "/{recordId}" }, params = "saveMetaData")
+  private String saveRecordMetaData(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+      @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm,
+      final RedirectAttributes redirectAttributes, final ModelMap model) {
+    final UserDTO user = UserUtil.getCurrentUser();
+    if (recordId.isPresent())
+      log.trace("Entering saveRecordMetaData(update) for [recordId: {}; studyId {}; projectId {}]",
+          () -> recordId.get(), () -> studyId.get(), () -> pid.get());
+    else
+      log.trace("Entering saveRecordMetaData(create) for [studyId {}; projectId {}]", () -> studyId.get(),
+          () -> pid.get());
+    String ret = checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    if (ret != null)
+      return ret;
+    if (sForm.getRecord().getRecordName() != null && !sForm.getRecord().getRecordName().isEmpty()) {
+      try {
+        if (!recordId.isPresent() && sForm.getRecord().getId() <= 0) {
+          sForm.getRecord().setCreatedBy(user.getEmail());
+          sForm.getRecord().setStudyId(studyId.get());
+          recordDAO.insertRecordMetaData(sForm.getRecord());
+        } else {
+          recordDAO.updateRecordMetaData(sForm.getRecord());
+        }
+      } catch (Exception e) {
+        log.error("ERROR: Saving record to DB wasn't sucessful! Exception:", () -> e);
+        redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
+            new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+      }
+    } else {
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("record.name.missing", null, LocaleContextHolder.getLocale()));
+    }
+    return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + sForm.getRecord().getId();
+  }
+
   private void removeEmptyDWAttributes(List<SPSSValueLabelDTO> attributes) {
     Iterator<SPSSValueLabelDTO> itt = attributes.iterator();
     while (itt.hasNext()) {
@@ -542,7 +577,7 @@ public class RecordController extends SuperController {
       }
       if (currentVersion != null && lastVersion != null && currentVersion.getVariables() != null
           && lastVersion.getVariables() != null && !currentVersion.getVariables().equals(lastVersion.getVariables())) {
-        recordDAO.insertMetaData(currentVersion);
+        recordDAO.insertCodeBookMetaData(currentVersion);
         int i = 0;
         for (SPSSVarTDO var : currentVersion.getVariables()) {
           if (var.equals(lastVersion.getVariables().get(i++))) {
@@ -589,7 +624,7 @@ public class RecordController extends SuperController {
     if (!error && spssFile != null && file != null) {
       TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
       try {
-        recordDAO.insertMetaData(spssFile);
+        recordDAO.insertCodeBookMetaData(spssFile);
         setRecordDWAttributes(spssFile.getAttributes());
         recordDAO.insertAttributes(spssFile.getAttributes(), spssFile.getVersionId(), 0);
         if (spssFile.getVersionId() > 0) {

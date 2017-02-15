@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,8 +22,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-
-import com.google.gson.Gson;
 
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -150,7 +147,7 @@ public class RecordDAO extends SuperDAO {
     return cRecords;
   }
 
-  public List<SPSSVarTDO> findVariablesByVersionID(final long versionId) throws SQLException {
+  public List<SPSSVarTDO> findVariablesByVersionID(final long versionId) throws Exception {
     log.trace("Entering findVariablesByVersionID [versionId: {}]", () -> versionId);
     String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables "
         + "ON dw_record_version_variables.var_id = dw_record_variables.id "
@@ -183,7 +180,7 @@ public class RecordDAO extends SuperDAO {
     return cVars;
   }
 
-  public List<SPSSValueLabelDTO> findVariableValues(final long varId, final boolean withId) throws SQLException {
+  public List<SPSSValueLabelDTO> findVariableValues(final long varId, final boolean withId) throws Exception {
     log.trace("Entering findVariablesValues [varId: {}]", () -> varId);
     String sql = "SELECT * FROM dw_record_var_vallabel WHERE record_var_id = ?";
     final List<SPSSValueLabelDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { varId },
@@ -201,7 +198,7 @@ public class RecordDAO extends SuperDAO {
     return cVars;
   }
 
-  public List<SPSSValueLabelDTO> findVariableAttributes(final long varId, final boolean withId) throws SQLException {
+  public List<SPSSValueLabelDTO> findVariableAttributes(final long varId, final boolean withId) throws Exception {
     log.trace("Entering findVariablesAttributes [varId: {}]", () -> varId);
     String sql = "SELECT * FROM dw_record_attributes WHERE var_id = ?";
     final List<SPSSValueLabelDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { varId },
@@ -220,7 +217,7 @@ public class RecordDAO extends SuperDAO {
   }
 
   public List<SPSSValueLabelDTO> findRecordAttributes(final long versionId, boolean onlyUserAttributes)
-      throws SQLException {
+      throws Exception {
     log.trace("Entering findRecordAttributes [version: {}]", () -> versionId);
     String sql = "SELECT * FROM dw_record_attributes WHERE version_id = ? AND var_id IS NULL "
         + (onlyUserAttributes ? "AND text LIKE '@%'" : "");
@@ -245,7 +242,7 @@ public class RecordDAO extends SuperDAO {
    * @return
    * @throws Exception
    */
-  public int insertMetaData(final RecordDTO record) throws SQLException {
+  public int insertCodeBookMetaData(final RecordDTO record) throws Exception {
     log.trace("Entering insertMetaData [recordId: {}]", () -> record.getId());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_record_metadata (record_id, changeLog, changed, changedBy, masterRec, password, "
@@ -289,9 +286,9 @@ public class RecordDAO extends SuperDAO {
    * 
    * @param record
    * @return
-   * @throws SQLException
+   * @throws Exception
    */
-  public int insertMatrix(final RecordDTO record) throws SQLException {
+  public int insertMatrix(final RecordDTO record) throws Exception {
     log.trace("Entering insertRecordMatrix [recordId: {}, versionId: {}]", () -> record.getId(),
         () -> record.getVersionId());
     final int ret = this.jdbcTemplate.update("INSERT INTO dw_record_matrix (version_id, datamatrix) VALUES (?,?)",
@@ -300,7 +297,38 @@ public class RecordDAO extends SuperDAO {
     return ret;
   }
 
-  public String findMatrixByVersionId(final long versionId) throws SQLException {
+  public int updateRecordMetaData(final RecordDTO record) throws Exception {
+    log.trace("Entering updateRecordMetaData [recordId: {}]", () -> record.getId());
+    final int ret = this.jdbcTemplate.update("UPDATE dw_record SET name= ?, description = ? WHERE id = ?",
+        record.getRecordName(), record.getDescription(), record.getId());
+    log.debug("Transaction for updateRecordMetaData returned [{}]", () -> ret);
+    return ret;
+  }
+
+  public int insertRecordMetaData(final RecordDTO record) throws Exception {
+    log.trace("Entering insertRecordMetaData [studyid: {}]", () -> record.getStudyId());
+    KeyHolder holder = new GeneratedKeyHolder();
+    final String stmt = "INSERT INTO dw_record (study_id, name, created, createdBy, description, filename) VALUES (?,?,?,?,?,?)";
+    int res = this.jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+        ps.setLong(1, record.getStudyId());
+        ps.setString(2, record.getRecordName());
+        ps.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+        ps.setString(4, record.getCreatedBy());
+        ps.setString(5, record.getDescription());
+        ps.setString(6, record.getFileName());
+        return ps;
+      }
+    }, holder);
+    final long key = (holder.getKey().intValue() > 0) ? holder.getKey().longValue() : -1;
+    record.setId(key);
+    log.debug("Transaction for insertRecordMetaData returned [res: {}, key: {}]", () -> res, () -> key);
+    return res;
+  }
+
+  public String findMatrixByVersionId(final long versionId) throws Exception {
     log.trace("Entering findMatrixByVersionId [versionId: {}]", () -> versionId);
     String sql = "SELECT datamatrix FROM dw_record_matrix WHERE version_id = ?";
     String matrixJSON = jdbcTemplate.query(sql, new Object[] { versionId }, new ResultSetExtractor<String>() {
@@ -325,7 +353,7 @@ public class RecordDAO extends SuperDAO {
    * @throws Exception
    */
   public int insertAttributes(final List<SPSSValueLabelDTO> attr, final long versionId, final long varId)
-      throws SQLException {
+      throws Exception {
     log.trace("execute insertAttributes [size: {}]", () -> attr.size());
     int[] ret = this.jdbcTemplate.batchUpdate(
         "INSERT INTO dw_record_attributes (version_id, var_id, label, text) VALUES (?,?,?,?)",
@@ -355,9 +383,9 @@ public class RecordDAO extends SuperDAO {
    * @param var
    * @param versionId
    * @return
-   * @throws SQLException
+   * @throws Exception
    */
-  public long insertVariable(final SPSSVarTDO var) throws SQLException {
+  public long insertVariable(final SPSSVarTDO var) throws Exception {
     log.trace("Entering insertVariable [varName: {}, versionId: {}]", () -> var.getName());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_record_variables (name, type, varType, decimals, width, label, missingFormat, "
@@ -391,7 +419,7 @@ public class RecordDAO extends SuperDAO {
   }
 
   public long insertVariableVersionRelation(final long varId, final long versionId, final int position,
-      final String changelog) throws SQLException {
+      final String changelog) throws Exception {
     log.trace("Entering insertVariableVersionRelation[versionId: {}, varid: {}, position: {}, changelog: {}]",
         () -> versionId, () -> varId, () -> position, () -> changelog);
     final int ret = this.jdbcTemplate.update(

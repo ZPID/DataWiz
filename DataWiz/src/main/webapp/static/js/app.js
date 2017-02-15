@@ -643,3 +643,7 @@ function loadAjaxModal(url, global) {
     });
   }
 }
+
+$('.scrollTable').on('scroll', function () {
+  $(".scrollTable > *").width($(".scrollTable").width() + $(".scrollTable").scrollLeft());
+});
