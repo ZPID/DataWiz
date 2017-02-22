@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarTDO;
+import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSAligment;
 import de.zpid.spss.util.SPSSCompression;
 import de.zpid.spss.util.SPSSMeasLevel;
@@ -147,15 +147,15 @@ public class RecordDAO extends SuperDAO {
     return cRecords;
   }
 
-  public List<SPSSVarTDO> findVariablesByVersionID(final long versionId) throws Exception {
+  public List<SPSSVarDTO> findVariablesByVersionID(final long versionId) throws Exception {
     log.trace("Entering findVariablesByVersionID [versionId: {}]", () -> versionId);
     String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables "
         + "ON dw_record_version_variables.var_id = dw_record_variables.id "
         + "WHERE dw_record_version_variables.version_id = ? ORDER BY dw_record_version_variables.position ASC";
-    final List<SPSSVarTDO> cVars = this.jdbcTemplate.query(sql, new Object[] { versionId },
-        new RowMapper<SPSSVarTDO>() {
-          public SPSSVarTDO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            SPSSVarTDO var = new SPSSVarTDO();
+    final List<SPSSVarDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { versionId },
+        new RowMapper<SPSSVarDTO>() {
+          public SPSSVarDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            SPSSVarDTO var = new SPSSVarDTO();
             var.setId(rs.getLong("id"));
             var.setName(rs.getString("name"));
             var.setType(SPSSVarTypes.fromInt(rs.getInt("type")));
@@ -385,7 +385,7 @@ public class RecordDAO extends SuperDAO {
    * @return
    * @throws Exception
    */
-  public long insertVariable(final SPSSVarTDO var) throws Exception {
+  public long insertVariable(final SPSSVarDTO var) throws Exception {
     log.trace("Entering insertVariable [varName: {}, versionId: {}]", () -> var.getName());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_record_variables (name, type, varType, decimals, width, label, missingFormat, "

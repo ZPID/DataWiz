@@ -38,7 +38,7 @@ import de.zpid.datawiz.form.StudyForm;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSFileDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarTDO;
+import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSAligment;
 import de.zpid.spss.util.SPSSMeasLevel;
 import de.zpid.spss.util.SPSSMissing;
@@ -92,7 +92,7 @@ public class ImportUtil {
         String[] nextLine;
         int numOfCol = 0, lineNumber = 1;
         List<List<Object>> matrix = new ArrayList<>();
-        List<SPSSVarTDO> vars = new ArrayList<>();
+        List<SPSSVarDTO> vars = new ArrayList<>();
         List<String> dateFormatList = new ArrayList<>();
         List<SPSSVarTypes> types = new ArrayList<SPSSVarTypes>();
         List<String[]> importMatrix = new ArrayList<>();
@@ -104,7 +104,7 @@ public class ImportUtil {
           int i = 0;
           for (String s : nextLine) {
             s = s.trim();
-            SPSSVarTDO var = new SPSSVarTDO();
+            SPSSVarDTO var = new SPSSVarDTO();
             var.setPosition(i + 1);
             if (s.startsWith("\uFEFF")) {
               s = s.substring(1);
@@ -202,7 +202,7 @@ public class ImportUtil {
         }
         if (!sForm.isHeaderRow()) {
           for (int i = 1; i <= numOfCol; i++) {
-            SPSSVarTDO var = new SPSSVarTDO();
+            SPSSVarDTO var = new SPSSVarDTO();
             var.setName("var" + i);
             var.setPosition(i + 1);
             var.setMissingFormat(SPSSMissing.SPSS_NO_MISSVAL);
@@ -251,13 +251,13 @@ public class ImportUtil {
    * @param curr
    * @param comp
    */
-  public void compareVariable(final List<SPSSVarTDO> vars, final int position, final SPSSVarTDO curr,
+  public void compareVariable(final List<SPSSVarDTO> vars, final int position, final SPSSVarDTO curr,
       final RecordCompareDTO comp, final String selectedFileType) {
-    SPSSVarTDO savedVar;
+    SPSSVarDTO savedVar;
     if ((position) < vars.size()) {
       savedVar = vars.get(position);
     } else {
-      savedVar = new SPSSVarTDO();
+      savedVar = new SPSSVarDTO();
     }
     long savedId = savedVar.getId();
     savedVar.setId(0);
@@ -320,10 +320,10 @@ public class ImportUtil {
    * @param found
    * @return
    */
-  public boolean findVarInList(List<SPSSVarTDO> varList, SPSSVarTDO var, RecordCompareDTO comp,
+  public boolean findVarInList(List<SPSSVarDTO> varList, SPSSVarDTO var, RecordCompareDTO comp,
       final String selectedFileType) {
     boolean found = false;
-    for (SPSSVarTDO savedtmp : varList) {
+    for (SPSSVarDTO savedtmp : varList) {
       int lastPos = savedtmp.getPosition();
       int newPos = var.getPosition();
       long id = savedtmp.getId();
@@ -383,13 +383,13 @@ public class ImportUtil {
    * @param vars
    * @param types
    */
-  public void parseResult(StudyForm sForm, int numOfCol, List<List<Object>> matrix, List<SPSSVarTDO> vars,
+  public void parseResult(StudyForm sForm, int numOfCol, List<List<Object>> matrix, List<SPSSVarDTO> vars,
       List<SPSSVarTypes> types, List<String> dateFormatList, RecordDTO record) {
     int caseSize = 0;
     for (int i = 0; i < numOfCol; i++) {
       DateTimeFormatter formatter = null;
       int width = 0, dec = 0;
-      SPSSVarTDO var = vars.get(i);
+      SPSSVarDTO var = vars.get(i);
       SPSSVarTypes type = types.get(i);
       String dateFormat = dateFormatList.get(i).trim();
       // SET UNKNOWN TYPES TO ALPHANUMERIC
@@ -525,7 +525,7 @@ public class ImportUtil {
         spssFile.setId(recordId.get());
         spssFile.setChangedBy(user.getEmail());
         spssFile.setChangeLog(sForm.getNewChangeLog());
-        for (SPSSVarTDO var : spssFile.getVariables()) {
+        for (SPSSVarDTO var : spssFile.getVariables()) {
           sortVariableAttributes(var);
         }
         sForm.setRecord(spssFile);
@@ -540,7 +540,7 @@ public class ImportUtil {
     return error;
   }
 
-  public void sortVariableAttributes(SPSSVarTDO var) {
+  public void sortVariableAttributes(SPSSVarDTO var) {
     boolean dw_construct = false, dw_measocc = false, dw_instrument = false, dw_itemtext = false, dw_filtervar = false;
     Iterator<SPSSValueLabelDTO> itt = var.getAttributes().iterator();
     List<SPSSValueLabelDTO> dw_attr = new ArrayList<>();
@@ -659,9 +659,9 @@ public class ImportUtil {
    * @throws Exception
    */
   public void compareVarVersion(StudyForm sForm) throws Exception {
-    List<SPSSVarTDO> vars = new ArrayList<>();
-    for (SPSSVarTDO tmp : sForm.getPreviousRecordVersion().getVariables()) {
-      vars.add((SPSSVarTDO) ObjectCloner.deepCopy(tmp));
+    List<SPSSVarDTO> vars = new ArrayList<>();
+    for (SPSSVarDTO tmp : sForm.getPreviousRecordVersion().getVariables()) {
+      vars.add((SPSSVarDTO) ObjectCloner.deepCopy(tmp));
     }
     int listDiff = vars.size() - sForm.getRecord().getVariables().size();
     // TODO
@@ -671,7 +671,7 @@ public class ImportUtil {
     }
     int position = 0;
     List<RecordCompareDTO> compList = new ArrayList<RecordCompareDTO>();
-    for (SPSSVarTDO curr : sForm.getRecord().getVariables()) {
+    for (SPSSVarDTO curr : sForm.getRecord().getVariables()) {
       RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
       curr.setVarHandle(0.0);
       compareVariable(vars, position, curr, comp, sForm.getSelectedFileType());
@@ -682,24 +682,24 @@ public class ImportUtil {
     }
     position = 0;
     List<RecordCompareDTO> compList2 = new ArrayList<RecordCompareDTO>();
-    for (SPSSVarTDO curr : vars) {
+    for (SPSSVarDTO curr : vars) {
       RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
       compareVariable(sForm.getRecord().getVariables(), position, curr, comp, sForm.getSelectedFileType());
       compList2.add(comp);
       position++;
     }
     position = 0;
-    List<SPSSVarTDO> delVars = new ArrayList<>();
+    List<SPSSVarDTO> delVars = new ArrayList<>();
     int delcount = 0;
     for (RecordCompareDTO comp : compList2) {
       if (position >= compList.size()) {
-        SPSSVarTDO del = vars.get(position - delcount++);
+        SPSSVarDTO del = vars.get(position - delcount++);
         delVars.add(del);
         vars.remove(del);
       } else {
         if (comp.getVarStatus().equals(VariableStatus.NEW_VAR)
             && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
-          SPSSVarTDO del = vars.get(position - delcount++);
+          SPSSVarDTO del = vars.get(position - delcount++);
           delVars.add(del);
           vars.remove(del);
         }
@@ -713,11 +713,11 @@ public class ImportUtil {
           || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
           || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
           || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
-        SPSSVarTDO moved = sForm.getPreviousRecordVersion().getVariables().get(rc.getMovedFrom() - 1);
+        SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get(rc.getMovedFrom() - 1);
         vars.remove(moved);
         if (vars.size() < rc.getMovedTo() - 1) {
           for (int i = vars.size(); i < rc.getMovedTo() - 1; i++)
-            vars.add(new SPSSVarTDO());
+            vars.add(new SPSSVarDTO());
         }
         vars.add(rc.getMovedTo() - 1, moved);
       }

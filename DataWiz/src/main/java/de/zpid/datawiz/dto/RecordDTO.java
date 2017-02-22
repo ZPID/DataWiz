@@ -66,8 +66,8 @@ public class RecordDTO extends SPSSFileDTO implements Serializable {
         spssFile.getEstimatedNofCases(), spssFile.getCaseSize(), spssFile.getCaseWeightVar(), spssFile.getCompression(),
         spssFile.getDateNumOfElements(), spssFile.getDateInfo(), spssFile.getFileCodePage(), spssFile.getFileEncoding(),
         spssFile.getFileIdString(), spssFile.getInterfaceEncoding(), spssFile.getMultRespDefsEx(),
-        spssFile.getVariables(), spssFile.getAttributes(), spssFile.getDataMatrix(), spssFile.getDataMatrixJson(),
-        spssFile.getErrors());
+        spssFile.getVarSets(), spssFile.getVariables(), spssFile.getAttributes(), spssFile.getDataMatrix(),
+        spssFile.getDataMatrixJson(), spssFile.getErrors());
   }
 
   public long getId() {

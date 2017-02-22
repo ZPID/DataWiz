@@ -14,7 +14,7 @@ import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.RecordCompareDTO;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.StudyDTO;
-import de.zpid.spss.dto.SPSSVarTDO;
+import de.zpid.spss.dto.SPSSVarDTO;
 
 public class StudyForm implements Serializable {
 
@@ -49,8 +49,8 @@ public class StudyForm implements Serializable {
   private List<String> warnings;
   private List<String> errors;
   private List<RecordCompareDTO> compList;
-  private List<SPSSVarTDO> viewVars;
-  private List<SPSSVarTDO> delVars;
+  private List<SPSSVarDTO> viewVars;
+  private List<SPSSVarDTO> delVars;
 
   public StudyDTO getStudy() {
     return study;
@@ -268,19 +268,19 @@ public class StudyForm implements Serializable {
     this.compList = compList;
   }
 
-  public List<SPSSVarTDO> getViewVars() {
+  public List<SPSSVarDTO> getViewVars() {
     return viewVars;
   }
 
-  public void setViewVars(List<SPSSVarTDO> viewVars) {
+  public void setViewVars(List<SPSSVarDTO> viewVars) {
     this.viewVars = viewVars;
   }
 
-  public List<SPSSVarTDO> getDelVars() {
+  public List<SPSSVarDTO> getDelVars() {
     return delVars;
   }
 
-  public void setDelVars(List<SPSSVarTDO> delVars) {
+  public void setDelVars(List<SPSSVarDTO> delVars) {
     this.delVars = delVars;
   }
 

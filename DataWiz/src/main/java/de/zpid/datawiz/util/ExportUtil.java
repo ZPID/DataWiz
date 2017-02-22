@@ -1,22 +1,27 @@
 package de.zpid.datawiz.util;
 
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-
-import javax.servlet.http.HttpServletResponse;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import de.zpid.datawiz.dto.RecordDTO;
+import de.zpid.spss.SPSSIO;
+import de.zpid.spss.dto.SPSSErrorDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarTDO;
+import de.zpid.spss.dto.SPSSVarDTO;
 
 @Repository
 public class ExportUtil {
@@ -24,40 +29,164 @@ public class ExportUtil {
   private static Logger log = LogManager.getLogger(ExportUtil.class);
   @Autowired
   protected MessageSource messageSource;
+  @Autowired
+  private SPSSIO spss;
+  @Autowired
+  private FileUtil fileUtil;
 
   /**
+   * This function prepares the record DTO for the export and transfers it to the SPSS IO Module. If the return of the
+   * SPSS IO Module is valid, a byte[] which contains the spss file is returned. If some errors occur diring this
+   * process, null is returned and an error code is written to ResponseEntity<String> resp.
    * 
    * @param record
-   * @param response
-   * @return
+   *          Complete copy of the requested record version
+   * @param resp
+   *          Reference parameter to handle export errors in the calling function
+   * @return the spss file as byte array
    */
-  public ResponseEntity<String> exportCSVMatrix(RecordDTO record, HttpServletResponse response) {
-    ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
+  public byte[] exportSPSSFile(RecordDTO record, StringBuilder res) {
+    log.trace("Entering exportSPSSFile for RecordDTO: [id: {}; version:{}]", () -> record.getId(),
+        () -> record.getVersionId());
+    byte[] content = null;
+    record.setFileIdString(record.getRecordName() + "_Version_(" + record.getVersionId() + ")");
+    record.setErrors(new LinkedList<>());
+    String dir = fileUtil.setFolderPath("temp");
+    String filename = UUID.randomUUID().toString() + ".sav";
+    record.getAttributes().add(new SPSSValueLabelDTO("@dw_construct", "@dw_construct"));
+    record.getAttributes().add(new SPSSValueLabelDTO("@dw_measocc", "@dw_measocc"));
+    record.getAttributes().add(new SPSSValueLabelDTO("@dw_instrument", "@dw_instrument"));
+    record.getAttributes().add(new SPSSValueLabelDTO("@dw_itemtext", "@dw_itemtext"));
+    record.getAttributes().add(new SPSSValueLabelDTO("@dw_filtervar", "@dw_filtervar"));
+    record.getAttributes().add(new SPSSValueLabelDTO("CreatedBy", "DataWiz"));
+    record.getAttributes().add(new SPSSValueLabelDTO("DataWizStudyId", String.valueOf(record.getStudyId())));
+    record.getAttributes().add(new SPSSValueLabelDTO("DataWizRecordId", String.valueOf(record.getId())));
+    record.getAttributes().add(new SPSSValueLabelDTO("DataWizVersionId", String.valueOf(record.getVersionId())));
+    record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateAt", String.valueOf(record.getChanged())));
+    record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateBy", record.getChangedBy()));
+    //record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateLog", record.getChangeLog()));
+    //record.getAttributes().add(new SPSSValueLabelDTO("DataWizLRecordDescription", record.getDescription()));
+    System.out.println(record.getChangeLog().length() + " - " + record.getChangeLog().getBytes().length);
     if (record != null && record.getVariables() != null && record.getDataMatrix() != null) {
       try {
-        StringBuilder csv = recordMatrixToCSVString(record);
-        if (csv != null && csv.length() > 0) {
-          response.setContentType("application/csv");
-          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".json\"");
-          response.setContentLength(csv.toString().length());
-          response.getOutputStream().write(csv.toString().getBytes(Charset.forName("UTF-8")));
+        if (!Files.exists(Paths.get(dir)))
+          Files.createDirectories(Paths.get(dir));
+        spss.writeSPSSFile(record, dir + filename);
+        List<SPSSErrorDTO> errors = record.getErrors();
+        if (errors.size() > 0) {
+          for (SPSSErrorDTO error : errors)
+            if (error.getError().getNumber() > 0) {
+              res.insert(0, "export.error.spss.error");
+              break;
+            }
+        }
+        if (Files.exists(Paths.get(dir + filename))) {
+          content = Files.readAllBytes(Paths.get(dir + filename));
         } else {
-          resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
+          res.insert(0, "export.error.file.not.exist");
         }
       } catch (Exception e) {
-        resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
+        log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Exception: {}", () -> record.getId(),
+            () -> record.getVersionId(), () -> e);
+        res.insert(0, "export.error.exception.thown");
+      } finally {
+        if (Files.exists(Paths.get(dir + filename)))
+          fileUtil.deleteFile(Paths.get(dir + filename));
       }
     } else {
-      resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
+      res.insert(0, "export.recorddto.empty");
     }
-    return resp;
+    log.debug("Leaving exportSPSSFile with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+    return content;
   }
 
+  /**
+   * This function transfers the record into a CSV String and returns it as byte array. It handles the CSV export for
+   * the Caodebook and the matrix (boolean matrix = true).If some errors occur diring this process, null is returned and
+   * an error code is written to ResponseEntity<String> resp.
+   * 
+   * @param record
+   *          Complete copy of the requested record version
+   * @param resp
+   *          Reference parameter to handle export errors in the calling function
+   * @return the csv string as byte array
+   */
+  public byte[] exportCSV(final RecordDTO record, StringBuilder res, final boolean matrix) {
+    log.trace("Entering exportCSV for RecordDTO: [id: {}; version:{}] matrix[{}]", () -> record.getId(),
+        () -> record.getVersionId(), () -> matrix);
+    byte[] content = null;
+    if (record != null && record.getVariables() != null && record.getDataMatrix() != null) {
+      try {
+        StringBuilder csv;
+        if (matrix)
+          csv = recordMatrixToCSVString(record);
+        else
+          csv = recordCodebookToCSVString(record);
+        if (csv != null && csv.length() > 0) {
+          content = csv.toString().getBytes(Charset.forName("UTF-8"));
+        } else {
+          res.insert(0, "export.csv.string.empty");
+        }
+      } catch (Exception e) {
+        log.warn("Error during CSV export: RecordDTO: [id: {}; version:{} matrix[{}]] Exception: {}",
+            () -> record.getId(), () -> record.getVersionId(), () -> matrix, () -> e);
+        res.insert(0, "export.error.exception.thown");
+      }
+    } else {
+      res.insert(0, "export.recorddto.empty");
+    }
+    log.debug("Leaving exportCSV with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+    return content;
+  }
+
+  /**
+   * This function transfers the record into a JSON String and returns it as byte array. If some errors occur diring
+   * this process, null is returned and an error code is written to ResponseEntity<String> resp.
+   * 
+   * @param record
+   *          Complete copy of the requested record version
+   * @param resp
+   *          Reference parameter to handle export errors in the calling function
+   * @return the csv string as byte array
+   */
+  public byte[] exportJSON(RecordDTO record, StringBuilder res) {
+    log.trace("Entering exportJSON for RecordDTO: [id: {}; version:{}]", () -> record.getId(),
+        () -> record.getVersionId());
+    byte[] content = null;
+    if (record != null && record.getVariables() != null && record.getDataMatrix() != null) {
+      try {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String json = gson.toJson(record);
+        content = json.getBytes(Charset.forName("UTF-8"));
+        if (json != null && json.length() > 0) {
+          content = json.getBytes(Charset.forName("UTF-8"));
+        } else {
+          res.insert(0, "export.json.string.empty");
+        }
+      } catch (Exception e) {
+        log.warn("Error during JSON export: RecordDTO: [id: {}; version:{}] Exception: ", () -> record.getId(),
+            () -> record.getVersionId(), () -> e);
+        res.insert(0, "export.error.exception.thown");
+      }
+    } else {
+      res.insert(0, "export.recorddto.empty");
+    }
+    log.debug("Leaving exportJSON with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+    return content;
+  }
+
+  /**
+   * This function creates the CSV matrix (with variable names as headline) from the data matrix list of the record
+   * 
+   * @param record
+   *          Complete copy of the requested record version
+   * @return StringBuilder which contains the Matrix as CSV
+   */
   public StringBuilder recordMatrixToCSVString(RecordDTO record) {
     StringBuilder csv = new StringBuilder();
     int vars = record.getVariables().size();
     int varcount = 1;
-    for (SPSSVarTDO var : record.getVariables()) {
+    for (SPSSVarDTO var : record.getVariables()) {
       csv.append(var.getName());
       if (vars > varcount)
         csv.append(",");
@@ -83,44 +212,17 @@ public class ExportUtil {
   }
 
   /**
+   * This function creates the complete Codebook and returns it as StringBuilder Object.
    * 
    * @param record
-   * @param response
-   * @return
-   */
-  public ResponseEntity<String> exportCSVCodeBook(RecordDTO record, HttpServletResponse response) {
-    ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
-    if (record != null && record.getVariables() != null && record.getDataMatrix() != null) {
-      try {
-        StringBuilder csv = recordCodebookToCSVString(record);
-        if (csv != null && csv.length() > 0) {
-          response.setContentType("application/csv");
-          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".csv\"");
-          response.setContentLength(csv.toString().length());
-          response.getOutputStream().write(csv.toString().getBytes(Charset.forName("UTF-8")));
-        } else {
-          resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
-        }
-      } catch (Exception e) {
-        log.warn(e);
-        resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
-      }
-    } else {
-      resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
-    }
-    return resp;
-  }
-
-  /**
-   * 
-   * @param record
-   * @return
+   *          Complete copy of the requested record version
+   * @return StringBuilder which contains the Codebook as CSV
    */
   public StringBuilder recordCodebookToCSVString(RecordDTO record) {
     StringBuilder csv = new StringBuilder();
     csv.append(
         "name,type,label,values,missingformat,missingValue1,missingValue2,missingValue3,width,decimals,measurelevel,role,attributes,dw_konstruct,dw_measocc,dw_instrument,dw_itemtext,dw_filtervariable\n");
-    for (SPSSVarTDO var : record.getVariables()) {
+    for (SPSSVarDTO var : record.getVariables()) {
       csv.append("\"" + cleanString(var.getName()) + "\"");
       csv.append(",");
       if (var.getType() != null)
@@ -250,6 +352,13 @@ public class ExportUtil {
     return csv;
   }
 
+  /**
+   * This function removes all line-break and tabulator commands from the passed String.
+   * 
+   * @param s
+   *          String, which has to be cleaned
+   * @return Cleaned String
+   */
   private String cleanString(String s) {
     return s.replaceAll("(\\r|\\n|\\t)", " ").replaceAll("\"", "'");
   }

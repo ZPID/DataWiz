@@ -260,7 +260,8 @@
           <div class="col-sm-12">
             <a href="${accessUrl}/export/CSVMatrix" target="_blank">CSVMatrix</a><br /> <a
               href="${accessUrl}/export/CSVCodebook" target="_blank">CSVCodebook</a><br /> <a
-              href="${accessUrl}/export/JSON" target="_blank">JSON</a>
+              href="${accessUrl}/export/JSON" target="_blank">JSON</a> <a href="${accessUrl}/export/SPSS"
+              target="_blank">SPSS</a>
           </div>
         </div>
       </div>
