@@ -552,6 +552,27 @@ label.btn::after {
   display: block;
 }
 
+.scrollTableFullscreen {
+  position: fixed;
+  top: 10px;
+  left: 0px;
+  width: 100%;
+  z-index: 99;
+  background-color: white;
+}
+
+.scrollTableFullScreenTBody {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 91vh;
+}
+
+.scrollTableTbody {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 600px;
+}
+
 .scrollTable thead {
   
 }
@@ -560,11 +581,7 @@ label.btn::after {
   display: block;
 }
 
-.scrollTable tbody {
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 600px;
-}
+
 
 .scrollTable td, .scrollTable th {
   

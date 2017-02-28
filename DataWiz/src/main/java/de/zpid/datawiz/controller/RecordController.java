@@ -43,6 +43,7 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ExportUtil;
+import de.zpid.datawiz.util.ITextUtil;
 import de.zpid.datawiz.util.ImportUtil;
 import de.zpid.datawiz.util.UserUtil;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -62,6 +63,8 @@ public class RecordController extends SuperController {
   private ImportUtil importUtil;
   @Autowired
   private ExportUtil exportUtil;
+  @Autowired
+  private ITextUtil itextUtil;
 
   public RecordController() {
     super();
@@ -521,6 +524,8 @@ public class RecordController extends SuperController {
           content = exportUtil.exportJSON(record, res);
         } else if (exportType.equals("SPSS")) {
           content = exportUtil.exportSPSSFile(record, res);
+        } else if (exportType.equals("PDF")) {
+          content = itextUtil.createPdf(record, false);
         }
       }
     }
@@ -542,6 +547,10 @@ public class RecordController extends SuperController {
       case "SPSS":
         response.setContentType("application/sav");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".sav\"");
+        break;
+      case "PDF":
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".pdf\"");
         break;
       }
       response.setContentLength(content.length);

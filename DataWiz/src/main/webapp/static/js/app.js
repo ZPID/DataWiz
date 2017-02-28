@@ -58,6 +58,9 @@ $tag_box = null;
               $("#csvSelected").show();
             }
           });
+          if (window.location.pathname.search("/codebook") > 0 || window.location.pathname.search("/data") > 0) {
+            fixTableHeaderWidth();
+          }
         }// loading Panel Content
         else if (window.location.pathname.search("/panel") > 0) {
           startAccordion();
@@ -312,7 +315,7 @@ function showorHideDMPContent() {
 }
 
 function startloader() {
-  $(".loader").fadeIn("slow");
+  setTimeout($(".loader").fadeIn("slow"), 0);
 }
 
 function showorHideStudyContent() {
@@ -627,7 +630,6 @@ function asyncSumbit(uri, global) {
 
 function loadAjaxModal(url, global) {
   if (url != null) {
-
     if (!global) {
       $(".modal-dialog").removeClass("modalWidth")
     } else {
@@ -644,6 +646,35 @@ function loadAjaxModal(url, global) {
   }
 }
 
-$('.scrollTable').on('scroll', function () {
+$('.scrollTable').on('scroll', function() {
   $(".scrollTable > *").width($(".scrollTable").width() + $(".scrollTable").scrollLeft());
 });
+
+function fixTableHeaderWidth() {
+  var tdHeader = document.getElementById("fixedHeaderTable").rows[0].cells;
+  var tdData = document.getElementById("fixedHeaderTable").rows[1].cells;
+  console.log("1")
+  $.each(tdData, function(i, item) {
+    setTimeout(function() {
+      var dataWidth = tdData[i].offsetWidth;
+      var headWidth = tdHeader[i].offsetWidth
+      if (dataWidth > headWidth)
+        tdHeader[i].style.minWidth = dataWidth + 'px';
+      else
+        tdData[i].style.minWidth = headWidth + 'px';
+    }, 0);
+    
+  });
+  console.log("2")
+}
+
+function toggleFullscreen() {
+  console.log("toggleFullscreen")
+  if ($("#fullScreenView").hasClass("scrollTableFullscreen")) {
+    $("#fullScreenView").removeClass("scrollTableFullscreen");
+    $(".scrollTable tbody").removeClass("scrollTableFullScreenTBody").addClass("scrollTableTbody");
+  } else {
+    $("#fullScreenView").addClass("scrollTableFullscreen");
+    $(".scrollTable tbody").addClass("scrollTableFullScreenTBody").removeClass("scrollTableTbody");
+  }
+}
