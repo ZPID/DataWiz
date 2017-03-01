@@ -525,7 +525,7 @@ public class RecordController extends SuperController {
         } else if (exportType.equals("SPSS")) {
           content = exportUtil.exportSPSSFile(record, res);
         } else if (exportType.equals("PDF")) {
-          content = itextUtil.createPdf(record, false);
+          content = itextUtil.createPdf(record, false, true);
         }
       }
     }

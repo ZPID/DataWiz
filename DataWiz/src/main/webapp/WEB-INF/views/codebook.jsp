@@ -7,13 +7,14 @@
     <div class="content-padding">
       <div class="page-header">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-sm-10">
             <h4>
               <s:message code="record.codebook.headline" />
             </h4>
           </div>
-          <div class="col-sm-1">
-            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exportModal">EXPORT</button>
+          <div class="col-sm-2 text-align-right">
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exportModal">Datensatz
+              exportieren</button>
           </div>
         </div>
         <div>
@@ -30,7 +31,7 @@
             <div id="fullScreenView">
               <div class="form-group">
                 <div class="col-sm-12 text-align-right">
-                  <div class="label label-default" onclick="toggleFullscreen()">open in Fullscreen</div>
+                  <div class="label label-success" onclick="toggleFullscreen()">open in Fullscreen</div>
                 </div>
               </div>
               <div class="form-group">
@@ -276,19 +277,29 @@
         <h4 class="modal-title">Export</h4>
       </div>
       <div class="modal-body">
-        <div class="form-group">
-          <div class="col-sm-12">
-            <a href="${accessUrl}/export/CSVMatrix" target="_blank">CSVMatrix</a><br /> <a
-              href="${accessUrl}/export/CSVCodebook" target="_blank">CSVCodebook</a><br /> <a
-              href="${accessUrl}/export/JSON" target="_blank">JSON</a> <a href="${accessUrl}/export/SPSS"
-              target="_blank">SPSS</a><a href="${accessUrl}/export/PDF"
-              target="_blank">PDF/A</a>
-          </div>
-        </div>
+        <ul class="list-group">
+          <li class="list-group-item">CSV
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default"
+                onclick="javascript:location.href='${accessUrl}/export/CSVMatrix'">Datenmatrix</li>
+              <li class="list-group-item btn btn-default"
+                onclick="javascript:location.href='${accessUrl}/export/CSVCodebook'">Variablen Codebuch</li>
+            </ul>
+          </li>
+          <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/SPSS'">SPSS</li>
+          <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/JSON'">JSON</li>
+          <li class="list-group-item">PDF/A
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/PDF'">Unverschlüsselt</li>
+              <li class="list-group-item btn btn-default"
+                onclick="javascript:location.href='${accessUrl}/export/PDF?encrypt=true'">Verschlüsselt und zugriffsbeschränkt auf Drucken</li>
+            </ul>
+          </li>
+        </ul>
       </div>
       <div class="modal-footer">
         <div class="form-group">
-          <div class="col-sm-offset-0 col-md-12"></div>
+          <div class="col-sm-offset-0 col-md-12">close</div>
         </div>
       </div>
     </div>

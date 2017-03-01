@@ -71,7 +71,7 @@ public class ITextUtil {
 
   private static final float FONTSIZENORMAL = 12.0f;
 
-  public byte[] createPdf(final RecordDTO record, boolean encrypt) throws IOException {
+  public byte[] createPdf(final RecordDTO record, boolean encrypt, boolean withAttachments) throws IOException {
     StringBuilder res = new StringBuilder();
     byte[] content = null;
     String dir = fileUtil.setFolderPath("temp");
@@ -84,26 +84,23 @@ public class ITextUtil {
       document.setFont(PdfFontFactory.createFont(fontBytes, true));
       document.setTextAlignment(TextAlignment.JUSTIFIED);
       document.setFontSize(FONTSIZENORMAL);
-      PdfArray array = new PdfArray();
-      PdfFileSpec matrix = getDatamatrix(record, pdf, res);
-      if (matrix != null) {
-        array.add(matrix.getPdfObject().getIndirectReference());
+      // CSV Attachments
+      if (withAttachments) {
+        PdfArray array = new PdfArray();
+        PdfFileSpec matrix = getRecordCSVAttachment(record, pdf, res, true);
+        PdfFileSpec codebook = getRecordCSVAttachment(record, pdf, res, false);
+        if (matrix != null)
+          array.add(matrix.getPdfObject().getIndirectReference());
+        if (codebook != null)
+          array.add(codebook.getPdfObject().getIndirectReference());
         pdf.getCatalog().put(new PdfName("Attachments"), array);
       }
       // report meta page
-      document.add(new Paragraph().setTextAlignment(TextAlignment.CENTER).setBold()
-          .add("Variablencodebuch des Datensatzes \"" + record.getRecordName() + "\""));
-      document.add(new Paragraph().setTextAlignment(TextAlignment.CENTER)
-          .add("Erstellt am \"" + record.getCreated() + "\" von \"" + record.getCreatedBy() + "\"\n")
-          .add("Letzte Version vom \"" + record.getChanged() + "\" bearbeitet von \"" + record.getChangedBy() + "\""));
-      document.add(new Paragraph().add(new Text("Datensatzbeschreibung:\n").setBold().setUnderline())
-          .add(new Text(record.getDescription()).setTextAlignment(TextAlignment.JUSTIFIED)));
-      document.add(new Paragraph().add(new Text("Letzte Änderung:\n").setBold().setUnderline())
-          .add(new Text(record.getChangeLog()).setTextAlignment(TextAlignment.JUSTIFIED)));
-      document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+      createRecordMetaDesc(record, document);
       // variables
       for (SPSSVarDTO var : record.getVariables()) {
-        document.add(new Paragraph().add(new Text("Variable: ").setFontSize(12f))
+        document.add(new Paragraph()
+            .add(new Text(messageSource.getMessage("export.pdf.line.variable", null, Locale.ENGLISH)).setFontSize(12f))
             .add(new Text(var.getName()).setFontSize(12f).setBold()).add("\n\n"));
         document.add(createVarTable(var));
         document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
@@ -117,6 +114,31 @@ public class ITextUtil {
       }
     }
     return content;
+  }
+
+  /**
+   * @param record
+   * @param document
+   */
+  private void createRecordMetaDesc(final RecordDTO record, Document document) {
+    document.add(new Paragraph().setTextAlignment(TextAlignment.CENTER).setBold().add(
+        messageSource.getMessage("export.pdf.line.head", new Object[] { record.getRecordName() }, Locale.ENGLISH)));
+    document.add(new Paragraph().setTextAlignment(TextAlignment.CENTER)
+        .add(messageSource.getMessage("export.pdf.line.created",
+            new Object[] { record.getCreated(), record.getCreatedBy() }, Locale.ENGLISH))
+        .add("\n").add(messageSource.getMessage("export.pdf.line.updated",
+            new Object[] { record.getChanged(), record.getChangedBy() }, Locale.ENGLISH))
+        .add("\n").add("\n"));
+    document.add(new Paragraph()
+        .add(new Text(messageSource.getMessage("export.pdf.line.record.desc", null, Locale.ENGLISH)).setBold()
+            .setUnderline())
+        .add("\n").add(new Text(record.getDescription()).setTextAlignment(TextAlignment.JUSTIFIED)));
+    document
+        .add(new Paragraph()
+            .add(new Text(messageSource.getMessage("export.pdf.line.last.changes", null, Locale.ENGLISH)).setBold()
+                .setUnderline())
+            .add("\n").add(new Text(record.getChangeLog()).setTextAlignment(TextAlignment.JUSTIFIED)));
+    document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
   }
 
   /**
@@ -277,17 +299,19 @@ public class ITextUtil {
    * @param res
    * @return
    */
-  private PdfFileSpec getDatamatrix(final RecordDTO record, PdfADocument pdf, StringBuilder res) {
+  private PdfFileSpec getRecordCSVAttachment(final RecordDTO record, PdfADocument pdf, StringBuilder res,
+      boolean matrix) {
     log.trace("Entering getDatamatrix for record[id:{}, version:{}]", () -> record.getId(),
         () -> record.getVersionId());
     PdfFileSpec fileSpec = null;
-    byte[] datamatrix = exportUtil.exportCSV(record, res, true);
+    String name = record.getRecordName() + "_" + record.getVersionId() + (matrix ? "(matrix).csv" : "(codebook).csv");
+    byte[] datamatrix = exportUtil.exportCSV(record, res, matrix);
     if (datamatrix != null && datamatrix.length > 0) {
       PdfDictionary parameters = new PdfDictionary();
-      fileSpec = PdfFileSpec.createEmbeddedFileSpec(pdf, datamatrix, "datamatrix.csv", "datamatrix.csv",
-          new PdfName("text/csv"), parameters, PdfName.Data, false);
+      fileSpec = PdfFileSpec.createEmbeddedFileSpec(pdf, datamatrix, name, name, new PdfName("text/csv"), parameters,
+          PdfName.Data, false);
       fileSpec.put(new PdfName("AFRelationship"), new PdfName("Data"));
-      pdf.addFileAttachment("united_states.csv", fileSpec);
+      pdf.addFileAttachment(name, fileSpec);
     } else {
       res.insert(0, "export.csv.string.empty");
     }
@@ -348,5 +372,4 @@ public class ITextUtil {
     info.setMoreInfo("DataWiz RecordId", String.valueOf(record.getId()));
     info.setMoreInfo("DataWiz VersionId", String.valueOf(record.getVersionId()));
   }
-
 }
