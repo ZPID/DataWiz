@@ -6,7 +6,10 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Repository;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.itextpdf.io.source.ByteArrayOutputStream;
 
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.spss.SPSSIO;
@@ -33,6 +37,32 @@ public class ExportUtil {
   private SPSSIO spss;
   @Autowired
   private FileUtil fileUtil;
+
+  public byte[] exportZip(List<Entry<String, byte[]>> files, StringBuilder res) {
+    log.trace("Entering exportZip for Num of File: [{}]", () -> files.size());
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ZipOutputStream zos = new ZipOutputStream(baos);
+    String fileName = null;
+    byte[] content = null;
+    try {
+      for (Entry<String, byte[]> file : files) {
+        fileName = file.getKey();
+        ZipEntry entry = new ZipEntry(file.getKey());
+        entry.setSize(file.getValue().length);
+        zos.putNextEntry(entry);
+        zos.write(file.getValue());
+        zos.closeEntry();
+      }
+      zos.close();
+      content = baos.toByteArray();
+      baos.close();
+    } catch (Exception e) {
+      log.warn("Error during exportZip: Filename: [{}] Exception: {}", fileName, e);
+      res.insert(0, "export.error.exception.thown");
+    }
+    log.debug("Leaving exportZip with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+    return content;
+  }
 
   /**
    * This function prepares the record DTO for the export and transfers it to the SPSS IO Module. If the return of the
@@ -64,9 +94,8 @@ public class ExportUtil {
     record.getAttributes().add(new SPSSValueLabelDTO("DataWizVersionId", String.valueOf(record.getVersionId())));
     record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateAt", String.valueOf(record.getChanged())));
     record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateBy", record.getChangedBy()));
-    //record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateLog", record.getChangeLog()));
-    //record.getAttributes().add(new SPSSValueLabelDTO("DataWizLRecordDescription", record.getDescription()));
-    System.out.println(record.getChangeLog().length() + " - " + record.getChangeLog().getBytes().length);
+    // record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateLog", record.getChangeLog()));
+    // record.getAttributes().add(new SPSSValueLabelDTO("DataWizLRecordDescription", record.getDescription()));
     if (record != null && record.getVariables() != null && record.getDataMatrix() != null) {
       try {
         if (!Files.exists(Paths.get(dir)))

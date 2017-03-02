@@ -332,7 +332,7 @@ public class ITextUtil {
     WriterProperties prop;
     if (encrypt)
       prop = new WriterProperties().setStandardEncryption("".getBytes(), UUID.randomUUID().toString().getBytes(),
-          EncryptionConstants.ALLOW_PRINTING,
+          EncryptionConstants.ALLOW_PRINTING | EncryptionConstants.ALLOW_FILL_IN | EncryptionConstants.ALLOW_ASSEMBLY,
           EncryptionConstants.ENCRYPTION_AES_256 | EncryptionConstants.DO_NOT_ENCRYPT_METADATA);
     else
       prop = new WriterProperties();
@@ -341,7 +341,7 @@ public class ITextUtil {
     PdfADocument pdf = null;
 
     try {
-      pdf = new PdfADocument(new PdfWriter(dest, prop), PdfAConformanceLevel.PDF_A_3A, new PdfOutputIntent("Custom", "",
+      pdf = new PdfADocument(new PdfWriter(dest, prop), PdfAConformanceLevel.PDF_A_3U, new PdfOutputIntent("Custom", "",
           "http://www.color.org", "sRGB IEC61966-2.1", this.getClass().getClassLoader().getResourceAsStream(ICC)));
     } catch (FileNotFoundException e) {
       res.insert(0, "export.error.exception.thown");

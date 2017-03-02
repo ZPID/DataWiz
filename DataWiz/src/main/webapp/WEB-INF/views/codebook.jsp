@@ -13,8 +13,9 @@
             </h4>
           </div>
           <div class="col-sm-2 text-align-right">
-            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exportModal">Datensatz
-              exportieren</button>
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exportModal">
+              <s:message code="export.show.modal.button" />
+            </button>
           </div>
         </div>
         <div>
@@ -31,7 +32,9 @@
             <div id="fullScreenView">
               <div class="form-group">
                 <div class="col-sm-12 text-align-right">
-                  <div class="label label-success" onclick="toggleFullscreen()">open in Fullscreen</div>
+                  <div class="label label-success" onclick="toggleFullscreen()">
+                    <s:message code="codebook.toggle.fullscreen" />
+                  </div>
                 </div>
               </div>
               <div class="form-group">
@@ -128,7 +131,9 @@
                               <c:if test="${val.label == 'dw_construct'}">
                                 <sf:select class="form-control"
                                   path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                                  <sf:option value="">Kein Konstrukt</sf:option>
+                                  <sf:option value="">
+                                    <s:message code="record.codebook.no.construct" />
+                                  </sf:option>
                                   <sf:options items="${StudyForm.study.constructs}" itemLabel="name" itemValue="name" />
                                 </sf:select>
                                 <c:set var="contains" value="false" />
@@ -149,7 +154,9 @@
                               <c:if test="${val.label == 'dw_measocc'}">
                                 <sf:select class="form-control"
                                   path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                                  <sf:option value="">Kein Messzeitpunkt</sf:option>
+                                  <sf:option value="">
+                                    <s:message code="record.codebook.no.measocc" />
+                                  </sf:option>
                                   <sf:options items="${StudyForm.study.measOcc}" itemLabel="text" itemValue="text" />
                                 </sf:select>
                                 <c:set var="contains" value="false" />
@@ -170,7 +177,9 @@
                               <c:if test="${val.label == 'dw_instrument'}">
                                 <sf:select class="form-control"
                                   path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                                  <sf:option value="">Kein Instrument</sf:option>
+                                  <sf:option value="">
+                                    <s:message code="record.codebook.no.instrument" />
+                                  </sf:option>
                                   <sf:options items="${StudyForm.study.instruments}" itemLabel="title" itemValue="title" />
                                 </sf:select>
                                 <c:set var="contains" value="false" />
@@ -243,7 +252,7 @@
 </div>
 <div class="modal fade" id="valueModal" role="dialog">
   <div class="modal-dialog">
-    <!-- Modal content-->
+    <!-- content is dynamically loading with ajax -->
   </div>
 </div>
 <div class="modal fade" id="errorModal" role="dialog">
@@ -251,11 +260,15 @@
     <div class="modal-content panel-primary">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">YOU FAILED</h4>
+        <h4 class="modal-title">
+          <s:message code="record.codebook.submit.timeout.modal.head" />
+        </h4>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <div class="col-sm-12">Bist du der Depp des Tages?</div>
+          <div class="col-sm-12">
+            <s:message code="record.codebook.submit.timeout.modal.info" />
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -274,32 +287,54 @@
     <div class="modal-content panel-primary">
       <div class="modal-header panel-heading">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Export</h4>
+        <h4 class="modal-title">
+          <s:message code="record.export.modal.title" />
+        </h4>
       </div>
       <div class="modal-body">
         <ul class="list-group">
-          <li class="list-group-item">CSV
+          <li class="list-group-item"><s:message code="record.export.modal.csv" />
             <ul class="list-group">
               <li class="list-group-item btn btn-default"
-                onclick="javascript:location.href='${accessUrl}/export/CSVMatrix'">Datenmatrix</li>
+                onclick="javascript:location.href='${accessUrl}/export/CSVMatrix'" data-dismiss="modal"><s:message
+                  code="record.export.modal.csvmatrix" /></li>
               <li class="list-group-item btn btn-default"
-                onclick="javascript:location.href='${accessUrl}/export/CSVCodebook'">Variablen Codebuch</li>
-            </ul>
-          </li>
-          <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/SPSS'">SPSS</li>
-          <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/JSON'">JSON</li>
-          <li class="list-group-item">PDF/A
+                onclick="javascript:location.href='${accessUrl}/export/CSVCodebook'" data-dismiss="modal"><s:message
+                  code="record.export.modal.csvcodebook" /></li>
+              <li class="list-group-item btn btn-default"
+                onclick="javascript:location.href='${accessUrl}/export/CSVZIP'" data-dismiss="modal"><s:message
+                  code="record.export.modal.csvboth" /></li>
+            </ul></li>
+          <li class="list-group-item"><s:message code="record.export.modal.spss" />
             <ul class="list-group">
-              <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/PDF'">Unverschlüsselt</li>
+              <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/SPSS'"
+                data-dismiss="modal"><s:message code="record.export.modal.sav" /></li>
+            </ul></li>
+          <li class="list-group-item"><s:message code="record.export.modal.json" />
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/JSON'"
+                data-dismiss="modal"><s:message code="record.export.modal.json.file" /></li>
+            </ul></li>
+          <li class="list-group-item"><s:message code="record.export.modal.pdf" />
+            <ul class="list-group">
               <li class="list-group-item btn btn-default"
-                onclick="javascript:location.href='${accessUrl}/export/PDF?encrypt=true'">Verschlüsselt und zugriffsbeschränkt auf Drucken</li>
-            </ul>
-          </li>
+                onclick="window.open('${accessUrl}/export/PDF?attachments=false', '_blank')" data-dismiss="modal">
+                <s:message code="record.export.modal.pdf.withoutAtt" />
+              </li>
+              <li class="list-group-item btn btn-default"
+                onclick="window.open('${accessUrl}/export/PDF?attachments=true', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.pdf.withAtt" /></li>
+            </ul> <s:message code="record.export.modal.pdf.help" var="appresmess" /> <%@ include
+              file="templates/helpblock.jsp"%></li>
         </ul>
       </div>
       <div class="modal-footer">
         <div class="form-group">
-          <div class="col-sm-offset-0 col-md-12">close</div>
+          <div class="col-sm-offset-0 col-md-12">
+            <button class="btn btn-default" data-dismiss="modal">
+              <s:message code="gen.close" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

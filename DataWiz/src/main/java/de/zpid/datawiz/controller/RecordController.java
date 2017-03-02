@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.util.AbstractMap.SimpleEntry;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -481,7 +483,8 @@ public class RecordController extends SuperController {
   @RequestMapping(value = { "{recordId}/version/{versionId}/export/{exportType}" })
   public void exportRecord(final ModelMap model, HttpServletResponse response, RedirectAttributes redirectAttributes,
       @PathVariable long versionId, @PathVariable long recordId, @PathVariable final Optional<Long> pid,
-      @PathVariable final Optional<Long> studyId, @PathVariable String exportType) throws Exception {
+      @PathVariable final Optional<Long> studyId, @PathVariable String exportType,
+      @RequestParam(value = "attachments", required = false) Boolean attachments) throws Exception {
     log.trace("exportRecord - " + recordId + " - " + versionId + " - " + exportType);
     UserDTO user = UserUtil.getCurrentUser();
     RecordDTO record = null;
@@ -490,7 +493,7 @@ public class RecordController extends SuperController {
     if (user == null || checkStudyAccess(pid, studyId, redirectAttributes, false, user) != null) {
       log.warn("Auth User Object == null - redirect to login");
       // TODO
-      res.insert(0, "sdf");
+      res.insert(0, "project.access.denied");
     } else {
       try {
         record = recordDAO.findRecordWithID(recordId, versionId);
@@ -511,9 +514,9 @@ public class RecordController extends SuperController {
         }
       } catch (Exception e) {
         record = null;
-        // TODO
-        res.insert(0, "sdf");
-        e.printStackTrace();
+        res.insert(0, "dbs.sql.exception");
+        log.error("ERROR: Getting record from DB wasn't sucessful! Record[recordId:{}; VersionId:{}] Exception:",
+            () -> recordId, () -> versionId, () -> e);
       }
       if (record != null) {
         if (exportType.equals("CSVMatrix")) {
@@ -525,39 +528,52 @@ public class RecordController extends SuperController {
         } else if (exportType.equals("SPSS")) {
           content = exportUtil.exportSPSSFile(record, res);
         } else if (exportType.equals("PDF")) {
-          content = itextUtil.createPdf(record, false, true);
+          System.out.println(attachments);
+          content = itextUtil.createPdf(record, false, attachments);
+        } else if (exportType.equals("CSVZIP")) {
+          List<Entry<String, byte[]>> files = new ArrayList<>();
+          files.add(new SimpleEntry<String, byte[]>(record.getRecordName() + "_Matrix.csv",
+              exportUtil.exportCSV(record, res, true)));
+          files.add(new SimpleEntry<String, byte[]>(record.getRecordName() + "_Codebook.csv",
+              exportUtil.exportCSV(record, res, false)));
+          content = exportUtil.exportZip(files, res);
         }
       }
-    }
-    if (res.toString().trim().isEmpty() && record != null && content != null) {
-      switch (exportType) {
-      case "CSVMatrix":
-        response.setContentType("application/csv");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + "_Matrix.csv\"");
-        break;
-      case "CSVCodebook":
-        response.setContentType("application/csv");
-        response.setHeader("Content-Disposition",
-            "attachment; filename=\"" + record.getRecordName() + "_Codebook.csv\"");
-        break;
-      case "JSON":
-        response.setContentType("application/json");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".json\"");
-        break;
-      case "SPSS":
-        response.setContentType("application/sav");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".sav\"");
-        break;
-      case "PDF":
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".pdf\"");
-        break;
+      if (res.toString().trim().isEmpty() && record != null && content != null) {
+        switch (exportType) {
+        case "CSVMatrix":
+          response.setContentType("text/csv");
+          response.setHeader("Content-Disposition",
+              "attachment; filename=\"" + record.getRecordName() + "_Matrix.csv\"");
+          break;
+        case "CSVCodebook":
+          response.setContentType("text/csv");
+          response.setHeader("Content-Disposition",
+              "attachment; filename=\"" + record.getRecordName() + "_Codebook.csv\"");
+          break;
+        case "JSON":
+          response.setContentType("application/json");
+          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".json\"");
+          break;
+        case "SPSS":
+          response.setContentType("application/sav");
+          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".sav\"");
+          break;
+        case "PDF":
+          response.setContentType("application/pdf");
+          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".pdf\"");
+          break;
+        case "CSVZIP":
+          response.setContentType("application/zip");
+          response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".zip\"");
+          break;
+        }
+        response.setContentLength(content.length);
+        response.getOutputStream().write(content);
+        response.flushBuffer();
+      } else {
+        throw new DWDownloadException(res.toString());
       }
-      response.setContentLength(content.length);
-      response.getOutputStream().write(content);
-      response.flushBuffer();
-    } else {
-      throw new DWDownloadException(res.toString());
     }
   }
 
@@ -656,6 +672,7 @@ public class RecordController extends SuperController {
       }
 
     } catch (Exception e) {
+      // TODO
       log.error("ERROR", e);
       redirectAttributes.addFlashAttribute("errorMSG",
           messageSource.getMessage("record.codebook.server.error", null, LocaleContextHolder.getLocale()));
