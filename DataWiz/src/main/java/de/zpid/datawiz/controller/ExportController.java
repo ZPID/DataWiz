@@ -46,8 +46,8 @@ public class ExportController extends SuperController {
     String pName = "";
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
-      pUtil.getProjectForm(pForm, projectId.get(), user, PageState.EXPORT,
-          pUtil.checkProjectRoles(user, projectId.get(), 0, false, false));
+      projectService.getProjectForm(pForm, projectId.get(), user, PageState.EXPORT,
+          projectService.checkProjectRoles(user, projectId.get(), 0, false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         if (pForm.getProject().getTitle() != null && !pForm.getProject().getTitle().trim().isEmpty()) {
           pName = pForm.getProject().getTitle();

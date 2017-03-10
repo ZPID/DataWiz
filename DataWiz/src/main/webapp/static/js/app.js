@@ -59,7 +59,9 @@ $tag_box = null;
             }
           });
           if (window.location.pathname.search("/codebook") > 0 || window.location.pathname.search("/data") > 0) {
-            fixTableHeaderWidth();
+            setTimeout(function() {
+              fixTableHeaderWidth();
+            }, 0);
           }
         }// loading Panel Content
         else if (window.location.pathname.search("/panel") > 0) {
@@ -651,21 +653,18 @@ $('.scrollTable').on('scroll', function() {
 });
 
 function fixTableHeaderWidth() {
-  var tdHeader = document.getElementById("fixedHeaderTable").rows[0].cells;
-  var tdData = document.getElementById("fixedHeaderTable").rows[1].cells;
-  console.log("1")
-  $.each(tdData, function(i, item) {
-    setTimeout(function() {
+  setTimeout(function() {
+    var tdHeader = document.getElementById("fixedHeaderTable").rows[0].cells;
+    var tdData = document.getElementById("fixedHeaderTable").rows[1].cells;
+    $.each(tdData, function(i, item) {
       var dataWidth = tdData[i].offsetWidth;
       var headWidth = tdHeader[i].offsetWidth
       if (dataWidth > headWidth)
         tdHeader[i].style.minWidth = dataWidth + 'px';
       else
         tdData[i].style.minWidth = headWidth + 'px';
-    }, 0);
-    
-  });
-  console.log("2")
+    });
+  }, 0);
 }
 
 function toggleFullscreen() {
@@ -678,3 +677,4 @@ function toggleFullscreen() {
     $(".scrollTable tbody").addClass("scrollTableFullScreenTBody").removeClass("scrollTableTbody");
   }
 }
+

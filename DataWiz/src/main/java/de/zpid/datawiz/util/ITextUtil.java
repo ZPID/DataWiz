@@ -12,7 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
@@ -46,11 +46,12 @@ import com.itextpdf.layout.property.VerticalAlignment;
 import com.itextpdf.pdfa.PdfADocument;
 
 import de.zpid.datawiz.dto.RecordDTO;
+import de.zpid.datawiz.service.ExportService;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSMissing;
 
-@Repository
+@Component
 public class ITextUtil {
 
   private static Logger log = LogManager.getLogger(ITextUtil.class);
@@ -59,7 +60,7 @@ public class ITextUtil {
   private FileUtil fileUtil;
 
   @Autowired
-  private ExportUtil exportUtil;
+  private ExportService exportUtil;
 
   @Autowired
   protected MessageSource messageSource;

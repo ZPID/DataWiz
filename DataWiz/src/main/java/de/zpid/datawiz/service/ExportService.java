@@ -1,13 +1,16 @@
-package de.zpid.datawiz.util;
+package de.zpid.datawiz.service;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -15,28 +18,65 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 
 import de.zpid.datawiz.dto.RecordDTO;
+import de.zpid.datawiz.util.FileUtil;
+import de.zpid.datawiz.util.ITextUtil;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSErrorDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
 
-@Repository
-public class ExportUtil {
+@Component
+public class ExportService {
 
-  private static Logger log = LogManager.getLogger(ExportUtil.class);
+  private static Logger log = LogManager.getLogger(ExportService.class);
   @Autowired
   protected MessageSource messageSource;
   @Autowired
   private SPSSIO spss;
   @Autowired
   private FileUtil fileUtil;
+  @Autowired
+  private ITextUtil itextUtil;
+
+  /**
+   * @param exportType
+   * @param attachments
+   * @param record
+   * @param res
+   * @param content
+   * @return
+   * @throws IOException
+   */
+  public byte[] getRecordExportContentAsByteArray(String exportType, Boolean attachments, RecordDTO record,
+      StringBuilder res) throws IOException {
+    byte[] content = null;
+    if (exportType.equals("CSVMatrix")) {
+      content = exportCSV(record, res, true);
+    } else if (exportType.equals("CSVCodebook")) {
+      content = exportCSV(record, res, false);
+    } else if (exportType.equals("JSON")) {
+      content = exportJSON(record, res);
+    } else if (exportType.equals("SPSS")) {
+      content = exportSPSSFile(record, res);
+    } else if (exportType.equals("PDF")) {
+      System.out.println(attachments);
+      content = itextUtil.createPdf(record, false, attachments);
+    } else if (exportType.equals("CSVZIP")) {
+      List<Entry<String, byte[]>> files = new ArrayList<>();
+      files.add(new SimpleEntry<String, byte[]>(record.getRecordName() + "_Matrix.csv", exportCSV(record, res, true)));
+      files.add(
+          new SimpleEntry<String, byte[]>(record.getRecordName() + "_Codebook.csv", exportCSV(record, res, false)));
+      content = exportZip(files, res);
+    }
+    return content;
+  }
 
   public byte[] exportZip(List<Entry<String, byte[]>> files, StringBuilder res) {
     log.trace("Entering exportZip for Num of File: [{}]", () -> files.size());

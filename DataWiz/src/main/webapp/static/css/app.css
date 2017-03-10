@@ -34,6 +34,10 @@ textarea {
   resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
+.uppercase{
+  text-transform: uppercase;
+}
+
 .form-group .required:BEFORE {
   content: "*";
   color: red;

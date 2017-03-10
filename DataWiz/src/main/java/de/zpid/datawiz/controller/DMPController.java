@@ -111,7 +111,7 @@ public class DMPController extends SuperController {
     }
     String pName = "";
     try {
-      pUtil.getProjectForm(pForm, pid, user, PageState.DMP, pUtil.checkProjectRoles(user, pid, 0, false, false));
+      projectService.getProjectForm(pForm, pid, user, PageState.DMP, projectService.checkProjectRoles(user, pid, 0, false, false));
       if (pForm != null && pForm.getProject() != null && pForm.getProject().getTitle() != null
           && !pForm.getProject().getTitle().trim().isEmpty()) {
         pName = pForm.getProject().getTitle();
@@ -144,7 +144,7 @@ public class DMPController extends SuperController {
     }
     UserDTO user = UserUtil.getCurrentUser();
     Boolean hasErrors = false;
-    if (!pid.isPresent() || pUtil.checkProjectRoles(user, pid.get(), 0, true, false) == null) {
+    if (!pid.isPresent() || projectService.checkProjectRoles(user, pid.get(), 0, true, false) == null) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;
@@ -157,7 +157,7 @@ public class DMPController extends SuperController {
       }
       hasErrors = true;
     }
-    if (hasErrors || !pUtil.saveOrUpdateProject(pForm)) {
+    if (hasErrors || !projectService.saveOrUpdateProject(pForm)) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;

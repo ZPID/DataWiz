@@ -132,8 +132,8 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     return sm;
   }
 
-  @Bean(name = "multipartResolver")
-  public CommonsMultipartResolver multipartResolver() {
+  @Bean(name = "filterMultipartResolver")
+  public CommonsMultipartResolver commonsMultipartResolver() {
     CommonsMultipartResolver resolver = new CommonsMultipartResolver();
     resolver.setDefaultEncoding("utf-8");
     log.info("multipartResolver succesfully loaded");

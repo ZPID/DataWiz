@@ -78,13 +78,13 @@ public class ProjectController extends SuperController {
     String name = messageSource.getMessage("breadcrumb.new.project", null, LocaleContextHolder.getLocale());
     if (pid.isPresent()) {
       try {
-        Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
+        Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
         if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
             && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
           redirectAttributes.addFlashAttribute("hideMenu", true);
           return "redirect:/project/" + pid.get() + "/studies";
         }
-        pUtil.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
+        projectService.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
         name = pForm.getProject().getTitle();
       } catch (Exception e) {
         // TODO
@@ -125,12 +125,12 @@ public class ProjectController extends SuperController {
       return "redirect:/panel";
     }
     try {
-      Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
+      Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
       if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
           && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
         model.put("hideMenu", true);
       }
-      pUtil.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
+      projectService.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());
@@ -169,8 +169,8 @@ public class ProjectController extends SuperController {
       return "redirect:/panel";
     }
     try {
-      Roles role = pUtil.checkProjectRoles(user, pid.get(), 0, false, true);
-      pUtil.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
+      Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
+      projectService.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());
@@ -214,7 +214,7 @@ public class ProjectController extends SuperController {
       }
       return "project";
     }
-    if (!pUtil.saveOrUpdateProject(pForm)) {
+    if (!projectService.saveOrUpdateProject(pForm)) {
       // TODO vern�nftige Fehlerausgabe
       model.put("saveState", SavedState.ERROR.toString());
       model.put("saveStateMsg", "fehler!!!!");

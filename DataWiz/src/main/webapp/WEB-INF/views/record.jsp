@@ -51,9 +51,10 @@
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
       <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}?${_csrf.parameterName}=${_csrf.token}" />
+        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST"
         enctype="multipart/form-data" role="form">
+        <input type="hidden" id="csrf" name="${_csrf.parameterName}" value="${_csrf.token}"  />
         <!-- records[0].recordName -->
         <c:set var="input_vars" value="record.recordName;record.recordName;required; ;row" />
         <%@ include file="templates/gen_input.jsp"%>

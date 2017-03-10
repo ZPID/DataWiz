@@ -28,12 +28,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import de.zpid.datawiz.dto.FileDTO;
 
-@Repository
+@Component
 @Scope("singleton")
 public class FileUtil {
 

@@ -89,8 +89,8 @@ public class AccessController extends SuperController {
     String pName = "";
     try {
       user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
-      pUtil.getProjectForm(pForm, projectId.get(), user, PageState.ACCESS,
-          pUtil.checkProjectRoles(user, projectId.get(), 0, false, false));
+      projectService.getProjectForm(pForm, projectId.get(), user, PageState.ACCESS,
+          projectService.checkProjectRoles(user, projectId.get(), 0, false, false));
       if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
         pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject().getId()));
         pForm.setRoleList(roleDAO.findAllProjectRoles());
@@ -143,7 +143,7 @@ public class AccessController extends SuperController {
       final RedirectAttributes reAtt, final ModelMap model) {
     log.trace("Entering deleteUserfromProject [id: {}; userid: {}]", () -> projectId, () -> userId);
     final UserDTO admin = UserUtil.getCurrentUser();
-    final String check = pUtil.checkProjectAdmin(reAtt, projectId, admin);
+    final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -179,7 +179,7 @@ public class AccessController extends SuperController {
       final RedirectAttributes reAtt, final boolean resend) {
     log.trace("Entering deleteInvite project [id: {}] and user [mail: {}] ", () -> projectId, () -> mail);
     final UserDTO admin = UserUtil.getCurrentUser();
-    final String check = pUtil.checkProjectAdmin(reAtt, projectId, admin);
+    final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -209,7 +209,7 @@ public class AccessController extends SuperController {
       final RedirectAttributes reAtt, final boolean resend) {
     log.trace("Entering resendInvite for project [id: {}] and user [mail: {}] ", () -> projectId, () -> mail);
     final UserDTO admin = UserUtil.getCurrentUser();
-    final String check = pUtil.checkProjectAdmin(reAtt, projectId, admin);
+    final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -252,7 +252,7 @@ public class AccessController extends SuperController {
       final boolean resend) {
     log.trace("Entering addUserToProject for project [id: {}]", () -> projectId);
     final UserDTO admin = UserUtil.getCurrentUser();
-    final String check = pUtil.checkProjectAdmin(reAtt, projectId, admin);
+    final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -424,7 +424,7 @@ public class AccessController extends SuperController {
     log.trace("Entering deleteRole [Role: {}; User: {}; Project: {}]", () -> roleId, () -> userId, () -> projectId);
     final UserRoleDTO role = new UserRoleDTO(roleId, userId, projectId, studyId.isPresent() ? studyId.get() : 1, "");
     final UserDTO admin = UserUtil.getCurrentUser();
-    final String check = pUtil.checkProjectAdmin(reAtt, projectId, admin);
+    final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }
@@ -477,7 +477,7 @@ public class AccessController extends SuperController {
       final BindingResult bRes) {
     log.trace("Entering addRoleToProjectUser for Project [id:" + projectId + "]");
     final UserDTO admin = UserUtil.getCurrentUser();
-    final String check = pUtil.checkProjectAdmin(reAtt, projectId, admin);
+    final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
     if (check != null) {
       return check;
     }

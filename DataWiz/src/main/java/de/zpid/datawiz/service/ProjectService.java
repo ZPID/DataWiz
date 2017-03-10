@@ -1,4 +1,4 @@
-package de.zpid.datawiz.util;
+package de.zpid.datawiz.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
@@ -33,10 +32,10 @@ import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.UserUtil;
 
 @Service
-@Scope("singleton")
-public class ProjectUtil {
+public class ProjectService {
 
   @Autowired
   private MessageSource messageSource;
@@ -59,7 +58,7 @@ public class ProjectUtil {
   @Autowired
   protected ClassPathXmlApplicationContext applicationContext;
 
-  private static Logger log = LogManager.getLogger(ProjectUtil.class);
+  private static Logger log = LogManager.getLogger(ProjectService.class);
 
   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.

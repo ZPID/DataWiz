@@ -293,29 +293,28 @@
       </div>
       <div class="modal-body">
         <ul class="list-group">
-          <li class="list-group-item"><s:message code="record.export.modal.csv" />
+          <li class="list-group-item"><b><s:message code="record.export.modal.csv" /></b>
             <ul class="list-group">
               <li class="list-group-item btn btn-default"
-                onclick="javascript:location.href='${accessUrl}/export/CSVMatrix'" data-dismiss="modal"><s:message
+                onclick="window.open('${accessUrl}/export/CSVMatrix', '_blank')" data-dismiss="modal"><s:message
                   code="record.export.modal.csvmatrix" /></li>
               <li class="list-group-item btn btn-default"
-                onclick="javascript:location.href='${accessUrl}/export/CSVCodebook'" data-dismiss="modal"><s:message
+                onclick="window.open('${accessUrl}/export/CSVCodebook', '_blank')" data-dismiss="modal"><s:message
                   code="record.export.modal.csvcodebook" /></li>
-              <li class="list-group-item btn btn-default"
-                onclick="javascript:location.href='${accessUrl}/export/CSVZIP'" data-dismiss="modal"><s:message
-                  code="record.export.modal.csvboth" /></li>
+              <li class="list-group-item btn btn-default" onclick="window.open('${accessUrl}/export/CSVZIP', '_blank')"
+                data-dismiss="modal"><s:message code="record.export.modal.csvboth" /></li>
             </ul></li>
-          <li class="list-group-item"><s:message code="record.export.modal.spss" />
+          <li class="list-group-item"><b><s:message code="record.export.modal.spss" /></b>
             <ul class="list-group">
-              <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/SPSS'"
+              <li class="list-group-item btn btn-default" onclick="window.open('${accessUrl}/export/SPSS', '_blank')"
                 data-dismiss="modal"><s:message code="record.export.modal.sav" /></li>
             </ul></li>
-          <li class="list-group-item"><s:message code="record.export.modal.json" />
+          <li class="list-group-item"><b><s:message code="record.export.modal.json" /></b>
             <ul class="list-group">
-              <li class="list-group-item btn btn-default" onclick="javascript:location.href='${accessUrl}/export/JSON'"
+              <li class="list-group-item btn btn-default" onclick="window.open('${accessUrl}/export/JSON', '_blank')"
                 data-dismiss="modal"><s:message code="record.export.modal.json.file" /></li>
             </ul></li>
-          <li class="list-group-item"><s:message code="record.export.modal.pdf" />
+          <li class="list-group-item"><b><s:message code="record.export.modal.pdf" /></b>
             <ul class="list-group">
               <li class="list-group-item btn btn-default"
                 onclick="window.open('${accessUrl}/export/PDF?attachments=false', '_blank')" data-dismiss="modal">

@@ -4,6 +4,7 @@
 <sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form"
   onsubmit="return checkValueMissingForm('${modalView}')">
   <sf:hidden path="id" />
+  <input type="hidden" id="spssType" value="${VarValues.type}" />
   <c:set var="simplifiedType" value="${StudyForm.record.simplifyVarTypes(VarValues.type)}" />
   <sf:hidden path="type" value="${simplifiedType}" />
   <c:choose>
@@ -57,7 +58,7 @@
                           path="values[${loop.count-1}].value" onkeyup="checkNumberField('values${loop.count-1}val')" />
                       </c:when>
                       <c:when test="${simplifiedType == 'SPSS_FMT_DATE'}">
-                        <sf:input id="values${loop.count-1}val" class="form-control"
+                        <sf:input id="values${loop.count-1}val" class="form-control uppercase"
                           path="values[${loop.count-1}].value" onkeyup="checkDateField('values${loop.count-1}val')" />
                       </c:when>
                       <c:otherwise>
@@ -105,10 +106,12 @@
       <div class="modal-content panel-primary">
         <div class="modal-header panel-heading">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h4 class="modal-title"><s:message code="record.codebook.modal.missings.header" arguments="${VarValues.name}"/></h4>
+          <h4 class="modal-title">
+            <s:message code="record.codebook.modal.missings.header" arguments="${VarValues.name}" />
+          </h4>
         </div>
         <div class="modal-body">
-        <div class="form-group">
+          <div class="form-group">
             <div class="col-sm-12">
               <div class="well marginTop1">
                 <c:choose>
@@ -117,6 +120,7 @@
                   </c:when>
                   <c:when test="${simplifiedType == 'SPSS_FMT_DATE'}">
                     <s:message code="record.codebook.modal.missings.info.date" />
+                    <c:set value="uppercase" var="upperCaseCSS"></c:set>
                   </c:when>
                   <c:otherwise>
                     <s:message code="record.codebook.modal.missings.info.string" />
@@ -157,15 +161,18 @@
           <div class="form-group">
             <div class="col-sm-12">
               <div class="col-sm-3" style="white-space: nowrap;">
-                <sf:input path="missingVal1" class="form-control" onkeyup="checkMissingField('missingVal1');" />
+                <sf:input path="missingVal1" class="form-control ${upperCaseCSS}"
+                  onkeyup="checkMissingField('missingVal1');" />
               </div>
               <div class="col-sm-1" id="missingSep1" style="font-size: 26px;">,</div>
               <div class="col-sm-3">
-                <sf:input path="missingVal2" class="form-control" onkeyup="checkMissingField('missingVal2');" />
+                <sf:input path="missingVal2" class="form-control ${upperCaseCSS}"
+                  onkeyup="checkMissingField('missingVal2');" />
               </div>
               <div class="col-sm-1" id="missingSep2" style="font-size: 26px;">,</div>
               <div class="col-sm-3">
-                <sf:input path="missingVal3" class="form-control" onkeyup="checkMissingField('missingVal3');" />
+                <sf:input path="missingVal3" class="form-control ${upperCaseCSS}"
+                  onkeyup="checkMissingField('missingVal3');" />
               </div>
             </div>
           </div>

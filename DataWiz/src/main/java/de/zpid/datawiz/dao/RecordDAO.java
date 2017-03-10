@@ -87,13 +87,13 @@ public class RecordDAO extends SuperDAO {
 
   public RecordDTO findRecordWithID(final long recordId, final long versionId) throws Exception {
     log.trace("Entering findRecordWithID [recordId: {}; version: {}]", () -> recordId, () -> versionId);
-    final RecordDTO cRecords = jdbcTemplate.query("SELECT * FROM dw_record WHERE dw_record.id  = ?",
+    final RecordDTO record = jdbcTemplate.query("SELECT * FROM dw_record WHERE dw_record.id  = ?",
         new Object[] { recordId }, new ResultSetExtractor<RecordDTO>() {
           @Override
           public RecordDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
-            if (rs.next()) {
+            if (rs != null && rs.next()) {
               long recordId = rs.getLong("id");
-              RecordDTO record = jdbcTemplate.query(
+              RecordDTO recVersion = jdbcTemplate.query(
                   "SELECT * FROM dw_record_metadata WHERE dw_record_metadata.record_id = ? "
                       + (versionId == 0 ? "ORDER BY dw_record_metadata.version_id DESC LIMIT 1"
                           : "AND dw_record_metadata.version_id = ?"),
@@ -101,7 +101,7 @@ public class RecordDAO extends SuperDAO {
                   new ResultSetExtractor<RecordDTO>() {
                     @Override
                     public RecordDTO extractData(ResultSet rs2) throws SQLException, DataAccessException {
-                      if (rs2.next()) {
+                      if (rs2 != null && rs2.next()) {
                         final RecordDTO rectmp = (RecordDTO) applicationContext.getBean("RecordDTO");
                         rectmp.setChanged(rs2.getTimestamp("changed").toLocalDateTime());
                         rectmp.setChangeLog(rs2.getString("changeLog"));
@@ -128,23 +128,23 @@ public class RecordDAO extends SuperDAO {
                       return null;
                     }
                   });
-              if (record == null) {
-                record = (RecordDTO) applicationContext.getBean("RecordDTO");
+              if (recVersion == null) {
+                recVersion = (RecordDTO) applicationContext.getBean("RecordDTO");
               }
-              record.setId(recordId);
-              record.setStudyId(rs.getLong("study_id"));
-              record.setRecordName(rs.getString("name"));
-              record.setCreated(rs.getTimestamp("created").toLocalDateTime());
-              record.setCreatedBy(rs.getString("createdBy"));
-              record.setDescription(rs.getString("description"));
-              record.setFileName(rs.getString("filename"));
-              return record;
+              recVersion.setId(recordId);
+              recVersion.setStudyId(rs.getLong("study_id"));
+              recVersion.setRecordName(rs.getString("name"));
+              recVersion.setCreated(rs.getTimestamp("created").toLocalDateTime());
+              recVersion.setCreatedBy(rs.getString("createdBy"));
+              recVersion.setDescription(rs.getString("description"));
+              recVersion.setFileName(rs.getString("filename"));
+              return recVersion;
             }
             return null;
           }
         });
-    log.debug("leaving findRecordWithID with id: {}", () -> cRecords.getId());
-    return cRecords;
+    log.debug("leaving findRecordWithID with id: {}", () -> (record != null ? record.getId() : null));
+    return record;
   }
 
   public List<SPSSVarDTO> findVariablesByVersionID(final long versionId) throws Exception {
@@ -162,7 +162,7 @@ public class RecordDAO extends SuperDAO {
             var.setVarType(rs.getInt("varType"));
             var.setDecimals(rs.getInt("decimals"));
             var.setWidth(rs.getInt("width"));
-            var.setLabel(rs.getString("label"));
+            var.setLabel(rs.getString("label") == null ? "" : rs.getString("label"));
             var.setMissingFormat(SPSSMissing.fromInt(rs.getInt("missingFormat")));
             var.setMissingVal1(rs.getString("missingVal1"));
             var.setMissingVal2(rs.getString("missingVal2"));

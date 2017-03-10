@@ -25,9 +25,9 @@
             </tr>
           </thead>
           <tbody class="scrollTableTbody">
-            <c:forEach items="${StudyForm.record.dataMatrix}" var="row" varStatus="rowNum">
+            <c:forEach items="${StudyForm.record.dataMatrix}" var="row">
               <tr>
-                <c:forEach items="${row}" var="value" varStatus="valloop">
+                <c:forEach items="${row}" var="value">
                   <td><s:message text="${value}" /></td>
                 </c:forEach>
               </tr>

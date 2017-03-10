@@ -1,4 +1,4 @@
-package de.zpid.datawiz.util;
+package de.zpid.datawiz.service;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +23,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.opencsv.CSVReader;
@@ -35,6 +35,10 @@ import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.VariableStatus;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.util.DateUtil;
+import de.zpid.datawiz.util.FileUtil;
+import de.zpid.datawiz.util.MinioUtil;
+import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSFileDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -45,11 +49,11 @@ import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSRoleCodes;
 import de.zpid.spss.util.SPSSVarTypes;
 
-@Repository
+@Component
 @Scope("singleton")
-public class ImportUtil {
+public class ImportService {
 
-  private static Logger log = LogManager.getLogger(ImportUtil.class);
+  private static Logger log = LogManager.getLogger(ImportService.class);
   final static String OS = System.getProperty("os.name").toLowerCase();
   @Autowired
   protected ClassPathXmlApplicationContext applicationContext;

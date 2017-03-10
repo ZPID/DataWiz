@@ -35,6 +35,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -48,6 +49,8 @@ public class StudyController extends SuperController {
   private PlatformTransactionManager txManager;
   @Autowired
   private int sessionTimeout;
+  @Autowired
+  private StudyService studyService;
 
   private static Logger log = LogManager.getLogger(StudyController.class);
 
@@ -73,10 +76,10 @@ public class StudyController extends SuperController {
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
       log.trace("Entering showStudyPage(edit) for study [id: {}]", () -> studyId.get());
-      ret = checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
     } else {
       log.trace("Entering showStudyPage(create) study");
-      ret = checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     }
     if (ret != null)
       return ret;
@@ -148,7 +151,7 @@ public class StudyController extends SuperController {
     final UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering showRecordOverview for study [id: {}] and user [email: {}]", () -> studyId.get(),
         () -> user.getEmail());
-    String ret = checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
     if (ret != null)
       return ret;
     StudyForm sForm = createStudyForm();
@@ -207,10 +210,10 @@ public class StudyController extends SuperController {
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
       log.trace("Entering saveStudy(edit) for study [id: {}]", () -> studyId.get());
-      ret = checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
     } else {
       log.trace("Entering saveStudy(create)");
-      ret = checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     }
     if (ret != null)
       return ret;
@@ -418,7 +421,7 @@ public class StudyController extends SuperController {
     log.trace("Entering changeStudyLock");
     StudyDTO study = sForm.getStudy();
     UserDTO user = UserUtil.getCurrentUser();
-    String ret = checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret != null)
       return ret;
     String actLock = (String) model.get("disStudyContent");

@@ -3,10 +3,15 @@
 /**
  * debugging variable
  */
-var MODALDEBUG = false;
-var datawizDateTimePattern = /^((\d{2}.\d{2}.\d{4}(\s\d{2}:\d{2}(:\d{2})?)?)$)|(\d{2}:\d{2}(:\d{2})?)$/;
-var dateTimeRegex = /^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(:[0-5]\d){1,2})?$/g;
-
+var MODALDEBUG = true;
+var datawizDateTimePattern = /^((\d{2}.\d{2}.\d{4}(\s\d{2}:\d{2}((:\d{2})?|:\d{2}(.\d{2})?))?)$)|(\d{2}:\d{2}((:\d{2})?|:\d{2}(.\d{2})?))$/;
+var dateTimeRegex = /^(?=\d)(?:(?:31(?!.(?:0?[2469]|11))|(?:30|29)(?!.0?2)|29(?=.0?2.(?:(?:(?:1[6-9]|[2-9]\d)?(?:0[48]|[2468][048]|[13579][26])|(?:(?:16|[2468][048]|[3579][26])00)))(?:\x20|$))|(?:2[0-8]|1\d|0?[1-9]))([-./])(?:1[012]|0?[1-9])\1(?:1[6-9]|[2-9]\d)?\d\d(?:(?=\x20\d)\x20|$))?(((0?[1-9]|1[012])(:[0-5]\d){0,2}(\x20[AP]M))|([01]\d|2[0-3])(((:[0-5]\d){1,2})|((:[0-5]\d){2}.\d{2})))?$/g;
+var quaterRegex = /^(1|2|3|4)\sQ\s(19|20)\d{2}$/;
+var moyrRegex = /^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s(19|20)\d{2}$/;
+var wkyrRegex = /^([1-9]|[1-4][0-9]|[5][0-3])\sWK\s(19|20)\d{2}$/;
+var dtimeRegex = /^([1-9]{1}|[1-9]{1}\d{1}|[1-2]{1}\d{1,2}|[3]{1}[0-5]{1}\d{1}|[3]{1}[6]{1}[0-6]{1})\s\d{2}:\d{2}((:\d{2})?|:\d{2}(.\d{2})?)$/;
+var monthRegex = /^(JANUARY|FEBRUARY|MARCH|APRIL|MAY|JUNE|JULY|AUGUST|SEPTEMBER|OCTOBER|NOVEMBER|DECEMBER)$/;
+var dayRegex = /^(MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY)$/;
 /**
  * jQuery Listener for "propertychange" on input fields which belongs to class ".varNames"
  */
@@ -577,7 +582,7 @@ function checkType(pos, type) {
     if (type == "5" && !isNumber(value)) {
       $("#values" + pos + "val").addClass("redborder");
       ret = false;
-    } else if (type == "20" && !checkDate(value)) {
+    } else if (type == "20" && !checkDateField("values" + pos + "val")) {
       $("#values" + pos + "val").addClass("redborder");
       ret = false;
     }
@@ -606,10 +611,46 @@ function checkDateField(fieldId) {
   }
   var ret = true;
   var field = $("#" + fieldId)
+  
   field.removeClass("redborder");
-  if (field.val() != null && field.val() != "" && !checkDate(field.val())) {
-    field.addClass("redborder");
-    ret = false;
+  var spssDate = $("#spssType").val().trim();
+  console.log(spssDate);
+  if (field.val() != null && field.val() != "") {
+    var value = field.val().toLocaleUpperCase().trim();
+    if (spssDate != undefined && spssDate == "SPSS_FMT_QYR") {
+      if (!checkQuaterOfYear(value)) {
+        field.addClass("redborder");
+        ret = false;
+      }
+    } else if (spssDate != undefined && spssDate == "SPSS_FMT_MOYR") {
+      if (!checkMonthOfYear(value)) {
+        field.addClass("redborder");
+        ret = false;
+      }
+    } else if (spssDate != undefined && spssDate == "SPSS_FMT_WKYR") {
+      if (!checkWeekOfYear(value)) {
+        field.addClass("redborder");
+        ret = false;
+      }
+    } else if (spssDate != undefined && spssDate == "SPSS_FMT_DTIME") {
+      if (!checkDTIME(value)) {
+        field.addClass("redborder");
+        ret = false;
+      }
+    } else if (spssDate != undefined && spssDate == "SPSS_FMT_MONTH") {
+      if (!checkMonth(value)) {
+        field.addClass("redborder");
+        ret = false;
+      }
+    } else if (spssDate != undefined && spssDate == "SPSS_FMT_WKDAY") {
+      if (!checkDay(value)) {
+        field.addClass("redborder");
+        ret = false;
+      }
+    }else if (!checkDate(field.val())) {
+      field.addClass("redborder");
+      ret = false;
+    }
   }
   if (MODALDEBUG) {
     console.log("Leaving checkDateField with result: ", ret);
@@ -662,13 +703,109 @@ function checkDate(value) {
   }
   var ret = true;
   dateTimeRegex.lastIndex = 0;
-  datawizDateTimePattern.lastIndex = 0; 
-  if(datawizDateTimePattern.exec(value) === null)
+  datawizDateTimePattern.lastIndex = 0;
+  if (datawizDateTimePattern.exec(value) === null)
     ret = false;
   if (dateTimeRegex.exec(value) === null)
     ret = false;
   if (MODALDEBUG) {
     console.log("Leaving isDate with result: ", ret);
+    console.groupEnd();
+  }
+  return ret;
+}
+
+function checkQuaterOfYear(value) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkQuaterOfYear(", value, ")");
+  }
+  var ret = true;
+  quaterRegex.lastIndex = 0;
+  if (quaterRegex.exec(value) === null)
+    ret = false;
+  if (MODALDEBUG) {
+    console.log("Leaving checkQuaterOfYear with result: ", ret);
+    console.groupEnd();
+  }
+  return ret;
+}
+
+function checkMonthOfYear(value) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkMonthOfYear(", value, ")");
+  }
+  var ret = true;
+  moyrRegex.lastIndex = 0;
+  if (moyrRegex.exec(value) === null)
+    ret = false;
+  if (MODALDEBUG) {
+    console.log("Leaving checkMonthOfYear with result: ", ret);
+    console.groupEnd();
+  }
+  return ret;
+}
+
+function checkWeekOfYear(value) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkWeekOfYear(", value, ")");
+  }
+  var ret = true;
+  wkyrRegex.lastIndex = 0;
+  if (wkyrRegex.exec(value) === null)
+    ret = false;
+  if (MODALDEBUG) {
+    console.log("Leaving checkWeekOfYear with result: ", ret);
+    console.groupEnd();
+  }
+  return ret;
+}
+
+function checkDTIME(value) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkDTIME(", value, ")");
+  }
+  var ret = true;
+  dtimeRegex.lastIndex = 0;
+  if (dtimeRegex.exec(value) === null)
+    ret = false;
+  if (MODALDEBUG) {
+    console.log("Leaving checkDTIME with result: ", ret);
+    console.groupEnd();
+  }
+  return ret;
+}
+
+function checkMonth(value) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkMonth(", value, ")");
+  }
+  var ret = true;
+  monthRegex.lastIndex = 0;
+  if (monthRegex.exec(value) === null)
+    ret = false;
+  if (MODALDEBUG) {
+    console.log("Leaving checkMonth with result: ", ret);
+    console.groupEnd();
+  }
+  return ret;
+}
+
+function checkDay(value) {
+  if (MODALDEBUG) {
+    console.group();
+    console.log("Entering checkDay(", value, ")");
+  }
+  var ret = true;
+  dayRegex.lastIndex = 0;
+  if (dayRegex.exec(value) === null)
+    ret = false;
+  if (MODALDEBUG) {
+    console.log("Leaving checkDay with result: ", ret);
     console.groupEnd();
   }
   return ret;
