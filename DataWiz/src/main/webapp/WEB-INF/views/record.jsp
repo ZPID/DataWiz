@@ -23,16 +23,6 @@
                 </h4>
               </div>
               <div class="col-sm-3 text-align-right">
-                <c:url var="accessUrl"
-                  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
-                <%-- TODO <c:choose>
-                  <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
-                    <a href="${accessUrl}" class="btn btn-success">Checkin</a>
-                  </c:when>
-                  <c:otherwise>
-                    <a href="${accessUrl}" class="btn btn-danger">CheckOut</a>
-                  </c:otherwise>
-                </c:choose> --%>
                 <!-- Trigger the modal with a button -->
                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">
                   <s:message code="record.upload.new.file" />
@@ -54,7 +44,7 @@
         value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST"
         enctype="multipart/form-data" role="form">
-        <input type="hidden" id="csrf" name="${_csrf.parameterName}" value="${_csrf.token}"  />
+        <input type="hidden" id="csrf" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <!-- records[0].recordName -->
         <c:set var="input_vars" value="record.recordName;record.recordName;required; ;row" />
         <%@ include file="templates/gen_input.jsp"%>
@@ -249,7 +239,13 @@
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">History</h4>
               </div>
-              <div class="modal-body">History</div>
+              <div class="modal-body">
+                <c:forEach items="${StudyForm.records}" var="recVersion">
+                <s:message text="${recVersion.changedLog}"></s:message><br/>
+                <s:message text="${recVersion.changedBy}"></s:message><br/>
+                  <s:message text="${recVersion.changed}"></s:message><br/>
+                </c:forEach>
+              </div>
               <div class="modal-footer">
                 <div class="form-group">
                   <div class="col-sm-offset-0 col-md-12">

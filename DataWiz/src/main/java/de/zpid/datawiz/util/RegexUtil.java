@@ -28,4 +28,10 @@ public class RegexUtil {
   public static final String size0to250 = "{0,250}";
   public static final String size0to50 = "{0,50}";
   public static final String size0to10 = "{0,10}";
+
+  public static final String QUATER_REGEX = "^(1|2|3|4)\\sQ\\s(19|20)\\d{2}$";
+  public static final String MOYR_REGEX = "^(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\\s(19|20)\\d{2}$";
+  public static final String WKYR_REGEX = "^([1-9]|[1-4][0-9]|[5][0-3])\\sWK\\s(19|20)\\d{2}$";
+  public static final String DTIME_REGEX = "^([1-9]{1}|[1-9]{1}\\d{1}|[1-2]{1}\\d{1,2}|[3]{1}[0-5]{1}\\d{1}|[3]{1}[6]{1}[0-6]{1})\\s\\d{2}:\\d{2}((:\\d{2})?|:\\d{2}(.\\d{2})?)$";
+  public static final String WKDAY_REGEX = "^(MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY)$";
 }

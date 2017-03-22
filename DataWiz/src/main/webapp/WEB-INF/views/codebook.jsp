@@ -23,7 +23,7 @@
         </div>
       </div>
       <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}" />
+        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}/codebook" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>

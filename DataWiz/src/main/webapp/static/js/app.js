@@ -620,11 +620,9 @@ function asyncSumbit(uri, global) {
     async : true,
     dataType : "json",
     success : function() {
-      console.log("success - 2");
       loadAjaxModal(uri, global)
     },
     error : function(result) {
-      console.log("lol");
       loadAjaxModal(null, true);
     }
   });

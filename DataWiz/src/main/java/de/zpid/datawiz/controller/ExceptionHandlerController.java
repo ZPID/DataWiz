@@ -8,9 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.security.web.authentication.rememberme.CookieTheftException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.mysql.jdbc.exceptions.jdbc4.CommunicationsException;
 
 import de.zpid.datawiz.exceptions.DWDownloadException;
 
@@ -26,11 +31,20 @@ public class ExceptionHandlerController {
   private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);
 
   @ExceptionHandler(value = { DWDownloadException.class })
-  public ModelAndView defaultErrorHandler(HttpServletRequest request, Exception e) {
+  public ModelAndView defaultDWDownloadException(HttpServletRequest request, Exception e) {
     log.warn("DWDownloadException catched from[{}] Exception: {}", () -> request.getRequestURL(), () -> e.getMessage());
     ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
     mav.addObject("errormsg", messageSource.getMessage(e.getMessage(),
         new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+    return mav;
+  }
+
+  @ExceptionHandler(value = { DataAccessResourceFailureException.class, CookieTheftException.class,
+      CommunicationsException.class, CannotGetJdbcConnectionException.class, CommunicationsException.class })
+  public ModelAndView defaultDataAccessResourceFailureException(HttpServletRequest request, Exception e) {
+    log.warn("DWDownloadException catched from[{}] Exception: {}", () -> request.getRequestURL(), () -> e.getMessage());
+    ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
+    mav.addObject("errormsg", e.getMessage());
     return mav;
   }
 }

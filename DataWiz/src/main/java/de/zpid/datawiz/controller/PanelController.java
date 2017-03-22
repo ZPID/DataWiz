@@ -27,7 +27,7 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/panel")
 @SessionAttributes({ "breadcrumpList" })
 public class PanelController extends SuperController {
-  
+
   private static Logger log = LogManager.getLogger(PanelController.class);
 
   public PanelController() {
@@ -61,8 +61,10 @@ public class PanelController extends SuperController {
         }
       }
     } catch (Exception e) {
-      log.error("DBS error during setting Users Dashboardpage for user : " + user.getEmail() + " Message:" + e);
-      model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+      log.fatal("DBS error during setting Users Dashboardpage for user : {} Message: {}", () -> user.getEmail(),
+          () -> e.getMessage());
+      model.put("errormsg", messageSource.getMessage("dbs.sql.exception",
+          new Object[] { env.getRequiredProperty("organisation.admin.email"), e }, LocaleContextHolder.getLocale()));
       return "error";
     }
     model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PANEL, null, null, messageSource));

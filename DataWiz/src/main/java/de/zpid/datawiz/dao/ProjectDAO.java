@@ -39,8 +39,7 @@ public class ProjectDAO extends SuperDAO {
     String sql = "SELECT dw_project.* FROM dw_user_roles "
         + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
         + "LEFT JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id "
-        + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 "
-        + "GROUP BY dw_project.id";
+        + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 " + "GROUP BY dw_project.id";
     List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] { user.getId() }, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
         ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
@@ -141,11 +140,17 @@ public class ProjectDAO extends SuperDAO {
   }
 
   public String findValFromInviteData(final String email, final String linkhash, final String val) throws Exception {
-    log.trace("execute getValFromInviteData for project [id: {}], [linkhash : {}] and [val: {}]", () -> linkhash,
-        () -> email, () -> val);
+    log.trace("execute getValFromInviteData for project [email: {}], [linkhash : {}] and [val: {}]", () -> email,
+        () -> linkhash, () -> val);
     final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND linkhash = ?";
-    String ret = jdbcTemplate.queryForObject(sql, new Object[] { email, linkhash }, String.class);
-    log.debug("Transaction for getValFromInviteData returned [{}: {}]", () -> val, () -> ret);
+    String ret;
+    try {
+      ret = jdbcTemplate.queryForObject(sql, new Object[] { email, linkhash }, String.class);
+    } catch (Exception e) {
+      ret = "0";
+    }
+    if (log.isDebugEnabled())
+      log.debug("Transaction for getValFromInviteData returned [{}: {}]", val, ret);
     return ret;
   }
 

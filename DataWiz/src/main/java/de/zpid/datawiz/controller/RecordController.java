@@ -10,7 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -35,14 +38,15 @@ import de.zpid.datawiz.service.ExportService;
 import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.UserUtil;
 import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSVarTypes;
 
 @Controller
-@RequestMapping(value = { "/record", "/project/{pid}/study/{studyId}/record" })
+@RequestMapping(value = { "/project/{pid}/study/{studyId}/record" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
-public class RecordController extends SuperController {
+public class RecordController {
 
   private static Logger log = LogManager.getLogger(RecordController.class);
 
@@ -52,6 +56,12 @@ public class RecordController extends SuperController {
   private StudyService studyService;
   @Autowired
   private ExportService exportService;
+  @Autowired
+  private MessageSource messageSource;
+  @Autowired
+  private Environment env;
+  @Autowired
+  private ClassPathXmlApplicationContext applicationContext;
 
   public RecordController() {
     super();
@@ -85,9 +95,10 @@ public class RecordController extends SuperController {
       ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     }
     StudyForm sForm = null;
+    List<String> parsingErrors = new ArrayList<String>();
     if (ret == null) {
       try {
-        sForm = recordService.setStudyform(pid, studyId, recordId, versionId, subpage);
+        sForm = recordService.setStudyform(pid, studyId, recordId, versionId, subpage, parsingErrors);
       } catch (Exception e) {
         if (e instanceof DataWizSystemException) {
           String errorMSG = "";
@@ -106,10 +117,15 @@ public class RecordController extends SuperController {
           redirectAttributes.addFlashAttribute("errorMSG",
               messageSource.getMessage(errorMSG, null, LocaleContextHolder.getLocale()));
         } else {
-          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage(), () -> e);
-          ret = "redirect:/panel";
-          redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
-              new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage(),
+              () -> e.getMessage());
+          ret = "error";
+          model
+              .put("errormsg",
+                  messageSource.getMessage("dbs.sql.exception",
+                      new Object[] { env.getRequiredProperty("organisation.admin.email"),
+                          e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
+                      LocaleContextHolder.getLocale()));
         }
       }
     }
@@ -123,6 +139,9 @@ public class RecordController extends SuperController {
       model.put("recordSubMenu", true);
       if (subpage.isPresent() && subpage.get().equals("codebook")) {
         model.put("subnaviActive", PageState.RECORDVAR.name());
+        StringBuilder sb = new StringBuilder();
+        sb.append(recordService.validateCodeBook(sForm));
+        model.put("errorMSG", sb.toString());
         ret = "codebook";
       } else if (subpage.isPresent() && subpage.get().equals("data")) {
         model.put("subnaviActive", PageState.RECORDDATA.name());
@@ -269,7 +288,7 @@ public class RecordController extends SuperController {
    * @return
    */
   @RequestMapping(value = { "", "/{recordId}" }, params = "saveMetaData")
-  private String saveRecordMetaData(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+  public String saveRecordMetaData(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm,
       final RedirectAttributes redirectAttributes, final ModelMap model) {
     final UserDTO user = UserUtil.getCurrentUser();
@@ -294,8 +313,8 @@ public class RecordController extends SuperController {
     }
     if (ret == null) {
       try {
-        ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + sForm.getRecord().getId();
         recordService.insertOrUpdateRecordMetadata(studyId, recordId, sForm, user);
+        ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + sForm.getRecord().getId();
       } catch (Exception e) {
         log.error("ERROR: Saving record to DB wasn't sucessful! Exception:", () -> e);
         redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
@@ -318,7 +337,7 @@ public class RecordController extends SuperController {
    * @param modal
    * @return
    */
-  @RequestMapping(value = { "{recordId}/version/{versionId}/modal" })
+  @RequestMapping(value = { "{recordId}/version/{versionId}/codebook/modal" })
   public String loadAjaxModal(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
       @PathVariable final Long pid, @PathVariable final Long studyId, @PathVariable final Long recordId,
       @RequestParam(value = "varId", required = true) long varId,
@@ -368,6 +387,7 @@ public class RecordController extends SuperController {
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("setValues for variable [id: {}]", () -> varVal.getId());
     recordService.setVariableValues(varVal, sForm);
+    model.put("errorMSG", recordService.validateCodeBook(sForm));
     model.remove("VarValues");
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
@@ -387,8 +407,7 @@ public class RecordController extends SuperController {
   public String setMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("setMissings for variable [id: {}]", () -> varVal.getId());
-    model.put("recordSubMenu", true);
-    model.put("subnaviActive", PageState.RECORDVAR.name());
+
     for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
       if (var.getId() == varVal.getId()) {
         var.setMissingFormat(varVal.getMissingFormat());
@@ -397,6 +416,9 @@ public class RecordController extends SuperController {
         break;
       }
     }
+    model.put("errorMSG", recordService.validateCodeBook(sForm));
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
       log.trace("Method setMissingsToStudyForm completed - mapping to codebook");
     return "codebook";
@@ -415,7 +437,7 @@ public class RecordController extends SuperController {
    * @param attachments
    * @throws Exception
    */
-  @RequestMapping(value = { "{recordId}/version/{versionId}/export/{exportType}" })
+  @RequestMapping(value = { "{recordId}/version/{versionId}/codebook/export/{exportType}" })
   public void exportRecord(final ModelMap model, HttpServletResponse response, RedirectAttributes redirectAttributes,
       @PathVariable long versionId, @PathVariable long recordId, @PathVariable final Optional<Long> pid,
       @PathVariable final Optional<Long> studyId, @PathVariable String exportType,
@@ -514,11 +536,9 @@ public class RecordController extends SuperController {
    * @return
    */
   @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setGlobalMissings")
-  public String setGlobalMissings(final ModelMap model, @ModelAttribute("VarValues") StudyForm varVal,
+  public String setGlobalMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") StudyForm varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
     log.trace("setGlobalMissings for record [id: {}]", () -> sForm.getRecord().getId());
-    model.put("recordSubMenu", true);
-    model.put("subnaviActive", PageState.RECORDVAR.name());
     List<SPSSVarDTO> missings = varVal.getViewVars();
     for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
       if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_A)) {
@@ -532,6 +552,11 @@ public class RecordController extends SuperController {
         recordService.switchMissingType(missings.get(2), var);
       }
     }
+    model.put("errorMSG", recordService.validateCodeBook(sForm));
+    model.put("recordSubMenu", true);
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    if (log.isTraceEnabled())
+      log.trace("Method setGlobalMissingsToStudyForm completed - mapping to codebook");
     return "codebook";
   }
 
@@ -545,28 +570,60 @@ public class RecordController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = { "/{recordId}/version/{versionId}" }, method = RequestMethod.POST, params = "saveCodebook")
+  @RequestMapping(value = {
+      "/{recordId}/version/{versionId}/codebook" }, method = RequestMethod.POST, params = "saveCodebook")
   public String saveCodebook(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       @PathVariable long versionId, @PathVariable long recordId, @ModelAttribute("StudyForm") StudyForm sForm,
-      final RedirectAttributes redirectAttributes) {
+      final RedirectAttributes redirectAttributes, final ModelMap model) {
     UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering saveCodebook for record [id: {}; current_version{}] and User [email: {}]", () -> recordId,
         () -> versionId, () -> user.getEmail());
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       RecordDTO currentVersion = sForm.getRecord();
-      String msg = recordService.compareAndSaveCodebook(currentVersion);
-      ret = "redirect:/project/" + sForm.getProject().getId() + "/study/" + sForm.getStudy().getId() + "/record/"
-          + currentVersion.getId() + "/version/" + currentVersion.getVersionId() + "/codebook";
-      if (msg != null) {
-        if (msg.equals("record.codebook.server.error"))
-          redirectAttributes.addFlashAttribute("errorMSG",
-              messageSource.getMessage(msg, null, LocaleContextHolder.getLocale()));
-        else
-          redirectAttributes.addFlashAttribute("infoMSG",
-              messageSource.getMessage(msg, null, LocaleContextHolder.getLocale()));
+      List<String> parsingErrors = new ArrayList<>();
+      String infoMSG = null;
+      try {
+        RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(currentVersion);
+        recordService.validateAndPrepareCodebookForm(copy, parsingErrors, false);
+        currentVersion = copy;
+        infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors);
+        redirectAttributes.addFlashAttribute("infoMSG",
+            messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
+        ret = "redirect:/project/" + sForm.getProject().getId() + "/study/" + sForm.getStudy().getId() + "/record/"
+            + currentVersion.getId() + "/version/" + currentVersion.getVersionId() + "/codebook";
+      } catch (DataWizSystemException e) {
+        if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
+          log.fatal("Database Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(),
+              () -> e.getMessage(), () -> e);
+          model
+              .put("errorMSG",
+                  messageSource.getMessage("dbs.sql.exception",
+                      new Object[] { env.getRequiredProperty("organisation.admin.email"),
+                          e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
+                      LocaleContextHolder.getLocale()));
+        } else {
+          log.debug("Parsing Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(),
+              () -> e.getMessage());
+          if (parsingErrors != null && parsingErrors.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            parsingErrors.forEach(s -> {
+              sb.append(s);
+              sb.append("<br />");
+            });
+            model.put("errorMSG", sb.toString());
+          }
+          model.put("subnaviActive", PageState.RECORDVAR.name());
+          model.put("recordSubMenu", true);
+        }
+        ret = "codebook";
+      } catch (ClassNotFoundException | IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
     }
+    if (log.isTraceEnabled())
+      log.trace("Method saveCodebook completed - mapping to {}", ret);
     return ret;
   }
 

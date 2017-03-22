@@ -147,6 +147,38 @@ public class RecordDAO extends SuperDAO {
     return record;
   }
 
+  public List<RecordDTO> findRecordVersionList(final long recordId) throws Exception {
+    log.trace("Entering findRecordVersionList [recordId: {}]", () -> recordId);
+    String sql = "SELECT dw_record_metadata.version_id, dw_record_metadata.record_id, dw_record_metadata.changeLog, "
+        + "dw_record_metadata.changed, dw_record_metadata.changedBy, dw_user.title, dw_user.first_name, dw_user.last_name "
+        + "FROM dw_record_metadata JOIn dw_user on dw_record_metadata.changedBy = dw_user.email "
+        + "WHERE dw_record_metadata.record_id = ? ORDER BY dw_record_metadata.version_id DESC";
+    final List<RecordDTO> record = this.jdbcTemplate.query(sql, new Object[] { recordId }, new RowMapper<RecordDTO>() {
+      public RecordDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        final RecordDTO rectmp = (RecordDTO) applicationContext.getBean("RecordDTO");
+        rectmp.setId(recordId);
+        rectmp.setChangeLog(rs.getString("changeLog"));
+        String title = rs.getString("title");
+        String firstname = rs.getString("first_name");
+        String lastname = rs.getString("last_name");
+        String changedBy = rs.getString("changedBy");
+        String changedByLink;
+        if ((title != null && !title.isEmpty())
+            && ((firstname != null && !firstname.isEmpty()) || (lastname != null && !lastname.isEmpty())))
+          changedByLink = "<a href=\"mailto:" + changedBy + "\">" + title + " " + firstname + " " + lastname + "</a>";
+        else
+          changedByLink = "<a href=\"mailto:" + changedBy + "\">" + changedBy + "</a>";
+        rectmp.setChangedBy(changedByLink);
+        rectmp.setChanged((rs.getTimestamp("changed").toLocalDateTime()));
+        rectmp.setVersionId(rs.getLong("version_id"));
+        rectmp.setId(rs.getLong("record_id"));
+        return rectmp;
+      }
+    });
+    log.debug("leaving findRecordVersionList with size: {}", record != null ? record.size() : null);
+    return record;
+  }
+
   public List<SPSSVarDTO> findVariablesByVersionID(final long versionId) throws Exception {
     log.trace("Entering findVariablesByVersionID [versionId: {}]", () -> versionId);
     String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables "
@@ -402,9 +434,9 @@ public class RecordDAO extends SuperDAO {
         ps.setInt(5, var.getWidth());
         ps.setString(6, var.getLabel());
         ps.setInt(7, var.getMissingFormat() == null ? 0 : var.getMissingFormat().getNumber());
-        ps.setString(8, var.getMissingVal1() == null ? "" : var.getMissingVal1());
-        ps.setString(9, var.getMissingVal2() == null ? "" : var.getMissingVal2());
-        ps.setString(10, var.getMissingVal3() == null ? "" : var.getMissingVal3());
+        ps.setString(8, var.getMissingVal1());
+        ps.setString(9, var.getMissingVal2());
+        ps.setString(10, var.getMissingVal3());
         ps.setInt(11, var.getColumns());
         ps.setInt(12, var.getAligment() == null ? 0 : var.getAligment().getNumber());
         ps.setInt(13, var.getMeasureLevel() == null ? 0 : var.getMeasureLevel().getNumber());

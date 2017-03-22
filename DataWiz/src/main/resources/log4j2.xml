@@ -3,15 +3,11 @@
 	<Appenders>
 		<Console name="CONSOLE" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%d{DEFAULT} [%t] %level: %c{3} --- %msg%n" />
+				pattern="%highlight{%d{DEFAULT} [%t] %level: %c{3} --- %msg%n}{FATAL=Bright red, ERROR=Bright red, WARN=Bright red, INFO=Bright white, DEBUG=white, TRACE=white}" />
 		</Console>
 		<File name="DataWizLog" fileName="/logs/DataWizLog.log">
 			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
 		</File>
-<!-- 		<Async name="Async">
-			<AppenderRef ref="DataWizLog" />
-			<AppenderRef ref="CONSOLE" />
-		</Async> -->
 	</Appenders>
 	<Loggers>
 		<logger name="org.springframework" level="WARN" />

@@ -67,6 +67,8 @@ public class ImportService {
   protected RecordDAO recordDAO;
   @Autowired
   protected MinioUtil minioUtil;
+  @Autowired
+  RecordService recordService;
 
   /**
    * @param recordId
@@ -263,8 +265,15 @@ public class ImportService {
     } else {
       savedVar = new SPSSVarDTO();
     }
+
     long savedId = savedVar.getId();
     savedVar.setId(0);
+    long id = curr.getId();
+    curr.setId(0);
+    if (savedVar.getLabel() == null)
+      savedVar.setLabel("");
+    if (curr.getLabel() == null)
+      curr.setLabel("");
     if (!curr.equals(savedVar)) {
       // var not equal -
       if (curr.getType().equals(savedVar.getType()) && curr.getName().equals(savedVar.getName())) {
@@ -314,6 +323,7 @@ public class ImportService {
       comp.setBootstrapItemColor("success");
     }
     savedVar.setId(savedId);
+    curr.setId(id);
   }
 
   /**
@@ -408,29 +418,33 @@ public class ImportService {
         int curW = 0;
         switch (type) {
         case SPSS_FMT_DATE:
-          if (formatter != null)
+          if (formatter != null && value != null && !value.isEmpty())
             row.set(i, LocalDate.parse(value, formatter).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+          else
+            row.set(i, "");
           break;
         case SPSS_FMT_TIME:
-          if (formatter != null) {
+          if (formatter != null && value != null && !value.isEmpty()) {
             LocalTime time = LocalTime.parse(value, formatter);
             curW = (time.getNano() != 0) ? 11 : (time.getSecond() != 0) ? 8 : 5;
             width = (width < curW ? curW : width);
             row.set(i, time.format(DateTimeFormatter.ofPattern("HH:mm:ss.SSS")));
-          }
+          } else
+            row.set(i, "");
           break;
         case SPSS_FMT_DATE_TIME:
-          if (formatter != null) {
+          if (formatter != null && value != null && !value.isEmpty()) {
             LocalDateTime dateTime = LocalDateTime.parse(value, formatter);
             curW = (dateTime.getNano() != 0) ? 23 : (dateTime.getSecond() != 0) ? 20 : 17;
             width = (width < curW ? curW : width);
             if (curW == 23)
-              row.set(i, dateTime.format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss.SS")));
+              row.set(i, dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss.SS")));
             else if (curW == 20)
-              row.set(i, dateTime.format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")));
+              row.set(i, dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss")));
             else if (curW == 17)
-              row.set(i, dateTime.format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm")));
-          }
+              row.set(i, dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy HH:mm")));
+          } else
+            row.set(i, "");
           break;
         case SPSS_FMT_F:
           BigDecimal d = parseDouble(value, true);
@@ -439,7 +453,7 @@ public class ImportService {
             if (decT <= 0) {
               row.set(i, d.stripTrailingZeros().longValue());
             } else {
-              row.set(i, d);
+              row.set(i, d.doubleValue());
             }
             if (decT > dec) {
               dec = decT;
@@ -454,6 +468,7 @@ public class ImportService {
         case SPSS_FMT_A:
           if (value.length() > width) {
             width = value.length();
+
           }
           break;
         default:
@@ -461,6 +476,8 @@ public class ImportService {
         }
       }
       if (type.equals(SPSSVarTypes.SPSS_FMT_A)) {
+        if (width == 0)
+          width = 8;
         caseSize += width;
         var.setVarType(width);
         var.setDecimals(0);
@@ -478,6 +495,10 @@ public class ImportService {
       record.setCaseSize(caseSize);
       var.setType(type);
       var.setWidth(width);
+      if (width < 8)
+        var.setColumns(8);
+      else
+        var.setColumns(width);
       vars.set(i, var);
     }
   }
@@ -510,9 +531,9 @@ public class ImportService {
     RecordDTO spssFile = null;
     if (path != null && !error) {
       SPSSFileDTO spssTMP;
-      if ((spssTMP = spss.readWholeSPSSFile(path)) != null)
+      if ((spssTMP = spss.readWholeSPSSFile(path)) != null) {
         spssFile = new RecordDTO(spssTMP);
-      else {
+      } else {
         log.error("ERROR: Reading SPSS file wasn't successful");
         errors.add(messageSource.getMessage("error.upload.spss.file", null, LocaleContextHolder.getLocale()));
         error = true;
@@ -615,7 +636,7 @@ public class ImportService {
       } catch (Exception e) {
         if (parse) {
           log.error(
-              "ERROR: Parsing not successful - Number was checkted before parsing, but something went wrong: Number: {} ",
+              "ERROR: Parsing not successful - Number was checked before parsing, but something went wrong: Number: {} ",
               val, e);
         }
       }
