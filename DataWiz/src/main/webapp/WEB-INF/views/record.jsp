@@ -241,7 +241,7 @@
               </div>
               <div class="modal-body">
                 <c:forEach items="${StudyForm.records}" var="recVersion">
-                <s:message text="${recVersion.changedLog}"></s:message><br/>
+                <s:message text="${recVersion.changeLog}"></s:message><br/>
                 <s:message text="${recVersion.changedBy}"></s:message><br/>
                   <s:message text="${recVersion.changed}"></s:message><br/>
                 </c:forEach>

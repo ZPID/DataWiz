@@ -59,6 +59,9 @@ $tag_box = null;
             }
           });
           if (window.location.pathname.search("/codebook") > 0 || window.location.pathname.search("/data") > 0) {
+            if (detectBrowser() == "edge" || detectBrowser() == "ie") {
+              $('.browser_wrapper').addClass('old_ie_wrapper');
+            }
             setTimeout(function() {
               fixTableHeaderWidth();
             }, 0);
@@ -656,11 +659,18 @@ function fixTableHeaderWidth() {
     var tdData = document.getElementById("fixedHeaderTable").rows[1].cells;
     $.each(tdData, function(i, item) {
       var dataWidth = tdData[i].offsetWidth;
-      var headWidth = tdHeader[i].offsetWidth
-      if (dataWidth > headWidth)
+      var headWidth = tdHeader[i].offsetWidth;
+      if (dataWidth > headWidth) {
+        if (detectBrowser() == "firefox") {
+          dataWidth = dataWidth - getBorderAndPadding(tdHeader[i]);
+        }
         tdHeader[i].style.minWidth = dataWidth + 'px';
-      else
+      } else if (dataWidth < headWidth) {
+        if (detectBrowser() == "firefox") {
+          headWidth = headWidth - getBorderAndPadding(tdData[i]);
+        }
         tdData[i].style.minWidth = headWidth + 'px';
+      }
     });
   }, 0);
 }
@@ -676,3 +686,29 @@ function toggleFullscreen() {
   }
 }
 
+function getBorderAndPadding(element) {
+  var style = element.currentStyle || window.getComputedStyle(element);
+  var padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+  var border = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+  return padding + border;
+}
+
+function detectBrowser() {
+  // Opera 8.0+
+  if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
+    return "opera";
+  else if (typeof InstallTrigger !== 'undefined')
+    return "firefox";
+  else if (/constructor/i.test(window.HTMLElement) || (function(p) {
+    return p.toString() === "[object SafariRemoteNotification]";
+  })(!window['safari'] || safari.pushNotification))
+    return "safari";
+  else if (/* @cc_on!@ */false || !!document.documentMode)
+    return "ie";
+  else if (!!window.StyleMedia)
+    return "edge";
+  else if (!!window.chrome && !!window.chrome.webstore)
+    return "chrome";
+  else
+    return "notsupported"
+}

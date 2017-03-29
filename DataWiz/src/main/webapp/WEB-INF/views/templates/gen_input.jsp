@@ -13,18 +13,26 @@
 <s:message text="" var="input_class" />
 <div class="form-group">
   <div class="col-sm-12">
-    <div class="row">
-      <div class="col-sm-11">
+    <c:choose>
+      <c:when test="${fn:length(valimages) gt 0 && not empty valimages[0]}">
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message
+                code="${input_vars[1]}" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <c:forEach items="${valimages}" var="imglabel">
+              <c:if test="${imglabel ne '' && imglabel ne ' '}">
+                <img src="/DataWiz/static/images/${imglabel}" class="infoImages" />
+              </c:if>
+            </c:forEach>
+          </div>
+        </div>
+      </c:when>
+      <c:otherwise>
         <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message code="${input_vars[1]}" /></label>
-      </div>
-      <div class="col-sm-1 text-align-right">
-        <c:forEach items="${valimages}" var="imglabel">
-          <c:if test="${imglabel ne '' && imglabel ne ' '}">
-            <img src="/DataWiz/static/images/${imglabel}" class="infoImages" />
-          </c:if>
-        </c:forEach>
-      </div>
-    </div>
+      </c:otherwise>
+    </c:choose>
     <s:message code="${input_vars[1]}.ph" var="placeholder_txt" />
     <div class="${input_vars[3]}">
       <s:bind path="${input_vars[0]}">

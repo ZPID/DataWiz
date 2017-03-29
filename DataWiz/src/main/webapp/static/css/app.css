@@ -34,7 +34,7 @@ textarea {
   resize: vertical; /* user can resize vertically, but width is fixed */
 }
 
-.uppercase{
+.uppercase {
   text-transform: uppercase;
 }
 
@@ -567,24 +567,28 @@ label.btn::after {
 
 .scrollTableFullScreenTBody {
   overflow-y: auto;
+  overflowY: auto;
   overflow-x: hidden;
-  height: 91vh;
+  max-height: 91vh;
 }
 
 .scrollTableTbody {
   overflow-y: auto;
   overflow-x: hidden;
-  height: 600px;
-}
-
-.scrollTable thead {
-  
-}
-
-.scrollTable thead, .scrollTable tbody {
+  max-height: 60vh;
   display: block;
 }
 
-.scrollTable td, .scrollTable th {
-  
+.scrollTable thead {
+  position: relative;
+  display: block;
+}
+
+.old_ie_wrapper {
+  max-height: 60vh;
+  overflow: auto;
+}
+
+.old_ie_wrapper tbody {
+  height: auto;
 }

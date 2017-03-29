@@ -38,7 +38,7 @@
                 </div>
               </div>
               <div class="form-group">
-                <div class="col-sm-12">
+                <div class="col-sm-12 browser_wrapper">
                   <table class="table table-striped table-bordered scrollTable" id="fixedHeaderTable">
                     <thead>
                       <tr>
