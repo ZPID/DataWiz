@@ -74,7 +74,9 @@
                     <sf:input id="values${loop.count-1}label" class="form-control" path="values[${loop.count-1}].label" />
                   </div>
                   <div class="col-sm-2">
-                    <button class="btn btn-danger" onclick="delVarValues(${loop.count-1});return false;">X</button>
+                    <button type="button" class="btn btn-danger" onclick="delVarValues(${loop.count-1});return false;">
+                      <span class="glyphicon glyphicon-remove" aria-hidden="false"></span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -83,18 +85,22 @@
           <div class="form-group">
             <div class="col-sm-12">
               <div class="col-sm-offset-10 col-sm-2">
-                <button class="btn btn-success" onclick="addValueLabel();return false;">+</button>
+                <button type="button" class="btn btn-success" onclick="addValueLabel();return false;">
+                  <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <div class="form-group">
-            <div class="col-sm-offset-0 col-md-12">
-              <button class="btn btn-default" data-dismiss="modal">
+            <div class="col-md-6 text-align-left">
+              <button class="btn btn-default btn-sm" data-dismiss="modal">
                 <s:message code="gen.close" />
               </button>
-              <sf:button class="btn btn-success" name="setValues">
+            </div>
+            <div class="col-md-6 text-align-right">
+              <sf:button class="btn btn-success btn-sm" name="setValues">
                 <s:message code="record.codebook.modal.values.set" />
               </sf:button>
             </div>
@@ -179,11 +185,13 @@
         </div>
         <div class="modal-footer">
           <div class="form-group">
-            <div class="col-sm-offset-0 col-md-12">
-              <button class="btn btn-default" data-dismiss="modal">
+            <div class="col-sm-6 text-align-left">
+              <button class="btn btn-default btn-sm" data-dismiss="modal">
                 <s:message code="gen.close" />
               </button>
-              <sf:button type="submit" class="btn btn-success" name="setMissings">
+            </div>
+            <div class="col-sm-6 text-align-right">
+              <sf:button type="submit" class="btn btn-success btn-sm" name="setMissings">
                 <s:message code="record.codebook.modal.missings.set" />
               </sf:button>
             </div>

@@ -181,6 +181,18 @@ label.btn::after {
   text-align: right;
 }
 
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.text-bold {
+  font-weight: bold;
+}
+
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */

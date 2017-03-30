@@ -3,6 +3,7 @@ package de.zpid.datawiz.service;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,7 +34,9 @@ import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.RecordCompareDTO;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.VariableStatus;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.DateUtil;
 import de.zpid.datawiz.util.FileUtil;
@@ -69,6 +72,54 @@ public class ImportService {
   protected MinioUtil minioUtil;
   @Autowired
   RecordService recordService;
+
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param recordId
+   * @param sForm
+   * @param user
+   * @throws DataWizSystemException
+   */
+  public void importFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
+      final StudyForm sForm, final UserDTO user) throws DataWizSystemException {
+    boolean error = false;
+    List<String> warnings = new ArrayList<>();
+    List<String> errors = new ArrayList<>();
+    if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
+        && sForm.getSpssFile().getSize() > 0) {
+      error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors);
+    } else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV")
+        && sForm.getCsvFile() != null && sForm.getCsvFile().getSize() > 0) {
+      error = validateCSVFile(pid, studyId, recordId, sForm, user, warnings, errors);
+    } else {
+      throw new DataWizSystemException("Type " + sForm.getSelectedFileType() + "is not supported",
+          DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED);
+    }
+    sForm.setParsingError(error);
+    sForm.setErrors(errors);
+    if (!error)
+      sForm.setWarnings(warnings);
+  }
+
+  /**
+   * @param recordId
+   * @param sForm
+   * @throws Exception
+   */
+  public void loadImportReport(final Optional<Long> recordId, StudyForm sForm) throws Exception {
+    RecordDTO lastVersion = recordDAO.findRecordWithID(recordId.get(), 0);
+    List<SPSSVarDTO> vars = recordDAO.findVariablesByVersionID(lastVersion.getVersionId());
+    for (SPSSVarDTO var : vars) {
+      var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
+      var.setValues(recordDAO.findVariableValues(var.getId(), false));
+      sortVariableAttributes(var);
+    }
+    lastVersion.setVariables(vars);
+    sForm.setPreviousRecordVersion(lastVersion);
+    compareVarVersion(sForm);
+  }
 
   /**
    * @param recordId
@@ -451,9 +502,11 @@ public class ImportService {
           if (d != null) {
             int decT = d.stripTrailingZeros().scale();
             if (decT <= 0) {
-              row.set(i, d.stripTrailingZeros().longValue());
+              row.set(i, d.longValue());
+              curW = String.valueOf(d.longValue()).length();
             } else {
               row.set(i, d.doubleValue());
+              curW = String.valueOf(d.doubleValue()).length();
             }
             if (decT > dec) {
               dec = decT;
@@ -461,14 +514,13 @@ public class ImportService {
           } else {
             row.set(i, "");
           }
-          if (value.length() > width) {
-            width = value.length();
+          if (curW > width) {
+            width = curW;
           }
           break;
         case SPSS_FMT_A:
-          if (value.length() > width) {
-            width = value.length();
-
+          if (value.getBytes(Charset.forName("UTF-8")).length > width) {
+            width = value.getBytes(Charset.forName("UTF-8")).length;
           }
           break;
         default:
@@ -550,12 +602,11 @@ public class ImportService {
         spssFile.setId(recordId.get());
         spssFile.setChangedBy(user.getEmail());
         spssFile.setChangeLog(sForm.getNewChangeLog());
-        for (SPSSVarDTO var : spssFile.getVariables()) {
+        spssFile.getVariables().forEach(var -> {
           sortVariableAttributes(var);
-        }
+        });
         sForm.setRecord(spssFile);
-        sForm.setFile(file);
-
+        sForm.setFile(file);        
       }
     } else {
       log.warn("Error: Not FilePath was set - Temporary File was not saved to local Filesystem");

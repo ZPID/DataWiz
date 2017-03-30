@@ -1,5 +1,6 @@
 package de.zpid.datawiz.dao;
 
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -367,11 +368,12 @@ public class RecordDAO extends SuperDAO {
       @Override
       public String extractData(ResultSet rs) throws SQLException, DataAccessException {
         if (rs.next()) {
-          return rs.getString("datamatrix");
+          return new String(rs.getBytes("datamatrix"), Charset.forName("UTF-8"));
         }
         return null;
       }
     });
+    System.err.println(matrixJSON);
     log.debug("leaving findMatrixByVersionId with size: {}", () -> (matrixJSON != null ? matrixJSON.length() : "null"));
     return matrixJSON;
   }

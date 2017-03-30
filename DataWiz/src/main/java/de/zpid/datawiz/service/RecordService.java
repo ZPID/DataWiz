@@ -44,6 +44,7 @@ import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.RegexUtil;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
+import de.zpid.spss.util.SPSSMeasLevel;
 import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSMonths;
 import de.zpid.spss.util.SPSSVarTypes;
@@ -241,54 +242,6 @@ public class RecordService {
                       LocaleContextHolder.getLocale()));
     }
     return viewDate;
-  }
-
-  /**
-   * 
-   * @param pid
-   * @param studyId
-   * @param recordId
-   * @param sForm
-   * @param user
-   * @throws DataWizSystemException
-   */
-  public void importFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
-      final StudyForm sForm, final UserDTO user) throws DataWizSystemException {
-    boolean error = false;
-    List<String> warnings = new ArrayList<>();
-    List<String> errors = new ArrayList<>();
-    if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
-        && sForm.getSpssFile().getSize() > 0) {
-      error = importService.validateSPSSFile(pid, studyId, recordId, sForm, user, errors);
-    } else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV")
-        && sForm.getCsvFile() != null && sForm.getCsvFile().getSize() > 0) {
-      error = importService.validateCSVFile(pid, studyId, recordId, sForm, user, warnings, errors);
-    } else {
-      throw new DataWizSystemException("Type " + sForm.getSelectedFileType() + "is not supported",
-          DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED);
-    }
-    sForm.setParsingError(error);
-    sForm.setErrors(errors);
-    if (!error)
-      sForm.setWarnings(warnings);
-  }
-
-  /**
-   * @param recordId
-   * @param sForm
-   * @throws Exception
-   */
-  public void loadImportReport(final Optional<Long> recordId, StudyForm sForm) throws Exception {
-    RecordDTO lastVersion = recordDAO.findRecordWithID(recordId.get(), 0);
-    List<SPSSVarDTO> vars = recordDAO.findVariablesByVersionID(lastVersion.getVersionId());
-    for (SPSSVarDTO var : vars) {
-      var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
-      var.setValues(recordDAO.findVariableValues(var.getId(), false));
-      importService.sortVariableAttributes(var);
-    }
-    lastVersion.setVariables(vars);
-    sForm.setPreviousRecordVersion(lastVersion);
-    importService.compareVarVersion(sForm);
   }
 
   /**
@@ -819,10 +772,12 @@ public class RecordService {
             newVar.setNumOfAttributes(prevVar.getNumOfAttributes());
             newVar.setValues(prevVar.getValues());
             newVar.setAttributes(prevVar.getAttributes());
-          } else {
-            if (prevVar.getDw_attributes() != null)
-              removeEmptyDWAttributes(prevVar.getDw_attributes());
-            newVar.getAttributes().addAll(prevVar.getDw_attributes());
+          }
+          if (prevVar.getDw_attributes() != null)
+            removeEmptyDWAttributes(prevVar.getDw_attributes());
+          newVar.getAttributes().addAll(prevVar.getDw_attributes());
+          if (newVar.getType().equals(SPSSVarTypes.SPSS_FMT_A) && !prevVar.getType().equals(SPSSVarTypes.SPSS_FMT_A)) {
+            newVar.setMeasureLevel(SPSSMeasLevel.SPSS_MLVL_UNK);
           }
         } else if (!comp.isKeepExpMeta() && !CSV && newVar != null) {
           if (newVar.getDw_attributes() != null)

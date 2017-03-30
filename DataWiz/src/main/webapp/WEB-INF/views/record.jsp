@@ -17,23 +17,33 @@
           </c:when>
           <c:otherwise>
             <div class="row">
-              <div class="col-sm-9">
-                <h4>
-                  <s:message code="record.edit.headline" arguments="${StudyForm.record.recordName}" />
-                </h4>
-              </div>
-              <div class="col-sm-3 text-align-right">
+              <div class="col-sm-12 text-align-right">
                 <!-- Trigger the modal with a button -->
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#uploadModal">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#uploadModal">
                   <s:message code="record.upload.new.file" />
                 </button>
-                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#historyModal">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exportModal">
+                  <s:message code="export.show.modal.button" />
+                </button>
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#historyModal">
                   <s:message code="record.history.show" />
                 </button>
               </div>
-            </div>
-            <div>
-              <s:message code="record.edit.info" />
+              <div class="col-sm-12">
+                <h4>
+                  <c:choose>
+                    <c:when test="${not empty StudyForm.record.recordName}">
+                      <s:message code="record.edit.headline" arguments="${StudyForm.record.recordName}" />
+                    </c:when>
+                    <c:otherwise>
+                      <s:message code="record.edit.headline" arguments=" " />
+                    </c:otherwise>
+                  </c:choose>
+                </h4>
+              </div>
+              <div class="col-sm-12">
+                <s:message code="record.edit.info" />
+              </div>
             </div>
           </c:otherwise>
         </c:choose>
@@ -52,11 +62,12 @@
         <c:set var="input_vars" value="record.description;record.description; ; ;row" />
         <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
-          <div class="col-md-12 text-align-right">
-            <button type="reset" class="btn btn-default">
-              <s:message code="gen.reset" />
-            </button>
-            <sf:button type="submit" class="btn btn-success" name="saveMetaData">
+          <div class="col-md-6 ">
+            <a href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" />"
+              class="btn btn-default btn-sm"><s:message code="record.back.to.overview" /></a>
+          </div>
+          <div class="col-md-6 text-align-right">
+            <sf:button type="submit" class="btn btn-success btn-sm" name="saveMetaData">
               <s:message code="gen.submit" />
             </sf:button>
           </div>
@@ -65,7 +76,7 @@
         <div class="modal fade" id="uploadModal" role="dialog">
           <div class="modal-dialog">
             <!-- Modal content-->
-            <div class="modal-content panel-info">
+            <div class="modal-content panel-primary">
               <div class="modal-header panel-heading">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">
@@ -102,7 +113,7 @@
                             onchange="shortFilename('upload-spss-file-info',$(this).val());" />
                           <s:message code="record.spssFile.button" />
                         </sf:label>
-                        <div class='form-control' id="upload-spss-file-info" style="text-align: center;"></div>
+                        <div class='form-control text-align-center' id="upload-spss-file-info"></div>
                       </div>
                       <s:message code="record.spssFile.help" var="appresmess" />
                       <%@ include file="templates/helpblock.jsp"%>
@@ -120,7 +131,7 @@
                           onchange="shortFilename('upload-csv-file-info',$(this).val());" />
                         <s:message code="record.csvFile.button" />
                       </sf:label>
-                      <div class='form-control' id="upload-csv-file-info" style="text-align: center;"></div>
+                      <div class='form-control text-align-center' id="upload-csv-file-info"></div>
                       <s:message code="record.csvFile.help" var="appresmess" />
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
@@ -138,7 +149,7 @@
                   </div>
                   <div class="form-group">
                     <!-- seperator -->
-                    <div class="col-sm-4">
+                    <div class="col-sm-6">
                       <sf:label class="control-label" path="csvSeperator">
                         <s:message code="record.csvSeperator" />
                       </sf:label>
@@ -166,7 +177,7 @@
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
                     <!-- quote chars -->
-                    <div class="col-sm-4">
+                    <div class="col-sm-6">
                       <sf:label class="control-label" path="csvQuoteChar">
                         <s:message code="record.quote.characters" />
                       </sf:label>
@@ -182,7 +193,7 @@
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
                     <!-- quote chars -->
-                    <div class="col-sm-4">
+                    <%-- <div class="col-sm-4">
                       <sf:label class="control-label" path="csvDecChar">
                         <s:message code="record.csvDecChar" />
                       </sf:label>
@@ -195,8 +206,8 @@
                         </sf:option>
                       </sf:select>
                       <s:message code="record.csvDecChar.help" var="appresmess" />
-                      <%@ include file="templates/helpblock.jsp"%>
-                    </div>
+                      <%@ include file="templates/helpblock.jsp"%> 
+                  </div>--%>
                   </div>
                   <div class="form-group">
                     <div class="col-sm-12">
@@ -208,7 +219,7 @@
                           onchange="shortFilename('upload-codebook-file-info',$(this).val());" />
                         <s:message code="record.csvFile.button" />
                       </sf:label>
-                      <div class='form-control' id="upload-codebook-file-info" style="text-align: center;"></div>
+                      <div class='form-control text-align-center' id="upload-codebook-file-info"></div>
                       <s:message code="record.codeBookFile.help" var="appresmess" />
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
@@ -219,9 +230,13 @@
               </div>
               <div class="modal-footer">
                 <div class="form-group">
-                  <div class="col-sm-offset-0 col-md-12">
-                    <button class="btn btn-default" data-dismiss="modal">Close</button>
-                    <sf:button type="submit" class="btn btn-success" name="upload">
+                  <div class="col-sm-6 text-align-left">
+                    <button class="btn btn-default btn-sm" data-dismiss="modal">
+                      <s:message code="gen.close" />
+                    </button>
+                  </div>
+                  <div class="col-sm-6 text-align-right">
+                    <sf:button type="submit" class="btn btn-success btn-sm" name="upload">
                       <s:message code="gen.submit" />
                     </sf:button>
                   </div>
@@ -234,25 +249,70 @@
         <div class="modal fade" id="historyModal" role="dialog">
           <div class="modal-dialog">
             <!-- Modal content-->
-            <div class="modal-content panel-warning">
+            <div class="modal-content panel-primary">
               <div class="modal-header panel-heading">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="modal-title">History</h4>
+                <h4 class="modal-title">
+                  <s:message code="record.history.modal.headline" />
+                </h4>
               </div>
               <div class="modal-body">
-                <c:forEach items="${StudyForm.records}" var="recVersion">
-                <s:message text="${recVersion.changeLog}"></s:message><br/>
-                <s:message text="${recVersion.changedBy}"></s:message><br/>
-                  <s:message text="${recVersion.changed}"></s:message><br/>
-                </c:forEach>
+                <ul class="list-group">
+                  <c:set var="verslength" value="${fn:length(StudyForm.records)}" />
+                  <c:forEach items="${StudyForm.records}" var="recVersion" varStatus="verCount">
+                    <li class="list-group-item">
+                      <div class="form-group">
+                        <div class="col-sm-12 text-align-right">
+                          <c:url var="versionUrl"
+                            value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${recVersion.versionId}/codebook" />
+                          <a class="btn btn-default btn-sm" href="${versionUrl}"><s:message
+                              code="record.history.modal.select" /></a>
+                        </div>
+                        <div class="col-sm-3 text-align-right text-bold">
+                          <s:message code="record.history.modal.number" />
+                        </div>
+                        <div class="col-sm-9">
+                          <s:message text="${verslength- verCount.index}" />
+                        </div>
+                        <div class="col-sm-3 text-align-right text-bold">
+                          <s:message code="record.history.modal.versionnumber" />
+                        </div>
+                        <div class="col-sm-9">
+                          <s:message text="${recVersion.versionId}" />
+                        </div>
+                        <div class="col-sm-3 text-align-right text-bold">
+                          <s:message code="record.history.modal.changedBy" />
+                        </div>
+                        <div class="col-sm-9">
+                          <s:message text="${recVersion.changedBy}" />
+                        </div>
+                        <div class="col-sm-3 text-align-right text-bold">
+                          <s:message code="record.history.modal.changedDate" />
+                        </div>
+                        <div class="col-sm-9">
+                          <c:set var="date" value="${fn:split(recVersion.changed, 'T')}" />
+                          <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate"
+                            type="date" />
+                          <fmt:formatDate value="${parsedDate}" pattern="dd.MM.yyyy HH:mm:ss" var="strDate" />
+                          <s:message text="${strDate}" />
+                        </div>
+                        <div class="col-sm-3 text-align-right text-bold">
+                          <s:message code="record.history.modal.changeLog" />
+                        </div>
+                        <div class="col-sm-9" style="text-align: justify;">
+                          <s:message text="${recVersion.changeLog}" />
+                        </div>
+                      </div>
+                    </li>
+                  </c:forEach>
+                </ul>
               </div>
               <div class="modal-footer">
                 <div class="form-group">
-                  <div class="col-sm-offset-0 col-md-12">
-                    <button class="btn btn-default" data-dismiss="modal">Close</button>
-                    <sf:button type="submit" class="btn btn-success" name="history">
-                      <s:message code="gen.submit" />
-                    </sf:button>
+                  <div class="col-md-12 text-align-left">
+                    <button class="btn btn-default btn-sm" data-dismiss="modal">
+                      <s:message code="gen.close" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -260,6 +320,68 @@
           </div>
         </div>
       </sf:form>
+    </div>
+  </div>
+</div>
+<c:url var="exportUrl"
+  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}" />
+<div class="modal fade" id="exportModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content panel-primary">
+      <div class="modal-header panel-heading">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">
+          <s:message code="record.export.modal.title" />
+        </h4>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item"><b><s:message code="record.export.modal.csv" /></b>
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/CSVMatrix', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.csvmatrix" /></li>
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/CSVCodebook', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.csvcodebook" /></li>
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/CSVZIP', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.csvboth" /></li>
+            </ul></li>
+          <li class="list-group-item"><b><s:message code="record.export.modal.spss" /></b>
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/SPSS', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.sav" /></li>
+            </ul></li>
+          <li class="list-group-item"><b><s:message code="record.export.modal.json" /></b>
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/JSON', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.json.file" /></li>
+            </ul></li>
+          <li class="list-group-item"><b><s:message code="record.export.modal.pdf" /></b>
+            <ul class="list-group">
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/PDF?attachments=false', '_blank')" data-dismiss="modal">
+                <s:message code="record.export.modal.pdf.withoutAtt" />
+              </li>
+              <li class="list-group-item btn btn-default btn-sm"
+                onclick="window.open('${exportUrl}/export/PDF?attachments=true', '_blank')" data-dismiss="modal"><s:message
+                  code="record.export.modal.pdf.withAtt" /></li>
+            </ul> <s:message code="record.export.modal.pdf.help" var="appresmess" /> <%@ include
+              file="templates/helpblock.jsp"%></li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <div class="form-group">
+          <div class="col-sm-12 text-align-left">
+            <button class="btn btn-default btn-sm" data-dismiss="modal">
+              <s:message code="gen.close" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

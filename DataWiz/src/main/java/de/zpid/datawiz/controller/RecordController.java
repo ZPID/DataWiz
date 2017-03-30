@@ -35,6 +35,7 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExportService;
+import de.zpid.datawiz.service.ImportService;
 import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
@@ -56,6 +57,8 @@ public class RecordController {
   private StudyService studyService;
   @Autowired
   private ExportService exportService;
+  @Autowired
+  private ImportService importService;
   @Autowired
   private MessageSource messageSource;
   @Autowired
@@ -184,7 +187,7 @@ public class RecordController {
     }
     if (ret == null) {
       try {
-        recordService.importFile(pid, studyId, recordId, sForm, user);
+        importService.importFile(pid, studyId, recordId, sForm, user);
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get()
             + "/importReport";
       } catch (DataWizSystemException e) {
@@ -220,7 +223,7 @@ public class RecordController {
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       try {
-        recordService.loadImportReport(recordId, sForm);
+        importService.loadImportReport(recordId, sForm);
         ret = "importRep";
       } catch (Exception e) {
         log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage(), () -> e);
@@ -437,7 +440,7 @@ public class RecordController {
    * @param attachments
    * @throws Exception
    */
-  @RequestMapping(value = { "{recordId}/version/{versionId}/codebook/export/{exportType}" })
+  @RequestMapping(value = { "{recordId}/version/{versionId}/export/{exportType}" })
   public void exportRecord(final ModelMap model, HttpServletResponse response, RedirectAttributes redirectAttributes,
       @PathVariable long versionId, @PathVariable long recordId, @PathVariable final Optional<Long> pid,
       @PathVariable final Optional<Long> studyId, @PathVariable String exportType,
