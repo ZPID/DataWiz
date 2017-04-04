@@ -75,7 +75,8 @@ function addValueLabel() {
           + '<div class="col-sm-6">' + '<input id="values' + (count)
           + 'label" class="form-control" type="text" name="values[' + (count) + '].label"  />' + '</div>'
           + '<div class="col-sm-2">' + '<button class="btn btn-danger" onclick="delVarValues(' + (count)
-          + ');return false;">X</button>' + '</div>' + '</div>' + '</div>');
+          + ');return false;"><span class="glyphicon glyphicon-remove" aria-hidden="false"></span></button>' + '</div>'
+          + '</div>' + '</div>');
   if (MODALDEBUG) {
     console.log("Leaving addValueLabel");
     console.groupEnd();
@@ -100,17 +101,17 @@ function addGlobalValueLabel(string, number, date) {
   var wrapper = $(".valvar_wrap");
   var count = wrapper.children().length;
   $(wrapper).append(
-      '<div class="form-group" id="values' + (count) + '">' + '<div class="col-sm-12">' + '<div class="col-sm-3">'
+      '<li class="list-group-item" id="values' + (count) + '">' + '<div class="row">' + '<div class="col-sm-3">'
           + '<select name="values[' + (count) + '].id" class="form-control" id="values' + (count)
           + 'id" onchange="checkType(' + (count) + ', null);">' + '<option value="1">' + string + '</option>'
-          + '<option value="5">' + number + '</option>' + '<option value="20">' + date + '</option>' + '</select>'
-          + '</div>' + '<div class="col-sm-3">' + '<input id="values' + (count)
-          + 'val" class="form-control" type="text" name="values[' + (count) + '].value" onkeyup="checkType(' + (count)
-          + ', null);" onblur="checkType(' + (count) + ', null);" />' + '</div>' + '<div class="col-sm-1">' + '='
-          + '</div>' + '<div class="col-sm-4">' + '<input id="values' + (count)
-          + 'label" class="form-control" type="text" name="values[' + (count) + '].label" />' + '</div>'
+          + '<option value="5">' + number + '</option></select>' + '</div>' + '<div class="col-sm-3">'
+          + '<input id="values' + (count) + 'val" class="form-control" type="text" name="values[' + (count)
+          + '].value" onkeyup="checkType(' + (count) + ', null);" onblur="checkType(' + (count) + ', null);" />'
+          + '</div>' + '<div class="col-sm-1">' + '=' + '</div>' + '<div class="col-sm-3">' + '<input id="values'
+          + (count) + 'label" class="form-control" type="text" name="values[' + (count) + '].label" />' + '</div>'
           + '<div class="col-sm-1">' + '<button class="btn btn-danger" onclick="delVarValues(' + (count)
-          + ');return false;">X</button>' + '</div>' + '</div>' + '</div>');
+          + ');return false;"><span class="glyphicon glyphicon-remove" aria-hidden="false"></span></button>' + '</div>'
+          + '</div>' + '</li>');
   if (MODALDEBUG) {
     console.log("Leaving addGlobalValueLabel");
     console.groupEnd();
@@ -611,7 +612,7 @@ function checkDateField(fieldId) {
   }
   var ret = true;
   var field = $("#" + fieldId)
-  
+
   field.removeClass("redborder");
   var spssDate = $("#spssType").val().trim();
   console.log(spssDate);
@@ -647,7 +648,7 @@ function checkDateField(fieldId) {
         field.addClass("redborder");
         ret = false;
       }
-    }else if (!checkDate(field.val())) {
+    } else if (!checkDate(field.val())) {
       field.addClass("redborder");
       ret = false;
     }

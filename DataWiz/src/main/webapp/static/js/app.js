@@ -633,11 +633,11 @@ function asyncSumbit(uri, global) {
 
 function loadAjaxModal(url, global) {
   if (url != null) {
-    if (!global) {
-      $(".modal-dialog").removeClass("modalWidth")
-    } else {
-      $(".modal-dialog").addClass("modalWidth")
-    }
+//    if (!global) {
+//      $(".modal-dialog").removeClass("modalWidth")
+//    } else {
+//      $(".modal-dialog").addClass("modalWidth")
+//    }
     jQuery('#valueModal').modal('show', {
       backdrop : 'static'
     });
