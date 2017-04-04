@@ -1,12 +1,15 @@
 package de.zpid.datawiz.service;
 
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -79,7 +82,8 @@ public class RecordService {
   @Autowired
   private MessageSource messageSource;
 
-  final static private int LABEL_MAX_LENGTH = 120;
+  final static private int VAR_LABEL_MAX_LENGTH = 200;
+  final static private int VAR_NAME_MAX_LENGTH = 50;
 
   /**
    * @param pid
@@ -119,7 +123,12 @@ public class RecordService {
       if (rec != null) {
         rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
         rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
+        rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
+        if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
+          rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
+          }.getType()));
         if (rec.getVariables() != null && rec.getVariables().size() > 0) {
+          int varPosition = 0;
           for (SPSSVarDTO var : rec.getVariables()) {
             var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
             importService.sortVariableAttributes(var);
@@ -147,12 +156,14 @@ public class RecordService {
               if (missing != null)
                 var.setMissingVal3(missing);
             }
+            int sd = varPosition++;
+            rec.getDataMatrix().parallelStream().forEach(row -> {
+              if (var.getVarType() == 0 && var.getDecimals() == 0 && row.get(sd) != null
+                  && row.get(sd) instanceof Double)
+                row.set(sd, Math.round(((Double) row.get(sd)).doubleValue()));
+            });
           }
         }
-        rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
-        if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
-          rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
-          }.getType()));
       } else {
         throw new DataWizSystemException("No Record found for recordId " + recordId.get(),
             DataWizErrorCodes.RECORD_NOT_AVAILABLE);
@@ -405,7 +416,21 @@ public class RecordService {
    */
   public void validateAndPrepareCodebookForm(final RecordDTO currentVersion, final List<String> parsingErrors,
       final boolean onlyValidation) throws DataWizSystemException {
+    Set<String> names = new HashSet<String>();
     currentVersion.getVariables().parallelStream().forEach((var) -> {
+      if (var.getName() == null || var.getName().isEmpty()) {
+        parsingErrors.add("name empty");
+      } else if (var.getName().getBytes(Charset.forName("UTF-8")).length > VAR_NAME_MAX_LENGTH) {
+        parsingErrors.add("name to long");
+      } else if (!names.add(var.getName().toUpperCase())) {
+        parsingErrors.add("name equal");
+      } else if (!Pattern.compile(RegexUtil.VAR_NAME_REGEX).matcher(var.getName()).find()) {
+        parsingErrors.add("sonderzeichen juuunge " + var.getName() + " - " + var.getPosition());
+      }
+      if (var.getLabel() != null && !var.getLabel().isEmpty()
+          && var.getLabel().getBytes(Charset.forName("UTF-8")).length > VAR_LABEL_MAX_LENGTH) {
+        parsingErrors.add("label to long!!!!");
+      }
       for (SPSSValueLabelDTO val : var.getValues()) {
         validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0);
       }

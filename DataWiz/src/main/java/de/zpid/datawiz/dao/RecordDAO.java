@@ -373,7 +373,6 @@ public class RecordDAO extends SuperDAO {
         return null;
       }
     });
-    System.err.println(matrixJSON);
     log.debug("leaving findMatrixByVersionId with size: {}", () -> (matrixJSON != null ? matrixJSON.length() : "null"));
     return matrixJSON;
   }

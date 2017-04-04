@@ -712,3 +712,15 @@ function detectBrowser() {
   else
     return "notsupported"
 }
+
+document.onkeypress = stopRKey;
+
+function stopRKey(evt) {
+  var evt = (evt) ? evt : ((event) ? event : null);
+  var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+  if ((evt.which == 13) && (node.type == "text")) {
+    return false;
+  }
+}
+
+

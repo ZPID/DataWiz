@@ -13,6 +13,7 @@
 		<logger name="org.springframework" level="WARN" />
 		<logger name="org.hibernate" level="WARN" />
 		<logger name="de.zpid" level="TRACE" />
+		<logger name="de.zpid.spss" level="WARN" />
 		<Root level="WARN">
 			<AppenderRef ref="CONSOLE" />
 		</Root>

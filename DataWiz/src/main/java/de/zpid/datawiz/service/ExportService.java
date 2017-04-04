@@ -152,11 +152,13 @@ public class ExportService {
         if (Files.exists(Paths.get(dir + filename))) {
           content = Files.readAllBytes(Paths.get(dir + filename));
         } else {
-          res.insert(0, "export.error.file.not.exist");
+          if (res.length() == 0)
+            res.insert(0, "export.error.file.not.exist");
         }
       } catch (Exception e) {
-        log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Exception: {}", () -> record.getId(),
-            () -> record.getVersionId(), () -> e);
+        log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Error: {}; Exception: {}",
+            () -> record.getId(), () -> record.getVersionId(), () -> res.toString(), () -> e);
+        e.printStackTrace();
         res.insert(0, "export.error.exception.thown");
       } finally {
         if (Files.exists(Paths.get(dir + filename)))

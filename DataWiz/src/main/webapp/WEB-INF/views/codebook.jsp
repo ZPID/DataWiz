@@ -116,13 +116,20 @@
                         <td class="th-width-200"><c:forEach items="${var.dw_attributes}" var="val"
                             varStatus="attloop">
                             <c:if test="${val.label == 'dw_construct'}">
-                              <sf:select class="form-control"
-                                path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                                <sf:option value="">
-                                  <s:message code="record.codebook.no.construct" />
-                                </sf:option>
-                                <sf:options items="${StudyForm.study.constructs}" itemLabel="name" itemValue="name" />
-                              </sf:select>
+                              <c:choose>
+                                <c:when test="${not empty StudyForm.study.constructs}">
+                                  <sf:select class="form-control"
+                                    path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                    <sf:option value="">
+                                      <s:message code="record.codebook.no.construct" />
+                                    </sf:option>
+                                    <sf:options items="${StudyForm.study.constructs}" itemLabel="name" itemValue="name" />
+                                  </sf:select>
+                                </c:when>
+                                <c:otherwise>
+                                  <s:message code="record.codebook.study.constructs.empty" />
+                                </c:otherwise>
+                              </c:choose>
                               <c:set var="contains" value="false" />
                               <c:forEach items="${StudyForm.study.constructs}" var="construct">
                                 <c:if test="${construct.name eq val.value}">
@@ -139,13 +146,20 @@
                         <td class="th-width-200"><c:forEach items="${var.dw_attributes}" var="val"
                             varStatus="attloop">
                             <c:if test="${val.label == 'dw_measocc'}">
-                              <sf:select class="form-control"
-                                path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                                <sf:option value="">
-                                  <s:message code="record.codebook.no.measocc" />
-                                </sf:option>
-                                <sf:options items="${StudyForm.study.measOcc}" itemLabel="text" itemValue="text" />
-                              </sf:select>
+                              <c:choose>
+                                <c:when test="${not empty StudyForm.study.measOcc}">
+                                  <sf:select class="form-control"
+                                    path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                    <sf:option value="">
+                                      <s:message code="record.codebook.no.measocc" />
+                                    </sf:option>
+                                    <sf:options items="${StudyForm.study.measOcc}" itemLabel="text" itemValue="text" />
+                                  </sf:select>
+                                </c:when>
+                                <c:otherwise>
+                                  <s:message code="record.codebook.study.measOcc.empty" />
+                                </c:otherwise>
+                              </c:choose>
                               <c:set var="contains" value="false" />
                               <c:forEach items="${StudyForm.study.measOcc}" var="construct">
                                 <c:if test="${construct.text eq val.value}">
@@ -162,13 +176,21 @@
                         <td class="th-width-200"><c:forEach items="${var.dw_attributes}" var="val"
                             varStatus="attloop">
                             <c:if test="${val.label == 'dw_instrument'}">
-                              <sf:select class="form-control"
-                                path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
-                                <sf:option value="">
-                                  <s:message code="record.codebook.no.instrument" />
-                                </sf:option>
-                                <sf:options items="${StudyForm.study.instruments}" itemLabel="title" itemValue="title" />
-                              </sf:select>
+                              <c:choose>
+                                <c:when test="${not empty StudyForm.study.instruments}">
+                                  <sf:select class="form-control"
+                                    path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                    <sf:option value="">
+                                      <s:message code="record.codebook.no.instrument" />
+                                    </sf:option>
+                                    <sf:options items="${StudyForm.study.instruments}" itemLabel="title"
+                                      itemValue="title" />
+                                  </sf:select>
+                                </c:when>
+                                <c:otherwise>
+                                  <s:message code="record.codebook.study.instruments.empty" />
+                                </c:otherwise>
+                              </c:choose>
                               <c:set var="contains" value="false" />
                               <c:forEach items="${StudyForm.study.instruments}" var="construct">
                                 <c:if test="${construct.title eq val.value}">

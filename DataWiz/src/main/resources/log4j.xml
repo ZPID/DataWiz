@@ -26,7 +26,7 @@
 		<level value="warn" />
 	</logger>
 	<logger name="de.zpid.spss">
-		<level value="trace" />
+		<level value="warn" />
 	</logger>
 	<root>
 		<priority value="info" />
