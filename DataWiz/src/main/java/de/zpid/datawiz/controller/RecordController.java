@@ -132,11 +132,11 @@ public class RecordController {
       }
     }
     if (sForm != null && ret == null) {
-      model.put("breadcrumpList",
-          BreadCrumpUtil.generateBC(PageState.RECORDS,
-              new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
-                  (sForm.getRecord() != null ? sForm.getRecord().getRecordName() : "TEST") },
-              new long[] { pid.get(), studyId.get() }, messageSource));
+      model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.RECORDS,
+          new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
+              (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
+                  : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
+          new long[] { pid.get(), studyId.get() }, messageSource));
       model.put("StudyForm", sForm);
       model.put("recordSubMenu", true);
       if (subpage.isPresent() && subpage.get().equals("codebook")) {

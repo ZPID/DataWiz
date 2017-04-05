@@ -103,12 +103,10 @@ public class RecordService {
     if (sForm.getProject() == null)
       throw new DataWizSystemException("No Project found for projectId " + pid.get(),
           DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
-
     sForm.setStudy(studyDAO.findById(studyId.get(), pid.get(), true, false));
-    if (sForm.getStudy() == null) {
+    if (sForm.getStudy() == null)
       throw new DataWizSystemException("No Study found for studyId " + studyId.get(),
           DataWizErrorCodes.STUDY_NOT_AVAILABLE);
-    }
     if (subpage.isPresent() && subpage.get().equals("codebook")) {
       sForm.getStudy().setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
       sForm.getStudy().setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
@@ -421,65 +419,66 @@ public class RecordService {
     if (!onlyValidation) {
       if (changelog == null || changelog.trim().isEmpty()) {
         parsingErrors
-            .add(messageSource.getMessage("record.codebook.changelog.missing", null,
-            LocaleContextHolder.getLocale()));
+            .add(messageSource.getMessage("record.codebook.changelog.missing", null, LocaleContextHolder.getLocale()));
         missingChangelog = true;
       }
     }
     if (!missingChangelog) {
       Set<String> names = new HashSet<String>();
-      currentVersion.getVariables().parallelStream().forEach((var) -> {
-        if (var.getName() == null || var.getName().isEmpty()) {
-          parsingErrors.add(messageSource.getMessage("record.name.empty", new Object[] { var.getPosition() },
-              LocaleContextHolder.getLocale()));
-        } else if (var.getName().getBytes(Charset.forName("UTF-8")).length > VAR_NAME_MAX_LENGTH) {
-          parsingErrors.add(messageSource.getMessage("record.name.too.long",
-              new Object[] { var.getPosition(), var.getName(), VAR_NAME_MAX_LENGTH }, LocaleContextHolder.getLocale()));
-        } else if (!names.add(var.getName().toUpperCase())) {
-          parsingErrors.add(messageSource.getMessage("record.name.equal",
-              new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
-        } else if (!Pattern.compile(RegexUtil.VAR_NAME_REGEX).matcher(var.getName()).find()) {
-          parsingErrors.add(messageSource.getMessage("record.name.invalid",
-              new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
-        }
-        if (var.getLabel() != null && !var.getLabel().isEmpty()
-            && var.getLabel().getBytes(Charset.forName("UTF-8")).length > VAR_LABEL_MAX_LENGTH) {
-          parsingErrors.add(messageSource.getMessage("record.label.too.long",
-              new Object[] { var.getPosition(), var.getName(), VAR_LABEL_MAX_LENGTH },
-              LocaleContextHolder.getLocale()));
-        }
-        for (SPSSValueLabelDTO val : var.getValues()) {
-          validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0);
-        }
-        SPSSMissing missFormat = var.getMissingFormat();
-        if (!missFormat.equals(SPSSMissing.SPSS_UNKNOWN) && !missFormat.equals(SPSSMissing.SPSS_NO_MISSVAL)) {
-          validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 1);
-          if (missFormat.equals(SPSSMissing.SPSS_TWO_MISSVAL) || missFormat.equals(SPSSMissing.SPSS_MISS_RANGE)
-              || missFormat.equals(SPSSMissing.SPSS_THREE_MISSVAL)
-              || missFormat.equals(SPSSMissing.SPSS_MISS_RANGEANDVAL)) {
-            validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 2);
-            if (missFormat.equals(SPSSMissing.SPSS_THREE_MISSVAL)
+      if (currentVersion != null && currentVersion.getVariables() != null)
+        currentVersion.getVariables().parallelStream().forEach((var) -> {
+          if (var.getName() == null || var.getName().isEmpty()) {
+            parsingErrors.add(messageSource.getMessage("record.name.empty", new Object[] { var.getPosition() },
+                LocaleContextHolder.getLocale()));
+          } else if (var.getName().getBytes(Charset.forName("UTF-8")).length > VAR_NAME_MAX_LENGTH) {
+            parsingErrors.add(messageSource.getMessage("record.name.too.long",
+                new Object[] { var.getPosition(), var.getName(), VAR_NAME_MAX_LENGTH },
+                LocaleContextHolder.getLocale()));
+          } else if (!names.add(var.getName().toUpperCase())) {
+            parsingErrors.add(messageSource.getMessage("record.name.equal",
+                new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
+          } else if (!Pattern.compile(RegexUtil.VAR_NAME_REGEX).matcher(var.getName()).find()) {
+            parsingErrors.add(messageSource.getMessage("record.name.invalid",
+                new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
+          }
+          if (var.getLabel() != null && !var.getLabel().isEmpty()
+              && var.getLabel().getBytes(Charset.forName("UTF-8")).length > VAR_LABEL_MAX_LENGTH) {
+            parsingErrors.add(messageSource.getMessage("record.label.too.long",
+                new Object[] { var.getPosition(), var.getName(), VAR_LABEL_MAX_LENGTH },
+                LocaleContextHolder.getLocale()));
+          }
+          for (SPSSValueLabelDTO val : var.getValues()) {
+            validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0);
+          }
+          SPSSMissing missFormat = var.getMissingFormat();
+          if (!missFormat.equals(SPSSMissing.SPSS_UNKNOWN) && !missFormat.equals(SPSSMissing.SPSS_NO_MISSVAL)) {
+            validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 1);
+            if (missFormat.equals(SPSSMissing.SPSS_TWO_MISSVAL) || missFormat.equals(SPSSMissing.SPSS_MISS_RANGE)
+                || missFormat.equals(SPSSMissing.SPSS_THREE_MISSVAL)
                 || missFormat.equals(SPSSMissing.SPSS_MISS_RANGEANDVAL)) {
-              validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 3);
+              validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 2);
+              if (missFormat.equals(SPSSMissing.SPSS_THREE_MISSVAL)
+                  || missFormat.equals(SPSSMissing.SPSS_MISS_RANGEANDVAL)) {
+                validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 3);
+              } else {
+                if (!onlyValidation) {
+                  var.setMissingVal3(null);
+                }
+              }
             } else {
               if (!onlyValidation) {
+                var.setMissingVal2(null);
                 var.setMissingVal3(null);
               }
             }
           } else {
             if (!onlyValidation) {
+              var.setMissingVal1(null);
               var.setMissingVal2(null);
               var.setMissingVal3(null);
             }
           }
-        } else {
-          if (!onlyValidation) {
-            var.setMissingVal1(null);
-            var.setMissingVal2(null);
-            var.setMissingVal3(null);
-          }
-        }
-      });
+        });
     }
     if (parsingErrors.size() > 0) {
       throw new DataWizSystemException(

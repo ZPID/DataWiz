@@ -2,7 +2,6 @@ package de.zpid.datawiz.controller;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -33,7 +32,9 @@ import de.zpid.datawiz.dto.StudyInstrumentDTO;
 import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
@@ -81,60 +82,56 @@ public class StudyController extends SuperController {
       log.trace("Entering showStudyPage(create) study");
       ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     }
-    if (ret != null)
-      return ret;
-    String accessState = "disabled";
     StudyForm sForm = createStudyForm();
-    try {
-      ProjectDTO project = projectDAO.findById(pid.get());
-      if (project == null) {
-        log.warn("No Project found for projectId {}", () -> pid.get());
-        redirectAttributes.addFlashAttribute("errorMSG",
-            messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
-        return "redirect:/panel";
-      }
-      sForm.setProject(project);
-      List<ContributorDTO> pContri = contributorDAO.findByProject(project, false, true);
-      if (studyId.isPresent()) {
-        StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false, false);
-        if (study != null) {
-          setStudyDTO(studyId, study);
-          sForm.setStudy(study);
-          cleanContributorList(pContri, study.getContributors());
-          accessState = updateAccessState(user, accessState, study);
-        } else {
-          log.warn("No Study found for studyId {}", () -> studyId.get());
+    String accessState = "disabled";
+    if (ret == null) {
+      try {
+        accessState = studyService.setStudyForm(pid, studyId, redirectAttributes, user, sForm);
+        ret = "study";
+      } catch (Exception e) {
+        if (e instanceof DataWizSystemException) {
+          String errorMSG = "";
+          log.warn("DataWizSystemException during recordService.setStudyform Message[{}] , Code [{}]",
+              () -> e.getMessage(), () -> ((DataWizSystemException) e).getErrorCode());
+          if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)) {
+            errorMSG = "project.not.available";
+            ret = "redirect:/panel";
+          } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)) {
+            errorMSG = "study.not.available";
+            ret = "redirect:/project/" + pid.get() + "/studies";
+          }
           redirectAttributes.addFlashAttribute("errorMSG",
-              messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
-          return "redirect:/project/" + pid.get() + "/studies";
+              messageSource.getMessage(errorMSG, null, LocaleContextHolder.getLocale()));
+        } else {
+          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage());
+          ret = "error";
+          model
+              .put("errormsg",
+                  messageSource.getMessage("dbs.sql.exception",
+                      new Object[] { env.getRequiredProperty("organisation.admin.email"),
+                          e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
+                      LocaleContextHolder.getLocale()));
         }
-        sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
-        sForm.setSourFormat(formTypeDAO.findAllByType(true, DWFieldTypes.DATAFORMAT));
-      } else {
-        accessState = "enabled";
       }
-      sForm.setProjectContributors(pContri);
-    } catch (Exception e) {
-      // TODO
-      log.warn(e);
     }
-    // TODO Empty in ressoures
-    model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.STUDY,
-            new String[] { sForm.getProject().getTitle(),
-                (sForm.getStudy() != null && sForm.getStudy().getTitle() != null
-                    && !sForm.getStudy().getTitle().isEmpty() ? sForm.getStudy().getTitle() : "empty") },
-            new long[] { pid.get() }, messageSource));
-    model.put("disStudyContent", accessState);
-    model.put("StudyForm", sForm);
-    model.put("studySubMenu", true);
-    if (jQueryMapS == null || jQueryMapS.trim().isEmpty())
-      model.put("jQueryMap", PageState.STUDYGENERAL);
-    else
-      model.put("jQueryMap", PageState.STUDYSURVEY);
-    model.put("subnaviActive", PageState.STUDY.name());
-    log.trace("Method showStudyPage successfully completed");
-    return "study";
+    if (ret.equals("study")) {
+      model.put("breadcrumpList",
+          BreadCrumpUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(),
+              (sForm.getStudy() != null && sForm.getStudy().getTitle() != null && !sForm.getStudy().getTitle().isEmpty()
+                  ? sForm.getStudy().getTitle()
+                  : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
+              new long[] { pid.get() }, messageSource));
+      model.put("disStudyContent", accessState);
+      model.put("StudyForm", sForm);
+      model.put("studySubMenu", true);
+      if (jQueryMapS == null || jQueryMapS.trim().isEmpty())
+        model.put("jQueryMap", PageState.STUDYGENERAL);
+      else
+        model.put("jQueryMap", PageState.STUDYSURVEY);
+      model.put("subnaviActive", PageState.STUDY.name());
+    }
+    log.trace("Method showStudyPage completed");
+    return ret;
   }
 
   /**
@@ -185,21 +182,6 @@ public class StudyController extends SuperController {
     model.put("subnaviActive", PageState.RECORDS.name());
     model.put("StudyForm", sForm);
     return "records";
-  }
-
-  /**
-   * @param user
-   * @param accessState
-   * @param study
-   * @return
-   */
-  private String updateAccessState(final UserDTO user, String accessState, StudyDTO study) {
-    if (study.isCurrentlyEdit() && study.getEditUserId() == user.getId()
-        && (study.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) >= 0)) {
-      studyDAO.switchStudyLock(study.getId(), user.getId(), false);
-      accessState = "enabled";
-    }
-    return accessState;
   }
 
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST)
@@ -720,42 +702,4 @@ public class StudyController extends SuperController {
     return "study";
   }
 
-  /**
-   * @param studyId
-   * @param study
-   * @throws Exception
-   */
-  private void setStudyDTO(final Optional<Long> studyId, final StudyDTO study) throws Exception {
-    if (study != null && study.getId() > 0) {
-      study.setContributors(contributorDAO.findByStudy(studyId.get()));
-      study.setSoftware(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.SOFTWARE));
-      study.setPubOnData(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.PUBONDATA));
-      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.CONFLINTEREST));
-      study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.RELTHEORY));
-      study.setObjectives(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.OBJECTIVES));
-      study.setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
-      study.setInterArms(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.INTERARMS));
-      study.setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
-      study.setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get(), false));
-      study.setEligibilities(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.ELIGIBILITY));
-      study.setUsedCollectionModes(
-          formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.COLLECTIONMODE, true));
-      study.setUsedSourFormat(
-          formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.DATAFORMAT, true));
-    }
-  }
-
-  /**
-   * @param pContri
-   * @param study
-   */
-  private void cleanContributorList(final List<ContributorDTO> pContri, final List<ContributorDTO> sContri) {
-    if (pContri != null && sContri != null)
-      for (Iterator<ContributorDTO> it = pContri.iterator(); it.hasNext();) {
-        ContributorDTO ccontri = it.next();
-        for (ContributorDTO scontri : sContri)
-          if (scontri.getId() == ccontri.getId())
-            it.remove();
-      }
-  }
 }

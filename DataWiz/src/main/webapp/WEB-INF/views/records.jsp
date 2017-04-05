@@ -7,13 +7,14 @@
     <div class="content-padding">
       <div class="page-header">
         <div class="row">
-          <div class="col-sm-10">
+          <div class="col-sm-12 text-align-right">
+            <a href='<c:url value="record/"/>' class="btn btn-success btn-sm"><s:message
+                code="record.create.new.record" /></a>
+          </div>
+          <div class="col-sm-12">
             <h4>
               <s:message code="record.overview.headline" />
             </h4>
-          </div>
-          <div class="col-sm-2 text-align-right">
-            <a href='<c:url value="record/"/>' class="btn btn-success"><s:message code="record.create.new.record" /></a>
           </div>
         </div>
         <div>

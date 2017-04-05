@@ -229,7 +229,7 @@
                 <%@ include file="templates/gen_textarea.jsp"%>
               </div>
               <div class="modal-footer">
-                <div class="form-group">
+                <div class="row">
                   <div class="col-sm-6 text-align-left">
                     <button class="btn btn-default btn-sm" data-dismiss="modal">
                       <s:message code="gen.close" />
@@ -308,7 +308,7 @@
                 </ul>
               </div>
               <div class="modal-footer">
-                <div class="form-group">
+                <div class="row">
                   <div class="col-md-12 text-align-left">
                     <button class="btn btn-default btn-sm" data-dismiss="modal">
                       <s:message code="gen.close" />
@@ -382,7 +382,7 @@
         </ul>
       </div>
       <div class="modal-footer">
-        <div class="form-group">
+        <div class="row">
           <div class="col-sm-12 text-align-left">
             <button class="btn btn-default btn-sm" data-dismiss="modal">
               <s:message code="gen.close" />
