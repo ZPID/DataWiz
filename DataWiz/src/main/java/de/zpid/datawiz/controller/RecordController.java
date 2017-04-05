@@ -120,8 +120,7 @@ public class RecordController {
           redirectAttributes.addFlashAttribute("errorMSG",
               messageSource.getMessage(errorMSG, null, LocaleContextHolder.getLocale()));
         } else {
-          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage(),
-              () -> e.getMessage());
+          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage());
           ret = "error";
           model
               .put("errormsg",
@@ -150,6 +149,13 @@ public class RecordController {
         model.put("subnaviActive", PageState.RECORDDATA.name());
         ret = "datamatrix";
       } else {
+        if (!recordService.validateCodeBook(sForm).toString().trim().isEmpty()) {
+          model.put("errorMSG",
+              messageSource.getMessage("record.spss.export.disabled", null, LocaleContextHolder.getLocale()));
+          model.put("disableSPSSExport", true);
+        } else {
+          model.put("disableSPSSExport", false);
+        }
         model.put("subnaviActive", PageState.RECORDMETA.name());
         ret = "record";
       }
@@ -588,9 +594,9 @@ public class RecordController {
       String infoMSG = null;
       try {
         RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(currentVersion);
-        recordService.validateAndPrepareCodebookForm(copy, parsingErrors, false);
+        recordService.validateAndPrepareCodebookForm(copy, parsingErrors, sForm.getNewChangeLog(), false);
         currentVersion = copy;
-        infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors);
+        infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors, sForm.getNewChangeLog());
         redirectAttributes.addFlashAttribute("infoMSG",
             messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
         ret = "redirect:/project/" + sForm.getProject().getId() + "/study/" + sForm.getStudy().getId() + "/record/"

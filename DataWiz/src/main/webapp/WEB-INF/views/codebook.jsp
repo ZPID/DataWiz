@@ -248,9 +248,13 @@
         </div>
         <s:message code="dataset.import.report.codebook.help" var="appresmess" />
         <%@ include file="templates/helpblock.jsp"%>
+        <c:set var="input_vars" value="newChangeLog;record.changeLog;required; ;row" />
+        <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
-          <div class="col-sm-12 text-align-right">
+          <div class="col-sm-6 text-align-left">
             <a href="${accessUrl}" class="btn btn-default btn-sm"><s:message code="codebook.cancel.save" /></a>
+          </div>
+          <div class="col-sm-6 text-align-right">
             <button type="submit" class="btn btn-success btn-sm" name="saveCodebook">
               <s:message code="codebook.submit.save" />
             </button>

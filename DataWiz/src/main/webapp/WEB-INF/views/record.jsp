@@ -350,9 +350,17 @@
             </ul></li>
           <li class="list-group-item"><b><s:message code="record.export.modal.spss" /></b>
             <ul class="list-group">
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/SPSS', '_blank')" data-dismiss="modal"><s:message
-                  code="record.export.modal.sav" /></li>
+              <c:choose>
+                <c:when test="${disableSPSSExport}">
+                  <li class="list-group-item btn btn-default btn-sm disabled"><s:message
+                      code="record.export.modal.sav" /></li>
+                </c:when>
+                <c:otherwise>
+                  <li class="list-group-item btn btn-default btn-sm"
+                    onclick="window.open('${exportUrl}/export/SPSS', '_blank')" data-dismiss="modal"><s:message
+                      code="record.export.modal.sav" /></li>
+                </c:otherwise>
+              </c:choose>
             </ul></li>
           <li class="list-group-item"><b><s:message code="record.export.modal.json" /></b>
             <ul class="list-group">
