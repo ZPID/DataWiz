@@ -23,23 +23,7 @@
           </c:choose>
         </c:forEach>
       </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
-            <c:when test="${localeCode eq 'de'}">
-              <div>
-                <a href="<c:url value="?datawiz_locale=de" />"><img alt="" style="border: solid 1px red;"
-                  src="<c:url value="/static/images/de.png" />"></a> <a href="<c:url value="?datawiz_locale=en" />"><img
-                  alt="" src="<c:url value="/static/images/gb.png" />"></a>
-              </div>
-            </c:when>
-            <c:when test="${localeCode eq 'en'}">
-              <div>
-                <a href="<c:url value="?datawiz_locale=de" />"><img alt=""
-                  src="<c:url value="/static/images/de.png" />"></a> <a href="<c:url value="?datawiz_locale=en" />"><img
-                  alt="" style="border: solid 1px red;" src="<c:url value="/static/images/gb.png" />"></a>
-              </div>
-            </c:when>
-          </c:choose></li>
+      <ul class="nav navbar-nav navbar-right" style="margin-right: 8.7%;">
         <sec:authorize access="isAuthenticated()">
           <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
             aria-haspopup="true" aria-expanded="false"><c:out value="${principal.username}" /><span class="caret"></span></a>
@@ -55,6 +39,24 @@
           <li><a href="<c:url value="/login" />">Login</a></li>
           <li><a href="<c:url value="/register" />">Register</a></li>
         </sec:authorize>
+        <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
+            <c:when test="${localeCode eq 'de'}">
+              <div>
+                <a href="<c:url value="?datawiz_locale=de" />"><img alt="" style="border: solid 1px white;"
+                  src="<c:url value="/static/images/Germany.png" />"></a> <a
+                  href="<c:url value="?datawiz_locale=en" />"><img alt=""
+                  src="<c:url value="/static/images/USA.png" />"></a>
+              </div>
+            </c:when>
+            <c:when test="${localeCode eq 'en'}">
+              <div>
+                <a href="<c:url value="?datawiz_locale=de" />"><img alt=""
+                  src="<c:url value="/static/images/Germany.png" />"></a> <a
+                  href="<c:url value="?datawiz_locale=en" />"><img alt="" style="border: solid 1px white;"
+                  src="<c:url value="/static/images/USA.png" />"></a>
+              </div>
+            </c:when>
+          </c:choose></li>
         <!--         <li>
           <form class="navbar-form" role="search">
             <div class="form-group">

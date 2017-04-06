@@ -24,7 +24,8 @@
                   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                 <c:choose>
                   <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
-                    <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
+                    <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message
+                        code="study.button.check.in" /></a>
                   </c:when>
                   <c:otherwise>
                     <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
@@ -63,7 +64,7 @@
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
         <input type="hidden" id="disStudyContent" value="${disStudyContent}" />
-        <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
+        <sf:hidden path="jQueryMap" />
         <sf:hidden path="delPos" />
         <sf:hidden path="scrollPosition" />
         <!-- Messages -->

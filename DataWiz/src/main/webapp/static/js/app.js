@@ -89,7 +89,7 @@ $(".projectContentClick").click(function() {
 });
 
 $(".studyContentClick").click(function() {
-  $("#jQueryMap").val($(this).attr("id"));
+  $('#jQueryMap').val($(this).attr("id"));
   setStudySubmenu($(this).attr("id"));
 });
 
@@ -140,6 +140,7 @@ function setProjectSubmenu(id) {
   }
 }
 
+
 function setStudySubmenu(id) {
   if (id != null) {
     if (!$("#" + id).hasClass("active")) {
@@ -152,17 +153,21 @@ function setStudySubmenu(id) {
     $(".studyContent").hide();
     $(".studyContentClick").removeClass("active");
     switch ($("#jQueryMap").val()) {
-    case "STUDYDESIGN":
+    case "designActiveClick":
       $("#designActiveClick").addClass("active");
       $("#designActiveContent").show();
       break;
-    case "STUDYSAMPLE":
+    case "sampleActiveClick":
       $("#sampleActiveClick").addClass("active");
       $("#sampleActiveContent").show();
       break;
-    case "STUDYSURVEY":
+    case "surveyActiveClick":
       $("#surveyActiveClick").addClass("active");
       $("#surveyActiveContent").show();
+      break;
+    case "ethicalActiveClick":
+      $("#ethicalActiveClick").addClass("active");
+      $("#ethicalActiveContent").show();
       break;
     default:
       $("#basisDataActiveClick").addClass("active");
@@ -633,11 +638,11 @@ function asyncSumbit(uri, global) {
 
 function loadAjaxModal(url, global) {
   if (url != null) {
-//    if (!global) {
-//      $(".modal-dialog").removeClass("modalWidth")
-//    } else {
-//      $(".modal-dialog").addClass("modalWidth")
-//    }
+    // if (!global) {
+    // $(".modal-dialog").removeClass("modalWidth")
+    // } else {
+    // $(".modal-dialog").addClass("modalWidth")
+    // }
     jQuery('#valueModal').modal('show', {
       backdrop : 'static'
     });
@@ -722,5 +727,3 @@ function stopRKey(evt) {
     return false;
   }
 }
-
-

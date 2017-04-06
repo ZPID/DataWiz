@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -75,9 +74,8 @@ public class StudyController extends SuperController {
    * @return
    */
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.GET)
-  public String showStudyPage(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      final ModelMap model, final RedirectAttributes redirectAttributes,
-      @ModelAttribute("jQueryMapS") String jQueryMapS) {
+  public String showStudyPage(@ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Optional<Long> pid,
+      @PathVariable final Optional<Long> studyId, final ModelMap model, final RedirectAttributes redirectAttributes) {
     String ret;
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
@@ -87,7 +85,12 @@ public class StudyController extends SuperController {
       log.trace("Entering showStudyPage(create) study");
       ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     }
-    StudyForm sForm = createStudyForm();
+    String jQueryMap = "";
+    if (sForm != null && sForm.getjQueryMap() != null && !sForm.getjQueryMap().isEmpty()) {
+      jQueryMap = sForm.getjQueryMap();
+    }
+    sForm = createStudyForm();
+    sForm.setjQueryMap(jQueryMap);
     String accessState = "disabled";
     if (ret == null) {
       try {
@@ -129,10 +132,6 @@ public class StudyController extends SuperController {
       model.put("disStudyContent", accessState);
       model.put("StudyForm", sForm);
       model.put("studySubMenu", true);
-      if (jQueryMapS == null || jQueryMapS.trim().isEmpty())
-        model.put("jQueryMap", PageState.STUDYGENERAL);
-      else
-        model.put("jQueryMap", PageState.STUDYSURVEY);
       model.put("subnaviActive", PageState.STUDY.name());
     }
     log.trace("Method showStudyPage completed");
@@ -192,7 +191,7 @@ public class StudyController extends SuperController {
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST)
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId,
-      @PathVariable final Optional<Long> pid, @RequestParam("jQueryMap") String jQueryMap) {
+      @PathVariable final Optional<Long> pid) {
     String ret;
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
@@ -276,14 +275,6 @@ public class StudyController extends SuperController {
     } else {
       // TODO study null
     }
-    // System.out.println(jQueryMap);
-    // switch (jQueryMap) {
-    // case "ethicalActiveClick":
-    // redirectAttributes.addFlashAttribute("jQueryMap", jQueryMap);
-    // break;
-    // }
-    // TODO
-    redirectAttributes.addFlashAttribute("jQueryMap", model.get("jQueryMap"));
     return "redirect:/project/" + pid.get() + "/study/" + study.getId();
   }
 
@@ -406,7 +397,6 @@ public class StudyController extends SuperController {
       RedirectAttributes redirectAttributes, @PathVariable final Optional<Long> pid,
       @PathVariable final Optional<Long> studyId) {
     log.trace("Entering changeStudyLock");
-    StudyDTO study = sForm.getStudy();
     UserDTO user = UserUtil.getCurrentUser();
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret != null)
@@ -414,7 +404,7 @@ public class StudyController extends SuperController {
     String actLock = (String) model.get("disStudyContent");
     StudyDTO currLock = null;
     try {
-      currLock = studyDAO.findById(study.getId(), pid.get(), true, true);
+      currLock = studyDAO.findById(studyId.get(), pid.get(), true, true);
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -424,16 +414,15 @@ public class StudyController extends SuperController {
         || (currLock.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) >= 0
             && user.getId() == currLock.getEditUserId()))) {
       if (actLock == null || actLock.isEmpty() || actLock.equals("enabled")) {
-        if (studyDAO.switchStudyLock(study.getId(), user.getId(), true) > 0)
+        if (studyDAO.switchStudyLock(studyId.get(), user.getId(), true) > 0)
           actLock = "disabled";
       } else {
-        if (studyDAO.switchStudyLock(study.getId(), user.getId(), false) > 0)
+        if (studyDAO.switchStudyLock(studyId.get(), user.getId(), false) > 0)
           actLock = "enabled";
       }
       model.put("disStudyContent", actLock);
     }
     model.put("studySubMenu", true);
-    model.put("jQueryMap", model.get("jQueryMap"));
     return "study";
   }
 
@@ -459,7 +448,6 @@ public class StudyController extends SuperController {
       sForm.setHiddenVar(-1);
     }
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
   }
 
@@ -483,7 +471,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().getContributors().remove(sForm.getDelPos());
     }
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
   }
 
@@ -505,7 +492,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setSoftware(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getSoftware().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
   }
 
@@ -527,7 +513,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setPubOnData(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getPubOnData().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
   }
 
@@ -549,7 +534,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setConflInterests(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getConflInterests().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYGENERAL);
     return "study";
   }
 
@@ -571,7 +555,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setObjectives(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getObjectives().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
 
@@ -593,7 +576,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setRelTheorys(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getRelTheorys().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
 
@@ -615,7 +597,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setInterArms(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getInterArms().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
 
@@ -637,7 +618,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setMeasOcc(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getMeasOcc().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
 
@@ -659,7 +639,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setConstructs(new ArrayList<StudyConstructDTO>());
     sForm.getStudy().getConstructs().add((StudyConstructDTO) applicationContext.getBean("StudyConstructDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
 
@@ -681,7 +660,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setInstruments(new ArrayList<StudyInstrumentDTO>());
     sForm.getStudy().getInstruments().add((StudyInstrumentDTO) applicationContext.getBean("StudyInstrumentDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYDESIGN);
     return "study";
   }
 
@@ -703,7 +681,6 @@ public class StudyController extends SuperController {
       sForm.getStudy().setEligibilities(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getEligibilities().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
-    model.put("jQueryMap", PageState.STUDYSAMPLE);
     return "study";
   }
 

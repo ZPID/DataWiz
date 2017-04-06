@@ -12,7 +12,14 @@
   <!-- study.responsibility -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.responsibility"><s:message code="study.responsibility" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.responsibility"><s:message code="study.responsibility" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.responsibility" class="form-control" id="selectResponsibility"
         onchange="switchViewIfSelected('selectResponsibility', 'OTHER');">
         <sf:option value="">
@@ -36,7 +43,14 @@
   </div>
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label" for="study.collStart"><s:message code="study.collTime" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label" for="study.collStart"><s:message code="study.collTime" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <div class="row input-daterange" id="datepicker">
         <!-- study.collStart -->
         <div class="col-sm-6">
@@ -60,7 +74,15 @@
   <!-- study.collMode -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label" for="study.usedCollectionModes"><s:message code="study.usedCollectionModes" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label" for="study.usedCollectionModes"><s:message
+              code="study.usedCollectionModes" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <div class="col-sm-6">
           <sf:label path="study.usedCollectionModes">
@@ -123,7 +145,14 @@
   <!-- study.sampMethod-->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.sampMethod"><s:message code="study.sampMethod" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.sampMethod"><s:message code="study.sampMethod" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.sampMethod" class="form-control" id="selectSampMethod"
         onchange="switchViewIfSelected('selectSampMethod', 'OTHER');">
         <sf:option value="">
@@ -160,15 +189,21 @@
       <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
-  <!-- study.sampMethodOther -->
+  <!-- study.recruiting -->
   <c:set var="input_vars" value="study.recruiting;study.recruiting; ; ;row; ; ;" />
+  <c:set var="valimages" value="${valimag1};${valimag2}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.sourFormat-->
   <div class="form-group">
     <div class="col-sm-12">
-      <sf:label path="study.usedSourFormat">
-        <s:message code="study.usedSourFormat" />
-      </sf:label>
+      <div class="row">
+        <div class="col-sm-11">
+          <sf:label path="study.usedSourFormat"><s:message code="study.usedSourFormat" /></sf:label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body">
         <c:forEach items="${StudyForm.sourFormat}" var="dtype">
           <c:choose>
@@ -196,7 +231,15 @@
   <!-- study.sourTrans -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.sourTrans"><s:message code="study.sourTrans" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.sourTrans"><s:message code="study.sourTrans" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.sourTrans" class="form-control" id="selectSourTrans"
         onchange="switchViewIfSelected('selectSourTrans', 'COMPLEX');">
         <sf:option value="">
@@ -220,14 +263,18 @@
   </div>
   <!-- study.specCirc -->
   <c:set var="input_vars" value="study.specCirc;study.specCirc; ; ;row; ; ;" />
+  <c:set var="valimages" value="${valimag1};${valimag2}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.transDescr -->
   <c:set var="input_vars" value="study.transDescr;study.transDescr; ; ;row; ; ;" />
+  <c:set var="valimages" value="${valimag1}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.qualInd-->
   <c:set var="input_vars" value="study.qualInd;study.qualInd; ; ;row; ; ;" />
+  <c:set var="valimages" value="${valimag1}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.qualLim -->
   <c:set var="input_vars" value="study.qualLim;study.qualLim; ; ;row; ; ;" />
+  <c:set var="valimages" value="${valimag1}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
 </div>

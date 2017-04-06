@@ -361,7 +361,15 @@
   <!-- study.constructs -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.constructs"><s:message code="study.constructs" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.constructs"><s:message code="study.constructs" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <input type="hidden" value="${StudyForm.study.constructs.size()}" id="constructSize" />
         <c:forEach items="${StudyForm.study.constructs}" varStatus="loop">

@@ -31,6 +31,7 @@ public class StudyForm implements Serializable {
   private int delPos;
   private int scrollPosition;
   private String fileType;
+  private String jQueryMap;
 
   private String selectedFileType;
   private MultipartFile spssFile;
@@ -282,6 +283,14 @@ public class StudyForm implements Serializable {
 
   public void setDelVars(List<SPSSVarDTO> delVars) {
     this.delVars = delVars;
+  }
+
+  public String getjQueryMap() {
+    return jQueryMap;
+  }
+
+  public void setjQueryMap(String jQueryMap) {
+    this.jQueryMap = jQueryMap;
   }
 
 }

@@ -67,7 +67,14 @@
   <!-- study.persDataColl -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.persDataColl"><s:message code="study.persDataColl" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.persDataColl"><s:message code="study.persDataColl" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.persDataColl" class="form-control" id="selectPersDataColl"
         onchange="switchViewIfSelected('selectPersDataColl', 1);">
         <sf:option value="0">
@@ -85,7 +92,14 @@
     <!-- study.persDataPres -->
     <div class="form-group">
       <div class="col-sm-12">
-        <label class="control-label " for="study.persDataPres"><s:message code="study.persDataPres" /></label>
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.persDataPres"><s:message code="study.persDataPres" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+          </div>
+        </div>
         <sf:select path="study.persDataPres" class="form-control" id="selectPersDataPres"
           onchange="switchViewIfSelected('selectPersDataPres', 'ANONYMOUS');">
           <sf:option value="">
@@ -105,13 +119,21 @@
     <div id="contentPersDataPres">
       <!-- study.anonymProc -->
       <c:set var="input_vars" value="study.anonymProc;study.anonymProc; ; ;row; ; ;" />
+      <c:set var="valimages" value="${valimag1}" />
       <%@ include file="../templates/gen_textarea.jsp"%>
     </div>
   </div>
   <!-- study.copyright -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.copyright"><s:message code="study.copyright" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.copyright"><s:message code="study.copyright" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.copyright" class="form-control" id="selectCopyright"
         onchange="switchViewIfSelected('selectCopyright', 1);">
         <sf:option value="0">
@@ -128,6 +150,7 @@
   <div id="contentCopyright">
     <!-- study.copyrightHolder -->
     <c:set var="input_vars" value="study.copyrightHolder;study.copyrightHolder; ; ;row; ; ;" />
+    <c:set var="valimages" value="${valimag1}" />
     <%@ include file="../templates/gen_textarea.jsp"%>
   </div>
   <!-- study.thirdParty -->
