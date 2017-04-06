@@ -1,7 +1,7 @@
 <%@ include file="templates/header.jsp"%>
 <%@ include file="templates/navbar.jsp"%>
-<c:set var="valimag1" value="zpid.png" scope="session"/>
-<c:set var="valimag2" value="check-mark-20px.png" scope="session"/>
+<c:set var="valimag1" value="zpid.png" scope="session" />
+<c:set var="valimag2" value="check-mark-20px.png" scope="session" />
 <div id="mainWrapper">
   <div class="content-container">
     <%@ include file="templates/breadcrump.jsp"%>
@@ -19,22 +19,22 @@
           </c:when>
           <c:otherwise>
             <div class="row">
-              <div class="col-sm-11">
-                <h4>
-                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
-                </h4>
-              </div>
-              <div class="col-sm-1">
+              <div class="col-sm-12 text-align-right">
                 <c:url var="accessUrl"
                   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                 <c:choose>
                   <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
-                    <a href="${accessUrl}" class="btn btn-success">Checkin</a>
+                    <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
                   </c:when>
                   <c:otherwise>
-                    <a href="${accessUrl}" class="btn btn-warn">CheckOut</a>
+                    <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
                   </c:otherwise>
                 </c:choose>
+              </div>
+              <div class="col-sm-12">
+                <h4>
+                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
+                </h4>
               </div>
             </div>
             <div>
@@ -69,7 +69,7 @@
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
         <!-- START General Data Content -->
-        <jsp:include page="forms/study_general.jsp" />          
+        <jsp:include page="forms/study_general.jsp" />
         <!-- START Design Data Content -->
         <jsp:include page="forms/study_design.jsp" />
         <!-- START Sample Characteristics Content -->
@@ -81,12 +81,15 @@
         <!-- START Ethical Content -->
         <jsp:include page="forms/study_ethical.jsp" />
         <!-- Buttons -->
-        <div class="form-group">
-          <div class="col-sm-offset-0 col-md-12">
-            <button type="reset" class="btn btn-default">
+        <hr />
+        <div class="row">
+          <div class="col-md-6 text-align-left">
+            <button type="reset" class="btn btn-default btn-sm">
               <s:message code="gen.reset" />
             </button>
-            <sf:button type="submit" class="btn btn-success">
+          </div>
+          <div class="col-md-6 text-align-right">
+            <sf:button type="submit" class="btn btn-success btn-sm">
               <s:message code="gen.submit" />
             </sf:button>
           </div>

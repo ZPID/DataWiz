@@ -44,10 +44,12 @@
             </div>
           </div>
         </c:forEach>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addObjectives" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addObjectives" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.objectives.help" var="appresmess" />
@@ -69,10 +71,12 @@
         <c:forEach items="${StudyForm.study.relTheorys}" varStatus="loop">
           <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addRelTheorys" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addRelTheorys" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.relTheorys.help" var="appresmess" />
@@ -286,34 +290,38 @@
         </div>
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
-        <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th class="col-sm-10"><s:message code="study.measOcc.time" /></th>
-                <th class="col-sm-1 contentExperimentalIntervention"><s:message code="study.measOcc.dim" /></th>
-                <th class="col-sm-1"><s:message code="study.measOcc.sort" /></th>
-              </tr>
-            </thead>
-            <tbody>
-              <c:forEach items="${StudyForm.study.measOcc}" varStatus="loop">
+        <c:if test="${not empty StudyForm.study.measOcc}">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
                 <tr>
-                  <td><sf:textarea rows="1" path="study.measOcc[${loop.index}].text" class="form-control" /></td>
-                  <td style="text-align: center;" class="contentExperimentalIntervention">
-                    <div class="checkbox form-group-clean">
-                      <label><sf:checkbox path="study.measOcc[${loop.index}].timetable" /></label>
-                    </div>
-                  </td>
-                  <td><sf:input path="study.measOcc[${loop.index}].sort" class="form-control" /></td>
+                  <th class="col-sm-10"><s:message code="study.measOcc.time" /></th>
+                  <th class="col-sm-1 contentExperimentalIntervention"><s:message code="study.measOcc.dim" /></th>
+                  <th class="col-sm-1"><s:message code="study.measOcc.sort" /></th>
                 </tr>
-              </c:forEach>
-            </tbody>
-          </table>
-        </div>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addMeasOccName" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+              </thead>
+              <tbody>
+                <c:forEach items="${StudyForm.study.measOcc}" varStatus="loop">
+                  <tr>
+                    <td><sf:textarea rows="1" path="study.measOcc[${loop.index}].text" class="form-control" /></td>
+                    <td style="text-align: center;" class="contentExperimentalIntervention">
+                      <div class="checkbox form-group-clean">
+                        <label><sf:checkbox path="study.measOcc[${loop.index}].timetable" /></label>
+                      </div>
+                    </td>
+                    <td><sf:input path="study.measOcc[${loop.index}].sort" class="form-control" /></td>
+                  </tr>
+                </c:forEach>
+              </tbody>
+            </table>
+          </div>
+        </c:if>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addMeasOccName" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.measOcc.help" var="appresmess" />
@@ -323,7 +331,15 @@
   <!-- study.surveyType -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <sf:select path="study.surveyType" class="form-control">
         <sf:option value="">
           <s:message code="gen.select" />
@@ -398,10 +414,12 @@
             </div>
           </div>
         </c:forEach>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addConstruct" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addConstruct" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.constructs.help" var="appresmess" />
@@ -411,7 +429,15 @@
   <!-- study.instrument -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="control-label " for="study.instruments"><s:message code="study.instruments" /></label>
+      <div class="row">
+        <div class="col-sm-11">
+          <label class="control-label " for="study.instruments"><s:message code="study.instruments" /></label>
+        </div>
+        <div class="col-sm-1 text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <div class="panel-group" id="accordion">
           <c:forEach items="${StudyForm.study.instruments}" var="form" varStatus="loop">
@@ -483,10 +509,12 @@
             </div>
           </c:forEach>
         </div>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addInstrument" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addInstrument" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
     </div>

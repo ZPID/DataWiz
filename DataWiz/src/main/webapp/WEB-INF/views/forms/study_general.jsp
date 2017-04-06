@@ -144,10 +144,12 @@
         <c:forEach items="${StudyForm.study.software}" varStatus="loop">
           <sf:textarea rows="1" path="study.software[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addSoftware" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addSoftware" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.software.help" var="appresmess" />
@@ -169,10 +171,12 @@
         <c:forEach items="${StudyForm.study.pubOnData}" varStatus="loop">
           <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addPubOnData" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addPubOnData" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.pubOnData.help" var="appresmess" />
@@ -187,10 +191,12 @@
         <c:forEach items="${StudyForm.study.conflInterests}" varStatus="loop">
           <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text" class="form-control margin-bottom-10" />
         </c:forEach>
-        <div class="input-group-btn">
-          <sf:button class="btn btn-sm btn-success" name="addConflInterests" onclick="setScrollPosition();">
-            <s:message code="gen.add" />
-          </sf:button>
+        <div class="row text-align-right">
+          <div class="col-sm-12">
+            <sf:button class="btn btn-sm btn-success" name="addConflInterests" onclick="setScrollPosition();">
+              <s:message code="gen.add" />
+            </sf:button>
+          </div>
         </div>
       </div>
       <s:message code="study.conflInterests.help" var="appresmess" />

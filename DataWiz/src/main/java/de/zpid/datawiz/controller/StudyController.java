@@ -60,6 +60,11 @@ public class StudyController extends SuperController {
     log.info("Loading StudyController for mapping /study");
   }
 
+  @ModelAttribute("StudyForm")
+  protected StudyForm createStudyForm() {
+    return (StudyForm) applicationContext.getBean("StudyForm");
+  }
+
   /**
    * 
    * @param pid

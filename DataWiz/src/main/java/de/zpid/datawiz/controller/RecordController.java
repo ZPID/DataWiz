@@ -622,9 +622,9 @@ public class RecordController {
             });
             model.put("errorMSG", sb.toString());
           }
-          model.put("subnaviActive", PageState.RECORDVAR.name());
-          model.put("recordSubMenu", true);
         }
+        model.put("subnaviActive", PageState.RECORDVAR.name());
+        model.put("recordSubMenu", true);
         ret = "codebook";
       } catch (ClassNotFoundException | IOException e) {
         // TODO Auto-generated catch block

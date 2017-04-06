@@ -26,12 +26,18 @@
       <ul class="nav navbar-nav navbar-right">
         <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
             <c:when test="${localeCode eq 'de'}">
-              <a href="<c:url value="?datawiz_locale=en" />"><img alt=""
-                src="<c:url value="/static/images/de.png" />"></a>
+              <div>
+                <a href="<c:url value="?datawiz_locale=de" />"><img alt="" style="border: solid 1px red;"
+                  src="<c:url value="/static/images/de.png" />"></a> <a href="<c:url value="?datawiz_locale=en" />"><img
+                  alt="" src="<c:url value="/static/images/gb.png" />"></a>
+              </div>
             </c:when>
             <c:when test="${localeCode eq 'en'}">
-              <a href="<c:url value="?datawiz_locale=de" />"><img alt=""
-                src="<c:url value="/static/images/gb.png" />"></a>
+              <div>
+                <a href="<c:url value="?datawiz_locale=de" />"><img alt=""
+                  src="<c:url value="/static/images/de.png" />"></a> <a href="<c:url value="?datawiz_locale=en" />"><img
+                  alt="" style="border: solid 1px red;" src="<c:url value="/static/images/gb.png" />"></a>
+              </div>
             </c:when>
           </c:choose></li>
         <sec:authorize access="isAuthenticated()">

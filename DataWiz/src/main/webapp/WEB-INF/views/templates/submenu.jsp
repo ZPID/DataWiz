@@ -1,22 +1,22 @@
 <c:if test="${!hideMenu}">
   <c:choose>
     <c:when test="${studySubMenu}">
-      <ul class="nav nav-tabs nav-justified">
-        <li role="presentation" class="<c:out value="${subnaviActive eq 'STUDY' ? 'active' : ''}" /> "><a
-          href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" /> "><s:message
-              code="submenu.studydoc" /></a></li>
-        <c:if test="${not empty StudyForm.project.id}">
+      <c:if test="${not empty StudyForm.study.id && StudyForm.study.id > 0}">
+        <ul class="nav nav-tabs nav-justified">
+          <li role="presentation" class="<c:out value="${subnaviActive eq 'STUDY' ? 'active' : ''}" /> "><a
+            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" /> "><s:message
+                code="submenu.studydoc" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDS' ? 'active' : ''}" /> "><a
             href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" /> "><s:message
                 code="submenu.record" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'STUDMATERIAL' ? 'active' : ''}" /> "><a
             href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/material" /> "><s:message
                 code="submenu.studymaterial" /></a></li>
-        </c:if>
-      </ul>
+        </ul>
+      </c:if>
     </c:when>
     <c:when test="${recordSubMenu}">
-      <c:if test="${not empty StudyForm.record && not empty StudyForm.record.id}">
+      <c:if test="${not empty StudyForm.record && not empty StudyForm.record.id && StudyForm.record.id>0}">
         <ul class="nav nav-tabs nav-justified">
           <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDMETA' ? 'active' : ''}" /> "><a
             href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}" /> "><s:message

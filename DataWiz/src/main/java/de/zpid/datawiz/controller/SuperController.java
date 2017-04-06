@@ -24,7 +24,6 @@ import de.zpid.datawiz.dao.StudyListTypesDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.MinioUtil;
@@ -79,10 +78,7 @@ public class SuperController {
     return (ProjectForm) applicationContext.getBean("ProjectForm");
   }
 
-  @ModelAttribute("StudyForm")
-  protected StudyForm createStudyForm() {
-    return (StudyForm) applicationContext.getBean("StudyForm");
-  }
+  
 
   @ModelAttribute("UserDTO")
   protected UserDTO createUserDTO() {

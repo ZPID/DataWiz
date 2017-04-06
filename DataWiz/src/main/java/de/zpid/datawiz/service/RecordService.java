@@ -350,10 +350,13 @@ public class RecordService {
         int i = 0;
         for (SPSSVarDTO var : currentVersion.getVariables()) {
           long varId = var.getId();
-          SPSSVarDTO dbvar = lastVersion.getVariables().get(i++);
-          dbvar.setId(0);
-          var.setId(0);
-          if (var.equals(dbvar)) {
+          SPSSVarDTO dbvar = null;
+          if (lastVersion != null && lastVersion.getVariables() != null && lastVersion.getVariables().size() > i) {
+            dbvar = lastVersion.getVariables().get(i++);
+            dbvar.setId(0);
+            var.setId(0);
+          }
+          if (dbvar != null && var.equals(dbvar)) {
             recordDAO.insertVariableVersionRelation(varId, currentVersion.getVersionId(), var.getPosition(),
                 messageSource.getMessage("import.check.EQUAL", null, LocaleContextHolder.getLocale()));
           } else {
@@ -737,7 +740,8 @@ public class RecordService {
           txManager.commit(status);
         }
       } catch (Exception e) {
-        txManager.rollback(status);
+        if (!error)
+          txManager.rollback(status);
         if (file.getFilePath() != null && !file.getFilePath().isEmpty())
           minioUtil.deleteFile(file);
         throw new DataWizSystemException("saveRecordToDBAndMinio to DB wasn't sucessful!",
