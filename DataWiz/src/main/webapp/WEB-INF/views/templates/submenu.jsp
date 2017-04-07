@@ -9,7 +9,7 @@
           <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDS' ? 'active' : ''}" /> "><a
             href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" /> "><s:message
                 code="submenu.record" /></a></li>
-          <li role="presentation" class="<c:out value="${subnaviActive eq 'STUDMATERIAL' ? 'active' : ''}" /> "><a
+          <li role="presentation" class="<c:out value="${subnaviActive eq 'MATERIAL' ? 'active' : ''}" /> "><a
             href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/material" /> "><s:message
                 code="submenu.studymaterial" /></a></li>
         </ul>

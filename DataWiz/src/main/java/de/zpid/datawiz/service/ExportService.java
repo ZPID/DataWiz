@@ -1,5 +1,7 @@
 package de.zpid.datawiz.service;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -273,7 +275,10 @@ public class ExportService {
       }
       varcount = 1;
       for (Object obj : row) {
-        csv.append(obj);
+        if (obj instanceof Number)
+          csv.append(obj);
+        else
+          csv.append("\"" + ((String) obj).replaceAll("\"", "\'") + "\"");
         if (vars > varcount++)
           csv.append(",");
       }

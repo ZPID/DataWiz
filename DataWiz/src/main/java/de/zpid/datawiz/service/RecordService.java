@@ -47,7 +47,6 @@ import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.RegexUtil;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
-import de.zpid.spss.util.SPSSErrors;
 import de.zpid.spss.util.SPSSMeasLevel;
 import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSMonths;

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -47,6 +49,9 @@ import de.zpid.datawiz.util.UserUtil;
 @RequestMapping(value = "/project")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
 public class ProjectController extends SuperController {
+
+  @Autowired
+  StudyService studyService;
 
   private static Logger log = LogManager.getLogger(ProjectController.class);
 
@@ -153,44 +158,69 @@ public class ProjectController extends SuperController {
     return "studies";
   }
 
-  @RequestMapping(value = { "/{pid}/material" }, method = RequestMethod.GET)
-  public String showMaterialPage(@PathVariable Optional<Long> pid, ModelMap model,
+  @RequestMapping(value = { "/{pid}/material", "/{pid}/study/{studyId}/material" }, method = RequestMethod.GET)
+  public String showMaterialPage(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model,
       RedirectAttributes redirectAttributes) {
     log.debug("execute showMaterialPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
     UserDTO user = UserUtil.getCurrentUser();
+    String ret = null;
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
-      return "redirect:/login";
+      ret = "redirect:/login";
+    } else {
+      if (!pid.isPresent()) {
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
+        ret = "redirect:/panel";
+      }
+      if (studyId.isPresent())
+        ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+      // TODO PROJEKT ZUGRIFF SCHREIBRECHTE
     }
     ProjectForm pForm = createProjectForm();
-    if (!pid.isPresent()) {
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
-      return "redirect:/panel";
-    }
-    try {
-      Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
-      projectService.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
-    } catch (Exception e) {
-      // TODO
-      log.warn(e.getMessage());
-      String redirectMessage = "";
-      if (e instanceof DataWizException) {
-        redirectMessage = "project.not.available";
-      } else if (e instanceof DataWizSecurityException) {
-        redirectMessage = "project.access.denied";
+
+    if (ret == null) {
+      ret = "material";
+      if (!studyId.isPresent()) {
+        try {
+          Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
+          projectService.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
+        } catch (Exception e) {
+          // TODO
+          log.warn(e.getMessage());
+          String redirectMessage = "";
+          if (e instanceof DataWizException) {
+            redirectMessage = "project.not.available";
+          } else if (e instanceof DataWizSecurityException) {
+            redirectMessage = "project.access.denied";
+          } else {
+            redirectMessage = "dbs.sql.exception";
+          }
+          redirectAttributes.addFlashAttribute("errorMSG",
+              messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+          ret = "redirect:/panel";
+        }
+        model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
+            new String[] { pForm.getProject().getTitle() }, null, messageSource));
+        model.put("subnaviActive", PageState.MATERIAL.name());
+        model.put("ProjectForm", pForm);
+        model.put("projectId", pid.get());
+        model.put("studyId", -1);
       } else {
-        redirectMessage = "dbs.sql.exception";
+        try {
+          pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        model.put("studyId", studyId.get());
+        model.put("projectId", pid.get());
+        model.put("ProjectForm", pForm);
+        model.put("studySubMenu", true);
+        model.put("subnaviActive", PageState.MATERIAL.name());
       }
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
-      return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
-        new String[] { pForm.getProject().getTitle() }, null, messageSource));
-    model.put("subnaviActive", PageState.MATERIAL.name());
-    model.put("ProjectForm", pForm);
-    return "material";
+    return ret;
   }
 
   /**
@@ -272,19 +302,22 @@ public class ProjectController extends SuperController {
    * @param pForm
    * @return
    */
-  @RequestMapping(value = { "/{pid}/upload" }, method = RequestMethod.POST)
+  @RequestMapping(value = { "/{pid}/upload", "/{pid}/study/{studyId}/upload" }, method = RequestMethod.POST)
   public @ResponseBody ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
-      @ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable long pid) {
+      @ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable Optional<Long> pid,
+      @PathVariable Optional<Long> studyId) {
     log.trace("Entering uploadFile for Project [id: {}]", () -> pid);
-    if (pForm == null || pForm.getProject() == null || pForm.getProject().getId() <= 0) {
+    if (!pid.isPresent()) {
       log.warn("ProjectForm is empty or missing values");
-      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+      // TOTO ERROR STRINGS!!!!
+      return new ResponseEntity<String>("{\"error\" : \"12\"}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
       return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    // TODO LESESCHREIBRECHTE!!!!!!
     try {
       Iterator<String> itr = request.getFileNames();
       while (itr.hasNext()) {
@@ -292,7 +325,8 @@ public class ProjectController extends SuperController {
         log.debug("Saving file [name: {}]", () -> filename);
         final MultipartFile mpf = request.getFile(filename);
         if (mpf != null) {
-          FileDTO file = fileUtil.buildFileDTO(pid, 0, 0, 0, user.getId(), mpf);
+          FileDTO file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(),
+              mpf);
           // String filePath = fileUtil.saveFile(file);
           MinioResult res = minioUtil.putFile(file);
           if (res.equals(MinioResult.OK)) {
@@ -324,16 +358,22 @@ public class ProjectController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = { "/{pid}/multisaved" })
-  public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+  @RequestMapping(value = { "/{pid}/multisaved", "/{pid}/study/{studyId}/multisaved" })
+  public String multiSaved(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId,
       RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
       log.debug("execute multiSaved()");
     }
-    redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
-    redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
-    redirectAttributes.addFlashAttribute("jQueryMap", "material");
-    return "redirect:/project/" + pForm.getProject().getId() + "/material";
+    if (studyId.isPresent()) {
+      redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
+      redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
+      return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/material";
+    } else {
+      redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
+      redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
+      redirectAttributes.addFlashAttribute("jQueryMap", "material");
+      return "redirect:/project/" + pid.get() + "/material";
+    }
   }
 
   /**
@@ -416,7 +456,7 @@ public class ProjectController extends SuperController {
    * @param imgId
    * @param response
    */
-  @RequestMapping(value = { "/{pid}/img/{imgId}" }, method = RequestMethod.GET)
+  @RequestMapping(value = { "/{pid}/img/{imgId}", "/{pid}/study/{studyId}/img/{imgId}" }, method = RequestMethod.GET)
   private void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
     FileDTO file;
     final int thumbHeight = 98;
@@ -439,6 +479,7 @@ public class ProjectController extends SuperController {
         }
       }
     } catch (Exception e) {
+      //TODO !!!!
       e.printStackTrace();
     }
   }

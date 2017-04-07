@@ -52,6 +52,24 @@ public class FileDAO extends SuperDAO {
    * @return
    * @throws Exception
    */
+  public List<FileDTO> findStudyMaterialFiles(long pid, long studyId) throws Exception {
+    if (log.isDebugEnabled())
+      log.trace("execute findStudyMaterialFiles for project [id: {}] study[id: {}]", () -> pid, () -> studyId);
+    String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id = ? "
+        + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
+    return jdbcTemplate.query(sql, new Object[] { pid, studyId }, new RowMapper<FileDTO>() {
+      public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return setFileDTO(rs);
+      }
+    });
+  }
+
+  /**
+   * 
+   * @param project
+   * @return
+   * @throws Exception
+   */
   public List<FileDTO> findStudyMaterialFiles(final StudyDTO study) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute findStudyFiles for study [id: " + study.getId() + " name: " + study.getTitle() + "]");
