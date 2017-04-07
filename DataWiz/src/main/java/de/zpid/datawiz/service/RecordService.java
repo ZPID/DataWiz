@@ -47,6 +47,7 @@ import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.RegexUtil;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
+import de.zpid.spss.util.SPSSErrors;
 import de.zpid.spss.util.SPSSMeasLevel;
 import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSMonths;
@@ -684,12 +685,14 @@ public class RecordService {
    * 
    * @param sForm
    *          StudyForm, which contains the Record
+   * @throws Exception
    * 
    */
-  public void saveRecordToDBAndMinio(StudyForm sForm) throws DataWizSystemException {
-    Boolean error = false;
+  public void saveRecordToDBAndMinio(StudyForm sForm) throws Exception {
     RecordDTO spssFile = sForm.getRecord();
     FileDTO file = sForm.getFile();
+    DataWizErrorCodes errcode = null;
+    MinioResult res;
     if (spssFile != null && file != null) {
       TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
       try {
@@ -721,31 +724,22 @@ public class RecordService {
             position++;
           }
           file.setVersion(spssFile.getVersionId());
-          MinioResult res = minioUtil.putFile(file);
+          res = minioUtil.putFile(file);
           if (res.equals(MinioResult.OK)) {
             fileDAO.saveFile(file);
           } else if (res.equals(MinioResult.CONNECTION_ERROR)) {
             log.error("FATAL: No Connection to Minio Server - please check Settings or Server");
-            error = true;
-          } else {
-            log.error("ERROR: During Saving File - MinioResult:", () -> res.name());
-            error = true;
+            errcode = DataWizErrorCodes.MINIO_SAVE_ERROR;
+            throw new DataWizSystemException("Minio returns an error MinioResult: " + res.name(),
+                DataWizErrorCodes.MINIO_SAVE_ERROR);
           }
-        }
-        if (error) {
-          txManager.rollback(status);
-          throw new DataWizSystemException("saveRecordToDBAndMinio wasn't sucessful!",
-              DataWizErrorCodes.RECORD_SAVE_ERROR);
-        } else {
           txManager.commit(status);
         }
       } catch (Exception e) {
-        if (!error)
-          txManager.rollback(status);
+        txManager.rollback(status);
         if (file.getFilePath() != null && !file.getFilePath().isEmpty())
           minioUtil.deleteFile(file);
-        throw new DataWizSystemException("saveRecordToDBAndMinio to DB wasn't sucessful!",
-            DataWizErrorCodes.DATABASE_ERROR, e);
+        throw (e);
       }
     } else {
       throw new DataWizSystemException(

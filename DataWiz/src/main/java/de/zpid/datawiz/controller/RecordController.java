@@ -271,11 +271,17 @@ public class RecordController {
       try {
         recordService.sortVariablesAndSetMetaData(sForm);
         recordService.saveRecordToDBAndMinio(sForm);
-      } catch (DataWizSystemException e) {
-        if (e.getErrorCode().equals(DataWizErrorCodes.NO_DATA_ERROR))
-          redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("global.error.internal",
-              new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
-        else {
+      } catch (Exception e) {
+        if (e instanceof DataWizSystemException) {
+          if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.NO_DATA_ERROR))
+            redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("global.error.internal",
+                new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+          else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.MINIO_SAVE_ERROR))
+            redirectAttributes.addFlashAttribute("errorMSG",
+                messageSource.getMessage("minio.connection.exception",
+                    new Object[] { env.getRequiredProperty("organisation.admin.email"), e.getMessage() },
+                    LocaleContextHolder.getLocale()));
+        } else {
           redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
               new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
         }
