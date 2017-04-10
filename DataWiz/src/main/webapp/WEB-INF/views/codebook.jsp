@@ -108,8 +108,8 @@
                         <td class="th-width-30">&nbsp;&nbsp;&nbsp;</td>
                         <c:forEach items="${StudyForm.record.attributes}" var="val" varStatus="attnameloop">
                           <td class="th-width-100"><c:forEach items="${var.attributes}" var="att">
-                              <c:if test="${fn:substringAfter(val.value, '@') == att.label}">
-                                <s:message text="${att.value}" />
+                              <c:if test="${fn:startsWith(att.label, fn:substringAfter(val.value, '@'))}">
+                                <s:message text="${att.value}" /><br />
                               </c:if>
                             </c:forEach></td>
                         </c:forEach>

@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +43,7 @@ import de.zpid.datawiz.util.DateUtil;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.ObjectCloner;
+import de.zpid.datawiz.util.RegexUtil;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSFileDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -89,7 +91,7 @@ public class ImportService {
     List<String> errors = new ArrayList<>();
     if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
         && sForm.getSpssFile().getSize() > 0) {
-      error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors);
+      error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors, warnings);
     } else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV")
         && sForm.getCsvFile() != null && sForm.getCsvFile().getSize() > 0) {
       error = validateCSVFile(pid, studyId, recordId, sForm, user, warnings, errors);
@@ -111,11 +113,19 @@ public class ImportService {
   public void loadImportReport(final Optional<Long> recordId, StudyForm sForm) throws Exception {
     RecordDTO lastVersion = recordDAO.findRecordWithID(recordId.get(), 0);
     List<SPSSVarDTO> vars = recordDAO.findVariablesByVersionID(lastVersion.getVersionId());
-    for (SPSSVarDTO var : vars) {
-      var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
-      var.setValues(recordDAO.findVariableValues(var.getId(), false));
-      sortVariableAttributes(var);
+    for (SPSSVarDTO newVar : vars) {
+      newVar.setAttributes(recordDAO.findVariableAttributes(newVar.getId(), false));
+      newVar.setValues(recordDAO.findVariableValues(newVar.getId(), false));
+      sortVariableAttributes(newVar);
     }
+    sForm.getRecord().getVariables().parallelStream().forEach(var -> {
+      if (sortVariableAttributes(var)) {
+        if (sForm.getWarnings() == null) {
+          sForm.setWarnings(new ArrayList<String>());
+        }
+        sForm.getWarnings().add("Fehler bei den DW Attributen, bitte überprüfen!!!!");
+      }
+    });
     lastVersion.setVariables(vars);
     sForm.setPreviousRecordVersion(lastVersion);
     compareVarVersion(sForm);
@@ -566,7 +576,7 @@ public class ImportService {
    * @return
    */
   public Boolean validateSPSSFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
-      StudyForm sForm, final UserDTO user, List<String> errors) {
+      StudyForm sForm, final UserDTO user, final List<String> errors, final List<String> warnings) {
     FileDTO file = null;
     Boolean error = false;
     try {
@@ -602,11 +612,8 @@ public class ImportService {
         spssFile.setId(recordId.get());
         spssFile.setChangedBy(user.getEmail());
         spssFile.setChangeLog(sForm.getNewChangeLog());
-        spssFile.getVariables().forEach(var -> {
-          sortVariableAttributes(var);
-        });
         sForm.setRecord(spssFile);
-        sForm.setFile(file);        
+        sForm.setFile(file);
       }
     } else {
       log.warn("Error: Not FilePath was set - Temporary File was not saved to local Filesystem");
@@ -616,13 +623,17 @@ public class ImportService {
     return error;
   }
 
-  public void sortVariableAttributes(SPSSVarDTO var) {
+  public boolean sortVariableAttributes(SPSSVarDTO var) {
     boolean dw_construct = false, dw_measocc = false, dw_instrument = false, dw_itemtext = false, dw_filtervar = false;
     Iterator<SPSSValueLabelDTO> itt = var.getAttributes().iterator();
     List<SPSSValueLabelDTO> dw_attr = new ArrayList<>();
+    boolean ret = false;
     while (itt.hasNext()) {
       SPSSValueLabelDTO att = itt.next();
-      if (att.getLabel().equals("dw_construct")) {
+      if (Pattern.compile(RegexUtil.VAR_ARRAY_ATTR).matcher(att.getLabel()).find()) {
+        ret = true;
+        itt.remove();
+      } else if (att.getLabel().equals("dw_construct")) {
         dw_attr.add(att);
         dw_construct = true;
         itt.remove();
@@ -639,6 +650,10 @@ public class ImportService {
         dw_itemtext = true;
         itt.remove();
       } else if (att.getLabel().equals("dw_filtervar")) {
+        if (!att.getValue().equals("0") && !att.getValue().equals("1")) {
+          att.setValue("");
+          ret = true;
+        }
         dw_attr.add(att);
         dw_filtervar = true;
         itt.remove();
@@ -660,6 +675,7 @@ public class ImportService {
       dw_attr.add(new SPSSValueLabelDTO("dw_filtervar", ""));
     }
     var.setDw_attributes(dw_attr);
+    return ret;
   }
 
   /**
@@ -741,8 +757,9 @@ public class ImportService {
     }
     int listDiff = vars.size() - sForm.getRecord().getVariables().size();
     // TODO
-    if (listDiff != 0 && sForm.getWarnings().stream()
+    if (listDiff != 0 && sForm.getWarnings().parallelStream()
         .filter(match -> "Variablenanzahl geändert hinzugefügt".trim().equals(match)).count() == 0) {
+      // TODO TEXTE
       sForm.getWarnings().add("Variablenanzahl geändert hinzugefügt".trim());
     }
     int position = 0;

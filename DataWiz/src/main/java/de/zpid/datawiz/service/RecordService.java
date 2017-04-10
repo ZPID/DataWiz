@@ -395,9 +395,11 @@ public class RecordService {
    */
   public String validateCodeBook(StudyForm sForm) {
     List<String> parsingErrors = new ArrayList<>();
+    List<String> parsingWarnings = new ArrayList<>();
     StringBuilder sb = new StringBuilder();
     try {
-      validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, null, true);
+      validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, parsingWarnings, null, true);
+      sForm.setWarnings(parsingWarnings);
     } catch (DataWizSystemException e) {
       log.debug("Parsing Exception during saveCodebook - Code{}; Message: {}", () -> e.getErrorCode(),
           () -> e.getMessage());
@@ -417,7 +419,8 @@ public class RecordService {
    * @throws DataWizSystemException
    */
   public void validateAndPrepareCodebookForm(final RecordDTO currentVersion, final List<String> parsingErrors,
-      final String changelog, final boolean onlyValidation) throws DataWizSystemException {
+      final List<String> parsingWarnings, final String changelog, final boolean onlyValidation)
+      throws DataWizSystemException {
     boolean missingChangelog = false;
     if (!onlyValidation) {
       if (changelog == null || changelog.trim().isEmpty()) {
@@ -449,6 +452,10 @@ public class RecordService {
             parsingErrors.add(messageSource.getMessage("record.label.too.long",
                 new Object[] { var.getPosition(), var.getName(), VAR_LABEL_MAX_LENGTH },
                 LocaleContextHolder.getLocale()));
+          }
+          if (var.getDecimals() > 16) {
+            parsingWarnings.add(messageSource.getMessage("record.decimals.too.long",
+                new Object[] { var.getPosition(), var.getName(), 16 }, LocaleContextHolder.getLocale()));
           }
           for (SPSSValueLabelDTO val : var.getValues()) {
             validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0);

@@ -141,10 +141,16 @@ public class RecordController {
       model.put("recordSubMenu", true);
       if (subpage.isPresent() && subpage.get().equals("codebook")) {
         model.put("subnaviActive", PageState.RECORDVAR.name());
-        StringBuilder sb = new StringBuilder();
-        sb.append(recordService.validateCodeBook(sForm));
-        model.put("errorMSG", sb.toString());
+        model.put("errorMSG", recordService.validateCodeBook(sForm));
         ret = "codebook";
+        if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
+          StringBuilder sb = new StringBuilder();
+          sForm.getWarnings().forEach(s -> {
+            sb.append(s);
+            sb.append("<br />");
+          });
+          model.put("warnMSG", sb.toString());
+        }
       } else if (subpage.isPresent() && subpage.get().equals("data")) {
         model.put("subnaviActive", PageState.RECORDDATA.name());
         ret = "datamatrix";
@@ -404,6 +410,14 @@ public class RecordController {
     log.trace("setValues for variable [id: {}]", () -> varVal.getId());
     recordService.setVariableValues(varVal, sForm);
     model.put("errorMSG", recordService.validateCodeBook(sForm));
+    if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
+      StringBuilder sb = new StringBuilder();
+      sForm.getWarnings().forEach(s -> {
+        sb.append(s);
+        sb.append("<br />");
+      });
+      model.put("infoMSG", sb.toString());
+    }
     model.remove("VarValues");
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
@@ -433,6 +447,14 @@ public class RecordController {
       }
     }
     model.put("errorMSG", recordService.validateCodeBook(sForm));
+    if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
+      StringBuilder sb = new StringBuilder();
+      sForm.getWarnings().forEach(s -> {
+        sb.append(s);
+        sb.append("<br />");
+      });
+      model.put("infoMSG", sb.toString());
+    }
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
@@ -569,6 +591,14 @@ public class RecordController {
       }
     }
     model.put("errorMSG", recordService.validateCodeBook(sForm));
+    if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
+      StringBuilder sb = new StringBuilder();
+      sForm.getWarnings().forEach(s -> {
+        sb.append(s);
+        sb.append("<br />");
+      });
+      model.put("infoMSG", sb.toString());
+    }
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
@@ -598,17 +628,34 @@ public class RecordController {
     if (ret == null) {
       RecordDTO currentVersion = sForm.getRecord();
       List<String> parsingErrors = new ArrayList<>();
+      List<String> parsingWarings = new ArrayList<>();
       String infoMSG = null;
       try {
         RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(currentVersion);
-        recordService.validateAndPrepareCodebookForm(copy, parsingErrors, sForm.getNewChangeLog(), false);
+        recordService.validateAndPrepareCodebookForm(copy, parsingErrors, parsingWarings, sForm.getNewChangeLog(),
+            false);
         currentVersion = copy;
         infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors, sForm.getNewChangeLog());
-        redirectAttributes.addFlashAttribute("infoMSG",
-            messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
+        if (infoMSG.equals("record.codebook.saved"))
+          redirectAttributes.addFlashAttribute("successMSG",
+              messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
+        else {
+          redirectAttributes.addFlashAttribute("infoMSG",
+              messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
+        }
         ret = "redirect:/project/" + sForm.getProject().getId() + "/study/" + sForm.getStudy().getId() + "/record/"
             + currentVersion.getId() + "/version/" + currentVersion.getVersionId() + "/codebook";
       } catch (DataWizSystemException e) {
+        model.put("infoMSG",
+            messageSource.getMessage("record.codebook.not.saved", null, LocaleContextHolder.getLocale()));
+        if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
+          StringBuilder sb = new StringBuilder();
+          sForm.getWarnings().forEach(s -> {
+            sb.append(s);
+            sb.append("<br />");
+          });
+          model.put("warnMSG", sb.toString());
+        }
         if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
           log.fatal("Database Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(),
               () -> e.getMessage(), () -> e);

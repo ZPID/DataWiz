@@ -334,8 +334,8 @@ public class ProjectController extends SuperController {
           } else if (res.equals(MinioResult.CONNECTION_ERROR)) {
             log.error("ERROR: No Connection to Minio Server - please check Settings or Server");
             return new ResponseEntity<String>("{\"error\" : \""
-                + messageSource.getMessage("minio.connection.exception", null, LocaleContextHolder.getLocale()) + "\"}",
-                HttpStatus.INTERNAL_SERVER_ERROR);
+                + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale())
+                + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
           } else {
             log.error("ERROR: During Saving File - MinioResult:", () -> res.name());
             return new ResponseEntity<String>("{\"error\" : \"12\"}", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -383,7 +383,8 @@ public class ProjectController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = { "/{pid}/download/{docId}" }, method = RequestMethod.GET)
+  @RequestMapping(value = { "/{pid}/download/{docId}",
+      "/{pid}/study/{studyId}/download/{docId}" }, method = RequestMethod.GET)
   public @ResponseBody ResponseEntity<String> downloadDocument(@PathVariable long pid, @PathVariable long docId,
       HttpServletResponse response, RedirectAttributes redirectAttributes) {
     if (log.isDebugEnabled()) {
@@ -423,9 +424,10 @@ public class ProjectController extends SuperController {
    * @param redirectAttributes
    * @return
    */
-  @RequestMapping(value = { "/{pid}/delDoc/{docId}" }, method = RequestMethod.GET)
+  @RequestMapping(value = { "/{pid}/delDoc/{docId}",
+      "/{pid}/study/{studyId}/delDoc/{docId}" }, method = RequestMethod.GET)
   public String deleteDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response,
-      RedirectAttributes redirectAttributes) {
+      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes) {
     log.trace("Entering deleteDocument [id: {}]", () -> docId);
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
@@ -447,6 +449,8 @@ public class ProjectController extends SuperController {
     redirectAttributes.addFlashAttribute("saveState", state.name());
     redirectAttributes.addFlashAttribute("saveStateMsg", msg);
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
+    if (studyId.isPresent())
+      return "redirect:/project/" + pid + "/study/" + studyId.get() + "/material";
     return "redirect:/project/" + pid + "/material";
   }
 
@@ -479,7 +483,7 @@ public class ProjectController extends SuperController {
         }
       }
     } catch (Exception e) {
-      //TODO !!!!
+      // TODO !!!!
       e.printStackTrace();
     }
   }

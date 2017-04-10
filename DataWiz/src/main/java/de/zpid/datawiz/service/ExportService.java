@@ -1,18 +1,16 @@
 package de.zpid.datawiz.service;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -140,6 +138,9 @@ public class ExportService {
     // record.getAttributes().add(new SPSSValueLabelDTO("DataWizLRecordDescription", record.getDescription()));
     if (record != null && record.getVariables() != null && record.getDataMatrix() != null) {
       try {
+        record.getVariables().parallelStream().forEach(var -> {
+          var.setDecimals(var.getDecimals() > 16 ? 16 : var.getDecimals());
+        });
         if (!Files.exists(Paths.get(dir)))
           Files.createDirectories(Paths.get(dir));
         spss.writeSPSSFile(record, dir + filename);

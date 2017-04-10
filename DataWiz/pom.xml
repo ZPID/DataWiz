@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>io.minio</groupId>
 			<artifactId>minio</artifactId>
-			<version>2.0.1</version>
+			<version>3.0.3</version>
 		</dependency>
 		<!-- Spring -->
 		<dependency>
