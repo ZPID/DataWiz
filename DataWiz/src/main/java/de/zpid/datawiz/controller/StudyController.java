@@ -1,21 +1,18 @@
 package de.zpid.datawiz.controller;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,33 +21,33 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.ContributorDTO;
-import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyConstructDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.StudyInstrumentDTO;
 import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.enumeration.DWFieldTypes;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
-import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList", "disStudyContent" })
-public class StudyController extends SuperController {
+public class StudyController {
 
   @Autowired
-  private PlatformTransactionManager txManager;
-  @Autowired
-  private int sessionTimeout;
+  protected MessageSource messageSource;
   @Autowired
   private StudyService studyService;
+  @Autowired
+  private ExceptionService exceptionService;
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  protected SmartValidator validator;
 
   private static Logger log = LogManager.getLogger(StudyController.class);
 
@@ -95,44 +92,16 @@ public class StudyController extends SuperController {
     if (ret == null) {
       try {
         accessState = studyService.setStudyForm(pid, studyId, redirectAttributes, user, sForm);
+        createStudyBreadCrump(sForm, model);
+        model.put("disStudyContent", accessState);
+        model.put("StudyForm", sForm);
+        model.put("studySubMenu", true);
+        model.put("subnaviActive", PageState.STUDY.name());
         ret = "study";
       } catch (Exception e) {
-        if (e instanceof DataWizSystemException) {
-          String errorMSG = "";
-          log.warn("DataWizSystemException during recordService.setStudyform Message[{}] , Code [{}]",
-              () -> e.getMessage(), () -> ((DataWizSystemException) e).getErrorCode());
-          if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)) {
-            errorMSG = "project.not.available";
-            ret = "redirect:/panel";
-          } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)) {
-            errorMSG = "study.not.available";
-            ret = "redirect:/project/" + pid.get() + "/studies";
-          }
-          redirectAttributes.addFlashAttribute("errorMSG",
-              messageSource.getMessage(errorMSG, null, LocaleContextHolder.getLocale()));
-        } else {
-          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage());
-          ret = "error";
-          model
-              .put("errormsg",
-                  messageSource.getMessage("dbs.sql.exception",
-                      new Object[] { env.getRequiredProperty("organisation.admin.email"),
-                          e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
-                      LocaleContextHolder.getLocale()));
-        }
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, model, redirectAttributes, e,
+            "studyService.setStudyForm");
       }
-    }
-    if (ret.equals("study")) {
-      model.put("breadcrumpList",
-          BreadCrumpUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(),
-              (sForm.getStudy() != null && sForm.getStudy().getTitle() != null && !sForm.getStudy().getTitle().isEmpty()
-                  ? sForm.getStudy().getTitle()
-                  : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
-              new long[] { pid.get() }, messageSource));
-      model.put("disStudyContent", accessState);
-      model.put("StudyForm", sForm);
-      model.put("studySubMenu", true);
-      model.put("subnaviActive", PageState.STUDY.name());
     }
     log.trace("Method showStudyPage completed");
     return ret;
@@ -153,41 +122,36 @@ public class StudyController extends SuperController {
     log.trace("Entering showRecordOverview for study [id: {}] and user [email: {}]", () -> studyId.get(),
         () -> user.getEmail());
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
-    if (ret != null)
-      return ret;
-    StudyForm sForm = createStudyForm();
-    try {
-      ProjectDTO project = projectDAO.findById(pid.get());
-      if (project == null) {
-        log.warn("No Project found for projectId {}", () -> pid.get());
-        redirectAttributes.addFlashAttribute("errorMSG",
-            messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
-        return "redirect:/panel";
+    if (ret == null) {
+      try {
+        StudyForm sForm = createStudyForm();
+        studyService.setRecordList(pid, studyId, redirectAttributes, sForm);
+        model.put("breadcrumpList",
+            BreadCrumpUtil.generateBC(PageState.STUDY,
+                new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() }, new long[] { pid.get() },
+                messageSource));
+        model.put("studySubMenu", true);
+        model.put("subnaviActive", PageState.RECORDS.name());
+        model.put("StudyForm", sForm);
+        ret = "records";
+      } catch (Exception e) {
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, model, redirectAttributes, e,
+            "studyService.setRecordList");
       }
-      sForm.setProject(project);
-      StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
-      if (study == null || study.getId() <= 0) {
-        log.warn("No Study found for studyId {}", () -> studyId.get());
-        redirectAttributes.addFlashAttribute("errorMSG",
-            messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
-        return "redirect:/project/" + pid.get() + "/studies";
-      }
-      sForm.setStudy(study);
-      sForm.setRecords(recordDAO.findRecordsWithStudyID(studyId.get()));
-    } catch (Exception e) {
-      // TODO
-      log.warn(e);
     }
-    model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.STUDY,
-            new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() }, new long[] { pid.get() },
-            messageSource));
-    model.put("studySubMenu", true);
-    model.put("subnaviActive", PageState.RECORDS.name());
-    model.put("StudyForm", sForm);
-    return "records";
+    return ret;
   }
 
+  /**
+   * 
+   * @param sForm
+   * @param model
+   * @param redirectAttributes
+   * @param bRes
+   * @param studyId
+   * @param pid
+   * @return
+   */
   @RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST)
   public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, BindingResult bRes, @PathVariable final Optional<Long> studyId,
@@ -203,195 +167,29 @@ public class StudyController extends SuperController {
     }
     if (ret != null)
       return ret;
-    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
-    StudyDTO study = null;
-    if (sForm != null)
-      study = sForm.getStudy();
-    if (study != null && pid.isPresent()) {
-      try {
-        study.setLastUserId(user.getId());
-        if (studyId.isPresent() && study.getId() > 0) {
-          // update Study
-          studyDAO.update(study, false);
-        } else {
-          study.setProjectId(pid.get());
-          studyDAO.insert(study, false);
-        }
-        // update Contibutors
-        List<ContributorDTO> dbList = contributorDAO.findByStudy(study.getId());
-        if (!ListUtil.equalsWithoutOrder(dbList, study.getContributors())) {
-          if (dbList != null)
-            contributorDAO.deleteFromStudy(dbList);
-          if (study.getContributors() != null)
-            contributorDAO.insertIntoStudy(study.getContributors(), study.getId());
-        }
-        // update SOFTWARE
-        updateStudyListItems(study.getId(), study.getSoftware(), DWFieldTypes.SOFTWARE);
-        // update PUBONDATA
-        updateStudyListItems(study.getId(), study.getPubOnData(), DWFieldTypes.PUBONDATA);
-        // update CONFLINTEREST
-        updateStudyListItems(study.getId(), study.getConflInterests(), DWFieldTypes.CONFLINTEREST);
-        // update OBJECTIVES
-        updateStudyListItems(study.getId(), study.getObjectives(), DWFieldTypes.OBJECTIVES);
-        // update RELTHEORY
-        updateStudyListItems(study.getId(), study.getRelTheorys(), DWFieldTypes.RELTHEORY);
-        // update INTERARMS
-        updateStudyListItems(study.getId(), study.getInterArms(), DWFieldTypes.INTERARMS);
-        // update MEASOCCNAME
-        updateStudyListItems(study.getId(), study.getMeasOcc(), DWFieldTypes.MEASOCCNAME);
-        // update CONSTRUCTS
-        updateConstructsItems(study.getId(), study.getConstructs());
-        // update INSTRUMENTS
-        updateInstrumentItems(study.getId(), study.getInstruments());
-        // update MEASOCCNAME
-        updateStudyListItems(study.getId(), study.getEligibilities(), DWFieldTypes.ELIGIBILITY);
-        // update usedCollectionModes
-        List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(),
-            DWFieldTypes.COLLECTIONMODE, true);
-        if (!ListUtil.equalsWithoutOrder(collectionModes, study.getUsedCollectionModes())) {
-          if (collectionModes != null && collectionModes.size() > 0) {
-            formTypeDAO.deleteSelectedFormType(study.getId(), collectionModes, true);
-          }
-          if (study.getUsedCollectionModes() != null && study.getUsedCollectionModes().size() > 0) {
-            formTypeDAO.insertSelectedFormType(study.getId(), study.getUsedCollectionModes(), true);
-          }
-        }
-        // update UsedSourFormat
-        List<Integer> sourFormat = formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.DATAFORMAT,
-            true);
-        if (!ListUtil.equalsWithoutOrder(sourFormat, study.getUsedSourFormat())) {
-          if (sourFormat != null && sourFormat.size() > 0) {
-            formTypeDAO.deleteSelectedFormType(study.getId(), sourFormat, true);
-          }
-          if (study.getUsedSourFormat() != null && study.getUsedSourFormat().size() > 0) {
-            formTypeDAO.insertSelectedFormType(study.getId(), study.getUsedSourFormat(), true);
-          }
-        }
-        txManager.commit(status);
-      } catch (Exception e) {
-        log.error("ERROR", e);
-        txManager.rollback(status);
-      }
-    } else {
-      // TODO study null
+    // TODO VALIDATE FORM
+
+    validator.validate(sForm, bRes, StudyDTO.StGeneralVal.class);
+    if (bRes.hasErrors()) {
+      model.put("errorMSG", "FEHLER EINGABE");
+      model.put("studySubMenu", true);
+      model.put("subnaviActive", PageState.RECORDS.name());
+      return "study";
     }
+
+    StudyDTO study = studyService.saveStudyForm(sForm, studyId, pid, user);
     return "redirect:/project/" + pid.get() + "/study/" + study.getId();
   }
 
   /**
+   * 
+   * @param sForm
+   * @param model
+   * @param redirectAttributes
+   * @param pid
    * @param studyId
-   * @param study
-   * @param type
-   * @throws Exception
+   * @return
    */
-  private void updateStudyListItems(final Long studyId, List<StudyListTypesDTO> list, DWFieldTypes type)
-      throws Exception {
-    List<StudyListTypesDTO> dbtmp = studyListTypesDAO.findAllByStudyAndType(studyId, type);
-    if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
-      List<StudyListTypesDTO> insert = new ArrayList<>();
-      List<StudyListTypesDTO> delete = new ArrayList<>();
-      List<StudyListTypesDTO> update = new ArrayList<>();
-      if (list != null && list.size() > 0)
-        for (StudyListTypesDTO tmp : list) {
-          if (tmp.getId() <= 0 && !tmp.getText().trim().isEmpty()) {
-            tmp.setStudyid(studyId);
-            tmp.setType(type);
-            tmp.setSort(0);
-            tmp.setTimetable(false);
-            insert.add(tmp);
-          } else if (tmp.getId() > 0 && tmp.getText().trim().isEmpty()) {
-            dbtmp.remove(tmp);
-            delete.add(tmp);
-          } else if (tmp.getId() > 0 && !tmp.getText().trim().isEmpty()) {
-            for (ListIterator<StudyListTypesDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
-              StudyListTypesDTO tmp2 = iter.next();
-              if (tmp.getId() == tmp2.getId()) {
-                if (!tmp.getText().equals(tmp2.getText()) || (type.equals(DWFieldTypes.MEASOCCNAME)
-                    && (tmp.getSort() != tmp2.getSort() || tmp.isTimetable() == tmp2.isTimetable()))) {
-                  update.add(tmp);
-                }
-                iter.remove();
-              }
-            }
-          }
-        }
-      if (delete.size() > 0)
-        studyListTypesDAO.delete(delete);
-      if (update.size() > 0)
-        studyListTypesDAO.update(update);
-      if (insert.size() > 0)
-        studyListTypesDAO.insert(insert);
-    }
-  }
-
-  private void updateConstructsItems(final Long studyId, List<StudyConstructDTO> list) throws Exception {
-    List<StudyConstructDTO> dbtmp = studyConstructDAO.findAllByStudy(studyId);
-    if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
-      List<StudyConstructDTO> insert = new ArrayList<>();
-      List<StudyConstructDTO> delete = new ArrayList<>();
-      List<StudyConstructDTO> update = new ArrayList<>();
-      if (list != null && list.size() > 0)
-        for (StudyConstructDTO tmp : list) {
-          if (tmp.getId() <= 0 && !tmp.getName().trim().isEmpty()) {
-            tmp.setStudyId(studyId);
-            insert.add(tmp);
-          } else if (tmp.getId() > 0 && tmp.getName().trim().isEmpty()) {
-            delete.add(tmp);
-          } else if (tmp.getId() > 0 && !tmp.getName().trim().isEmpty()) {
-            for (ListIterator<StudyConstructDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
-              StudyConstructDTO tmp2 = iter.next();
-              if (tmp.getId() == tmp2.getId()) {
-                if (!tmp.getName().equals(tmp2.getName()) || !tmp.getType().equals(tmp2.getType())
-                    || !tmp.getOther().equals(tmp2.getOther())) {
-                  update.add(tmp);
-                }
-                iter.remove();
-              }
-            }
-          }
-        }
-      if (delete.size() > 0)
-        studyConstructDAO.delete(delete);
-      if (update.size() > 0)
-        studyConstructDAO.update(update);
-      if (insert.size() > 0)
-        studyConstructDAO.insert(insert);
-    }
-  }
-
-  private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list) throws Exception {
-    List<StudyInstrumentDTO> dbtmp = studyInstrumentDAO.findAllByStudy(studyId, false);
-    if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
-      List<StudyInstrumentDTO> insert = new ArrayList<>();
-      List<StudyInstrumentDTO> delete = new ArrayList<>();
-      List<StudyInstrumentDTO> update = new ArrayList<>();
-      if (list != null && list.size() > 0)
-        for (StudyInstrumentDTO tmp : list) {
-          if (tmp.getId() <= 0 && !tmp.getTitle().trim().isEmpty()) {
-            tmp.setStudyId(studyId);
-            insert.add(tmp);
-          } else if (tmp.getId() > 0 && tmp.getTitle().trim().isEmpty()) {
-            delete.add(tmp);
-          } else if (tmp.getId() > 0 && !tmp.getTitle().trim().isEmpty()) {
-            for (ListIterator<StudyInstrumentDTO> iter = dbtmp.listIterator(); iter.hasNext();) {
-              StudyInstrumentDTO tmp2 = iter.next();
-              if (tmp.getId() == tmp2.getId()) {
-                if (!tmp2.equals(tmp))
-                  update.add(tmp);
-                iter.remove();
-              }
-            }
-          }
-        }
-      if (delete.size() > 0)
-        studyInstrumentDAO.delete(delete);
-      if (update.size() > 0)
-        studyInstrumentDAO.update(update);
-      if (insert.size() > 0)
-        studyInstrumentDAO.insert(insert);
-    }
-  }
-
   @RequestMapping(value = { "/{studyId}/switchEditMode" })
   public String switchEditMode(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model,
       RedirectAttributes redirectAttributes, @PathVariable final Optional<Long> pid,
@@ -399,31 +197,22 @@ public class StudyController extends SuperController {
     log.trace("Entering changeStudyLock");
     UserDTO user = UserUtil.getCurrentUser();
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
-    if (ret != null)
-      return ret;
-    String actLock = (String) model.get("disStudyContent");
-    StudyDTO currLock = null;
-    try {
-      currLock = studyDAO.findById(studyId.get(), pid.get(), true, true);
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    if (currLock != null && (!currLock.isCurrentlyEdit()
-        || (currLock.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) < 0)
-        || (currLock.getEditSince().plusSeconds(sessionTimeout).compareTo(LocalDateTime.now()) >= 0
-            && user.getId() == currLock.getEditUserId()))) {
-      if (actLock == null || actLock.isEmpty() || actLock.equals("enabled")) {
-        if (studyDAO.switchStudyLock(studyId.get(), user.getId(), true) > 0)
-          actLock = "disabled";
-      } else {
-        if (studyDAO.switchStudyLock(studyId.get(), user.getId(), false) > 0)
-          actLock = "enabled";
+    if ((sForm == null || sForm.getStudy() == null || sForm.getProject() == null || sForm.getProject().getId() == 0)
+        && ret == null)
+      ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();
+    if (ret == null) {
+      ret = "study";
+      try {
+        model.put("disStudyContent",
+            studyService.checkActualLock(pid, studyId, user, (String) model.get("disStudyContent"), model));
+        model.put("studySubMenu", true);
+        model.put("subnaviActive", PageState.STUDY.name());
+      } catch (Exception e) {
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, model, redirectAttributes, e,
+            "studyService.checkActualLock");
       }
-      model.put("disStudyContent", actLock);
     }
-    model.put("studySubMenu", true);
-    return "study";
+    return ret;
   }
 
   /**
@@ -448,6 +237,7 @@ public class StudyController extends SuperController {
       sForm.setHiddenVar(-1);
     }
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -471,6 +261,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().getContributors().remove(sForm.getDelPos());
     }
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -492,6 +283,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setSoftware(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getSoftware().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -513,6 +305,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setPubOnData(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getPubOnData().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -534,6 +327,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setConflInterests(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getConflInterests().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -555,6 +349,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setObjectives(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getObjectives().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -576,6 +371,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setRelTheorys(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getRelTheorys().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -597,6 +393,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setInterArms(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getInterArms().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -618,6 +415,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setMeasOcc(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getMeasOcc().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -639,6 +437,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setConstructs(new ArrayList<StudyConstructDTO>());
     sForm.getStudy().getConstructs().add((StudyConstructDTO) applicationContext.getBean("StudyConstructDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -660,6 +459,7 @@ public class StudyController extends SuperController {
       sForm.getStudy().setInstruments(new ArrayList<StudyInstrumentDTO>());
     sForm.getStudy().getInstruments().add((StudyInstrumentDTO) applicationContext.getBean("StudyInstrumentDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
   }
 
@@ -681,7 +481,22 @@ public class StudyController extends SuperController {
       sForm.getStudy().setEligibilities(new ArrayList<StudyListTypesDTO>());
     sForm.getStudy().getEligibilities().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
     model.put("studySubMenu", true);
+    model.put("subnaviActive", PageState.STUDY.name());
     return "study";
+  }
+
+  /**
+   * @param sForm
+   * @param pid
+   * @param model
+   */
+  private void createStudyBreadCrump(final StudyForm sForm, final ModelMap model) {
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(),
+            (sForm.getStudy() != null && sForm.getStudy().getTitle() != null && !sForm.getStudy().getTitle().isEmpty()
+                ? sForm.getStudy().getTitle()
+                : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
+            new long[] { sForm.getProject().getId() }, messageSource));
   }
 
 }

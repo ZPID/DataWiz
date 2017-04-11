@@ -50,7 +50,8 @@ public class StudyDAO extends SuperDAO {
     return res;
   }
 
-  public StudyDTO findById(final long studyId, final long projectId,final boolean onlyInfoMetaData, final boolean onlyLockInfo) throws Exception {
+  public StudyDTO findById(final long studyId, final long projectId, final boolean onlyInfoMetaData,
+      final boolean onlyLockInfo) throws Exception {
     log.trace("execute findById for study [id: {}] from project [id: {}]", () -> studyId, () -> projectId);
     final StudyDTO res = jdbcTemplate.query(
         "SELECT dw_study.* FROM dw_study WHERE dw_study.id = ? AND dw_study.project_id = ?",
@@ -67,7 +68,7 @@ public class StudyDAO extends SuperDAO {
     return res;
   }
 
-  public int switchStudyLock(final long studyid, final long userid, final boolean deleteLock) {
+  public int switchStudyLock(final long studyid, final long userid, final boolean deleteLock) throws Exception {
     log.trace("execute switchStudyLock for [studyid: {}, userid: {}, deleteLock: {}]", () -> studyid, () -> userid,
         () -> deleteLock);
     int ret = this.jdbcTemplate.update(

@@ -102,7 +102,8 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public MessageSource resourceBundleMessageSource() {
     ReloadableResourceBundleMessageSource resolver = new ReloadableResourceBundleMessageSource();
     resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale/DMPResources",
-        "classpath:locale/EmailResources", "classpath:locale/StudyResources", "classpath:locale/RecordResources");
+        "classpath:locale/EmailResources", "classpath:locale/StudyResources", "classpath:locale/RecordResources",
+        "classpath:locale/LoggingResources");
     resolver.setDefaultEncoding("UTF-8");
     log.info("messageSource succesfully loaded");
     return resolver;

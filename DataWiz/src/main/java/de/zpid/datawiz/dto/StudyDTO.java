@@ -29,7 +29,7 @@ public class StudyDTO implements Serializable {
 
   /** Study01 */
   @NotNull(groups = StGeneralVal.class)
-  @Size(min = 0, max = 250, groups = StGeneralVal.class)
+  @Size(min = 1, max = 250, groups = StGeneralVal.class)
   private String title;
   /** Study02 */
   @Size(min = 0, max = 50, groups = StGeneralVal.class)
