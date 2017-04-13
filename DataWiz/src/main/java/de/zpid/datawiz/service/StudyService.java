@@ -38,8 +38,10 @@ import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ListUtil;
 
 @Service
@@ -495,6 +497,21 @@ public class StudyService {
           if (scontri.getId() == ccontri.getId())
             it.remove();
       }
+  }
+
+  /**
+   * @param sForm
+   * @param pid
+   * @param model
+   */
+  public void createStudyBreadCrump(final String projectName, final String studyName, final long pid,
+      final ModelMap model) {
+    model
+        .put("breadcrumpList",
+            BreadCrumpUtil.generateBC(PageState.STUDY,
+                new String[] { projectName, (studyName != null && !studyName.trim().isEmpty() ? studyName
+                    : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
+                new long[] { pid }, messageSource));
   }
 
 }

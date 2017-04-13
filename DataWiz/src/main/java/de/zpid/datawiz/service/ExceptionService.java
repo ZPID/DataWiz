@@ -33,28 +33,36 @@ public class ExceptionService {
    * @param e
    * @return
    */
-  public String setErrorMessagesAndRedirects(final Optional<Long> pid, final ModelMap model,
-      final RedirectAttributes redirectAttributes, Exception e, String functionName) {
+  public String setErrorMessagesAndRedirects(final Optional<Long> pid, final Optional<Long> studyId,
+      final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes, Exception e,
+      String functionName) {
     String ret = null;
     if (e instanceof DataWizSystemException) {
       DataWizSystemException dwe = (DataWizSystemException) e;
-      if (dwe.getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)
-          || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_PID_ERROR)) {
+      if (dwe.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR))
+        log.fatal("Exception during {} Message[{}]]", () -> functionName, () -> e.getMessage());
+      else
         log.warn("DataWizSystemException during {} Message[{}] , Code [{}]", () -> functionName, () -> e.getMessage(),
             () -> dwe.getErrorCode().name());
+      if (dwe.getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)
+          || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_PID_ERROR)) {
         redirectAttributes.addFlashAttribute("errorMSG",
             messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
         ret = "redirect:/panel";
       } else if (dwe.getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)
           || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_STUDYID_ERROR)) {
-        log.warn("DataWizSystemException during {} Message[{}] , Code [{}]", () -> functionName, () -> e.getMessage(),
-            () -> dwe.getErrorCode().name());
         redirectAttributes.addFlashAttribute("errorMSG",
             messageSource.getMessage("study.not.available", null, LocaleContextHolder.getLocale()));
         ret = "redirect:/project/" + pid.get() + "/studies";
+      } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.RECORD_NOT_AVAILABLE)) {
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
+        ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
+      } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED)) {
+        redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("import.error.file.extension",
+            new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+        ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
       } else if (dwe.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
-        log.error("DataBaseException during {} Message[{}], Code [{}]", () -> functionName,
-            () -> e.getMessage().replaceAll("\n", ""), () -> dwe.getErrorCode().name());
         model
             .put("errormsg",
                 messageSource
@@ -65,7 +73,7 @@ public class ExceptionService {
         ret = "error";
       }
     } else {
-      log.error("Exception during {} Message[{}]]", () -> functionName, () -> e.getMessage());
+      log.fatal("Exception during {} Message[{}]]", () -> functionName, () -> e.getMessage());
       ret = "error";
       model
           .put("errormsg",

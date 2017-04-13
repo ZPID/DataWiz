@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -49,7 +50,12 @@ public class PanelController extends SuperController {
     UserDTO user = UserUtil.getCurrentUser();
     List<ProjectForm> cpform = new ArrayList<ProjectForm>();
     try {
-      List<ProjectDTO> cpdto = projectDAO.findAllByUserID(user);
+      List<ProjectDTO> cpdto = null;
+      if (user.hasRole(Roles.ADMIN)) {
+        cpdto = projectDAO.findAll();
+      } else {
+        cpdto = projectDAO.findAllByUserID(user);
+      }
       if (cpdto != null) {
         for (ProjectDTO pdto : cpdto) {
           ProjectForm pform = createProjectForm();

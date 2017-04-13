@@ -96,7 +96,8 @@ public class ImportService {
         && sForm.getCsvFile() != null && sForm.getCsvFile().getSize() > 0) {
       error = validateCSVFile(pid, studyId, recordId, sForm, user, warnings, errors);
     } else {
-      throw new DataWizSystemException("Type " + sForm.getSelectedFileType() + "is not supported",
+      throw new DataWizSystemException(messageSource.getMessage("logging.selected.filetype.missmatch",
+          new Object[] { sForm.getSelectedFileType() }, LocaleContextHolder.getLocale()),
           DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED);
     }
     sForm.setParsingError(error);

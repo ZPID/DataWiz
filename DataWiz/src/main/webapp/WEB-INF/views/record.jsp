@@ -290,11 +290,7 @@
                           <s:message code="record.history.modal.changedDate" />
                         </div>
                         <div class="col-sm-9">
-                          <c:set var="date" value="${fn:split(recVersion.changed, 'T')}" />
-                          <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate"
-                            type="date" />
-                          <fmt:formatDate value="${parsedDate}" pattern="dd.MM.yyyy HH:mm:ss" var="strDate" />
-                          <s:message text="${strDate}" />
+                          <javatime:format value="${recVersion.changed}" style="MS" />
                         </div>
                         <div class="col-sm-3 text-align-right text-bold">
                           <s:message code="record.history.modal.changeLog" />

@@ -604,3 +604,21 @@ label.btn::after {
 .old_ie_wrapper tbody {
   height: auto;
 }
+
+.panel-pink {
+  border: 1px solid pink;
+}
+
+.panel-pink>.panel-heading {
+  background: pink;
+  color: #fff;
+}
+
+.panel-red {
+  border: 1px solid red;
+}
+
+.panel-red>.panel-heading {
+  background: red;
+  color: #fff;
+}

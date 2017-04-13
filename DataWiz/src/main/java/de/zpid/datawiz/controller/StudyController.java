@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -92,14 +91,15 @@ public class StudyController {
     if (ret == null) {
       try {
         accessState = studyService.setStudyForm(pid, studyId, redirectAttributes, user, sForm);
-        createStudyBreadCrump(sForm, model);
+        studyService.createStudyBreadCrump(sForm.getProject().getTitle(),
+            sForm.getStudy() != null ? sForm.getStudy().getTitle() : null, pid.get(), model);
         model.put("disStudyContent", accessState);
         model.put("StudyForm", sForm);
         model.put("studySubMenu", true);
         model.put("subnaviActive", PageState.STUDY.name());
         ret = "study";
       } catch (Exception e) {
-        ret = exceptionService.setErrorMessagesAndRedirects(pid, model, redirectAttributes, e,
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e,
             "studyService.setStudyForm");
       }
     }
@@ -135,7 +135,7 @@ public class StudyController {
         model.put("StudyForm", sForm);
         ret = "records";
       } catch (Exception e) {
-        ret = exceptionService.setErrorMessagesAndRedirects(pid, model, redirectAttributes, e,
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e,
             "studyService.setRecordList");
       }
     }
@@ -208,7 +208,7 @@ public class StudyController {
         model.put("studySubMenu", true);
         model.put("subnaviActive", PageState.STUDY.name());
       } catch (Exception e) {
-        ret = exceptionService.setErrorMessagesAndRedirects(pid, model, redirectAttributes, e,
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e,
             "studyService.checkActualLock");
       }
     }
@@ -483,20 +483,6 @@ public class StudyController {
     model.put("studySubMenu", true);
     model.put("subnaviActive", PageState.STUDY.name());
     return "study";
-  }
-
-  /**
-   * @param sForm
-   * @param pid
-   * @param model
-   */
-  private void createStudyBreadCrump(final StudyForm sForm, final ModelMap model) {
-    model.put("breadcrumpList",
-        BreadCrumpUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(),
-            (sForm.getStudy() != null && sForm.getStudy().getTitle() != null && !sForm.getStudy().getTitle().isEmpty()
-                ? sForm.getStudy().getTitle()
-                : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
-            new long[] { sForm.getProject().getId() }, messageSource));
   }
 
 }

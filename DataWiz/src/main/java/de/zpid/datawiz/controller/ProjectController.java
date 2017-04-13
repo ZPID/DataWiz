@@ -33,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.PageState;
@@ -178,47 +179,40 @@ public class ProjectController extends SuperController {
       // TODO PROJEKT ZUGRIFF SCHREIBRECHTE
     }
     ProjectForm pForm = createProjectForm();
-
     if (ret == null) {
-      ret = "material";
-      if (!studyId.isPresent()) {
-        try {
-          Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
-          projectService.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
-        } catch (Exception e) {
-          // TODO
-          log.warn(e.getMessage());
-          String redirectMessage = "";
-          if (e instanceof DataWizException) {
-            redirectMessage = "project.not.available";
-          } else if (e instanceof DataWizSecurityException) {
-            redirectMessage = "project.access.denied";
-          } else {
-            redirectMessage = "dbs.sql.exception";
-          }
-          redirectAttributes.addFlashAttribute("errorMSG",
-              messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
-          ret = "redirect:/panel";
-        }
-        model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
-            new String[] { pForm.getProject().getTitle() }, null, messageSource));
-        model.put("subnaviActive", PageState.MATERIAL.name());
-        model.put("ProjectForm", pForm);
-        model.put("projectId", pid.get());
-        model.put("studyId", -1);
-      } else {
-        try {
+      try {
+        ret = "material";
+        Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
+        projectService.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
+        if (!studyId.isPresent()) {
+          model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
+              new String[] { pForm.getProject().getTitle() }, null, messageSource));
+          model.put("studyId", -1);
+        } else {
+          StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
+          studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid.get(), model);
           pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
-        } catch (Exception e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          model.put("studySubMenu", true);
         }
-        model.put("studyId", studyId.get());
-        model.put("projectId", pid.get());
-        model.put("ProjectForm", pForm);
-        model.put("studySubMenu", true);
-        model.put("subnaviActive", PageState.MATERIAL.name());
+      } catch (Exception e) {
+        // TODO
+        log.warn(e.getMessage());
+        String redirectMessage = "";
+        if (e instanceof DataWizException) {
+          redirectMessage = "project.not.available";
+        } else if (e instanceof DataWizSecurityException) {
+          redirectMessage = "project.access.denied";
+        } else {
+          redirectMessage = "dbs.sql.exception";
+        }
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+        ret = "redirect:/panel";
       }
+      model.put("studyId", studyId.isPresent() ? studyId.get() : -1);
+      model.put("projectId", pid.get());
+      model.put("ProjectForm", pForm);
+      model.put("subnaviActive", PageState.MATERIAL.name());
     }
     return ret;
   }

@@ -55,6 +55,24 @@ public class ProjectDAO extends SuperDAO {
     return ret;
   }
 
+  public List<ProjectDTO> findAll() throws Exception {
+    log.trace("execute findAll");
+    String sql = "SELECT * FROM dw_project ORDER BY dw_project.owner_id";
+    List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<ProjectDTO>() {
+      public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
+        project.setId(rs.getInt("id"));
+        project.setTitle(rs.getString("name"));
+        project.setOwnerId(rs.getLong("owner_id"));
+        project.setDescription(rs.getString("description"));
+        project.setCreated(rs.getTimestamp("created").toLocalDateTime());
+        return project;
+      }
+    });
+    log.debug("Transaction for findAllByUserID returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
+    return ret;
+  }
+
   /**
    * Returns the project and the UserRole in one turn. For that, UserID and ProjectID is important, because projects and
    * users have an mxn relationship!

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -98,14 +99,23 @@ public class RecordService {
   public StudyForm setStudyform(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
       final Optional<Long> versionId, final Optional<String> subpage, final List<String> parsingErrors)
       throws Exception {
+    if (!pid.isPresent())
+      throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
+          DataWizErrorCodes.MISSING_PID_ERROR);
+    if (!studyId.isPresent())
+      throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH),
+          DataWizErrorCodes.MISSING_STUDYID_ERROR);
     StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
     sForm.setProject(projectDAO.findById(pid.get()));
-    if (sForm.getProject() == null)
-      throw new DataWizSystemException("No Project found for projectId " + pid.get(),
+    if (sForm.getProject() == null) {
+      throw new DataWizSystemException(
+          messageSource.getMessage("logging.project.not.found", new Object[] { pid.get() }, Locale.ENGLISH),
           DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+    }
     sForm.setStudy(studyDAO.findById(studyId.get(), pid.get(), true, false));
     if (sForm.getStudy() == null)
-      throw new DataWizSystemException("No Study found for studyId " + studyId.get(),
+      throw new DataWizSystemException(
+          messageSource.getMessage("logging.study.not.found", new Object[] { studyId.get() }, Locale.ENGLISH),
           DataWizErrorCodes.STUDY_NOT_AVAILABLE);
     if (subpage.isPresent() && subpage.get().equals("codebook")) {
       sForm.getStudy().setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
@@ -163,7 +173,8 @@ public class RecordService {
           }
         }
       } else {
-        throw new DataWizSystemException("No Record found for recordId " + recordId.get(),
+        throw new DataWizSystemException(
+            messageSource.getMessage("logging.record.not.found", new Object[] { recordId.get() }, Locale.ENGLISH),
             DataWizErrorCodes.RECORD_NOT_AVAILABLE);
       }
       sForm.setRecord(rec);
@@ -383,7 +394,9 @@ public class RecordService {
       }
     } catch (Exception e) {
       txManager.rollback(status);
-      throw new DataWizSystemException("Error during saving codebook to database", DataWizErrorCodes.DATABASE_ERROR, e);
+      throw new DataWizSystemException(
+          messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+          DataWizErrorCodes.DATABASE_ERROR);
     }
     return msg;
   }
@@ -697,7 +710,6 @@ public class RecordService {
   public void saveRecordToDBAndMinio(StudyForm sForm) throws Exception {
     RecordDTO spssFile = sForm.getRecord();
     FileDTO file = sForm.getFile();
-    DataWizErrorCodes errcode = null;
     MinioResult res;
     if (spssFile != null && file != null) {
       TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
@@ -735,7 +747,6 @@ public class RecordService {
             fileDAO.saveFile(file);
           } else if (res.equals(MinioResult.CONNECTION_ERROR)) {
             log.error("FATAL: No Connection to Minio Server - please check Settings or Server");
-            errcode = DataWizErrorCodes.MINIO_SAVE_ERROR;
             throw new DataWizSystemException("Minio returns an error MinioResult: " + res.name(),
                 DataWizErrorCodes.MINIO_SAVE_ERROR);
           }

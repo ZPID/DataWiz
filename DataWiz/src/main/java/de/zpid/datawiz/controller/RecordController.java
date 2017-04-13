@@ -34,6 +34,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.exceptions.DWDownloadException;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ExportService;
 import de.zpid.datawiz.service.ImportService;
 import de.zpid.datawiz.service.RecordService;
@@ -65,6 +66,8 @@ public class RecordController {
   private Environment env;
   @Autowired
   private ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  private ExceptionService exceptionService;
 
   public RecordController() {
     super();
@@ -103,32 +106,8 @@ public class RecordController {
       try {
         sForm = recordService.setStudyform(pid, studyId, recordId, versionId, subpage, parsingErrors);
       } catch (Exception e) {
-        if (e instanceof DataWizSystemException) {
-          String errorMSG = "";
-          log.warn("DataWizSystemException during recordService.setStudyform Message[{}] , Code [{}]",
-              () -> e.getMessage(), () -> ((DataWizSystemException) e).getErrorCode());
-          if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)) {
-            errorMSG = "project.not.available";
-            ret = "redirect:/panel";
-          } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)) {
-            errorMSG = "study.not.available";
-            ret = "redirect:/project/" + pid.get() + "/studies";
-          } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.RECORD_NOT_AVAILABLE)) {
-            errorMSG = "record.not.available";
-            ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
-          }
-          redirectAttributes.addFlashAttribute("errorMSG",
-              messageSource.getMessage(errorMSG, null, LocaleContextHolder.getLocale()));
-        } else {
-          log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage());
-          ret = "error";
-          model
-              .put("errormsg",
-                  messageSource.getMessage("dbs.sql.exception",
-                      new Object[] { env.getRequiredProperty("organisation.admin.email"),
-                          e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
-                      LocaleContextHolder.getLocale()));
-        }
+        exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e,
+            "recordService.setStudyform");
       }
     }
     if (sForm != null && ret == null) {
@@ -137,8 +116,6 @@ public class RecordController {
               (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
                   : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
           new long[] { pid.get(), studyId.get() }, messageSource));
-      model.put("StudyForm", sForm);
-      model.put("recordSubMenu", true);
       if (subpage.isPresent() && subpage.get().equals("codebook")) {
         model.put("subnaviActive", PageState.RECORDVAR.name());
         model.put("errorMSG", recordService.validateCodeBook(sForm));
@@ -166,6 +143,8 @@ public class RecordController {
         ret = "record";
       }
     }
+    model.put("StudyForm", sForm);
+    model.put("recordSubMenu", true);
     if (log.isTraceEnabled())
       log.trace("Method showRecord completed - mapping to {}", ret);
     return ret;
@@ -203,11 +182,8 @@ public class RecordController {
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get()
             + "/importReport";
       } catch (DataWizSystemException e) {
-        log.warn("DataWizSystemException during recordService.importFile Message[{}] , Code [{}]", () -> e.getMessage(),
-            () -> ((DataWizSystemException) e).getErrorCode());
-        redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("global.error.internal",
-            new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
-        ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+        exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e,
+            "importService.importFile");
       }
     }
     if (log.isTraceEnabled())
@@ -339,8 +315,9 @@ public class RecordController {
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + sForm.getRecord().getId();
       } catch (Exception e) {
         log.error("ERROR: Saving record to DB wasn't sucessful! Exception:", () -> e);
-        redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
+        model.put("errorMSG", messageSource.getMessage("dbs.sql.exception",
             new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+        ret = "record";
       }
     }
     if (log.isTraceEnabled())

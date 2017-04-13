@@ -48,10 +48,7 @@
                     <div class="form-group">
                       <label class="control-label col-sm-2" for="${rec.changed}"><s:message
                           code="study.records.version.info" /></label>
-                      <c:set var="date" value="${fn:split(rec.changed, 'T')}" />
-                      <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm" var="parsedDate"
-                        type="date" />
-                      <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm" var="strDate" />
+                      <javatime:format value="${rec.changed}" style="MS" var="strDate" />
                       <div class="col-sm-10 margin-top-7">
                         <s:message code="panel.last.commit" arguments="${strDate};${rec.changedBy}" htmlEscape="false"
                           argumentSeparator=";" />
@@ -76,9 +73,7 @@
               </form>
             </div>
             <div class="panel-footer">
-              <c:set var="date" value="${fn:split(rec.created, 'T')}" />
-              <fmt:parseDate value="${date[0]}/${date[1]}" pattern="yyyy-MM-dd/HH:mm:ss" var="parsedDate" type="date" />
-              <fmt:formatDate value="${parsedDate}" pattern="dd/MM/yyyy - HH:mm:ss" var="strDate" />
+              <javatime:format value="${rec.created}" style="MS" var="strDate" />
               <div class="row">
                 <div class="col-sm-12 clearfix">
                   <div class="pull-right">
