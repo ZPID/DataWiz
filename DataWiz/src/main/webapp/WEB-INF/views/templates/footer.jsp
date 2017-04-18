@@ -17,5 +17,6 @@
 <script src="<c:url value='/static/js/datepicker/js/bootstrap-datepicker.min.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/app.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/modalform.js' />" type="text/javascript"></script>
+<script src="<c:url value='/static/js/dwfilter.js' />" type="text/javascript"></script>
 </body>
 </html>

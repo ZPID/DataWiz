@@ -313,21 +313,25 @@ public class UserDTO implements Serializable {
     } else {
       return false;
     }
+    long finalPid = pid;
+    Roles finalrole = role;
     if (this.globalRoles != null && this.globalRoles.size() > 0) {
-      for (UserRoleDTO tmp : this.globalRoles) {
+      return this.globalRoles.parallelStream().anyMatch(tmp -> {
+        boolean ret = false;
         if (id.isPresent()) {
           if (!isStudy) {
-            if (tmp.getProjectId() > 0 && tmp.getProjectId() == pid && tmp.getType().equals(role.name()))
-              return true;
+            if (tmp.getProjectId() > 0 && tmp.getProjectId() == finalPid && tmp.getType().equals(finalrole.name()))
+              ret = true;
           } else {
-            if (tmp.getStudyId() > 0 && tmp.getStudyId() == pid && tmp.getType().equals(role.name()))
-              return true;
+            if (tmp.getStudyId() > 0 && tmp.getStudyId() == finalPid && tmp.getType().equals(finalrole.name()))
+              ret = true;
           }
         } else {
-          if (tmp.getType().equals(role.name()))
-            return true;
+          if (tmp.getType().equals(finalrole.name()))
+            ret = true;
         }
-      }
+        return ret;
+      });
     }
     return false;
   }

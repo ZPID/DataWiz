@@ -22,18 +22,41 @@
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <sf:form action="${projectUrl}" commandName="CProjectForm" class="form-inline">
+      <sf:form action="${projectUrl}" commandName="CProjectForm" class="form-inline" role="form">
+        <input type="hidden" value="<s:message code="project.panel.no.description" />" id="unsetDescription">
+        <input type="hidden" value="<s:message code="study.panel.no.description" />" id="unsetStudyDescription">
+        <input type="hidden" value="<s:message code="project.panel.no.researcher" />" id="unsetResearcher">
         <div class="panel-group">
-          <c:set var="firstIn" value="in" />
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="row">
+                <s:message code="project.filter.placeholder" var="filterPH" />
+                <div class="col-sm-11">
+                  <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}"
+                    style="width: 100%">
+                </div>
+                <div class="form-group">
+                  <select id="filterSelect" class="form-control">
+                    <option value="project">Project</option>
+                    <option value="study">Study</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
           <c:forEach items="${CProjectForm}" var="form" varStatus="loop">
             <c:choose>
               <c:when test="${principal.user.hasRole('PROJECT_ADMIN', form.project.id, false)}">
                 <c:set var="pRole" value="panel-primary" />
               </c:when>
               <c:when test="${principal.user.hasRole('PROJECT_WRITER', form.project.id, false)}">
-                <c:set var="pRole" value="panel-info" />
+                <c:set var="pRole" value="panel-success" />
               </c:when>
               <c:when test="${principal.user.hasRole('PROJECT_READER', form.project.id, false)}">
+                <c:set var="pRole" value="panel-info" />
+              </c:when>
+              <c:when
+                test="${principal.user.hasRole('DS_READER', form.project.id, false) || principal.user.hasRole('DS_WRITER', form.project.id, false)}">
                 <c:set var="pRole" value="panel-warning" />
               </c:when>
               <c:when test="${principal.user.hasRole('ADMIN')}">
@@ -43,72 +66,168 @@
                 <c:set var="pRole" value="panel-default" />
               </c:otherwise>
             </c:choose>
-            <div class="panel <c:out value="${pRole}"/> ">
-              <div class="panel-heading" onclick="location.href='<c:url value="project/${form.project.id}"/>';"
-                style="cursor: pointer;">
-                <div class="row">
-                  <div class="col-sm-12">
-                    <div class="row">
-                      <div class="col-sm-12 panel-title">
-                        <s:message text="${form.project.title}" />
-                      </div>
-                      <div class="col-sm-12">
-                        <c:if test="${not empty form.contributors && form.contributors.size() > 0 }">
-                          <s:message text="&#040;" />
-                          <c:forEach items="${form.contributors}" var="contri" varStatus="contriloop">
-                            <s:message text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
-                            <c:if test="${contriloop.index < form.contributors.size()-1}">
-                              <s:message text="&#044;" />
-                            </c:if>
-                          </c:forEach>
-                          <s:message text="&#041;" />
-                        </c:if>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div class="panel <s:message text="${pRole}"/> projectpanel">
+              <div class="panel-heading projectTitle"
+                onclick="location.href='<c:url value="project/${form.project.id}"/>';" style="cursor: pointer;">
+                <s:message text="${form.project.title}" />
               </div>
               <c:set var="firstIn" value="" />
               <div class="panel-body">
-                <div class="row">
+                <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right">
                     <label for="${form.project.description}">Beschreibung:</label>
                   </div>
-                  <div class="col-sm-10">
+                  <div class="col-sm-10 projectDescription">
                     <c:choose>
                       <c:when test="${not empty form.project.description}">
                         <s:message text="${form.project.description}" />
                       </c:when>
                       <c:otherwise>
-                        <s:message text="noch keine Projektbeschreibung vorhanden" />
+                        <s:message code="project.panel.no.description" />
                       </c:otherwise>
                     </c:choose>
                   </div>
                 </div>
-                <div class="row">
+                <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right">
+                    <label for="${form.project.description}">Forscher:</label>
+                  </div>
+                  <div class="col-sm-10 projectResearcher">
+                    <c:choose>
+                      <c:when test="${not empty form.contributors && form.contributors.size() > 0 }">
+                        <c:forEach items="${form.contributors}" var="contri" varStatus="contriloop">
+                          <s:message text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
+                          <c:if test="${contriloop.index < form.contributors.size()-1}">
+                            <s:message text="&#044;" />
+                          </c:if>
+                        </c:forEach>
+                      </c:when>
+                      <c:otherwise>
+                        <s:message code="project.panel.no.researcher" />
+                      </c:otherwise>
+                    </c:choose>
+                  </div>
+                </div>
+                <!-- studies -->
+                <div class="row" style="padding-bottom: 10px;">
+                  <div class="col-sm-2 text-align-right" style="padding-top: 12px;">
                     <label for="${study}">Studienübersicht:</label>
                   </div>
                   <div class="col-sm-10">
                     <c:choose>
                       <c:when test="${empty form.studies}">
-                        <s:message text="noch keine Studien vorhanden" />
+                        <div class="panel ">
+                          <div class="panel-heading" style="background-color: white;">
+                            <s:message text="noch keine Studien vorhanden" />
+                          </div>
+                        </div>
                       </c:when>
                       <c:otherwise>
                         <div class="panel panel-default">
-                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}">Show/hide
-                            Studies</div>
+                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
+                            style="cursor: pointer; background-color: white;">Show/hide Studies</div>
                           <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
+                            <div class="panel-group">
+                              <div class="panel-body">
+                                <c:forEach items="${form.studies}" var="study" varStatus="loop2">
+                                  <c:set var="sRole" value="${pRole}" />
+                                  <c:if test="${pRole eq 'panel-default' || pRole eq 'panel-warning'}">
+                                    <c:choose>
+                                      <c:when test="${principal.user.hasRole('DS_READER', study.id, true)}">
+                                        <c:set var="sRole" value="panel-success" />
+                                      </c:when>
+                                      <c:when test="${principal.user.hasRole('DS_WRITER', study.id, true)}">
+                                        <c:set var="sRole" value="panel-info" />
+                                      </c:when>
+                                    </c:choose>
+                                  </c:if>
+                                  <div class="panel  <s:message text="${sRole}"/> studyFilter">
+                                    <div class="panel-heading studyTitleFilter"
+                                      onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
+                                      style="cursor: pointer;">
+                                      <s:message text="${study.title}" />
+                                    </div>
+                                    <div class="panel-body">
+                                      <div class="row" style="padding-bottom: 10px;">
+                                        <div class="col-sm-2 text-align-right">
+                                          <label for="${study.sAbstract}">Beschreibung:</label>
+                                        </div>
+                                        <div class="col-sm-10 studyDescriptionFilter">
+                                          <c:choose>
+                                            <c:when test="${not empty study.sAbstract}">
+                                              <s:message text="${study.sAbstract}" />
+                                            </c:when>
+                                            <c:otherwise>
+                                              <s:message code="study.panel.no.description" />
+                                            </c:otherwise>
+                                          </c:choose>
+                                        </div>
+                                      </div>
+                                      <div class="row" style="padding-bottom: 10px;">
+                                        <div class="col-sm-2 text-align-right">
+                                          <label for="${study.contributors}">Forscher:</label>
+                                        </div>
+                                        <div class="col-sm-10 studyResearcherFilter">
+                                          <c:choose>
+                                            <c:when
+                                              test="${not empty study.contributors && study.contributors.size() > 0 }">
+                                              <c:forEach items="${study.contributors}" var="contri"
+                                                varStatus="contriloop">
+                                                <s:message
+                                                  text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
+                                                <c:if test="${contriloop.index < study.contributors.size()-1}">
+                                                  <s:message text="&#044;" />
+                                                </c:if>
+                                              </c:forEach>
+                                            </c:when>
+                                            <c:otherwise>
+                                              <s:message code="project.panel.no.researcher" />
+                                            </c:otherwise>
+                                          </c:choose>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </c:forEach>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </c:otherwise>
+                    </c:choose>
+                  </div>
+                </div>
+                <!-- sharedUser -->
+                <div class="row">
+                  <div class="col-sm-2 text-align-right" style="padding-top: 10px;">
+                    <label for="${study}">Projektmitarbeiter:</label>
+                  </div>
+                  <div class="col-sm-10">
+                    <c:choose>
+                      <c:when test="${empty form.sharedUser or fn:length(form.sharedUser) eq 1}">
+                        <div class="panel panel-default">
+                          <div class="panel-heading" style="background-color: white;">
+                            <s:message text="Sie haben das Projekt noch nicht geteilt" />
+                          </div>
+                        </div>
+                      </c:when>
+                      <c:otherwise>
+                        <div class="panel panel-default">
+                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
+                            style="cursor: pointer; background-color: white;">Show/hide Shared User</div>
+                          <div class="panel-collapse collapse" id="panel_user_${loop.count}">
                             <div class="list-group">
-                              <c:forEach items="${form.studies}" var="study" varStatus="loop2">
+                              <c:forEach items="${form.sharedUser}" var="user" varStatus="loop2">
                                 <div class="list-group-item ">
-                                  <h4 class="list-group-item-heading"
-                                    onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
-                                    style="cursor: pointer;">
-                                    <c:out value="${study.title}"></c:out>
-                                  </h4>
-                                  <br />
-                                  <c:out value="${study.sAbstract}"></c:out>
+                                  <s:message text="${user.firstName} ${user.lastName}(${user.email})" />
+                                  <c:forEach items="${user.globalRoles}" var="userRole">
+                                    <c:if test="${userRole.type ne 'REL_ROLE'}">
+                                      <s:message text="${userRole.type}" />
+                                    </c:if>
+                                    <c:if test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
+                                      <span class="reddot"></span>
+                                    </c:if>
+                                  </c:forEach>
                                 </div>
                               </c:forEach>
                             </div>
@@ -120,32 +239,8 @@
                 </div>
               </div>
               <div class="panel-footer">
-                <c:forEach items="${form.sharedUser}" var="user" varStatus="loopu">
-                  <c:choose>
-                    <c:when
-                      test="${not empty user.lastName && not empty user.firstName && loopu.index < form.sharedUser.size()-1}">
-                      <c:set var="shared" value="${shared} ${user.firstName} ${user.lastName}(${user.email}), " />
-                    </c:when>
-                    <c:when
-                      test="${not empty user.lastName && not empty user.firstName && loopu.index >= form.sharedUser.size()-1}">
-                      <c:set var="shared" value="${shared} ${user.firstName} ${user.lastName}(${user.email})" />
-                    </c:when>
-                    <c:when
-                      test="${(empty user.lastName || empty user.firstName) && loopu.index < form.sharedUser.size()-1}">
-                      <c:set var="shared" value="${shared} ${user.email}, " />
-                    </c:when>
-                    <c:otherwise>
-                      <c:set var="shared" value="${shared} ${user.email}" />
-                    </c:otherwise>
-                  </c:choose>
-                </c:forEach>
                 <div class="row">
-                  <div class="col-sm-1">
-                    <span class="label label-default" data-toggle="tooltip" data-placement="top"
-                      title="<c:out value="${shared}" />"><s:message code="panel.shared" /> (<c:out
-                        value="${form.sharedUser.size()}" />)</span>
-                  </div>
-                  <div class="col-sm-11 text-align-right">
+                  <div class="col-sm-12 text-align-right">
                     <c:choose>
                       <c:when test="${not empty form.studies[0] && form.studies.size() > 0 }">
                         <c:forEach items="${form.sharedUser}" var="user">

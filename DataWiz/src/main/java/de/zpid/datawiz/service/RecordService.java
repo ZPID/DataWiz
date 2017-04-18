@@ -83,7 +83,7 @@ public class RecordService {
   @Autowired
   private MessageSource messageSource;
 
-  final static private int VAR_LABEL_MAX_LENGTH = 200;
+  final static private int VAR_LABEL_MAX_LENGTH = 250;
   final static private int VAR_NAME_MAX_LENGTH = 50;
 
   /**
@@ -471,18 +471,18 @@ public class RecordService {
                 new Object[] { var.getPosition(), var.getName(), 16 }, LocaleContextHolder.getLocale()));
           }
           for (SPSSValueLabelDTO val : var.getValues()) {
-            validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0);
+            validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0, parsingWarnings);
           }
           SPSSMissing missFormat = var.getMissingFormat();
           if (!missFormat.equals(SPSSMissing.SPSS_UNKNOWN) && !missFormat.equals(SPSSMissing.SPSS_NO_MISSVAL)) {
-            validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 1);
+            validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 1, parsingWarnings);
             if (missFormat.equals(SPSSMissing.SPSS_TWO_MISSVAL) || missFormat.equals(SPSSMissing.SPSS_MISS_RANGE)
                 || missFormat.equals(SPSSMissing.SPSS_THREE_MISSVAL)
                 || missFormat.equals(SPSSMissing.SPSS_MISS_RANGEANDVAL)) {
-              validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 2);
+              validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 2, parsingWarnings);
               if (missFormat.equals(SPSSMissing.SPSS_THREE_MISSVAL)
                   || missFormat.equals(SPSSMissing.SPSS_MISS_RANGEANDVAL)) {
-                validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 3);
+                validateValueorMissingField(parsingErrors, onlyValidation, var, null, true, 3, parsingWarnings);
               } else {
                 if (!onlyValidation) {
                   var.setMissingVal3(null);
@@ -522,7 +522,8 @@ public class RecordService {
    * @return
    */
   private boolean validateValueorMissingField(final List<String> parsingErrors, final boolean onlyValidation,
-      SPSSVarDTO var, SPSSValueLabelDTO val, boolean switchToMissing, int missingNum) {
+      SPSSVarDTO var, SPSSValueLabelDTO val, boolean switchToMissing, int missingNum,
+      final List<String> parsingWarnings) {
     boolean date = (var.getType().equals(SPSSVarTypes.SPSS_FMT_DATE_TIME)
         || var.getType().equals(SPSSVarTypes.SPSS_FMT_DATE) || var.getType().equals(SPSSVarTypes.SPSS_FMT_ADATE)
         || var.getType().equals(SPSSVarTypes.SPSS_FMT_JDATE) || var.getType().equals(SPSSVarTypes.SPSS_FMT_EDATE)
@@ -548,8 +549,12 @@ public class RecordService {
       }
     }
     if (!switchToMissing && (label.isEmpty() || value.isEmpty())) {
-      parsingErrors.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName() },
-          LocaleContextHolder.getLocale()));
+      if (label.isEmpty())
+        parsingWarnings.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName()},
+            LocaleContextHolder.getLocale()));
+      else
+        parsingErrors.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName() },
+            LocaleContextHolder.getLocale()));
       varError = true;
     } else if (switchToMissing && (value == null || value.isEmpty())) {
       parsingErrors.add(messageSource.getMessage("record.value.missing.empty",

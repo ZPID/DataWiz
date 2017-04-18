@@ -1,5 +1,6 @@
 package de.zpid.datawiz.controller;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.form.ProjectForm;
@@ -60,9 +63,46 @@ public class PanelController extends SuperController {
         for (ProjectDTO pdto : cpdto) {
           ProjectForm pform = createProjectForm();
           pform.setProject(pdto);
-          pform.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+          if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pdto.getId(), false)
+              || user.hasRole(Roles.PROJECT_READER, pdto.getId(), false)
+              || user.hasRole(Roles.PROJECT_WRITER, pdto.getId(), false)) {
+            pform.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+          } else if (user.hasRole(Roles.DS_READER, pdto.getId(), false)
+              || user.hasRole(Roles.DS_WRITER, pdto.getId(), false)) {
+            List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pdto.getId());
+            List<StudyDTO> cStud = new ArrayList<StudyDTO>();
+            userRoles.parallelStream().forEach(role -> {
+              Roles uRole = Roles.valueOf(role.getType());
+              if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
+                try {
+                  cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId(), true, false));
+                } catch (Exception e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+                }
+              }
+            });
+            pform.setStudies(cStud);
+          }
+          pform.getStudies().parallelStream().forEach(stud -> {
+            try {
+              stud.setContributors(contributorDAO.findByStudy(stud.getId()));
+            } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          });
           pform.setContributors(contributorDAO.findByProject(pdto, false, true));
-          pform.setSharedUser(userDAO.findGroupedByProject(pdto.getId()));
+          List<UserDTO> sharedUser = userDAO.findGroupedByProject(pdto.getId());
+          sharedUser.parallelStream().forEach(shared -> {
+            try {
+              shared.setGlobalRoles(roleDAO.findRolesByUserIDAndProjectID(shared.getId(), pdto.getId()));
+            } catch (SQLException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+          });
+          pform.setSharedUser(sharedUser);
           cpform.add(pform);
         }
       }

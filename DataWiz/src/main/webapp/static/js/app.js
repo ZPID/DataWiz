@@ -68,7 +68,12 @@ $tag_box = null;
           }
         }// loading Panel Content
         else if (window.location.pathname.search("/panel") > 0) {
-          startAccordion();
+          $("#projectfilter").keyup(function() {
+            filterProjectList($(this).val());
+          });
+          $("#filterSelect").change(function() {
+            filterProjectList($("#projectfilter").val());
+          });
         } // loading access Content
         else if (window.location.pathname.search("/access") > 0) {
           showHideNewRole();
@@ -82,7 +87,6 @@ $tag_box = null;
         $(".uploader").fadeOut("slow");
       });
 })(window.jQuery, window, document);
-
 $(".projectContentClick").click(function() {
   $("#pagePosi").val($(this).attr("id"));
   setProjectSubmenu($(this).attr("id"));
@@ -139,7 +143,6 @@ function setProjectSubmenu(id) {
     }
   }
 }
-
 
 function setStudySubmenu(id) {
   if (id != null) {

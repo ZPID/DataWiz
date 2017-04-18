@@ -34,7 +34,7 @@ public class RegexUtil {
   public static final String WKYR_REGEX = "^([1-9]|[1-4][0-9]|[5][0-3])\\sWK\\s(19|20)\\d{2}$";
   public static final String DTIME_REGEX = "^([1-9]{1}|[1-9]{1}\\d{1}|[1-2]{1}\\d{1,2}|[3]{1}[0-5]{1}\\d{1}|[3]{1}[6]{1}[0-6]{1})\\s\\d{2}:\\d{2}((:\\d{2})?|:\\d{2}(.\\d{2})?)$";
   public static final String WKDAY_REGEX = "^(MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY)$";
-  public static final String VAR_NAME_REGEX = "^(([a-zA-Z]|\\@)(\\d*[a-zA-Z\\._$@#]*)*)$";
+  public static final String VAR_NAME_REGEX = "^(([a-zA-Z]|\\@)(\\d*[a-zA-Z\\._$@#öäüÖÄÜß]*)*)$";
   public static final String VAR_ARRAY_ATTR = "^(dw_construct\\[\\d+\\])$|(dw_measocc\\[\\d+\\])$|(dw_instrument\\[\\d+\\])$|(dw_itemtext\\[\\d+\\])$|(dw_filtervar\\[\\d+\\])$";
 
 
