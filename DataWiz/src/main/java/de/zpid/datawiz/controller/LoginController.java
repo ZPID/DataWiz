@@ -33,10 +33,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.service.LoginService;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -45,9 +47,11 @@ import de.zpid.datawiz.util.UserUtil;
 public class LoginController extends SuperController {
 
   @Autowired
-  PlatformTransactionManager txManager;
-
-  
+  private PlatformTransactionManager txManager;
+  @Autowired
+  private EmailUtil mail;
+  @Autowired
+  private LoginService loginService;
 
   private static Logger log = LogManager.getLogger(LoginController.class);
 
@@ -75,27 +79,27 @@ public class LoginController extends SuperController {
   public String homePage(ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute homePage()");
-//      try {
-//        log.info("SPSS LIB loaded: " + spss.isLibLoaded());
-//        if (spss.isLibLoaded()) {
-//          RecordDTO spssFile;
-//          if (Platform.isWindows()) {
-//            spssFile = new RecordDTO(
-//                spss.readWholeSPSSFile(Paths.get("C:\\Users\\ronny\\OneDrive\\ZPID\\Test.sav").toString()));
-//          } else {
-//            spssFile = new RecordDTO(spss.readWholeSPSSFile(Paths.get("/home/rb/Downloads/Test.sav").toString()));
-//
-//          }
-//          log.debug(spssFile);
-//          spssFile.getVariables().forEach((s) -> log.debug(s));
-//          spssFile.getErrors().forEach((s) -> System.out.println(s));
-//        }
-//      } catch (Error e) {
-//        System.out.println("lol1");
-//      } catch (Exception e) {
-//        System.out.println("lol2");
-//        e.printStackTrace();
-//      }
+      // try {
+      // log.info("SPSS LIB loaded: " + spss.isLibLoaded());
+      // if (spss.isLibLoaded()) {
+      // RecordDTO spssFile;
+      // if (Platform.isWindows()) {
+      // spssFile = new RecordDTO(
+      // spss.readWholeSPSSFile(Paths.get("C:\\Users\\ronny\\OneDrive\\ZPID\\Test.sav").toString()));
+      // } else {
+      // spssFile = new RecordDTO(spss.readWholeSPSSFile(Paths.get("/home/rb/Downloads/Test.sav").toString()));
+      //
+      // }
+      // log.debug(spssFile);
+      // spssFile.getVariables().forEach((s) -> log.debug(s));
+      // spssFile.getErrors().forEach((s) -> System.out.println(s));
+      // }
+      // } catch (Error e) {
+      // System.out.println("lol1");
+      // } catch (Exception e) {
+      // System.out.println("lol2");
+      // e.printStackTrace();
+      // }
     }
     // CustomResourceLoader res = new CustomResourceLoader();
     // try {
@@ -105,7 +109,7 @@ public class LoginController extends SuperController {
     // e.printStackTrace();
     // }
 
-    //model.addAttribute("greeting", "Hi, Welcome to mysite");
+    // model.addAttribute("greeting", "Hi, Welcome to mysite");
     return "redirect:/panel";
   }
 
@@ -135,8 +139,8 @@ public class LoginController extends SuperController {
   @RequestMapping(value = { "/register", "/register/{projectId}/{email}/{linkhash}" }, method = RequestMethod.GET)
   public String registerDataWizUser(ModelMap model, @PathVariable Optional<Long> projectId,
       @PathVariable Optional<String> email, @PathVariable Optional<String> linkhash) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute registerDataWizUser()- GET");
+    if (log.isTraceEnabled()) {
+      log.trace("execute registerDataWizUser()- GET");
     }
     UserDTO admin = UserUtil.getCurrentUser();
     if (admin != null) {
@@ -168,7 +172,8 @@ public class LoginController extends SuperController {
   @RequestMapping(value = { "/register" }, method = RequestMethod.POST)
   public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult,
       ModelMap model) {
-    log.trace("execute registerDataWizUser()- POST {}", person);
+    if (log.isTraceEnabled())
+      log.trace("execute registerDataWizUser()- POST {}", person);
     try {
       // password check
       if (person.getPassword() == null || person.getPassword_retyped() == null) {
@@ -180,9 +185,9 @@ public class LoginController extends SuperController {
         if (log.isDebugEnabled())
           log.debug("Password and retyped password not equal!");
       }
-      // GTC(AGB) check TODO TEXT
+      // GTC(AGB) check
       if (!person.isCheckedGTC()) {
-        bindingResult.rejectValue("checkedGTC", "email.already.exists");
+        bindingResult.rejectValue("checkedGTC", "register.gtc.net.set");
         if (log.isDebugEnabled())
           log.debug("Email is already used for an account email:" + person.getEmail());
       }
@@ -202,10 +207,10 @@ public class LoginController extends SuperController {
       long projectId = 0;
       try {
         projectId = (person.getComments() != null && !person.getComments().isEmpty())
-            ? Long.parseLong(person.getComments()) : null;
+            ? Long.parseLong(person.getComments()) : -1;
         person.setComments(null);
       } catch (Exception e) {
-        log.warn("ProjectId which is temporary stored in comments is not a number");
+        log.debug("ProjectId which is temporary stored in comments is not a number : {}", person.getComments());
       }
       if (chkmail != null && !chkmail.isEmpty() && projectId > 0) {
         person.setSecEmail(null);
@@ -217,14 +222,13 @@ public class LoginController extends SuperController {
       userDAO.saveOrUpdate(person, false);
       person = userDAO.findByMail(person.getEmail(), false);
     } catch (Exception e) {
-      log.error("DBS error during user registration: ", e);
+      log.error("DBS error during user registration: ", () -> e);
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
       return "error";
     }
     // registration mail
     if (person != null && person.getId() > 0) {
       try {
-        EmailUtil mail = new EmailUtil(env);
         mail.sendSSLMail(person.getEmail(),
             messageSource.getMessage("reg.mail.subject", null,
                 LocaleContextHolder.getLocale()),
@@ -234,11 +238,12 @@ public class LoginController extends SuperController {
                     person.getEmail(), person.getActivationCode() },
                 LocaleContextHolder.getLocale()));
       } catch (Exception e) {
-        log.error("Mail error during user registration: ", e);
+        log.error("Mail error during user registration: ", () -> e);
         model.put("errormsg", messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
         return "error";
       }
     }
+
     return "redirect:/login?activationmail";
   }
 
@@ -254,8 +259,8 @@ public class LoginController extends SuperController {
   @RequestMapping(value = "/activate/{mail}/{activationCode}", method = RequestMethod.GET)
   public String activateAccount(@PathVariable final String mail, @PathVariable final String activationCode,
       ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute activateAccount email: " + mail + " code: " + activationCode);
+    if (log.isTraceEnabled()) {
+      log.trace("execute activateAccount email: " + mail + " code: " + activationCode);
     }
     TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
     TransactionStatus status = txManager.getTransaction(transactionDefinition);
@@ -275,7 +280,7 @@ public class LoginController extends SuperController {
       txManager.commit(status);
     } catch (Exception e) {
       txManager.rollback(status);
-      log.warn("DBS error during user registration: " + e);
+      log.warn("DBS error during user registration: ", () -> e);
       model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
       return "error";
     }
@@ -290,8 +295,8 @@ public class LoginController extends SuperController {
    */
   @RequestMapping(value = "/Access_Denied")
   public String accessDeniedPage(ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute accessDeniedPage() - " + request.getHeader("referer") + " - " + request.getAuthType() + " - "
+    if (log.isTraceEnabled()) {
+      log.trace("execute accessDeniedPage() - " + request.getHeader("referer") + " - " + request.getAuthType() + " - "
           + request.getPathInfo());
     }
     try {
@@ -300,6 +305,76 @@ public class LoginController extends SuperController {
       return "redirect:/login";
     }
     return "accessDenied";
+  }
+
+  @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.GET)
+  public String requestResetPassword(ModelMap model) {
+    if (log.isTraceEnabled()) {
+      log.trace("execute requestResetPassword");
+    }
+    model.put("setemailview", true);
+    model.put("UserDTO", createUserDTO());
+    return "password";
+  }
+
+  @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.POST)
+  public String sendPasswordResetRequest(@ModelAttribute("UserDTO") UserDTO person, ModelMap model) {
+    if (log.isTraceEnabled()) {
+      log.trace("execute requestResetPasswordSubmit");
+    }
+    String ret = "password";
+    String retErr = loginService.sendPasswordRecoveryMail(person, request);
+    if (retErr != null && retErr.equals("dbs.sql.exception")) {
+      ret = "error";
+      model.put("errormsg", messageSource.getMessage(retErr,
+          new Object[] { env.getRequiredProperty("organisation.admin.email"), "" }, LocaleContextHolder.getLocale()));
+    } else if (retErr != null
+        && (retErr.equals("reset.password.no.secemail") || retErr.equals("reset.password.email.send"))) {
+      model.put("successMSG", messageSource.getMessage(retErr, new Object[] { person != null ? person.getEmail() : "" },
+          LocaleContextHolder.getLocale()));
+      model.put("setemailview", true);
+      model.put("sendSuccess", true);
+    } else {
+      model.put("errorMSG", messageSource.getMessage(retErr, new Object[] { person != null ? person.getEmail() : "",
+          env.getRequiredProperty("organisation.admin.email"), "" }, LocaleContextHolder.getLocale()));
+      model.put("setemailview", true);
+    }
+    return ret;
+  }
+
+  @RequestMapping(value = { "/login/resetpwd/{email}/{code}" })
+  public String showSetPassword(ModelMap model, @PathVariable final Optional<String> email,
+      @PathVariable final Optional<String> code) {
+    if (log.isTraceEnabled()) {
+      log.trace("execute showSetPassword for user: [{}]", () -> email.isPresent() ? email.get() : "null");
+    }
+    String ret = "password";
+    String retErr = loginService.setPasswordResetForm(email, code);
+    if (retErr == null || retErr.equals("reset.password.email.link.success")) {
+      model.put("successMSG", messageSource.getMessage(retErr, null, LocaleContextHolder.getLocale()));
+      model.put("setemailview", false);
+    } else if (retErr.equals("dbs.sql.exception")) {
+      ret = "error";
+      model.put("errormsg", messageSource.getMessage(retErr,
+          new Object[] { env.getRequiredProperty("organisation.admin.email"), "" }, LocaleContextHolder.getLocale()));
+    } else {
+      model.put("errorMSG", messageSource.getMessage(retErr, null, LocaleContextHolder.getLocale()));
+      model.put("setemailview", true);
+      model.put("sendSuccess", true);
+    }
+    return ret;
+  }
+
+  @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.POST, params = "setPassword")
+  public String saveNewPassword(@ModelAttribute("UserDTO") final UserDTO person, final ModelMap model,
+      final RedirectAttributes redirectAttributes) {
+    if (log.isTraceEnabled()) {
+      log.trace("execute saveNewPassword");
+    }
+    String ret = "redirect:/login";
+    redirectAttributes.addFlashAttribute("successMSG", "sucesssssss");
+
+    return ret;
   }
 
   /**
@@ -312,8 +387,8 @@ public class LoginController extends SuperController {
    */
   @RequestMapping(value = "/logout")
   public String logout(ModelMap model, HttpServletResponse response) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute logoutPage()");
+    if (log.isTraceEnabled()) {
+      log.trace("execute logoutPage()");
     }
     String cookieName = "remember-me";
     Cookie cookie = new Cookie(cookieName, null);

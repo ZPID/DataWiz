@@ -28,16 +28,16 @@
           <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
             aria-haspopup="true" aria-expanded="false"><c:out value="${principal.username}" /><span class="caret"></span></a>
             <ul class="dropdown-menu">
-              <li><a href="<c:url value="/panel" />">Projekte</a></li>
-              <li><a href="<c:url value="/usersettings" />">Eigene Daten</a></li>
+              <li><a href="<c:url value="/panel" />"><s:message code="navbar.sub.projects" /></a></li>
+              <li><a href="<c:url value="/usersettings" />"><s:message code="navbar.sub.userdata" /></a></li>
               <!-- <li><a href="#">Placeholder</a></li> -->
               <li role="separator" class="divider"></li>
-              <li><a href="<c:url value="/logout" />">Logout</a></li>
+              <li><a href="<c:url value="/logout" />"><s:message code="navbar.sub.logout" /></a></li>
             </ul></li>
         </sec:authorize>
         <sec:authorize access="isAnonymous()">
-          <li><a href="<c:url value="/login" />">Login</a></li>
-          <li><a href="<c:url value="/register" />">Register</a></li>
+          <li><a href="<c:url value="/login" />"><s:message code="navbar.main.login" /></a></li>
+          <li><a href="<c:url value="/register" />"><s:message code="navbar.main.register" /></a></li>
         </sec:authorize>
         <li><c:set var="localeCode" value="${pageContext.response.locale}" /> <c:choose>
             <c:when test="${localeCode eq 'de'}">

@@ -12,7 +12,7 @@
             <div class="col-sm-10">
               <s:message code="gen.firstName.ph" var="reg_first" />
               <sf:input path="firstName" class="form-control" placeholder="${reg_first}" />
-              <sf:errors path="firstName" cssClass="alert alert-danger" element="div" />
+              <sf:errors path="firstName" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
           <div class="form-group">
@@ -20,7 +20,7 @@
             <div class="col-sm-10">
               <s:message code="gen.lastName.ph" var="reg_last" />
               <sf:input path="lastName" class="form-control" placeholder="${reg_last}" />
-              <sf:errors path="lastName" cssClass="alert alert-danger" element="div" />
+              <sf:errors path="lastName" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
           <div class="form-group">
@@ -37,7 +37,7 @@
               <s:message code="gen.password.ph" var="reg_password" />
               <sf:input path="password" class="form-control" placeholder="${reg_password}" type="password"
                 required="required" />
-              <sf:errors path="password" cssClass="alert alert-danger" element="div" />
+              <sf:errors path="password" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
           <div class="form-group">
@@ -46,7 +46,7 @@
               <s:message code="gen.password.retype.ph" var="reg_password_retype" />
               <sf:input path="password_retyped" class="form-control" placeholder="${reg_password_retype}"
                 type="password" required="required" />
-              <sf:errors path="password" cssClass="alert alert-danger" element="div" />
+              <sf:errors path="password" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
           <div class="form-group">
@@ -55,7 +55,7 @@
               <sf:checkbox path="checkedGTC" value="true" />
               <c:url var="gtc_link" value="/static/html/terms.html" />
               <span><s:message code="reg.gtc.checkbox" arguments="${gtc_link}" /></span>
-              <sf:errors path="checkedGTC" cssClass="alert alert-danger" element="div" />
+              <sf:errors path="checkedGTC" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
           <div class="form-group">

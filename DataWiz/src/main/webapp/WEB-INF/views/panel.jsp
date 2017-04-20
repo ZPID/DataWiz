@@ -37,8 +37,8 @@
                 </div>
                 <div class="form-group">
                   <select id="filterSelect" class="form-control">
-                    <option value="project">Project</option>
-                    <option value="study">Study</option>
+                    <option value="project"><s:message code="project.panel.select.project" /></option>
+                    <option value="study"><s:message code="project.panel.select.study" /></option>
                   </select>
                 </div>
               </div>
@@ -69,13 +69,13 @@
             <div class="panel <s:message text="${pRole}"/> projectpanel">
               <div class="panel-heading projectTitle"
                 onclick="location.href='<c:url value="project/${form.project.id}"/>';" style="cursor: pointer;">
-                <s:message text="${form.project.title}" />
+                <strong><s:message text="${form.project.title}" /></strong>
               </div>
               <c:set var="firstIn" value="" />
               <div class="panel-body">
                 <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right">
-                    <label for="${form.project.description}">Beschreibung:</label>
+                    <label for="${form.project.description}"><s:message code="project.panel.project.description" /></label>
                   </div>
                   <div class="col-sm-10 projectDescription">
                     <c:choose>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right">
-                    <label for="${form.project.description}">Forscher:</label>
+                    <label for="${form.project.description}"><s:message code="project.panel.project.researcher" /></label>
                   </div>
                   <div class="col-sm-10 projectResearcher">
                     <c:choose>
@@ -111,7 +111,7 @@
                 <!-- studies -->
                 <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right" style="padding-top: 12px;">
-                    <label for="${study}">Studienübersicht:</label>
+                    <label for="${study}"><s:message code="project.panel.project.studies" /></label>
                   </div>
                   <div class="col-sm-10">
                     <c:choose>
@@ -125,7 +125,9 @@
                       <c:otherwise>
                         <div class="panel panel-default">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
-                            style="cursor: pointer; background-color: white;">Show/hide Studies</div>
+                            style="cursor: pointer; background-color: white;">
+                            <s:message code="project.panel.project.studies.showhide" />
+                          </div>
                           <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
                             <div class="panel-group">
                               <div class="panel-body">
@@ -141,16 +143,17 @@
                                       </c:when>
                                     </c:choose>
                                   </c:if>
-                                  <div class="panel  <s:message text="${sRole}"/> studyFilter">
-                                    <div class="panel-heading studyTitleFilter"
-                                      onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
-                                      style="cursor: pointer;">
-                                      <s:message text="${study.title}" />
+                                  <div class="panel  <s:message text="${sRole}"/> studyFilter"
+                                    onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
+                                    style="cursor: pointer;">
+                                    <div class="panel-heading studyTitleFilter">
+                                      <strong><s:message text="${study.title}" /></strong>
                                     </div>
                                     <div class="panel-body">
                                       <div class="row" style="padding-bottom: 10px;">
                                         <div class="col-sm-2 text-align-right">
-                                          <label for="${study.sAbstract}">Beschreibung:</label>
+                                          <label for="${study.sAbstract}"><s:message
+                                              code="project.panel.project.description" /></label>
                                         </div>
                                         <div class="col-sm-10 studyDescriptionFilter">
                                           <c:choose>
@@ -165,7 +168,8 @@
                                       </div>
                                       <div class="row" style="padding-bottom: 10px;">
                                         <div class="col-sm-2 text-align-right">
-                                          <label for="${study.contributors}">Forscher:</label>
+                                          <label for="${study.contributors}"><s:message
+                                              code="project.panel.project.researcher" /></label>
                                         </div>
                                         <div class="col-sm-10 studyResearcherFilter">
                                           <c:choose>
@@ -200,7 +204,7 @@
                 <!-- sharedUser -->
                 <div class="row">
                   <div class="col-sm-2 text-align-right" style="padding-top: 10px;">
-                    <label for="${study}">Projektmitarbeiter:</label>
+                    <label for="${study}"><s:message code="project.panel.project.shared" /></label>
                   </div>
                   <div class="col-sm-10">
                     <c:choose>
@@ -214,20 +218,41 @@
                       <c:otherwise>
                         <div class="panel panel-default">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
-                            style="cursor: pointer; background-color: white;">Show/hide Shared User</div>
+                            style="cursor: pointer; background-color: white;">
+                            <s:message code="project.panel.project.shared.showhide" />
+                          </div>
                           <div class="panel-collapse collapse" id="panel_user_${loop.count}">
                             <div class="list-group">
                               <c:forEach items="${form.sharedUser}" var="user" varStatus="loop2">
-                                <div class="list-group-item ">
-                                  <s:message text="${user.firstName} ${user.lastName}(${user.email})" />
-                                  <c:forEach items="${user.globalRoles}" var="userRole">
-                                    <c:if test="${userRole.type ne 'REL_ROLE'}">
-                                      <s:message text="${userRole.type}" />
-                                    </c:if>
-                                    <c:if test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
-                                      <span class="reddot"></span>
-                                    </c:if>
-                                  </c:forEach>
+                                <div class="list-group-item">
+                                  <div class="row">
+                                    <div class="col-sm-3" style="padding-top: 10px">
+                                      <s:message text="${user.firstName} ${user.lastName}(${user.email})" />
+                                    </div>
+                                    <div class="col-sm-9">
+                                      <div class="list-group" style="margin-bottom: 0px; margin-top:">
+                                        <c:forEach items="${user.globalRoles}" var="userRole">
+                                          <c:if test="${userRole.type ne 'REL_ROLE'}">
+                                            <div class="list-group-item">
+                                              <s:message code="roles.${userRole.type}" />
+                                              <c:if
+                                                test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
+                                                <span class="reddot"></span>
+                                              </c:if>
+                                              <c:if
+                                                test="${userRole.type eq 'DS_READER' or userRole.type eq 'DS_WRITER'}">
+                                                <c:forEach items="${form.studies}" var="study">
+                                                  <c:if test="${userRole.studyId eq study.id}">
+                                                    <s:message text="&quot; ${study.title}&quot; " />
+                                                  </c:if>
+                                                </c:forEach>
+                                              </c:if>
+                                            </div>
+                                          </c:if>
+                                        </c:forEach>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </c:forEach>
                             </div>

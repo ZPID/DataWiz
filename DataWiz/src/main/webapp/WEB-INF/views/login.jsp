@@ -6,33 +6,29 @@
     <div class="login-card content-padding">
       <c:url var="loginUrl" value="/login" />
       <sf:form action="${loginUrl}" commandName="UserDTO" StyleClass="form-horizontal">
+        <%@ include file="templates/message.jsp"%>
         <c:if test="${param.error != null}">
           <div class="alert alert-danger">
-            <p>
-              <c:out value="${error}" />
-            </p>
+            <s:message text="${error}" />
+          </div>
+          <div class="alert alert-info">
+            <s:message code="login.password.reset" arguments="${loginUrl}/passwordrequest" />
           </div>
         </c:if>
         <c:choose>
           <c:when test="${param.logout != null}">
             <div class="alert alert-success">
-              <p>
-                <s:message code="login.logout" />
-              </p>
+              <s:message code="login.logout" />
             </div>
           </c:when>
           <c:when test="${param.activated != null}">
             <div class="alert alert-success">
-              <p>
-                <s:message code="login.activated.success" htmlEscape="false" />
-              </p>
+              <s:message code="login.activated.success" />
             </div>
           </c:when>
           <c:when test="${param.activationmail != null}">
             <div class="alert alert-success">
-              <p>
-                <s:message code="login.activation.mail.send" htmlEscape="false" />
-              </p>
+              <s:message code="login.activation.mail.send" />
             </div>
           </c:when>
         </c:choose>
@@ -52,7 +48,8 @@
         </div>
         <div class="input-group input-sm">
           <div class="checkbox">
-            <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message code="login.remember.me" /></label>
+            <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message
+                code="login.remember.me" /></label>
           </div>
         </div>
         <div class="form-actions">

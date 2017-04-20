@@ -26,7 +26,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Autowired
-  @Qualifier("userLogin")
+  @Qualifier("LoginService")
   UserDetailsService userDetailsService;
 
   @Autowired

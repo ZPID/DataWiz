@@ -21,7 +21,7 @@ import de.zpid.datawiz.enumeration.AccountState;
 @Repository
 @Scope("singleton")
 public class UserDAO extends SuperDAO {
-  
+
   private static Logger log = LogManager.getLogger(UserDAO.class);
 
   public UserDAO() {
@@ -87,7 +87,6 @@ public class UserDAO extends SuperDAO {
             }
             return null;
           }
-
         });
     // set Userroles
     if (user != null && user.getId() > 0) {
