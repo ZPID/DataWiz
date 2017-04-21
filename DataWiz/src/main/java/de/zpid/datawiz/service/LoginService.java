@@ -1,7 +1,9 @@
 package de.zpid.datawiz.service;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,6 +16,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +24,7 @@ import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.util.CustomUserDetails;
 import de.zpid.datawiz.util.EmailUtil;
+import de.zpid.datawiz.util.RegexUtil;
 
 @Component("LoginService")
 @Scope("singleton")
@@ -33,6 +37,8 @@ public class LoginService implements UserDetailsService {
   protected MessageSource messageSource;
   @Autowired
   private EmailUtil mail;
+  @Autowired
+  protected PasswordEncoder passwordEncoder;
 
   @Transactional(readOnly = true)
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -119,6 +125,44 @@ public class LoginService implements UserDetailsService {
   }
 
   /**
+   * @param person
+   * @param retMSG
+   * @return
+   */
+  public String validateAndSavePassword(final UserDTO person, List<String> retMSG) {
+    String ret = "redirect:/login";
+    if (person != null) {
+      if (person.getPassword() == null || person.getPassword().isEmpty()) {
+        ret = "password";
+        retMSG.add(0, "reset.passwort.passwd.not.set");
+      } else if (person.getPassword_retyped() == null || person.getPassword_retyped().isEmpty()) {
+        ret = "password";
+        retMSG.add(0, "reset.passwort.retypepasswd.not.set");
+      } else if (!person.getPassword().equals(person.getPassword_retyped())) {
+        ret = "password";
+        retMSG.add(0, "passwords.not.equal");
+      } else if (person.getPassword().length() < 8) {
+        ret = "password";
+        retMSG.add(0, "passwords.too.short");
+      } else if (!Pattern.compile(RegexUtil.PASSWORDREGEX).matcher(person.getPassword()).find()) {
+        ret = "password";
+        retMSG.add(0, "reset.password.too.easy");
+      } else {
+        try {
+          person.setPassword(passwordEncoder.encode(person.getPassword()));
+          userDAO.updatePassword(person);
+          retMSG.add(0, "reset.password.success");
+        } catch (Exception e) {
+          log.fatal("DBS Exception during validateAndSavePassword Message: ", () -> e);
+          retMSG.add(0, e.getMessage());
+          ret = "error";
+        }
+      }
+    }
+    return ret;
+  }
+
+  /**
    * @param email
    * @param code
    * @return
@@ -126,7 +170,6 @@ public class LoginService implements UserDetailsService {
   public String setPasswordResetForm(final Optional<String> email, final Optional<String> code) {
     UserDTO user = null;
     String retErr = null;
-
     if (email.isPresent() && code.isPresent()) {
       try {
         user = userDAO.findByMail(email.get(), true);

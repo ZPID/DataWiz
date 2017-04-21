@@ -1,5 +1,7 @@
 package de.zpid.datawiz.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -371,9 +373,23 @@ public class LoginController extends SuperController {
     if (log.isTraceEnabled()) {
       log.trace("execute saveNewPassword");
     }
-    String ret = "redirect:/login";
-    redirectAttributes.addFlashAttribute("successMSG", "sucesssssss");
-
+    List<String> retMSG = new ArrayList<>();
+    String ret = loginService.validateAndSavePassword(person, retMSG);
+    if (ret.equals("redirect:/login")) {
+      redirectAttributes.addFlashAttribute("successMSG",
+          messageSource.getMessage(retMSG.get(0), new Object[] { person.getEmail() }, LocaleContextHolder.getLocale()));
+    } else if (ret.equals("error")) {
+      model
+          .put("errormsg",
+              messageSource
+                  .getMessage("dbs.sql.exception",
+                      new Object[] { env.getRequiredProperty("organisation.admin.email"),
+                          retMSG.get(0).replaceAll("\n", "").replaceAll("\"", "\'") },
+                      LocaleContextHolder.getLocale()));
+    } else {
+      model.put("setemailview", false);
+      model.put("errorMSG", messageSource.getMessage(retMSG.get(0), null, LocaleContextHolder.getLocale()));
+    }
     return ret;
   }
 

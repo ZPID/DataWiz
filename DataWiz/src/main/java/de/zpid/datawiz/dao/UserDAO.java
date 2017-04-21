@@ -181,6 +181,14 @@ public class UserDAO extends SuperDAO {
     return ret;
   }
 
+  public int updatePassword(final UserDTO user) throws Exception {
+    log.trace("Entering updatePassword for user [email: {}]", () -> user.getEmail());
+    int ret = this.jdbcTemplate.update("UPDATE dw_user SET password = ? WHERE email = ?", user.getPassword(),
+        user.getEmail());
+    log.debug("Transaction for updatePassword returned: {}", ret);
+    return ret;
+  }
+
   /**
    * Return only the encoded password of a DataWiz User
    * 

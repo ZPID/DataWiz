@@ -11,6 +11,9 @@ public class RegexUtil {
    */
   public static final String validEmail = "[\\w!#$%&’*+/=?`{|}~^-]+(?:\\.[\\w!#$%&’*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}";
   public static final String emptyOr = "^$|";
+
+  // Minimum 8 characters at least 1 Alphabet and 1 Number:
+  public static final String PASSWORDREGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
   /**
    * Regex for only alphabetic characters with umlauts, blanks and hyphens.
    */
@@ -36,6 +39,5 @@ public class RegexUtil {
   public static final String WKDAY_REGEX = "^(MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|SUNDAY)$";
   public static final String VAR_NAME_REGEX = "^(([a-zA-Z]|\\@)(\\d*[a-zA-Z\\._$@#öäüÖÄÜß]*)*)$";
   public static final String VAR_ARRAY_ATTR = "^(dw_construct\\[\\d+\\])$|(dw_measocc\\[\\d+\\])$|(dw_instrument\\[\\d+\\])$|(dw_itemtext\\[\\d+\\])$|(dw_filtervar\\[\\d+\\])$";
-
 
 }
