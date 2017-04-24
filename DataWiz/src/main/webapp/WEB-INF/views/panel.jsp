@@ -22,7 +22,7 @@
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <sf:form action="${projectUrl}" commandName="CProjectForm" class="form-inline" role="form">
+      <sf:form action="${projectUrl}" commandName="CProjectForm" class="form-inline">
         <input type="hidden" value="<s:message code="project.panel.no.description" />" id="unsetDescription">
         <input type="hidden" value="<s:message code="study.panel.no.description" />" id="unsetStudyDescription">
         <input type="hidden" value="<s:message code="project.panel.no.researcher" />" id="unsetResearcher">
@@ -75,7 +75,7 @@
               <div class="panel-body">
                 <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right">
-                    <label for="${form.project.description}"><s:message code="project.panel.project.description" /></label>
+                    <strong><s:message code="project.panel.project.description" /></strong>
                   </div>
                   <div class="col-sm-10 projectDescription">
                     <c:choose>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right">
-                    <label for="${form.project.description}"><s:message code="project.panel.project.researcher" /></label>
+                    <strong><s:message code="project.panel.project.researcher" /></strong>
                   </div>
                   <div class="col-sm-10 projectResearcher">
                     <c:choose>
@@ -111,7 +111,7 @@
                 <!-- studies -->
                 <div class="row" style="padding-bottom: 10px;">
                   <div class="col-sm-2 text-align-right" style="padding-top: 12px;">
-                    <label for="${study}"><s:message code="project.panel.project.studies" /></label>
+                    <strong><s:message code="project.panel.project.studies" /></strong>
                   </div>
                   <div class="col-sm-10">
                     <c:choose>
@@ -152,8 +152,7 @@
                                     <div class="panel-body">
                                       <div class="row" style="padding-bottom: 10px;">
                                         <div class="col-sm-2 text-align-right">
-                                          <label for="${study.sAbstract}"><s:message
-                                              code="project.panel.project.description" /></label>
+                                          <strong><s:message code="project.panel.project.description" /></strong>
                                         </div>
                                         <div class="col-sm-10 studyDescriptionFilter">
                                           <c:choose>
@@ -168,8 +167,7 @@
                                       </div>
                                       <div class="row" style="padding-bottom: 10px;">
                                         <div class="col-sm-2 text-align-right">
-                                          <label for="${study.contributors}"><s:message
-                                              code="project.panel.project.researcher" /></label>
+                                          <strong><s:message code="project.panel.project.researcher" /></strong>
                                         </div>
                                         <div class="col-sm-10 studyResearcherFilter">
                                           <c:choose>
@@ -204,7 +202,7 @@
                 <!-- sharedUser -->
                 <div class="row">
                   <div class="col-sm-2 text-align-right" style="padding-top: 10px;">
-                    <label for="${study}"><s:message code="project.panel.project.shared" /></label>
+                    <strong><s:message code="project.panel.project.shared" /></strong>
                   </div>
                   <div class="col-sm-10">
                     <c:choose>

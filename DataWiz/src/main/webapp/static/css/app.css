@@ -438,25 +438,25 @@ label.btn::after {
 /**************** END NAVBAR CUSTOMISATION ****************/
 /**************** START FIXED NAVBAR SETTINGS ****************/
 .mainnavtop.affix {
-  top: 0;
+  top: 0px;
   width: 100%
 }
 
 .mainnavtop {
-  border-left: 0;
-  border-right: 0;
-  border-radius: 0;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -o-border-radius: 0;
-  z-index: 1;
+  border-left: 0px;
+  border-right: 0px;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  -o-border-radius: 0px;
+  z-index: 99;
 }
 
 .subnavtop.affix {
   position: fixed;
-  top: 51;
-  left: 0;
-  z-index: 1;
+  top: 51px;
+  left: 0px;
+  z-index: 99;
   width: 100%;
   background-color: white;
   text-align: center;
@@ -465,13 +465,13 @@ label.btn::after {
 }
 
 .subnavtop {
-  border-left: 0;
-  border-right: 0;
-  border-radius: 0;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -o-border-radius: 0;
-  z-index: 1;
+  border-left: 0px;
+  border-right: 0px;
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  -o-border-radius: 0px;
+  z-index: 99;
 }
 
 /**************** END FIXED NAVBAR SETTINGS ****************/

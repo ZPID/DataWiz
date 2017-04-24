@@ -37,8 +37,9 @@
             <div class="panel-body">
               <form class="form-horizontal">
                 <div class="form-group">
-                  <label class="control-label col-sm-2" for="${rec.description}"><s:message
-                      code="study.records.description" /></label>
+                  <div class="control-label col-sm-2">
+                    <strong><s:message code="study.records.description" /></strong>
+                  </div>
                   <div class="col-sm-10 margin-top-7">
                     <s:message text="${rec.description}" />
                   </div>
@@ -46,8 +47,9 @@
                 <c:choose>
                   <c:when test="${not empty rec.changed}">
                     <div class="form-group">
-                      <label class="control-label col-sm-2" for="${rec.changed}"><s:message
-                          code="study.records.version.info" /></label>
+                      <div class="control-label col-sm-2">
+                        <strong><s:message code="study.records.version.info" /></strong>
+                      </div>
                       <javatime:format value="${rec.changed}" style="MS" var="strDate" />
                       <div class="col-sm-10 margin-top-7">
                         <s:message code="panel.last.commit" arguments="${strDate};${rec.changedBy}" htmlEscape="false"
@@ -55,8 +57,9 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="control-label col-sm-2" for="${rec.changeLog}"><s:message
-                          code="study.records.version.changelog" /></label>
+                      <div class="control-label col-sm-2">
+                        <strong><s:message code="study.records.version.changelog" /></strong>
+                      </div>
                       <div class="col-sm-10 margin-top-7">
                         <s:message text="${rec.changeLog}" />
                       </div>

@@ -154,6 +154,10 @@ public class ProjectService {
     } // load /project/xx/studies
     else if (call.equals(PageState.STUDIES)) {
       pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+      if (pForm.getStudies() != null)
+        for (StudyDTO stud : pForm.getStudies()) {
+          stud.setContributors(contributorDAO.findByStudy(stud.getId()));
+        }
     } // load /project/xx/material
     else if (call.equals(PageState.MATERIAL)) {
       pForm.setFiles(fileDAO.findProjectMaterialFiles(pdto));

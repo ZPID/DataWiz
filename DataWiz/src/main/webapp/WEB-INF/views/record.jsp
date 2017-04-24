@@ -53,7 +53,7 @@
       <c:url var="accessUrl"
         value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST"
-        enctype="multipart/form-data" role="form">
+        enctype="multipart/form-data">
         <input type="hidden" id="csrf" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <!-- records[0].recordName -->
         <c:set var="input_vars" value="record.recordName;record.recordName;required; ;row" />
@@ -67,7 +67,7 @@
               class="btn btn-default btn-sm"><s:message code="record.back.to.overview" /></a>
           </div>
           <div class="col-md-6 text-align-right">
-            <sf:button type="submit" class="btn btn-success btn-sm" name="saveMetaData">
+            <sf:button class="btn btn-success btn-sm" name="saveMetaData">
               <s:message code="gen.submit" />
             </sf:button>
           </div>
@@ -109,7 +109,7 @@
                       </sf:label>
                       <div>
                         <sf:label class="btn btn-primary form-control" path="spssFile">
-                          <sf:input path="spssFile" type="file" style="display: none;" accept=".sav,.por"
+                          <input id="spssFile" name="spssFile" type="file" style="display: none;" accept=".sav,.por"
                             onchange="shortFilename('upload-spss-file-info',$(this).val());" />
                           <s:message code="record.spssFile.button" />
                         </sf:label>
@@ -127,7 +127,7 @@
                         <s:message code="record.csvFile.label" />
                       </sf:label>
                       <sf:label class="btn btn-primary form-control" path="csvFile">
-                        <sf:input path="csvFile" type="file" style="display: none;" accept=".csv,.txt,.dat"
+                        <input id="csvFile" name="csvFile" type="file" style="display: none;" accept=".csv,.txt,.dat"
                           onchange="shortFilename('upload-csv-file-info',$(this).val());" />
                         <s:message code="record.csvFile.button" />
                       </sf:label>
@@ -139,10 +139,8 @@
                   <div class="form-group">
                     <!-- headerRow -->
                     <div class="col-sm-12">
-                      <sf:label class="control-label" path="headerRow">
-                        <s:message code="record.headerRow" />
-                      </sf:label>
-                      <sf:checkbox path="headerRow" />
+                      <label class="control-label"><sf:checkbox path="headerRow" /> <s:message
+                          code="record.headerRow" /> </label>
                       <s:message code="record.headerRow.help" var="appresmess" />
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
@@ -215,7 +213,7 @@
                         <s:message code="record.codeBookFile" />
                       </sf:label>
                       <sf:label class="btn btn-primary form-control" path="codeBookFile">
-                        <sf:input path="codeBookFile" type="file" style="display: none;" accept=".dw"
+                        <input name="codeBookFile" id="codeBookFile" type="file" style="display: none;" accept=".dw"
                           onchange="shortFilename('upload-codebook-file-info',$(this).val());" />
                         <s:message code="record.csvFile.button" />
                       </sf:label>
@@ -236,7 +234,7 @@
                     </button>
                   </div>
                   <div class="col-sm-6 text-align-right">
-                    <sf:button type="submit" class="btn btn-success btn-sm" name="upload">
+                    <sf:button class="btn btn-success btn-sm" name="upload">
                       <s:message code="gen.submit" />
                     </sf:button>
                   </div>
@@ -296,7 +294,7 @@
                           <s:message code="record.history.modal.changeLog" />
                         </div>
                         <div class="col-sm-9" style="text-align: justify;">
-                          <s:message text="${recVersion.changeLog}" />
+                          <s:message text="${recVersion.changeLog}" htmlEscape="true" />
                         </div>
                       </div>
                     </li>

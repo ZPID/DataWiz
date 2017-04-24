@@ -47,8 +47,8 @@ public class PanelController extends SuperController {
 
   @RequestMapping(method = RequestMethod.GET)
   public String dashboardPage(ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute dashboardPage()");
+    if (log.isTraceEnabled()) {
+      log.trace("execute dashboardPage()");
     }
     UserDTO user = UserUtil.getCurrentUser();
     List<ProjectForm> cpform = new ArrayList<ProjectForm>();
@@ -84,11 +84,13 @@ public class PanelController extends SuperController {
             });
             pform.setStudies(cStud);
           }
+          List<Boolean> par = new ArrayList<>();
           pform.getStudies().parallelStream().forEach(stud -> {
             try {
               stud.setContributors(contributorDAO.findByStudy(stud.getId()));
             } catch (Exception e) {
               // TODO Auto-generated catch block
+              par.add(false);
               e.printStackTrace();
             }
           });
@@ -116,19 +118,5 @@ public class PanelController extends SuperController {
     model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PANEL, null, null, messageSource));
     model.put("CProjectForm", cpform);
     return "panel";
-  }
-
-  @RequestMapping(method = RequestMethod.POST)
-  public String doPost(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute dashboardPage()");
-    }
-    if (bindingResult.hasErrors()) {
-      if (log.isInfoEnabled()) {
-        log.info("bindingResult has Errors");
-      }
-      return "panel";
-    }
-    return "welcome";
   }
 }

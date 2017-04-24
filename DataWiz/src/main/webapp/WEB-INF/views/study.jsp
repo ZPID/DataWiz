@@ -46,7 +46,7 @@
       </div>
       <!-- Submenu -->
       <c:if test="${!hideMenu}">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
           <li role="presentation" id="basisDataActiveClick" class="studyContentClick"><a><s:message
                 code="study.submenu.basic.data" /></a></li>
           <c:if test="${not empty StudyForm.study.id}">

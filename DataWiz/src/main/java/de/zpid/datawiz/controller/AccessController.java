@@ -120,7 +120,8 @@ public class AccessController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
     model.put("subnaviActive", PageState.ACCESS.name());
     model.put("ProjectForm", pForm);
     log.trace("Method showAccessPage successfully completed");
@@ -376,7 +377,8 @@ public class AccessController extends SuperController {
           mail.sendSSLMail(adminMail,
               messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
               messageSource.getMessage("accept.mail.admin.content",
-                  new Object[] { email, project.getTitle(), url + "/access/" + project.getId() },
+                  new Object[] { email, project.getTitle(),
+                      url.toString() + "/access/" + String.valueOf(project.getId()) },
                   LocaleContextHolder.getLocale()));
           reAtt.addFlashAttribute("infoMSG",
               messageSource.getMessage("roles.success.accept", null, LocaleContextHolder.getLocale()));

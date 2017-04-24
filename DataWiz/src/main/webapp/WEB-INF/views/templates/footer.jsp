@@ -2,8 +2,8 @@
   <div class="container">
     <p class="text-muted">
       <%
-        out.println("<p>bufferSize: " + out.getBufferSize() + " remaining: " + out.getRemaining() + " used: "
-            + (out.getBufferSize() - out.getRemaining()) + " autoFlush: " + out.isAutoFlush() + "</p><br>");
+        out.println("bufferSize: " + out.getBufferSize() + " remaining: " + out.getRemaining() + " used: "
+            + (out.getBufferSize() - out.getRemaining()) + " autoFlush: " + out.isAutoFlush());
       %>
     </p>
   </div>
