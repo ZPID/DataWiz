@@ -4,14 +4,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.Valid;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -21,8 +18,10 @@ import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -50,9 +49,15 @@ public class PanelController extends SuperController {
     if (log.isTraceEnabled()) {
       log.trace("execute dashboardPage()");
     }
-    UserDTO user = UserUtil.getCurrentUser();
+
+    UserDTO user = null;
     List<ProjectForm> cpform = new ArrayList<ProjectForm>();
     try {
+      if (UserUtil.setCurrentUser(userDAO.findByMail(UserUtil.getCurrentUser().getEmail(), true))) {
+        user = UserUtil.getCurrentUser();
+      } else {
+        throw new DataWizSystemException("User not found in Session", DataWizErrorCodes.NO_DATA_ERROR);
+      }
       List<ProjectDTO> cpdto = null;
       if (user.hasRole(Roles.ADMIN)) {
         cpdto = projectDAO.findAll();
@@ -85,32 +90,34 @@ public class PanelController extends SuperController {
             pform.setStudies(cStud);
           }
           List<Boolean> par = new ArrayList<>();
-          pform.getStudies().parallelStream().forEach(stud -> {
-            try {
-              stud.setContributors(contributorDAO.findByStudy(stud.getId()));
-            } catch (Exception e) {
-              // TODO Auto-generated catch block
-              par.add(false);
-              e.printStackTrace();
-            }
-          });
+          if (pform.getStudies() != null)
+            pform.getStudies().parallelStream().forEach(stud -> {
+              try {
+                stud.setContributors(contributorDAO.findByStudy(stud.getId()));
+              } catch (Exception e) {
+                // TODO Auto-generated catch block
+                par.add(false);
+                e.printStackTrace();
+              }
+            });
           pform.setContributors(contributorDAO.findByProject(pdto, false, true));
           List<UserDTO> sharedUser = userDAO.findGroupedByProject(pdto.getId());
-          sharedUser.parallelStream().forEach(shared -> {
-            try {
-              shared.setGlobalRoles(roleDAO.findRolesByUserIDAndProjectID(shared.getId(), pdto.getId()));
-            } catch (SQLException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            }
-          });
+          if (sharedUser != null)
+            sharedUser.parallelStream().forEach(shared -> {
+              try {
+                shared.setGlobalRoles(roleDAO.findRolesByUserIDAndProjectID(shared.getId(), pdto.getId()));
+              } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+            });
           pform.setSharedUser(sharedUser);
           cpform.add(pform);
         }
       }
     } catch (Exception e) {
-      log.fatal("DBS error during setting Users Dashboardpage for user : {} Message: {}", () -> user.getEmail(),
-          () -> e.getMessage());
+      log.fatal("DBS error during setting Users Dashboardpage for user : {} Message: {}", user.getEmail(),
+          e.getMessage());
       model.put("errormsg", messageSource.getMessage("dbs.sql.exception",
           new Object[] { env.getRequiredProperty("organisation.admin.email"), e }, LocaleContextHolder.getLocale()));
       return "error";

@@ -84,6 +84,9 @@
                 </h4>
               </div>
               <div class="modal-body">
+                <div class="well">
+                  <s:message code="record.modal.upload.info" />
+                </div>
                 <div class="form-group">
                   <div class="col-sm-12">
                     <sf:label class="control-label" path="selectedFileType">
@@ -207,7 +210,7 @@
                       <%@ include file="templates/helpblock.jsp"%> 
                   </div>--%>
                   </div>
-                  <div class="form-group">
+                  <%-- <div class="form-group">
                     <div class="col-sm-12">
                       <sf:label class="control-label" path="codeBookFile">
                         <s:message code="record.codeBookFile" />
@@ -221,7 +224,7 @@
                       <s:message code="record.codeBookFile.help" var="appresmess" />
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
-                  </div>
+                  </div> --%>
                 </div>
                 <c:set var="input_vars" value="newChangeLog;record.changeLog;required; ;row" />
                 <%@ include file="templates/gen_textarea.jsp"%>
@@ -255,6 +258,9 @@
                 </h4>
               </div>
               <div class="modal-body">
+                <div class="well">
+                  <s:message code="record.modal.history.info" />
+                </div>
                 <ul class="list-group">
                   <c:set var="verslength" value="${fn:length(StudyForm.records)}" />
                   <c:forEach items="${StudyForm.records}" var="recVersion" varStatus="verCount">
@@ -329,6 +335,9 @@
         </h4>
       </div>
       <div class="modal-body">
+        <div class="well">
+          <s:message code="record.modal.export.info" />
+        </div>
         <ul class="list-group">
           <li class="list-group-item"><b><s:message code="record.export.modal.csv" /></b>
             <ul class="list-group">

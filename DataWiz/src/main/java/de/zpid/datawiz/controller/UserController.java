@@ -137,13 +137,26 @@ public class UserController extends SuperController {
         }
         changePWD = true;
       }
-      if (bRes.hasErrors()) {
-        bRes.reject("globalErrors",
-            messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
+      boolean emailSet = false;
+      UserDTO userdb = userDAO.findByMail(user.getEmail(), false);
+      if (userdb != null && userdb.getId() != user.getId()) {
+        emailSet = true;
+      }
+      if (bRes.hasErrors() || emailSet) {
+        if (emailSet) {
+          bRes.reject("globalErrors",
+              messageSource.getMessage("usersettings.save.error.email", null, LocaleContextHolder.getLocale()));
+        } else
+          bRes.reject("globalErrors",
+              messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
         return "usersettings";
       }
       user.setPassword(passwordEncoder.encode(user.getPassword()));
       userDAO.saveOrUpdate(user, changePWD);
+      // load new UserData into Security
+      if (UserUtil.getCurrentUser().getId() == user.getId())
+        UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));
+      System.out.println(UserUtil.getCurrentUser().getEmail());
       reAtt.addFlashAttribute("infoMSG",
           messageSource.getMessage(changePWD ? "usersettings.save.success.pw" : "usersettings.save.success", null,
               LocaleContextHolder.getLocale()));

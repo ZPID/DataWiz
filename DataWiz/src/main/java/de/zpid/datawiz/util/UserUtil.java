@@ -23,4 +23,21 @@ public class UserUtil {
     }
     return user;
   }
+
+  public static boolean setCurrentUser(UserDTO user) {
+    boolean set = false;
+    if (user != null) {
+      try {
+        if (SecurityContextHolder.getContext().getAuthentication() != null
+            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null
+            && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof CustomUserDetails) {
+          ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setUser(user);
+          set = true;
+        }
+      } catch (Exception e) {
+        log.warn("Error setting current authendicated User - Message: " + e.getMessage());
+      }
+    }
+    return set;
+  }
 }
