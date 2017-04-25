@@ -19,19 +19,26 @@
           </c:when>
           <c:otherwise>
             <div class="row">
-              <div class="col-sm-12 text-align-right">
-                <c:url var="accessUrl"
-                  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
-                <c:choose>
-                  <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
-                    <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message
-                        code="study.button.check.in" /></a>
-                  </c:when>
-                  <c:otherwise>
-                    <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
-                  </c:otherwise>
-                </c:choose>
-              </div>
+              <c:set var="allowEdit" value="false" />
+              <c:if
+                test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
+                            principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) or 
+                            principal.user.hasRole('ADMIN') or 
+                            principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
+                <c:set var="allowEdit" value="true" />
+                <div class="col-sm-12 text-align-right">
+                  <c:url var="accessUrl"
+                    value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
+                  <c:choose>
+                    <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
+                      <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
+                    </c:when>
+                    <c:otherwise>
+                      <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
+                    </c:otherwise>
+                  </c:choose>
+                </div>
+              </c:if>
               <div class="col-sm-12">
                 <h4>
                   <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
@@ -63,7 +70,14 @@
       </c:if>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
-        <input type="hidden" id="disStudyContent" value="${disStudyContent}" />
+        <c:choose>
+          <c:when test="${allowEdit}">
+            <input type="hidden" id="disStudyContent" value="${disStudyContent}" />
+          </c:when>
+          <c:otherwise>
+            <input type="hidden" id="disStudyContent" value="disabled" />
+          </c:otherwise>
+        </c:choose>
         <sf:hidden path="jQueryMap" />
         <sf:hidden path="delPos" />
         <sf:hidden path="scrollPosition" />
@@ -83,18 +97,20 @@
         <jsp:include page="forms/study_ethical.jsp" />
         <!-- Buttons -->
         <hr />
-        <div class="row">
-          <div class="col-md-6 text-align-left">
-            <button type="reset" class="btn btn-default btn-sm">
-              <s:message code="gen.reset" />
-            </button>
+        <c:if test="${allowEdit}">
+          <div class="row">
+            <div class="col-md-6 text-align-left">
+              <button type="reset" class="btn btn-default btn-sm">
+                <s:message code="gen.reset" />
+              </button>
+            </div>
+            <div class="col-md-6 text-align-right">
+              <sf:button type="submit" class="btn btn-success btn-sm">
+                <s:message code="gen.submit" />
+              </sf:button>
+            </div>
           </div>
-          <div class="col-md-6 text-align-right">
-            <sf:button type="submit" class="btn btn-success btn-sm">
-              <s:message code="gen.submit" />
-            </sf:button>
-          </div>
-        </div>
+        </c:if>
       </sf:form>
     </div>
   </div>

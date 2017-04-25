@@ -19,7 +19,16 @@
       </div>
       <c:url var="accessUrl"
         value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}/codebook" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal">
+      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
+        <c:set var="allowEdit" value="true" />
+        <c:if
+          test="${!principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) and
+                  !principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) and
+                  !principal.user.hasRole('ADMIN') and 
+                  !principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
+          <input type="hidden" id="disStudyContent" value="disabled" />
+          <c:set var="allowEdit" value="false" />
+        </c:if>
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
         <div class="form-group">
@@ -109,7 +118,8 @@
                         <c:forEach items="${StudyForm.record.attributes}" var="val" varStatus="attnameloop">
                           <td class="th-width-100"><c:forEach items="${var.attributes}" var="att">
                               <c:if test="${fn:startsWith(att.label, fn:substringAfter(val.value, '@'))}">
-                                <s:message text="${att.value}" /><br />
+                                <s:message text="${att.value}" />
+                                <br />
                               </c:if>
                             </c:forEach></td>
                         </c:forEach>
@@ -232,68 +242,74 @@
                 </table>
               </div>
             </div>
-            <div class="row">
-              <div class="col-sm-12">
-                <div class="btn btn-default btn-sm"
-                  onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=values');">
-                  <s:message code="record.codebook.set.values" />
-                </div>
-                <div class="btn btn-default btn-sm"
-                  onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=missings');">
-                  <s:message code="record.codebook.set.missings" />
+            <c:if test="${allowEdit}">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="btn btn-default btn-sm"
+                    onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=values');">
+                    <s:message code="record.codebook.set.values" />
+                  </div>
+                  <div class="btn btn-default btn-sm"
+                    onclick="showGlobalAjaxModal('${accessUrl}/modal?varId=-1&modal=missings');">
+                    <s:message code="record.codebook.set.missings" />
+                  </div>
                 </div>
               </div>
-            </div>
+            </c:if>
           </div>
         </div>
         <s:message code="dataset.import.report.codebook.help" var="appresmess" />
         <%@ include file="templates/helpblock.jsp"%>
-        <c:set var="input_vars" value="newChangeLog;record.changeLog;required; ;row" />
-        <%@ include file="templates/gen_textarea.jsp"%>
-        <div class="form-group">
-          <div class="col-sm-6 text-align-left">
-            <a href="${accessUrl}" class="btn btn-default btn-sm"><s:message code="codebook.cancel.save" /></a>
+        <c:if test="${allowEdit}">
+          <c:set var="input_vars" value="newChangeLog;record.changeLog;required; ;row" />
+          <%@ include file="templates/gen_textarea.jsp"%>
+          <div class="form-group">
+            <div class="col-sm-6 text-align-left">
+              <a href="${accessUrl}" class="btn btn-default btn-sm"><s:message code="codebook.cancel.save" /></a>
+            </div>
+            <div class="col-sm-6 text-align-right">
+              <button type="submit" class="btn btn-success btn-sm" name="saveCodebook">
+                <s:message code="codebook.submit.save" />
+              </button>
+            </div>
           </div>
-          <div class="col-sm-6 text-align-right">
-            <button type="submit" class="btn btn-success btn-sm" name="saveCodebook">
-              <s:message code="codebook.submit.save" />
-            </button>
-          </div>
-        </div>
+        </c:if>
       </sf:form>
     </div>
   </div>
 </div>
-<div class="modal fade" id="valueModal" role="dialog">
-  <div class="modal-dialog">
-    <!-- content is dynamically loading with ajax -->
+<c:if test="${allowEdit}">
+  <div class="modal fade" id="valueModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- content is dynamically loading with ajax -->
+    </div>
   </div>
-</div>
-<div class="modal fade" id="errorModal" role="dialog">
-  <div class="modal-dialog">
-    <div class="modal-content panel-primary">
-      <div class="modal-header panel-heading">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">
-          <s:message code="record.codebook.submit.timeout.modal.head" />
-        </h4>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <div class="col-sm-12">
-            <s:message code="record.codebook.submit.timeout.modal.info" />
+  <div class="modal fade" id="errorModal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content panel-primary">
+        <div class="modal-header panel-heading">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">
+            <s:message code="record.codebook.submit.timeout.modal.head" />
+          </h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="col-sm-12">
+              <s:message code="record.codebook.submit.timeout.modal.info" />
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <div class="form-group">
-          <div class="col-sm-offset-0 col-md-12">
-            <a href="${accessUrl}/codebook" class="btn btn-success"> <s:message code="gen.yes" />
-            </a>
+        <div class="modal-footer">
+          <div class="form-group">
+            <div class="col-sm-offset-0 col-md-12">
+              <a href="${accessUrl}/codebook" class="btn btn-success"> <s:message code="gen.yes" />
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
+</c:if>
 <%@ include file="templates/footer.jsp"%>

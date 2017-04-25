@@ -47,6 +47,7 @@ $tag_box = null;
           showorHideStudyContent();
         } // loading Record Content
         else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
+          $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
           $("#spssSelected").show();
           $("#csvSelected").hide();
           $("#selectedFileType").change(function() {
@@ -59,6 +60,7 @@ $tag_box = null;
             }
           });
           if (window.location.pathname.search("/codebook") > 0 || window.location.pathname.search("/data") > 0) {
+            $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
             if (detectBrowser() == "edge" || detectBrowser() == "ie") {
               $('.browser_wrapper').addClass('old_ie_wrapper');
             }

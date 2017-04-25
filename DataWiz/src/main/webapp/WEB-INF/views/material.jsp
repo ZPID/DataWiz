@@ -15,27 +15,35 @@
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <div class="well">
-        <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles"
-          type="hidden" value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError"
-          type="hidden" value="<s:message code="upload.response.error" />" /> <input id="defaultMsg" type="hidden"
-          value="<s:message code="upload.default.message" />" /> <input id="uploadPid" type="hidden"
-          value="<s:message text="${projectId}" />" />
-        <c:choose>
-          <c:when test="${not empty studyId && studyId > 0}">
-            <c:url var="uploadUrl" value="/project/${projectId}/study/${studyId}/upload" />
-          </c:when>
-          <c:otherwise>
-            <c:url var="uploadUrl" value="/project/${projectId}/upload" />
-          </c:otherwise>
-        </c:choose>
-        <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
-          role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
-        <div>
-          <button class="btn btn-success" id="dz-upload-button">Upload File</button>
-          <button class="btn btn-danger" id="dz-reset-button">Reset Dropzone</button>
+      <c:set var="allowEdit" value="false" />
+      <c:if
+        test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
+                principal.user.hasRole('PROJECT_WRITER', ProjectForm.project.id, false) or 
+                principal.user.hasRole('ADMIN') or 
+                (not empty studyId && studyId > 0 && principal.user.hasRole('DS_WRITER', studyId, true))}">
+        <c:set var="allowEdit" value="true" />
+        <div class="well">
+          <input id="genDelete" type="hidden" value="<s:message code="gen.delete" />" /> <input id="maxFiles"
+            type="hidden" value="<s:message code="upload.max.files.exceeded" />" /> <input id="responseError"
+            type="hidden" value="<s:message code="upload.response.error" />" /> <input id="defaultMsg" type="hidden"
+            value="<s:message code="upload.default.message" />" /> <input id="uploadPid" type="hidden"
+            value="<s:message text="${projectId}" />" />
+          <c:choose>
+            <c:when test="${not empty studyId && studyId > 0}">
+              <c:url var="uploadUrl" value="/project/${projectId}/study/${studyId}/upload" />
+            </c:when>
+            <c:otherwise>
+              <c:url var="uploadUrl" value="/project/${projectId}/upload" />
+            </c:otherwise>
+          </c:choose>
+          <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
+            role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
+          <div>
+            <button class="btn btn-success" id="dz-upload-button">Upload File</button>
+            <button class="btn btn-danger" id="dz-reset-button">Reset Dropzone</button>
+          </div>
         </div>
-      </div>
+      </c:if>
       <!-- Start list for downloadfiles -->
       <ul class="list-group" id="file">
         <c:forEach items="${ProjectForm.files}" var="file">
@@ -48,10 +56,13 @@
               <div class="col-md-2">
                 <c:choose>
                   <c:when test="${(ctype[0]=='image' || ctype[0]=='IMAGE') && basename != 'ico' && basename != 'gif'}">
-                    <img style="padding-left: 14px" alt="${file.fileName}" src="<c:url value='img/${file.id}' />">
+                    <img style="padding-left: 14px" alt="${file.fileName}" src="<c:url value='img/${file.id}' />"
+                      onerror="this.src='<c:url value="/static/images/fileformat/_blank.png" />'" />
                   </c:when>
                   <c:otherwise>
-                    <img alt="" src="<c:url value="/static/images/fileformat/${fn:toLowerCase(basename)}.png" />">
+                    <img alt="${fn:toLowerCase(basename)}"
+                      src="<c:url value="/static/images/fileformat/${fn:toLowerCase(basename)}.png" />"
+                      onerror="this.src='<c:url value="/static/images/fileformat/_blank.png" />'" />
                   </c:otherwise>
                 </c:choose>
               </div>
@@ -107,10 +118,12 @@
                     </b>
                   </div>
                   <!-- deleteicon -->
-                  <div class="col-md-1">
-                    <a class="btn btn-danger btn-sm" href="<c:url value='delDoc/${file.id}' />"><span
-                      class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                  </div>
+                  <c:if test="${allowEdit}">
+                    <div class="col-md-1">
+                      <a class="btn btn-danger btn-sm" href="<c:url value='delDoc/${file.id}' />"><span
+                        class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                    </div>
+                  </c:if>
                 </div>
               </div>
             </div>

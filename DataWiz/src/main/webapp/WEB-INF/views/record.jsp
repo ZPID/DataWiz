@@ -53,7 +53,14 @@
       <c:url var="accessUrl"
         value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST"
-        enctype="multipart/form-data">
+        enctype="multipart/form-data" id="studyFormDis">
+        <c:if
+          test="${!principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) and
+                  !principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) and
+                  !principal.user.hasRole('ADMIN') and 
+                  !principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
+          <input type="hidden" id="disStudyContent" value="disabled" />
+        </c:if>
         <input type="hidden" id="csrf" name="${_csrf.parameterName}" value="${_csrf.token}" />
         <!-- records[0].recordName -->
         <c:set var="input_vars" value="record.recordName;record.recordName;required; ;row" />
