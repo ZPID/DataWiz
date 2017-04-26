@@ -358,13 +358,12 @@ public class ProjectController extends SuperController {
     if (log.isDebugEnabled()) {
       log.debug("execute multiSaved()");
     }
+    redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
+    redirectAttributes.addFlashAttribute("saveStateMsg",
+        messageSource.getMessage("material.upload.successful", null, LocaleContextHolder.getLocale()));
     if (studyId.isPresent()) {
-      redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
-      redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
       return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/material";
     } else {
-      redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
-      redirectAttributes.addFlashAttribute("saveStateMsg", "Upload passt!");
       redirectAttributes.addFlashAttribute("jQueryMap", "material");
       return "redirect:/project/" + pid.get() + "/material";
     }
@@ -429,19 +428,21 @@ public class ProjectController extends SuperController {
       return "redirect:/login";
     }
     SavedState state = SavedState.ERROR;
-    String msg = "Nicht gelöscht";
+    String msg = "material.delete.successful";
     try {
       if (minioUtil.deleteFile(fileDAO.findById(docId)).equals(MinioResult.OK)) {
         fileDAO.deleteFile(docId);
         state = SavedState.SUCCESS;
-        msg = "Erfolgreich gelöscht";
-        log.trace("Method deleteDocument [id: {}] successfully completed", () -> docId);
+      } else {
+        msg = "material.delete.minio.error";
       }
     } catch (Exception e) {
-      log.warn("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e);
+      msg = "material.delete.db.error";
+      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e);
     }
     redirectAttributes.addFlashAttribute("saveState", state.name());
-    redirectAttributes.addFlashAttribute("saveStateMsg", msg);
+    redirectAttributes.addFlashAttribute("saveStateMsg",
+        messageSource.getMessage(msg, null, LocaleContextHolder.getLocale()));
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
     if (studyId.isPresent())
       return "redirect:/project/" + pid + "/study/" + studyId.get() + "/material";

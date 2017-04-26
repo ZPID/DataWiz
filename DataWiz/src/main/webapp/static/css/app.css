@@ -193,6 +193,10 @@ label.btn::after {
   font-weight: bold;
 }
 
+.nav-wrapper {
+  min-height: 50px;
+}
+
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
@@ -229,6 +233,12 @@ label.btn::after {
     left: 0%;
     top: 8px;
   }
+  #navbarlogo {
+    height: 0px;
+    position: relative;
+    left: -20px;
+    top: 2x;
+  }
 }
 /* Breite ab 766 pixel */
 @media ( min-width : 766px) and (max-width:1599px) {
@@ -260,7 +270,13 @@ label.btn::after {
     width: 90%;
   }
   .breadcrumb {
-    left: 0%;
+    left: 5%;
+  }
+  #navbarlogo {
+    height: 48px;
+    position: relative;
+    left: -20px;
+    top: 2x;
   }
 }
 /* Breite ab 1200 pixel */
@@ -288,6 +304,12 @@ label.btn::after {
   }
   .breadcrumb {
     left: 10%;
+  }
+  #navbarlogo {
+    height: 48px;
+    position: relative;
+    left: 5%;
+    top: 2x;
   }
 }
 /**************** END RESPONSIVE ****************/

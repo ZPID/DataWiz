@@ -36,11 +36,21 @@
               <c:url var="uploadUrl" value="/project/${projectId}/upload" />
             </c:otherwise>
           </c:choose>
-          <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
-            role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
-          <div>
-            <button class="btn btn-success" id="dz-upload-button">Upload File</button>
-            <button class="btn btn-danger" id="dz-reset-button">Reset Dropzone</button>
+          <div class="form-group">
+            <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
+              role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <button class="btn btn-danger btn-sm" id="dz-reset-button">
+                <s:message code="material.dropzone.reset.btn" />
+              </button>
+            </div>
+            <div class="col-sm-6 text-align-right">
+              <button class="btn btn-success btn-sm" id="dz-upload-button">
+                <s:message code="material.dropzone.upload.btn" />
+              </button>
+            </div>
           </div>
         </div>
       </c:if>

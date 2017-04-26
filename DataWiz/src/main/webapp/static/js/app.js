@@ -12,6 +12,12 @@ $tag_box = null;
 (function($, window, document, undefined) {
   $(document).ready(
       function() {
+        $("#dwmainnavbar").on('affixed-top.bs.affix', function() {
+          $("#navbarlogo").slideUp("slow");
+        });
+        $("#dwmainnavbar").on('affix.bs.affix', function() {
+          $("#navbarlogo").slideDown("slow");
+        });
         $.ajaxSetup({
           headers : {
             'X-CSRF-TOKEN' : $('input[name="_csrf"]').val()

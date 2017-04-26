@@ -42,6 +42,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 import com.mysql.jdbc.AbandonedConnectionCleanupThread;
+import com.squareup.okhttp.ConnectionPool;
 
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.spss.SPSSIO;
@@ -107,6 +108,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     resolver.setDefaultEncoding("UTF-8");
     log.info("messageSource succesfully loaded");
     return resolver;
+
   }
 
   private ClassPathXmlApplicationContext context;
@@ -157,7 +159,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     return new DataSourceTransactionManager(getDataSource());
   }
 
-  @Bean(name = "minioUtil")
+  @Bean(name = "minioUtil", destroyMethod = "close")
   public MinioUtil minioUtil() {
     return new MinioUtil(env);
   }
@@ -180,21 +182,22 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   }
 
   @PreDestroy
-  public void destroy() {
-    try {
-      AbandonedConnectionCleanupThread.shutdown();
-      context.close();
-    } catch (Throwable t) {
-    }
+  public void destroy() {    
+    log.warn("Destroy DataWiz Application - ");
+    ConnectionPool.getDefault().evictAll();
     Enumeration<Driver> drivers = DriverManager.getDrivers();
     while (drivers.hasMoreElements()) {
       Driver driver = drivers.nextElement();
       try {
         DriverManager.deregisterDriver(driver);
+        log.warn(String.format("Driver %s deregistered", driver));
       } catch (SQLException e) {
         e.printStackTrace();
-
       }
     }
+    AbandonedConnectionCleanupThread.uncheckedShutdown();
+    context.destroy();
+    context.close();
+
   }
 }

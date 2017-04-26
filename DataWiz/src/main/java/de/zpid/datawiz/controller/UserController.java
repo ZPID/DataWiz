@@ -56,7 +56,7 @@ public class UserController extends SuperController {
   public UserController() {
     super();
     if (log.isInfoEnabled())
-      log.info("Loading DataWizUserController for mapping /usersettings");
+      log.info("Loading DataWizUserController for mapping /usersettings");    
   }
 
   /**

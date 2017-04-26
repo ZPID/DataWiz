@@ -63,6 +63,10 @@ public class MinioUtil {
       log.error("ERROR: Creating MinioClient was not successful: Message: {}", () -> e);
     }
   }
+  
+  public void close(){
+    this.minioClient = null;
+  }
 
   /**
    * Function to put a file to the Minio storage To not get problems Unix/Windows file naming convention, this function
