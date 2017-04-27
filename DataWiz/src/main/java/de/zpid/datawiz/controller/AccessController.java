@@ -291,7 +291,7 @@ public class AccessController extends SuperController {
         } else {
           if (log.isEnabled(Level.DEBUG)) {
             log.debug("User [email: {}] hasn't an active datawiz account - sending datawiz invitation to email",
-                pForm.getDelMail());
+                () -> pForm.getDelMail());
           }
           subject = "inv.mail.dw.subject";
           content = "inv.mail.dw.content";
@@ -307,7 +307,8 @@ public class AccessController extends SuperController {
                 messageSource.getMessage(content, new Object[] { adminName, pForm.getProject().getTitle(), url },
                     LocaleContextHolder.getLocale()));
           } catch (Exception e) {
-            log.error("ERROR: Mail error, Mail was not sent - Exception:", e);
+            projectDAO.deleteInvitationEntree(projectId, pForm.getDelMail());
+            log.error("ERROR: Mail error, Mail was not sent - Exception: {}", () -> e.getMessage());
             bRes.reject("globalErrors",
                 messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
           }

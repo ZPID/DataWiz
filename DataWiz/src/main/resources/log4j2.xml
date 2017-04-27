@@ -8,6 +8,11 @@
 		<File name="DataWizLog" fileName="/logs/DataWizLog.log">
 			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
 		</File>
+		<Async name="Async" bufferSize="262144">
+			<AppenderRef ref="CONSOLE" />
+			<AppenderRef ref="DataWizLog" />
+			<LinkedTransferQueue />
+		</Async>
 	</Appenders>
 	<Loggers>
 		<logger name="org.springframework" level="WARN" />
@@ -15,7 +20,7 @@
 		<logger name="de.zpid" level="TRACE" />
 		<logger name="de.zpid.spss" level="TRACE" />
 		<Root level="WARN">
-			<AppenderRef ref="CONSOLE" />
+			<AppenderRef ref="Async" />
 		</Root>
 	</Loggers>
 </Configuration>

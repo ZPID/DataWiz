@@ -438,7 +438,7 @@ public class ProjectController extends SuperController {
       }
     } catch (Exception e) {
       msg = "material.delete.db.error";
-      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e);
+      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e.getMessage());
     }
     redirectAttributes.addFlashAttribute("saveState", state.name());
     redirectAttributes.addFlashAttribute("saveStateMsg",

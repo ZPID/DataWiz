@@ -10,6 +10,7 @@
       <div class="page-header">
         <c:choose>
           <c:when test="${empty StudyForm.study.id}">
+            <c:set var="allowEdit" value="true" />
             <h4>
               <s:message code="study.create.basis.headline" />
             </h4>
@@ -22,9 +23,9 @@
               <c:set var="allowEdit" value="false" />
               <c:if
                 test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
-                            principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) or 
-                            principal.user.hasRole('ADMIN') or 
-                            principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
+                        principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) or 
+                        principal.user.hasRole('ADMIN') or 
+                        principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
                 <div class="col-sm-12 text-align-right">
                   <c:url var="accessUrl"
