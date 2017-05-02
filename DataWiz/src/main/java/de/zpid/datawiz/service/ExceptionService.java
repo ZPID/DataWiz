@@ -40,10 +40,10 @@ public class ExceptionService {
     if (e instanceof DataWizSystemException) {
       DataWizSystemException dwe = (DataWizSystemException) e;
       if (dwe.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR))
-        log.fatal("Exception during {} Message[{}]]", () -> functionName, () -> e.getMessage());
+        log.fatal("Exception during {} Message[{}]]", () -> functionName, () -> e);
       else
-        log.warn("DataWizSystemException during {} Message[{}] , Code [{}]", () -> functionName, () -> e.getMessage(),
-            () -> dwe.getErrorCode().name());
+        log.warn("DataWizSystemException during {} Code [{}], Message:", () -> functionName,
+            () -> dwe.getErrorCode().name(), () -> e);
       if (dwe.getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)
           || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_PID_ERROR)) {
         redirectAttributes.addFlashAttribute("errorMSG",
@@ -73,7 +73,7 @@ public class ExceptionService {
         ret = "error";
       }
     } else {
-      log.fatal("Exception during {} Message[{}]]", () -> functionName, () -> e.getMessage());
+      log.fatal("Exception during {} Message: ", () -> functionName, () -> e);
       ret = "error";
       model
           .put("errormsg",

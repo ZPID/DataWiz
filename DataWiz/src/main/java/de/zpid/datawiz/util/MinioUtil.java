@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.ConnectException;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +16,9 @@ import de.zpid.datawiz.enumeration.MinioResult;
 import io.minio.MinioClient;
 import io.minio.Result;
 import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InvalidEndpointException;
-import io.minio.errors.InvalidPortException;
+import io.minio.messages.Bucket;
 import io.minio.messages.Item;
+import io.minio.messages.Upload;
 
 /**
  * This file is part of Datawiz.<br />
@@ -51,7 +52,7 @@ public class MinioUtil {
    * 
    * @param env
    */
-  public MinioUtil(Environment env) {
+  public MinioUtil(Environment env, boolean cleanIncomplete) {
     super();
     this.bucketPrefix = env.getRequiredProperty("minio.bucket.prefix") + ".";
     log.info("Loading MinioDAO with [ServerAddress: {}; Bucket_Prefix: {}]", () -> env.getRequiredProperty("minio.url"),
@@ -59,12 +60,30 @@ public class MinioUtil {
     try {
       this.minioClient = new MinioClient(env.getRequiredProperty("minio.url"),
           env.getRequiredProperty("minio.access.key"), env.getRequiredProperty("minio.secret.key"));
-    } catch (InvalidEndpointException | InvalidPortException | IllegalStateException e) {
+      if (cleanIncomplete) {
+        log.info("Minio: cleaning incomplete Uploads");
+        List<Bucket> bucketList = minioClient.listBuckets();
+        bucketList.parallelStream().forEach(bucket -> {
+          Iterable<Result<Upload>> myObjects;
+          try {
+            myObjects = minioClient.listIncompleteUploads(bucket.name());
+            for (Result<Upload> result : myObjects) {
+              Upload upload = result.get();
+              log.info("Minio: incomplete upload found [Bucked: {}, name: {}]", () -> bucket.name(),
+                  () -> upload.objectName());
+              minioClient.removeIncompleteUpload(bucket.name(), upload.objectName());
+            }
+          } catch (Exception e) {
+            log.warn("WARN: cleaning incomplete Uploads - Exception during parallelStream().forEach(): ", () -> e);
+          }
+        });
+      }
+    } catch (Exception e) {
       log.error("ERROR: Creating MinioClient was not successful: Message: {}", () -> e);
     }
   }
-  
-  public void close(){
+
+  public void close() {
     this.minioClient = null;
   }
 

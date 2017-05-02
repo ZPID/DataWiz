@@ -303,7 +303,7 @@
         <div class="modal-footer">
           <div class="form-group">
             <div class="col-sm-offset-0 col-md-12">
-              <a href="${accessUrl}/codebook" class="btn btn-success"> <s:message code="gen.yes" />
+              <a href="${accessUrl}" class="btn btn-success"> <s:message code="gen.yes" />
               </a>
             </div>
           </div>

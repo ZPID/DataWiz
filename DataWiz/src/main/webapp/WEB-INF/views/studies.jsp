@@ -106,21 +106,25 @@
               </div>
             </div>
             <div class="panel-footer">
-              <c:forEach items="${form.sharedUser}" var="user">
-                <c:if test="${user.id eq cstud.lastUserId}">
-                  <javatime:format value="${cstud.timestamp}" style="MS" var="strDate" />
-                  <c:choose>
-                    <c:when test="${not empty user.lastName && not empty user.firstName}">
-                      <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"
-                        htmlEscape="false" argumentSeparator=";" />
-                    </c:when>
-                    <c:otherwise>
-                      <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false"
-                        argumentSeparator=";" />
-                    </c:otherwise>
-                  </c:choose>
-                </c:if>
-              </c:forEach>
+              <div class="row">
+                <div class="col-sm-12 text-align-right">
+                  <c:forEach items="${ProjectForm.sharedUser}" var="user">
+                    <c:if test="${user.id eq cstud.lastUserId}">
+                      <javatime:format value="${cstud.timestamp}" style="MS" var="strDate" />
+                      <c:choose>
+                        <c:when test="${not empty user.lastName && not empty user.firstName}">
+                          <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"
+                            htmlEscape="false" argumentSeparator=";" />
+                        </c:when>
+                        <c:otherwise>
+                          <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false"
+                            argumentSeparator=";" />
+                        </c:otherwise>
+                      </c:choose>
+                    </c:if>
+                  </c:forEach>
+                </div>
+              </div>
             </div>
           </div>
           <br />

@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -229,7 +231,7 @@ public class RecordService {
    * @return
    * @throws DataWizSystemException
    */
-  private String parseDateToDBTime(String valueString, SPSSVarTypes varType, final List<String> parsingErrors,
+  private String parseDateToDBTime(String valueString, SPSSVarTypes varType, final Set<String> parsingErrors,
       final SPSSVarDTO var, final String type, boolean missing) {
     String viewDate = null;
     try {
@@ -336,7 +338,7 @@ public class RecordService {
    * @param currentVersion
    * @throws DataWizSystemException
    */
-  public String compareAndSaveCodebook(final RecordDTO currentVersion, final List<String> parsingErrors,
+  public String compareAndSaveCodebook(final RecordDTO currentVersion, final Set<String> parsingErrors,
       final String changelog) throws DataWizSystemException {
     RecordDTO lastVersion;
     String msg = null;
@@ -407,12 +409,12 @@ public class RecordService {
    * @param parsingErrors
    */
   public String validateCodeBook(StudyForm sForm) {
-    List<String> parsingErrors = new ArrayList<>();
-    List<String> parsingWarnings = new ArrayList<>();
+    Set<String> parsingErrors = new HashSet<String>();
+    Set<String> parsingWarnings = new HashSet<String>();
     StringBuilder sb = new StringBuilder();
     try {
       validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, parsingWarnings, null, true);
-      sForm.setWarnings(parsingWarnings);
+      sForm.setWarnings(parsingWarnings.parallelStream().collect(Collectors.toList()));
     } catch (DataWizSystemException e) {
       log.debug("Parsing Exception during saveCodebook - Code{}; Message: {}", () -> e.getErrorCode(),
           () -> e.getMessage());
@@ -431,8 +433,8 @@ public class RecordService {
    * @param parsingErrors
    * @throws DataWizSystemException
    */
-  public void validateAndPrepareCodebookForm(final RecordDTO currentVersion, final List<String> parsingErrors,
-      final List<String> parsingWarnings, final String changelog, final boolean onlyValidation)
+  public void validateAndPrepareCodebookForm(final RecordDTO currentVersion, final Set<String> parsingErrors,
+      final Set<String> parsingWarnings, final String changelog, final boolean onlyValidation)
       throws DataWizSystemException {
     boolean missingChangelog = false;
     if (!onlyValidation) {
@@ -521,9 +523,9 @@ public class RecordService {
    * @param label
    * @return
    */
-  private boolean validateValueorMissingField(final List<String> parsingErrors, final boolean onlyValidation,
+  private boolean validateValueorMissingField(final Set<String> parsingErrors, final boolean onlyValidation,
       SPSSVarDTO var, SPSSValueLabelDTO val, boolean switchToMissing, int missingNum,
-      final List<String> parsingWarnings) {
+      final Set<String> parsingWarnings) {
     boolean date = (var.getType().equals(SPSSVarTypes.SPSS_FMT_DATE_TIME)
         || var.getType().equals(SPSSVarTypes.SPSS_FMT_DATE) || var.getType().equals(SPSSVarTypes.SPSS_FMT_ADATE)
         || var.getType().equals(SPSSVarTypes.SPSS_FMT_JDATE) || var.getType().equals(SPSSVarTypes.SPSS_FMT_EDATE)
@@ -549,10 +551,10 @@ public class RecordService {
       }
     }
     if (!switchToMissing && (label.isEmpty() || value.isEmpty())) {
-      if (label.isEmpty())
-        parsingWarnings.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName()},
+      if (label.isEmpty()) {
+        parsingWarnings.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName() },
             LocaleContextHolder.getLocale()));
-      else
+      } else
         parsingErrors.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName() },
             LocaleContextHolder.getLocale()));
       varError = true;
@@ -589,36 +591,43 @@ public class RecordService {
           SPSSMonths.valueOf(value);
         } catch (Exception e) {
           addParsingError(parsingErrors, var, value, "record.parse.month.invalid", switchToMissing);
+          varError = true;
         }
         break;
       case SPSS_FMT_QYR:
         if (!Pattern.compile(RegexUtil.QUATER_REGEX).matcher(value).find()) {
           addParsingError(parsingErrors, var, value, "record.parse.quater.invalid", switchToMissing);
+          varError = true;
         }
         break;
       case SPSS_FMT_MOYR:
         if (!Pattern.compile(RegexUtil.MOYR_REGEX).matcher(value).find()) {
           addParsingError(parsingErrors, var, value, "record.parse.moyr.invalid", switchToMissing);
+          varError = true;
         }
         break;
       case SPSS_FMT_WKYR:
         if (!Pattern.compile(RegexUtil.WKYR_REGEX).matcher(value).find()) {
           addParsingError(parsingErrors, var, value, "record.parse.wkyr.invalid", switchToMissing);
+          varError = true;
         }
         break;
       case SPSS_FMT_DTIME:
         if (!Pattern.compile(RegexUtil.DTIME_REGEX).matcher(value).find()) {
           addParsingError(parsingErrors, var, value, "record.parse.dtime.invalid", switchToMissing);
+          varError = true;
         }
         break;
       case SPSS_FMT_WKDAY:
         if (!Pattern.compile(RegexUtil.WKDAY_REGEX).matcher(value).find()) {
           addParsingError(parsingErrors, var, value, "record.parse.dtime.invalid", switchToMissing);
+          varError = true;
         }
         break;
       default:
         if (value.length() > var.getWidth()) {
           addParsingError(parsingErrors, var, value, "record.val.invalid.length", switchToMissing);
+          varError = true;
         }
         break;
       }
@@ -632,8 +641,8 @@ public class RecordService {
    * @param val
    * @param parsingErrorString
    */
-  private void addParsingError(final List<String> parsingErrors, SPSSVarDTO var, String value,
-      String parsingErrorString, boolean switchtoMissing) {
+  private void addParsingError(final Set<String> parsingErrors, SPSSVarDTO var, String value, String parsingErrorString,
+      boolean switchtoMissing) {
     parsingErrors
         .add(messageSource.getMessage(parsingErrorString,
             new Object[] { value,
@@ -909,6 +918,27 @@ public class RecordService {
       log.warn("MissingFormat not known - " + varVal.getMissingFormat());
       break;
     }
+  }
+
+  /**
+   * @param sForm
+   * @param warnString
+   * @return
+   */
+  public String setMessageString(List<String> messages) {
+    String messageString = null;
+    final AtomicInteger count = new AtomicInteger();
+    if (messages != null) {
+      final int warningSize = messages.size();
+      StringBuilder sb = new StringBuilder();
+      messages.parallelStream().forEach(s -> {
+        sb.append(s);
+        if (count.incrementAndGet() < warningSize)
+          sb.append("<br />");
+      });
+      messageString = sb.toString();
+    }
+    return messageString;
   }
 
 }

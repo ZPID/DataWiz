@@ -247,14 +247,15 @@ function toggleChevron(e) {
       'glyphicon glyphicon-plus glyphicon glyphicon-minus');
 }
 
+var uploaderror = false;
 // Start DROPZONE for project-material upload!
 Dropzone.options.myDropzone = {
   uploadMultiple : true,
   autoProcessQueue : false,
   autoDiscover : false,
-  parallelUploads : 20,
-  // maxFiles : 2,
-  maxFilesize : 2048, // MB
+  parallelUploads : 1,
+  // maxFiles : 20,
+  maxFilesize : 1536, // MB
   dictMaxFilesExceeded : $('#maxFiles').val(),
   dictResponseError : $('#responseError').val(),
   dictDefaultMessage : $('#defaultMsg').val(),
@@ -262,11 +263,12 @@ Dropzone.options.myDropzone = {
     'X-CSRF-Token' : $('input[name="_csrf"]').val()
   },
   init : function() {
+    $("#dz-upload-button").prop('disabled', true);
     // upload button click event
     var myDropzone = this;
     $('#dz-upload-button').on("click", function(e) {
+      uploaderror = false;
       myDropzone.processQueue();
-
     });
     // reset button click event
     $('#dz-reset-button').on("click", function(e) {
@@ -274,6 +276,7 @@ Dropzone.options.myDropzone = {
     });
     // adds the delete button after a file is added
     this.on("addedfile", function(file) {
+      $("#dz-upload-button").prop('disabled', false);
       var removeButton = Dropzone
           .createElement("<button class='btn btn-block btn-danger btn-xs' style='margin-top: 5px;' >"
               + $('#genDelete').val() + "</button>");
@@ -287,18 +290,46 @@ Dropzone.options.myDropzone = {
       // Add the button to the file preview element.
       file.previewElement.appendChild(removeButton);
     });
-    // shows a dialog after multiple upload finished
-    this.on("successmultiple", function(files, serverResponse) {
-      // calls controller after successful multiple saving to reload the page"
-      setTimeout(function() {
-        $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
-      }, 500);
+    this.on("removedfile", function(file) {
+      $("#dz-upload-button").prop('disabled', false);
     });
-    this.on("error", function(files, serverResponse) {
-      $(".loader").fadeOut("slow");
+    // shows a dialog after multiple upload finished
+    this.on("queuecomplete", function(file, res) {
+      console.log(uploaderror + ' - ' + file + ' - ' + res);
+      // calls controller after successful multiple saving to reload the page"
+      if (!uploaderror) {
+        setTimeout(function() {
+          $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
+        }, 500);
+      } else {
+        // $('.dz-error-message').html("asdsada");
+      }
+    });
+    this.on("successmultiple", function(files, serverResponse) {
+      myDropzone.processQueue();
+    });
+    this.on("totaluploadprogress", function(progress) {
+      $('#loadstatebar .progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).html(
+          Math.round(progress) + '%');
+      if (progress == 100.0) {
+        $("#loadstateloading").hide();
+        $("#loadstateworking").show();
+      }
+    });
+    this.on("error", function(file, serverResponse) {
+      uploaderror = true;
+      if(serverResponse.indexOf("Exception")>0){
+        this.defaultOptions.error(file, 'An error occurred!');
+      }      
+      $("#loadstate").fadeOut("slow");
+      $("#loader").fadeOut("slow");
     });
     this.on("processingmultiple", function(files, serverResponse) {
-      $(".loader").fadeIn("slow");
+      $("#loadstate").fadeIn("slow");
+    });
+    this.on("maxfilesexceeded", function(file) {
+      $("#dz-upload-button").prop('disabled', true);
+      this.removeFile(file);
     });
   }
 };

@@ -137,6 +137,7 @@ public class ProjectController extends SuperController {
         model.put("hideMenu", true);
       }
       projectService.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
+
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());
@@ -248,6 +249,7 @@ public class ProjectController extends SuperController {
       redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
       return "redirect:/project/" + pForm.getProject().getId();
     }
+
   }
 
   /**
@@ -286,6 +288,7 @@ public class ProjectController extends SuperController {
     ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
     pForm.getContributors().remove(pForm.getDelPos());
     // TODO DELETE FUNCTION
+
     return "project";
   }
 
@@ -304,14 +307,19 @@ public class ProjectController extends SuperController {
     if (!pid.isPresent()) {
       log.warn("ProjectForm is empty or missing values");
       // TOTO ERROR STRINGS!!!!
-      return new ResponseEntity<String>("{\"error\" : \"12\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>("{\"error\" : \""
+          + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
-      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>("{\"error\" : \""
+          + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
+          HttpStatus.INTERNAL_SERVER_ERROR);
     }
     // TODO LESESCHREIBRECHTE!!!!!!
+    FileDTO file = null;
     try {
       Iterator<String> itr = request.getFileNames();
       while (itr.hasNext()) {
@@ -319,8 +327,7 @@ public class ProjectController extends SuperController {
         log.debug("Saving file [name: {}]", () -> filename);
         final MultipartFile mpf = request.getFile(filename);
         if (mpf != null) {
-          FileDTO file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(),
-              mpf);
+          file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(), mpf);
           // String filePath = fileUtil.saveFile(file);
           MinioResult res = minioUtil.putFile(file);
           if (res.equals(MinioResult.OK)) {
@@ -332,17 +339,25 @@ public class ProjectController extends SuperController {
                 + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
           } else {
             log.error("ERROR: During Saving File - MinioResult:", () -> res.name());
-            return new ResponseEntity<String>("{\"error\" : \"12\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<String>("{\"error\" : \""
+                + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale())
+                + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
           }
         }
       }
     } catch (Exception e) {
-      // TODO delete file
+      if (file != null && minioUtil.getFile(file).equals(MinioResult.OK)) {
+        minioUtil.deleteFile(file);
+      }
+      
       log.warn("Exception during file upload: ", () -> e);
-      return new ResponseEntity<String>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<String>("{\"error\" : \""
+          + messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()) + "\"}",
+          HttpStatus.CONFLICT);
     }
+    
     log.trace("Method uploadFile successfully completed");
-    return new ResponseEntity<String>("{}", HttpStatus.OK);
+    return new ResponseEntity<String>("", HttpStatus.OK);
   }
 
   /**
@@ -353,8 +368,8 @@ public class ProjectController extends SuperController {
    * @return
    */
   @RequestMapping(value = { "/{pid}/multisaved", "/{pid}/study/{studyId}/multisaved" })
-  public String multiSaved(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId,
-      RedirectAttributes redirectAttributes) {
+  public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable Optional<Long> pid,
+      @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes, ModelMap model) {
     if (log.isDebugEnabled()) {
       log.debug("execute multiSaved()");
     }
@@ -438,7 +453,8 @@ public class ProjectController extends SuperController {
       }
     } catch (Exception e) {
       msg = "material.delete.db.error";
-      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e.getMessage());
+      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId,
+          () -> e.getMessage());
     }
     redirectAttributes.addFlashAttribute("saveState", state.name());
     redirectAttributes.addFlashAttribute("saveStateMsg",

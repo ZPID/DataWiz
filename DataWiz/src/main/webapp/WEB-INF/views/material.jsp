@@ -1,5 +1,18 @@
 <%@ include file="templates/header.jsp"%>
 <%@ include file="templates/navbar.jsp"%>
+<div id="loadstate" style="display: none;">
+  <div class="well" id="loadstatebar">
+    <div id="loadstateloading">
+      <s:message code="material.upload.loading" />
+    </div>
+    <div id="loadstateworking" style="display: none;">
+      <s:message code="material.upload.pending" />
+    </div>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+  </div>
+</div>
 <div id="mainWrapper">
   <div class="content-container">
     <%@ include file="templates/breadcrump.jsp"%>

@@ -9,6 +9,20 @@ body {
   margin-bottom: 60px;
 }
 
+.dropzone .dz-preview .dz-error-message {
+  top: 150px !important;
+}
+
+.dropzone .dz-preview .dz-filename {
+  position: relative;
+  top: -50px;
+}
+
+.dropzone .dz-preview .dz-size {
+  position: relative;
+  top: 12px;
+}
+
 body, #mainWrapper {
   background-color: #eee;
 }
@@ -520,6 +534,27 @@ label.btn::after {
   height: 100%;
   width: 100%;
   background: rgba(255, 255, 255, .8) url('../images/Loading-data.gif') 50% 50% no-repeat;
+}
+
+#loadstate {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(255, 255, 255, .8);
+  vertical-align: middle;
+}
+
+#loadstatebar {
+  width: 60%;
+  margin: auto;
+  position: relative;
+  top: 50%;
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  text-align: center;
 }
 
 .modal-content>.panel-heading {

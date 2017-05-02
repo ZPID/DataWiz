@@ -49,6 +49,9 @@
               <div class="col-sm-12">
                 <sf:select path="viewVars[${i}].missingFormat" class="form-control"
                   onchange="changeMissingFields(${i});" id="missingFormat_${i}">
+                  <sf:option value="SPSS_UNKNOWN">
+                    <s:message code="spss.missings.global.not.set" />
+                  </sf:option>
                   <sf:option value="SPSS_NO_MISSVAL">
                     <s:message code="spss.missings.SPSS_NO_MISSVAL" />
                   </sf:option>

@@ -56,7 +56,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   private static Logger log = LogManager.getLogger(DataWizConfiguration.class);
 
   @Autowired
-  private Environment env;
+  private Environment env;  
 
   @Bean(name = "PropertiesFile")
   public static PropertyPlaceholderConfigurer properties() {
@@ -139,6 +139,8 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   public CommonsMultipartResolver commonsMultipartResolver() {
     CommonsMultipartResolver resolver = new CommonsMultipartResolver();
     resolver.setDefaultEncoding("utf-8");
+    resolver.setMaxInMemorySize(268435456);
+    resolver.setMaxUploadSize(1610612736);
     log.info("multipartResolver succesfully loaded");
     return resolver;
   }
@@ -161,7 +163,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @Bean(name = "minioUtil", destroyMethod = "close")
   public MinioUtil minioUtil() {
-    return new MinioUtil(env);
+    return new MinioUtil(env, true);
   }
 
   @Override

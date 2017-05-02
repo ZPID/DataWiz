@@ -39,10 +39,9 @@ public class ExceptionHandlerController {
     return mav;
   }
 
-  @ExceptionHandler(value = { DataAccessResourceFailureException.class, CookieTheftException.class,
-      CommunicationsException.class, CannotGetJdbcConnectionException.class, CommunicationsException.class })
+  @ExceptionHandler(value = { Exception.class })
   public ModelAndView defaultDataAccessResourceFailureException(HttpServletRequest request, Exception e) {
-    log.warn("DWDownloadException catched from[{}] Exception: {}", () -> request.getRequestURL(), () -> e.getMessage());
+    log.fatal("Exception catched from[{}] Exception: ", () -> request.getRequestURL(), () -> e);
     ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
     mav.addObject("errormsg", e.getMessage());
     return mav;

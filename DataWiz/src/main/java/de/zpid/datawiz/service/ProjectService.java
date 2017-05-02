@@ -21,6 +21,7 @@ import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.TagDAO;
+import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -57,6 +58,8 @@ public class ProjectService {
   private DmpDAO dmpDAO;
   @Autowired
   protected ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  protected UserDAO userDAO;
 
   private static Logger log = LogManager.getLogger(ProjectService.class);
 
@@ -119,7 +122,7 @@ public class ProjectService {
       // load all data if user has full project rights
       if (userRole.equals(Roles.ADMIN) || userRole.equals(Roles.PROJECT_ADMIN) || userRole.equals(Roles.PROJECT_READER)
           || userRole.equals(Roles.PROJECT_WRITER)) {
-        setSpecificPageData(pForm, call, pdto);
+        setSpecificPageData(pForm, call);
       } else if (userRole.equals(Roles.DS_READER) || userRole.equals(Roles.DS_WRITER)) {
         List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
         List<StudyDTO> cStud = new ArrayList<StudyDTO>();
@@ -144,23 +147,23 @@ public class ProjectService {
    * @param pdto
    * @throws Exception
    */
-  private void setSpecificPageData(final ProjectForm pForm, final PageState call, final ProjectDTO pdto)
-      throws Exception {
+  private void setSpecificPageData(final ProjectForm pForm, final PageState call) throws Exception {
     // load /project data
     if (call == null || call.equals(PageState.PROJECT)) {
-      pForm.setTags(new ArrayList<String>(tagDAO.findTagsByProjectID(pdto).values()));
-      pForm.setContributors(contributorDAO.findByProject(pdto, false, false));
-      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+      pForm.setTags(new ArrayList<String>(tagDAO.findTagsByProjectID(pForm.getProject()).values()));
+      pForm.setContributors(contributorDAO.findByProject(pForm.getProject(), false, false));
+      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pForm.getProject()));
     } // load /project/xx/studies
     else if (call.equals(PageState.STUDIES)) {
-      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pForm.getProject()));
+      pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject().getId()));
       if (pForm.getStudies() != null)
         for (StudyDTO stud : pForm.getStudies()) {
           stud.setContributors(contributorDAO.findByStudy(stud.getId()));
         }
     } // load /project/xx/material
     else if (call.equals(PageState.MATERIAL)) {
-      pForm.setFiles(fileDAO.findProjectMaterialFiles(pdto));
+      pForm.setFiles(fileDAO.findProjectMaterialFiles(pForm.getProject()));
     } // load /dmp data
     else if (call.equals(PageState.DMP)) {
       DmpDTO dmp = dmpDAO.findByID(pForm.getProject());
@@ -186,10 +189,10 @@ public class ProjectService {
       pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));
       pForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
       pForm.setMetaPurposes(formTypeDAO.findAllByType(true, DWFieldTypes.METAPORPOSE));
-      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pdto));
+      pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pForm.getProject()));
     } // load /access data
     else if (call.equals(PageState.ACCESS)) {
-      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
+      pForm.setStudies(studyDAO.findAllStudiesByProjectId(pForm.getProject()));
     } // load /export data
     else if (call.equals(PageState.EXPORT)) {
 

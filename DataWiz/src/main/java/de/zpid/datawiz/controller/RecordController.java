@@ -2,8 +2,11 @@ package de.zpid.datawiz.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -43,6 +46,7 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.UserUtil;
 import de.zpid.spss.dto.SPSSVarDTO;
+import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSVarTypes;
 
 @Controller
@@ -120,14 +124,7 @@ public class RecordController {
         model.put("subnaviActive", PageState.RECORDVAR.name());
         model.put("errorMSG", recordService.validateCodeBook(sForm));
         ret = "codebook";
-        if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
-          StringBuilder sb = new StringBuilder();
-          sForm.getWarnings().forEach(s -> {
-            sb.append(s);
-            sb.append("<br />");
-          });
-          model.put("warnMSG", sb.toString());
-        }
+        model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
       } else if (subpage.isPresent() && subpage.get().equals("data")) {
         model.put("subnaviActive", PageState.RECORDDATA.name());
         ret = "datamatrix";
@@ -170,7 +167,8 @@ public class RecordController {
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       if (sForm.getNewChangeLog() == null || sForm.getNewChangeLog().isEmpty()) {
-        log.debug("New Changelog is Missing - return to jsp with message");
+        if (log.isDebugEnabled())
+          log.debug("New Changelog is Missing - return to jsp with message");
         redirectAttributes.addFlashAttribute("errorMSG",
             messageSource.getMessage("record.no.changelog", null, LocaleContextHolder.getLocale()));
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
@@ -214,7 +212,7 @@ public class RecordController {
         importService.loadImportReport(recordId, sForm);
         ret = "importRep";
       } catch (Exception e) {
-        log.error("Exception during recordService.setStudyform Message[{}]]", () -> e.getMessage(), () -> e);
+        log.error("Exception during recordService.setStudyform Message: ", () -> e);
         if (e instanceof IOException || e instanceof ClassNotFoundException) {
           redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("global.error.internal",
               new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
@@ -314,14 +312,14 @@ public class RecordController {
         recordService.insertOrUpdateRecordMetadata(studyId, recordId, sForm, user);
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + sForm.getRecord().getId();
       } catch (Exception e) {
-        log.error("ERROR: Saving record to DB wasn't sucessful! Exception:", () -> e);
+        log.fatal("ERROR: Saving record to DB wasn't sucessful! Exception:", () -> e);
         model.put("errorMSG", messageSource.getMessage("dbs.sql.exception",
             new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
         ret = "record";
       }
     }
     if (log.isTraceEnabled())
-      log.trace("Method saveImport saveRecordMetaData - mapping to {}", ret);
+      log.trace("Method saveRecordMetaData completed - mapping to {}", ret);
     return ret;
   }
 
@@ -341,7 +339,7 @@ public class RecordController {
       @PathVariable final Long pid, @PathVariable final Long studyId, @PathVariable final Long recordId,
       @RequestParam(value = "varId", required = true) long varId,
       @RequestParam(value = "modal", required = true) String modal) {
-    log.trace("loadAjaxModal [{}] for variable [id: {}]", () -> modal, () -> varId);
+    log.trace("Entering loadAjaxModal [{}] for variable [id: {}]", () -> modal, () -> varId);
     String ret = "forms/codebookModalContent";
     if (varId != -1) {
       for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
@@ -370,7 +368,7 @@ public class RecordController {
     }
     model.put("modalView", modal);
     if (log.isTraceEnabled())
-      log.trace("Method saveImport saveRecordMetaData - mapping to {}", ret);
+      log.trace("Method loadAjaxModal completed - mapping to {}", ret);
     return ret;
   }
 
@@ -384,7 +382,7 @@ public class RecordController {
   @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setValues")
   public String setValuesToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
-    log.trace("setValues for variable [id: {}]", () -> varVal.getId());
+    log.trace("Entering setValuesToStudyForm for variable [id: {}]", () -> varVal.getId());
     recordService.setVariableValues(varVal, sForm);
     model.put("errorMSG", recordService.validateCodeBook(sForm));
     if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
@@ -413,7 +411,7 @@ public class RecordController {
   @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setMissings")
   public String setMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
-    log.trace("setMissings for variable [id: {}]", () -> varVal.getId());
+    log.trace("Entering setMissingsToStudyForm for variable [id: {}]", () -> varVal.getId());
 
     for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
       if (var.getId() == varVal.getId()) {
@@ -424,14 +422,7 @@ public class RecordController {
       }
     }
     model.put("errorMSG", recordService.validateCodeBook(sForm));
-    if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
-      StringBuilder sb = new StringBuilder();
-      sForm.getWarnings().forEach(s -> {
-        sb.append(s);
-        sb.append("<br />");
-      });
-      model.put("infoMSG", sb.toString());
-    }
+    model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
@@ -457,7 +448,8 @@ public class RecordController {
       @PathVariable long versionId, @PathVariable long recordId, @PathVariable final Optional<Long> pid,
       @PathVariable final Optional<Long> studyId, @PathVariable String exportType,
       @RequestParam(value = "attachments", required = false) Boolean attachments) throws Exception {
-    log.trace("exportRecord - " + recordId + " - " + versionId + " - " + exportType);
+    log.trace("Entering exportRecord for [recordid: {}, version: {}, exporttye: {}] ", () -> recordId, () -> versionId,
+        () -> exportType);
     UserDTO user = UserUtil.getCurrentUser();
     RecordDTO record = null;
     StringBuilder res = new StringBuilder();
@@ -519,7 +511,7 @@ public class RecordController {
         if (log.isTraceEnabled())
           log.trace("Method exportRecord completed successfully");
       } else {
-        log.warn("Method exportRecord completed with an error - DWDownloadException thrown");
+        log.warn("Method exportRecord completed with an error - DWDownloadException thrown: ", res.toString());
         throw new DWDownloadException(res.toString());
       }
     }
@@ -534,7 +526,7 @@ public class RecordController {
   @RequestMapping(value = { "{recordId}/version/{versionId}/asyncSubmit" })
   public @ResponseBody ResponseEntity<String> setFormAsync(final ModelMap model,
       @ModelAttribute("StudyForm") StudyForm sForm) {
-    log.trace("setFormAsync");
+    log.trace("Entering setFormAsync");
     if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
       log.warn(
           "Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
@@ -553,29 +545,21 @@ public class RecordController {
   @RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setGlobalMissings")
   public String setGlobalMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") StudyForm varVal,
       @ModelAttribute("StudyForm") StudyForm sForm) {
-    log.trace("setGlobalMissings for record [id: {}]", () -> sForm.getRecord().getId());
+    log.trace("Entering setGlobalMissings for record [id: {}]", () -> sForm.getRecord().getId());
     List<SPSSVarDTO> missings = varVal.getViewVars();
     for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
-      if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_A)) {
+      if (!missings.get(0).getMissingFormat().equals(SPSSMissing.SPSS_UNKNOWN)
+          && RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_A)) {
         var.setMissingFormat(missings.get(0).getMissingFormat());
         recordService.switchMissingType(missings.get(0), var);
-      } else if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F)) {
+      } else if (!missings.get(1).getMissingFormat().equals(SPSSMissing.SPSS_UNKNOWN)
+          && RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F)) {
         var.setMissingFormat(missings.get(1).getMissingFormat());
         recordService.switchMissingType(missings.get(1), var);
-      } else if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE)) {
-        var.setMissingFormat(missings.get(2).getMissingFormat());
-        recordService.switchMissingType(missings.get(2), var);
       }
     }
     model.put("errorMSG", recordService.validateCodeBook(sForm));
-    if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
-      StringBuilder sb = new StringBuilder();
-      sForm.getWarnings().forEach(s -> {
-        sb.append(s);
-        sb.append("<br />");
-      });
-      model.put("infoMSG", sb.toString());
-    }
+    model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
@@ -604,8 +588,8 @@ public class RecordController {
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       RecordDTO currentVersion = sForm.getRecord();
-      List<String> parsingErrors = new ArrayList<>();
-      List<String> parsingWarings = new ArrayList<>();
+      Set<String> parsingErrors = new HashSet<String>();
+      Set<String> parsingWarings = new HashSet<String>();
       String infoMSG = null;
       try {
         RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(currentVersion);
@@ -625,14 +609,7 @@ public class RecordController {
       } catch (DataWizSystemException e) {
         model.put("infoMSG",
             messageSource.getMessage("record.codebook.not.saved", null, LocaleContextHolder.getLocale()));
-        if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
-          StringBuilder sb = new StringBuilder();
-          sForm.getWarnings().forEach(s -> {
-            sb.append(s);
-            sb.append("<br />");
-          });
-          model.put("warnMSG", sb.toString());
-        }
+        model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
         if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
           log.fatal("Database Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(),
               () -> e.getMessage(), () -> e);
@@ -645,21 +622,24 @@ public class RecordController {
         } else {
           log.debug("Parsing Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(),
               () -> e.getMessage());
-          if (parsingErrors != null && parsingErrors.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-            parsingErrors.forEach(s -> {
-              sb.append(s);
-              sb.append("<br />");
-            });
-            model.put("errorMSG", sb.toString());
-          }
+          model.put("errorMSG",
+              recordService.setMessageString(parsingErrors.parallelStream().collect(Collectors.toList())));
         }
         model.put("subnaviActive", PageState.RECORDVAR.name());
         model.put("recordSubMenu", true);
         ret = "codebook";
       } catch (ClassNotFoundException | IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        log.fatal("ClassNotFoundException |  IOException during saveCodebook - Message:", () -> e);
+        model
+            .put("errorMSG",
+                messageSource
+                    .getMessage("global.error.internal",
+                        new Object[] { env.getRequiredProperty("organisation.admin.email"),
+                            e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
+                        LocaleContextHolder.getLocale()));
+        model.put("subnaviActive", PageState.RECORDVAR.name());
+        model.put("recordSubMenu", true);
+        ret = "codebook";
       }
     }
     if (log.isTraceEnabled())
