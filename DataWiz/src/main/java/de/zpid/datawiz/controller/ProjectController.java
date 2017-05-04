@@ -349,13 +349,13 @@ public class ProjectController extends SuperController {
       if (file != null && minioUtil.getFile(file).equals(MinioResult.OK)) {
         minioUtil.deleteFile(file);
       }
-      
+
       log.warn("Exception during file upload: ", () -> e);
       return new ResponseEntity<String>("{\"error\" : \""
           + messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()) + "\"}",
           HttpStatus.CONFLICT);
     }
-    
+
     log.trace("Method uploadFile successfully completed");
     return new ResponseEntity<String>("", HttpStatus.OK);
   }
@@ -484,18 +484,22 @@ public class ProjectController extends SuperController {
             && !file.getContentType().toLowerCase().contains("icon")) {
           OutputStream sos = response.getOutputStream();
           BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
-          int scale = bImage.getHeight() / thumbHeight;
-          BufferedImage bf = fileUtil.scaleImage(bImage,
-              (bImage.getWidth() / scale > maxWidth) ? maxWidth : bImage.getWidth() / scale, thumbHeight);
-          response.setContentType(file.getContentType());
-          ImageIO.write(bf, "jpg", sos);
-          sos.flush();
+          int scale = 1;
+          if (bImage.getHeight() > thumbHeight)
+            scale = bImage.getHeight() / thumbHeight;
+          if (bImage.getWidth() / scale > maxWidth)
+            scale = bImage.getWidth() / maxWidth;
+          if (scale > 0) {
+            BufferedImage bf = fileUtil.scaleImage(bImage, bImage.getWidth() / scale, bImage.getHeight() / scale);
+            response.setContentType(file.getContentType());
+            ImageIO.write(bf, "jpg", sos);
+            sos.flush();
+          }
           sos.close();
         }
       }
     } catch (Exception e) {
-      // TODO !!!!
-      e.printStackTrace();
+      log.warn("Warn: setThumbnailImage throws an exception: ", () -> e);
     }
   }
 }

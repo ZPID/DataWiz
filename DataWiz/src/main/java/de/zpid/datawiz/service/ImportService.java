@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.any23.encoding.TikaEncodingDetector;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -124,6 +125,7 @@ public class ImportService {
         if (sForm.getWarnings() == null) {
           sForm.setWarnings(new ArrayList<String>());
         }
+        // TODO
         sForm.getWarnings().add("Fehler bei den DW Attributen, bitte überprüfen!!!!");
       }
     });
@@ -154,7 +156,21 @@ public class ImportService {
       errors.add(messageSource.getMessage("error.upload.creating.file", null, LocaleContextHolder.getLocale()));
     }
     if (!error) {
-      try (CSVReader reader = new CSVReader(new InputStreamReader(sForm.getCsvFile().getInputStream(), "UTF-8"),
+      Charset ch = null;
+      try {
+        ch = Charset.forName(new TikaEncodingDetector().guessEncoding(sForm.getCsvFile().getInputStream()));
+        if (ch.name().equals("IBM500")) {
+          ch = Charset.forName("Latin1");
+        } else if (!ch.name().equals("UTF-8") && !ch.name().equals("Latin1") && !ch.name().equals("ISO-8859-1")) {
+          warnings.add(
+              messageSource.getMessage("warning.charset.detection.standard", null, LocaleContextHolder.getLocale()));
+        }
+      } catch (Exception e1) {
+        log.warn("Detecting Charset for CSV File not successful - set Charset to UTF-8");
+        errors.add(messageSource.getMessage("warning.charset.detection", null, LocaleContextHolder.getLocale()));
+      }
+      try (CSVReader reader = new CSVReader(
+          new InputStreamReader(sForm.getCsvFile().getInputStream(), ch != null ? ch : Charset.forName("UTF-8")),
           (sForm.getCsvSeperator() == 't' ? '\t' : sForm.getCsvSeperator()),
           (sForm.getCsvQuoteChar() == 'q' ? '\"' : '\''))) {
         String[] nextLine;

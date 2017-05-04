@@ -253,6 +253,7 @@ public class RecordController {
         recordService.saveRecordToDBAndMinio(sForm);
       } catch (Exception e) {
         if (e instanceof DataWizSystemException) {
+          log.warn("Exception thrown during sortVariablesAndSetMetaData or saveRecordToDBAndMinio:", () -> e);
           if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.NO_DATA_ERROR))
             redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("global.error.internal",
                 new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
@@ -262,6 +263,7 @@ public class RecordController {
                     new Object[] { env.getRequiredProperty("organisation.admin.email"), e.getMessage() },
                     LocaleContextHolder.getLocale()));
         } else {
+          log.fatal("Database-Exception thrown during sortVariablesAndSetMetaData or saveRecordToDBAndMinio:", () -> e);
           redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
               new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
         }

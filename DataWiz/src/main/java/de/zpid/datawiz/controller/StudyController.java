@@ -1,7 +1,11 @@
 package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +14,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +35,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExceptionService;
+import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -47,6 +55,8 @@ public class StudyController {
   protected ClassPathXmlApplicationContext applicationContext;
   @Autowired
   protected SmartValidator validator;
+  @Autowired
+  private RecordService recordService;
 
   private static Logger log = LogManager.getLogger(StudyController.class);
 
@@ -167,18 +177,63 @@ public class StudyController {
     }
     if (ret != null)
       return ret;
-    // TODO VALIDATE FORM
-
-    validator.validate(sForm, bRes, StudyDTO.StGeneralVal.class);
-    if (bRes.hasErrors()) {
-      model.put("errorMSG", "FEHLER EINGABE");
+    Set<String> validateErrors = new HashSet<String>();
+    boolean error = validateStudyForm(sForm, bRes, StudyDTO.StGeneralVal.class, PageState.STUDYGENERAL, validateErrors);
+    error = validateStudyForm(sForm, bRes, StudyDTO.StDesignVal.class, PageState.STUDYDESIGN, validateErrors) ? true
+        : error;
+    error = validateStudyForm(sForm, bRes, StudyDTO.StEthicalVal.class, PageState.STUDYETHICAL, validateErrors) ? true
+        : error;
+    error = validateStudyForm(sForm, bRes, StudyDTO.StSampleVal.class, PageState.STUDYSAMPLE, validateErrors) ? true
+        : error;
+    error = validateStudyForm(sForm, bRes, StudyDTO.StSurveyVal.class, PageState.STUDYSURVEY, validateErrors) ? true
+        : error;
+    if (error) {
       model.put("studySubMenu", true);
-      model.put("subnaviActive", PageState.RECORDS.name());
+      model.put("subnaviActive", PageState.STUDY.name());
+      model.put("errorMSG",
+          recordService.setMessageString(validateErrors.parallelStream().collect(Collectors.toList())));
       return "study";
     }
-
     StudyDTO study = studyService.saveStudyForm(sForm, studyId, pid, user);
     return "redirect:/project/" + pid.get() + "/study/" + study.getId();
+  }
+
+  private boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls,
+      final PageState state, Set<String> validateErrors) {
+    boolean error = false;
+    if (sForm != null && bRes != null) {
+      BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
+      validator.validate(sForm, bResTmp, cls);
+      if (bResTmp.hasErrors()) {
+        error = true;
+        switch (state) {
+        case STUDYGENERAL:
+          validateErrors.add("ERROR GENERAL");
+          break;
+        case STUDYDESIGN:
+          validateErrors.add("ERROR DESIGN");
+          break;
+        case STUDYETHICAL:
+          validateErrors.add("ERROR ETHICAL");
+          break;
+        case STUDYSAMPLE:
+          validateErrors.add("ERROR SAMPLE");
+          break;
+        case STUDYSURVEY:
+          validateErrors.add("ERROR SURvey");
+          break;
+        default:
+          validateErrors.add("ERROR DEFAULT");
+          break;
+        }
+        for (ObjectError errtmp : bResTmp.getAllErrors()) {
+          bRes.addError(errtmp);
+        }
+      }
+    } else {
+      error = true;
+    }
+    return error;
   }
 
   /**

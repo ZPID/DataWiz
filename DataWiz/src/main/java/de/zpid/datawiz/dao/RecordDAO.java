@@ -276,7 +276,7 @@ public class RecordDAO extends SuperDAO {
    * @throws Exception
    */
   public int insertCodeBookMetaData(final RecordDTO record) throws Exception {
-    log.trace("Entering insertMetaData [recordId: {}]", () -> record.getId());
+    log.trace("Entering insertCodeBookMetaData [recordId: {}]", () -> record.getId());
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_record_metadata (record_id, changeLog, changed, changedBy, masterRec, password, "
         + "numberOfVariables, numberOfFileAttributes, numberOfCases, estimatedNofCases, caseSize, caseWeightVar,  compression, "

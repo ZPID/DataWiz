@@ -411,21 +411,14 @@ public class RecordService {
   public String validateCodeBook(StudyForm sForm) {
     Set<String> parsingErrors = new HashSet<String>();
     Set<String> parsingWarnings = new HashSet<String>();
-    StringBuilder sb = new StringBuilder();
     try {
       validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, parsingWarnings, null, true);
       sForm.setWarnings(parsingWarnings.parallelStream().collect(Collectors.toList()));
     } catch (DataWizSystemException e) {
       log.debug("Parsing Exception during saveCodebook - Code{}; Message: {}", () -> e.getErrorCode(),
           () -> e.getMessage());
-      if (parsingErrors != null && parsingErrors.size() > 0) {
-        parsingErrors.forEach(s -> {
-          sb.append(s);
-          sb.append("<br />");
-        });
-      }
     }
-    return sb.toString();
+    return setMessageString(parsingErrors.parallelStream().collect(Collectors.toList()));
   }
 
   /**

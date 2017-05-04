@@ -24,7 +24,19 @@
         <c:forEach items="${StudyForm.study.objectives}" varStatus="loop">
           <div class="row margin-bottom-10">
             <div class="col-sm-10">
-              <sf:textarea rows="1" path="study.objectives[${loop.index}].text" class="form-control " />
+              <s:bind path="study.objectives[${loop.index}].text">
+                <c:choose>
+                  <c:when test="${status.error}">
+                    <sf:textarea rows="1" path="study.objectives[${loop.index}].text"
+                      class="form-control margin-bottom-10 redborder" title="${status.errorMessage}"
+                      data-toggle="tooltip" />
+                  </c:when>
+                  <c:otherwise>
+                    <sf:textarea rows="1" path="study.objectives[${loop.index}].text"
+                      class="form-control margin-bottom-10" />
+                  </c:otherwise>
+                </c:choose>
+              </s:bind>
             </div>
             <div class="col-sm-2">
               <sf:select class="form-control col-sm-2" path="study.objectives[${loop.index}].objectivetype">
@@ -69,7 +81,17 @@
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.relTheorys}" varStatus="loop">
-          <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10" />
+          <s:bind path="study.relTheorys[${loop.index}].text">
+            <c:choose>
+              <c:when test="${status.error}">
+                <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text"
+                  class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+              </c:when>
+              <c:otherwise>
+                <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10" />
+              </c:otherwise>
+            </c:choose>
+          </s:bind>
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">
@@ -111,7 +133,7 @@
     </div>
   </div>
   <!-- study.timeDim -->
-  <c:set var="input_vars" value="study.timeDim;study.timeDim;required; ;row" />
+  <c:set var="input_vars" value="study.timeDim;study.timeDim; ; ;row" />
   <c:set var="valimages" value="${valimag1}" />
   <%@ include file="../templates/gen_textarea.jsp"%>
   <!-- study.intervention -->
@@ -265,7 +287,17 @@
         </div>
         <div class="panel panel-default panel-body margin-bottom-0">
           <c:forEach items="${StudyForm.study.interArms}" varStatus="loop">
-            <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
+            <s:bind path="study.interArms[${loop.index}].text">
+              <c:choose>
+                <c:when test="${status.error}">
+                  <sf:textarea rows="1" path="study.interArms[${loop.index}].text"
+                    class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+                </c:when>
+                <c:otherwise>
+                  <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
+                </c:otherwise>
+              </c:choose>
+            </s:bind>
           </c:forEach>
           <div class="input-group-btn">
             <sf:button class="btn btn-sm btn-success" name="addInterArms" onclick="setScrollPosition();">
@@ -303,7 +335,19 @@
               <tbody>
                 <c:forEach items="${StudyForm.study.measOcc}" varStatus="loop">
                   <tr>
-                    <td><sf:textarea rows="1" path="study.measOcc[${loop.index}].text" class="form-control" /></td>
+                    <td><s:bind path="study.measOcc[${loop.index}].text">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:textarea rows="1" path="study.measOcc[${loop.index}].text"
+                              class="form-control margin-bottom-10 redborder" title="${status.errorMessage}"
+                              data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:textarea rows="1" path="study.measOcc[${loop.index}].text"
+                              class="form-control margin-bottom-10" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind></td>
                     <td style="text-align: center;" class="contentExperimentalIntervention">
                       <div class="checkbox form-group-clean">
                         <label><sf:checkbox path="study.measOcc[${loop.index}].timetable" /></label>
@@ -379,7 +423,17 @@
               <div class="col-sm-6 margin-bottom-0">
                 <label class="control-label " for="study.constructs[${loop.index}].name"><s:message
                     code="study.constructs.name" />&nbsp;<s:message text="${loop.index + 1}" /></label>
-                <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control" />
+                <s:bind path="study.constructs[${loop.index}].name">
+                  <c:choose>
+                    <c:when test="${status.error}">
+                      <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control redborder"
+                        title="${status.errorMessage}" data-toggle="tooltip" />
+                    </c:when>
+                    <c:otherwise>
+                      <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control " />
+                    </c:otherwise>
+                  </c:choose>
+                </s:bind>
                 <s:message code="study.constructs.name.help" var="appresmess" />
                 <%@ include file="../templates/helpblock.jsp"%>
               </div>
@@ -415,7 +469,17 @@
               <div class="col-sm-6 col-sm-offset-6">
                 <label class="control-label " for="study.constructs[${loop.index}].other"><s:message
                     code="study.constructs.other" /></label>
-                <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control" />
+                <s:bind path="study.constructs[${loop.index}].other">
+                  <c:choose>
+                    <c:when test="${status.error}">
+                      <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control redborder"
+                        title="${status.errorMessage}" data-toggle="tooltip" />
+                    </c:when>
+                    <c:otherwise>
+                      <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control " />
+                    </c:otherwise>
+                  </c:choose>
+                </s:bind>
                 <s:message code="study.constructs.other.help" var="appresmess" />
                 <%@ include file="../templates/helpblock.jsp"%>
               </div>
@@ -449,11 +513,17 @@
       <div class="panel panel-default panel-body margin-bottom-0">
         <div class="panel-group" id="accordion">
           <c:forEach items="${StudyForm.study.instruments}" var="form" varStatus="loop">
+            <s:message var="redborderErr" text="" />
+            <s:bind path="study.instruments[${loop.index}].*">
+              <c:if test="${status.error}">
+                <s:message var="redborderErr" text="redborder" />
+              </c:if>
+            </s:bind>
             <div class="form-group">
               <div class="col-sm-12">
                 <label class="control-label " for="study.instruments"><s:message code="study.instrument" />&nbsp;<s:message
                     text="${loop.index + 1}" /></label>
-                <div class="panel panel-default">
+                <div class="panel panel-default ${redborderErr}">
                   <div class="panel-heading" data-target="#panel_coll_${loop.index}" data-toggle="collapse"
                     data-parent="#accordion">
                     <div class="row">

@@ -301,28 +301,24 @@ Dropzone.options.myDropzone = {
         setTimeout(function() {
           $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
         }, 500);
-      } else {
-        // $('.dz-error-message').html("asdsada");
       }
     });
     this.on("successmultiple", function(files, serverResponse) {
       myDropzone.processQueue();
     });
+    var totalpercent = 0;
     this.on("totaluploadprogress", function(progress) {
-      $('#loadstatebar .progress-bar').css('width', progress + '%').attr('aria-valuenow', progress).html(
-          Math.round(progress) + '%');
-      if (progress == 100.0) {
-        $("#loadstateloading").hide();
-        $("#loadstateworking").show();
-      }
+      if (progress > totalpercent)
+        totalpercent = progress;
+      $('#loadstatebar .progress-bar').css('width', totalpercent + '%').attr('aria-valuenow', totalpercent).html(
+          Math.round(totalpercent) + '%');
     });
     this.on("error", function(file, serverResponse) {
       uploaderror = true;
-      if(serverResponse.indexOf("Exception")>0){
+      if (serverResponse.indexOf("Exception") > 0) {
         this.defaultOptions.error(file, 'An error occurred!');
-      }      
+      }
       $("#loadstate").fadeOut("slow");
-      $("#loader").fadeOut("slow");
     });
     this.on("processingmultiple", function(files, serverResponse) {
       $("#loadstate").fadeIn("slow");

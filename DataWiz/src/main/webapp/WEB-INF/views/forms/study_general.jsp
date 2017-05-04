@@ -179,7 +179,17 @@
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.pubOnData}" varStatus="loop">
-          <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />
+          <s:bind path="study.pubOnData[${loop.index}].text">
+            <c:choose>
+              <c:when test="${status.error}">
+                <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text"
+                  class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+              </c:when>
+              <c:otherwise>
+                <sf:textarea rows="1" path="study.pubOnData[${loop.index}].text" class="form-control margin-bottom-10" />
+              </c:otherwise>
+            </c:choose>
+          </s:bind>
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">
@@ -199,7 +209,18 @@
       <label class="control-label " for="study.conflInterests"><s:message code="study.conflInterests" /></label>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.conflInterests}" varStatus="loop">
-          <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text" class="form-control margin-bottom-10" />
+          <s:bind path="study.conflInterests[${loop.index}].text">
+            <c:choose>
+              <c:when test="${status.error}">
+                <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text"
+                  class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+              </c:when>
+              <c:otherwise>
+                <sf:textarea rows="1" path="study.conflInterests[${loop.index}].text"
+                  class="form-control margin-bottom-10" />
+              </c:otherwise>
+            </c:choose>
+          </s:bind>
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">

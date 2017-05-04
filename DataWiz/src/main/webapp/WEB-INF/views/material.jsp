@@ -2,10 +2,10 @@
 <%@ include file="templates/navbar.jsp"%>
 <div id="loadstate" style="display: none;">
   <div class="well" id="loadstatebar">
-    <div id="loadstateloading">
+    <div id="loadstateloading" style="display: none;">
       <s:message code="material.upload.loading" />
     </div>
-    <div id="loadstateworking" style="display: none;">
+    <div id="loadstateworking" >
       <s:message code="material.upload.pending" />
     </div>
     <div class="progress">
@@ -76,7 +76,7 @@
           <li class="list-group-item">
             <!-- Image -->
             <div class="form-group row">
-              <div class="col-md-2">
+              <div class="col-md-2" style="text-align: center; vertical-align: middle;">
                 <c:choose>
                   <c:when test="${(ctype[0]=='image' || ctype[0]=='IMAGE') && basename != 'ico' && basename != 'gif'}">
                     <img style="padding-left: 14px" alt="${file.fileName}" src="<c:url value='img/${file.id}' />"

@@ -43,6 +43,22 @@
           </div>
         </c:if>
         <br />
+        <c:if test="${not empty StudyForm.errors}">
+          <div class="form-group">
+            <div class="col-sm-12">
+            <sf:label path="warnings">
+                <s:message code="dataset.import.report.errors" />
+              </sf:label>
+              <div class="alert alert-danger" role="alert">
+                <c:forEach items="${StudyForm.errors}" var="error">
+                  <div>
+                    <s:message text="${error}" />
+                  </div>
+                </c:forEach>
+              </div>
+            </div>
+          </div>
+        </c:if>
         <c:if test="${not empty StudyForm.warnings}">
           <div class="form-group">
             <div class="col-sm-12">
@@ -58,20 +74,6 @@
               </div>
               <s:message code="dataset.import.report.warnings.help" var="appresmess" />
               <%@ include file="templates/helpblock.jsp"%>
-            </div>
-          </div>
-        </c:if>
-        <c:if test="${not empty StudyForm.errors}">
-          <div class="form-group">
-            <div class="col-sm-12">
-              <div class="alert alert-danger" role="alert">
-                <h5>Parsing Errors:</h5>
-                <c:forEach items="${StudyForm.errors}" var="error">
-                  <div>
-                    <s:message text="${error}" />
-                  </div>
-                </c:forEach>
-              </div>
             </div>
           </div>
         </c:if>
