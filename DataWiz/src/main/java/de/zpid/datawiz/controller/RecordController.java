@@ -115,16 +115,24 @@ public class RecordController {
       }
     }
     if (sForm != null && ret == null) {
+      model.put("StudyForm", sForm);
+      model.put("recordSubMenu", true);
       model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.RECORDS,
           new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
               (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
                   : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
           new long[] { pid.get(), studyId.get() }, messageSource));
       if (subpage.isPresent() && subpage.get().equals("codebook")) {
+        if (sForm.getPageLoadMin() == 0) {
+          sForm.setPageLoadMin(1);
+        }
+        if (sForm.getPageLoadMax() == 0) {
+          sForm.setPageLoadMax(100);
+        }
         model.put("subnaviActive", PageState.RECORDVAR.name());
         model.put("errorMSG", recordService.validateCodeBook(sForm));
         ret = "codebook";
-        model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
+        model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
       } else if (subpage.isPresent() && subpage.get().equals("data")) {
         model.put("subnaviActive", PageState.RECORDDATA.name());
         ret = "datamatrix";
@@ -140,8 +148,6 @@ public class RecordController {
         ret = "record";
       }
     }
-    model.put("StudyForm", sForm);
-    model.put("recordSubMenu", true);
     if (log.isTraceEnabled())
       log.trace("Method showRecord completed - mapping to {}", ret);
     return ret;
@@ -424,7 +430,7 @@ public class RecordController {
       }
     }
     model.put("errorMSG", recordService.validateCodeBook(sForm));
-    model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
+    model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
@@ -525,6 +531,38 @@ public class RecordController {
    * @param sForm
    * @return
    */
+  @RequestMapping(value = {
+      "/{recordId}/version/{versionId}/codebook" }, method = RequestMethod.POST, params = "setNumofVars")
+  public String setNumofVars(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
+      @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+      @PathVariable final Optional<Long> recordId) {
+    log.trace("Entering setNumofVars");
+    if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
+      log.warn(
+          "Setting setNumofVars failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
+    }
+    if (sForm.getPageLoadMin() < 1)
+      sForm.setPageLoadMin(1);
+    if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
+      sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
+    model.put("subnaviActive", PageState.RECORDVAR.name());
+    model.put("errorMSG", recordService.validateCodeBook(sForm));
+    model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
+    model.put("recordSubMenu", true);
+    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.RECORDS,
+        new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
+            (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
+                : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
+        new long[] { pid.get(), studyId.get() }, messageSource));
+    return "codebook";
+  }
+
+  /**
+   * 
+   * @param model
+   * @param sForm
+   * @return
+   */
   @RequestMapping(value = { "{recordId}/version/{versionId}/asyncSubmit" })
   public @ResponseBody ResponseEntity<String> setFormAsync(final ModelMap model,
       @ModelAttribute("StudyForm") StudyForm sForm) {
@@ -561,7 +599,7 @@ public class RecordController {
       }
     }
     model.put("errorMSG", recordService.validateCodeBook(sForm));
-    model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
+    model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
     model.put("recordSubMenu", true);
     model.put("subnaviActive", PageState.RECORDVAR.name());
     if (log.isTraceEnabled())
@@ -589,6 +627,10 @@ public class RecordController {
         () -> versionId, () -> user.getEmail());
     String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
+      if (sForm.getPageLoadMin() < 1)
+        sForm.setPageLoadMin(1);
+      if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
+        sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
       RecordDTO currentVersion = sForm.getRecord();
       Set<String> parsingErrors = new HashSet<String>();
       Set<String> parsingWarings = new HashSet<String>();
@@ -611,7 +653,7 @@ public class RecordController {
       } catch (DataWizSystemException e) {
         model.put("infoMSG",
             messageSource.getMessage("record.codebook.not.saved", null, LocaleContextHolder.getLocale()));
-        model.put("warnMSG", recordService.setMessageString(sForm.getWarnings()));
+        model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
         if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
           log.fatal("Database Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(),
               () -> e.getMessage(), () -> e);

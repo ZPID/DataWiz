@@ -53,6 +53,9 @@ public class StudyForm implements Serializable {
   private List<SPSSVarDTO> viewVars;
   private List<SPSSVarDTO> delVars;
 
+  private int pageLoadMin;
+  private int pageLoadMax;
+
   public StudyDTO getStudy() {
     return study;
   }
@@ -293,4 +296,19 @@ public class StudyForm implements Serializable {
     this.jQueryMap = jQueryMap;
   }
 
+  public int getPageLoadMin() {
+    return pageLoadMin;
+  }
+
+  public void setPageLoadMin(int pageLoadMin) {
+    this.pageLoadMin = pageLoadMin;
+  }
+
+  public int getPageLoadMax() {
+    return pageLoadMax;
+  }
+
+  public void setPageLoadMax(int pageLoadMax) {
+    this.pageLoadMax = pageLoadMax;
+  }
 }

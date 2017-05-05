@@ -67,12 +67,12 @@ $tag_box = null;
           });
           if (window.location.pathname.search("/codebook") > 0 || window.location.pathname.search("/data") > 0) {
             $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
-            if (detectBrowser() == "edge" || detectBrowser() == "ie") {
-              $('.browser_wrapper').addClass('old_ie_wrapper');
-            }
-            setTimeout(function() {
-              fixTableHeaderWidth();
-            }, 0);
+//            if (detectBrowser() == "edge" || detectBrowser() == "ie") {
+//              $('.browser_wrapper').addClass('old_ie_wrapper');
+//            }
+            // setTimeout(function() {
+            // fixTableHeaderWidth();
+            // }, 0);
           }
         }// loading Panel Content
         else if (window.location.pathname.search("/panel") > 0) {

@@ -16,25 +16,28 @@
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
       <c:if test="${not empty StudyForm.record.dataMatrix}">
-        <div class="browser_wrapper">
-          <table class="table table-striped table-bordered table-condensed scrollTable" id="fixedHeaderTable">
-            <thead>
-              <tr>
-                <c:forEach items="${StudyForm.record.variables}" var="var">
-                  <th><s:message text="${var.name}" /></th>
-                </c:forEach>
-              </tr>
-            </thead>
-            <tbody class="scrollTableTbody">
-              <c:forEach items="${StudyForm.record.dataMatrix}" var="row">
-                <tr>
-                  <c:forEach items="${row}" var="value">
-                    <td><s:message text="${value}" /></td>
-                  </c:forEach>
-                </tr>
+      <div id="copy"></div>
+        <div class="divTable">
+          <div class="divTableHeading">
+            <div class="divTableRow">
+              <c:forEach items="${StudyForm.record.variables}" var="var">
+                <div class="divTableCell">
+                  <s:message text="${var.name}" />
+                </div>
               </c:forEach>
-            </tbody>
-          </table>
+            </div>
+          </div>
+          <div class="divTableBody">
+            <c:forEach items="${StudyForm.record.dataMatrix}" var="row">
+              <div class="divTableRow">
+                <c:forEach items="${row}" var="value">
+                  <div class="divTableCell">
+                    <s:message text="${value}" />
+                  </div>
+                </c:forEach>
+              </div>
+            </c:forEach>
+          </div>
         </div>
       </c:if>
     </div>

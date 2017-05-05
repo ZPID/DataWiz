@@ -44,6 +44,43 @@ body, #mainWrapper, .form-control {
 }
 /**************** END HEADER ****************/
 /**************** START Content ****************/
+.divTable {
+  display: table;
+  width: 100%;
+  display: block;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.divTableRow {
+  display: table-row;
+}
+
+.divTableCell, .divTableHead {
+  display: table-cell;
+  padding: 3px 10px;
+  border-color: rgba(200, 200, 200, 0.25);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.divTableHeading {
+  background-color: #286090;
+  display: table-header-group;
+  font-weight: bold;
+  color: white;
+}
+
+.divTableFoot {
+  background-color: #EEE;
+  display: table-footer-group;
+  font-weight: bold;
+}
+
+.divTableBody {
+  display: table-row-group;
+}
+
 textarea {
   resize: vertical; /* user can resize vertically, but width is fixed */
 }

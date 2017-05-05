@@ -31,63 +31,145 @@
         </c:if>
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>
+        <c:if test="${not empty warnCodeBookMSG}">
+          <div class="panel panel-warning">
+            <div class="panel-heading">
+              <s:message code="record.warnings.found" />
+              <a data-toggle="collapse" href="#collapse1"><s:message code="record.warnings.show" /></a>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse">
+              <div class="panel-body">${warnCodeBookMSG}</div>
+            </div>
+          </div>
+        </c:if>
         <div class="form-group">
           <div class="col-sm-12">
+            <div class="well" style="padding: 0px; margin: 0px;">
+              <div class="row col sm-12">
+                <div class="col-sm-3 margin-top-7">
+                  <strong><s:message code="record.select.vars.info" /></strong>
+                </div>
+                <div class="col-sm-2">
+                  <div class="col-sm-2 text-align-right margin-top-7">
+                    <strong><s:message code="record.select.vars.from" /></strong>
+                  </div>
+                  <div class="col-sm-10 text-align-left">
+                    <sf:input class="form-control" path="pageLoadMin" />
+                  </div>
+                </div>
+                <div class="col-sm-2">
+                  <div class="col-sm-2 text-align-right margin-top-7">
+                    <strong><s:message code="record.select.vars.to" /></strong>
+                  </div>
+                  <div class="col-sm-10 text-align-left">
+                    <sf:input class="form-control" path="pageLoadMax" />
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="col-sm-8 text-align-right margin-top-7">
+                    <strong><s:message code="record.select.vars.max" /></strong>
+                  </div>
+                  <div class="col-sm-4 text-align-left margin-top-7">
+                    <s:message text="${StudyForm.record.numberOfVariables}" />
+                  </div>
+                </div>
+                <div class="col-sm-2 text-align-right">
+                  <sf:button class="btn btn-success - btn-sm" name="setNumofVars">
+                    <s:message code="record.select.vars.show" />
+                  </sf:button>
+                </div>
+              </div>
+            </div>
             <div class="row">
-              <div class="col-sm-12 browser_wrapper">
-                <table class="table table-striped table-bordered scrollTable" id="fixedHeaderTable">
-                  <thead>
-                    <tr>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.name" /></th>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.type" /></th>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.label" /></th>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.values" /></th>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.missings" /></th>
-                      <th class="codebookTableHide th-width-60 hidefirst"><s:message
-                          code="dataset.import.report.codebook.width" /></th>
-                      <th class="codebookTableHide th-width-102 hidefirst"><s:message
-                          code="dataset.import.report.codebook.dec" /></th>
-                      <th class="codebookTableHide th-width-100 hidefirst"><s:message
-                          code="dataset.import.report.codebook.cols" /></th>
-                      <th class="codebookTableHide th-width-100 hidefirst"><s:message
-                          code="dataset.import.report.codebook.aligment" /></th>
-                      <th class="codebookTableHide th-width-100 hidefirst"><s:message
-                          code="dataset.import.report.codebook.measureLevel" /></th>
-                      <th class="codebookTableHide th-width-100 hidefirst"><s:message
-                          code="dataset.import.report.codebook.role" /></th>
-                      <th class="th-width-30" onclick="$('.codebookTableHide').toggle();fixTableHeaderWidth();">...</th>
+              <div class="col-sm-12">
+                <div class="divTable">
+                  <div class="divTableHeading">
+                    <div class="divTableRow">
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.name" />
+                      </div>
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.type" />
+                      </div>
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.label" />
+                      </div>
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.values" />
+                      </div>
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.missings" />
+                      </div>
+                      <div class="codebookTableHide divTableCell th-width-60 hidefirst">
+                        <s:message code="dataset.import.report.codebook.width" />
+                      </div>
+                      <div class="codebookTableHide divTableCell th-width-102 hidefirst">
+                        <s:message code="dataset.import.report.codebook.dec" />
+                      </div>
+                      <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                        <s:message code="dataset.import.report.codebook.cols" />
+                      </div>
+                      <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                        <s:message code="dataset.import.report.codebook.aligment" />
+                      </div>
+                      <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                        <s:message code="dataset.import.report.codebook.measureLevel" />
+                      </div>
+                      <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                        <s:message code="dataset.import.report.codebook.role" />
+                      </div>
+                      <div class="divTableCell th-width-30" onclick="$('.codebookTableHide').toggle();">...</div>
                       <c:forEach items="${StudyForm.record.attributes}" var="val" varStatus="attnameloop">
-                        <th class="th-width-100"><s:message text="[${fn:substringAfter(val.value, '@')}]" /></th>
+                        <div class="divTableCell th-width-100">
+                          <s:message text="[${fn:substringAfter(val.value, '@')}]" />
+                        </div>
                       </c:forEach>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.construct" /></th>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.measocc" /></th>
-                      <th class="th-width-200"><s:message code="dataset.import.report.codebook.instrument" /></th>
-                      <th class="th-width-300"><s:message code="dataset.import.report.codebook.itemtext" /></th>
-                      <th class="th-width-100"><s:message code="dataset.import.report.codebook.filtervar" /></th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody class="scrollTableTbody">
-                    <c:forEach items="${StudyForm.record.variables}" var="var" varStatus="loop">
-                      <tr>
-                        <td class="th-width-200"><strong><sf:input class="form-control varNames"
-                              path="record.variables[${loop.count-1}].name" id="varNameId_${loop.count-1}" /></strong></td>
-                        <td class="th-width-200"><c:set var="simplifiedType"
-                            value="${StudyForm.record.simplifyVarTypes(var.type)}" /> <s:message
-                            code="spss.type.${simplifiedType}" /> <c:if test="${simplifiedType ne var.type}">(<s:message
-                              code="spss.type.${var.type}" />)</c:if></td>
-                        <td class="th-width-200"><sf:textarea class="form-control"
-                            path="record.variables[${loop.count-1}].label" /></td>
-                        <td style="cursor: pointer;" class="th-width-200"
-                          onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=values');"><c:forEach
-                            items="${var.values}" var="val">
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.construct" />
+                      </div>
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.measocc" />
+                      </div>
+                      <div class="divTableCell th-width-200">
+                        <s:message code="dataset.import.report.codebook.instrument" />
+                      </div>
+                      <div class="divTableCell th-width-300">
+                        <s:message code="dataset.import.report.codebook.itemtext" />
+                      </div>
+                      <div class="divTableCell th-width-100">
+                        <s:message code="dataset.import.report.codebook.filtervar" />
+                      </div>
+                      <div></div>
+                    </div>
+                  </div>
+                  <div class="divTableBody">
+                    <c:forEach items="${StudyForm.record.variables}" var="var" varStatus="loop"
+                      begin="${StudyForm.pageLoadMin-1}" end="${StudyForm.pageLoadMax-1}">
+                      <div class="divTableRow">
+                        <div class="divTableCell th-width-200">
+                          <strong><sf:input class="form-control varNames"
+                              path="record.variables[${loop.index}].name" id="varNameId_${loop.index}" /></strong>
+                        </div>
+                        <div class="divTableCell th-width-200">
+                          <c:set var="simplifiedType" value="${StudyForm.record.simplifyVarTypes(var.type)}" />
+                          <s:message code="spss.type.${simplifiedType}" />
+                          <c:if test="${simplifiedType ne var.type}">(<s:message code="spss.type.${var.type}" />)</c:if>
+                        </div>
+                        <div class="divTableCell th-width-200">
+                          <sf:textarea class="form-control" path="record.variables[${loop.index}].label" />
+                        </div>
+                        <div style="cursor: pointer;" class="divTableCell th-width-200"
+                          onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=values');">
+                          <c:forEach items="${var.values}" var="val">
                             <div>
                               <s:message text="${val.value}&nbsp;=&nbsp;&quot;${val.label}&quot;" />
                               <br />
                             </div>
-                          </c:forEach></td>
-                        <td style="cursor: pointer;" class="th-width-200"
-                          onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=missings');"><c:choose>
+                          </c:forEach>
+                        </div>
+                        <div style="cursor: pointer;" class="divTableCell th-width-200"
+                          onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=missings');">
+                          <c:choose>
                             <c:when test="${var.missingFormat eq 'SPSS_ONE_MISSVAL'}">
                               <s:message text="${var.missingVal1}" />
                             </c:when>
@@ -104,32 +186,44 @@
                               <s:message
                                 text="${var.missingVal1}&nbsp;-&nbsp;${var.missingVal2},&nbsp;${var.missingVal3}" />
                             </c:when>
-                          </c:choose></td>
-                        <td class="codebookTableHide th-width-60 hidefirst"><s:message text="${var.width}" /></td>
-                        <td class="codebookTableHide th-width-102 hidefirst"><s:message text="${var.decimals}" /></td>
-                        <td class="codebookTableHide th-width-100 hidefirst"><s:message text="${var.columns}" /></td>
-                        <td class="codebookTableHide th-width-100 hidefirst"><s:message
-                            code="spss.aligment.${var.aligment}" /></td>
-                        <td class="codebookTableHide th-width-100 hidefirst"><s:message
-                            code="spss.measureLevel.${var.measureLevel}" /></td>
-                        <td class="codebookTableHide th-width-100 hidefirst"><s:message
-                            code="spss.role.${var.role}" /></td>
-                        <td class="th-width-30">&nbsp;&nbsp;&nbsp;</td>
+                          </c:choose>
+                        </div>
+                        <div class="codebookTableHide divTableCell th-width-60 hidefirst">
+                          <s:message text="${var.width}" />
+                        </div>
+                        <div class="codebookTableHide divTableCell th-width-102 hidefirst">
+                          <s:message text="${var.decimals}" />
+                        </div>
+                        <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                          <s:message text="${var.columns}" />
+                        </div>
+                        <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                          <s:message code="spss.aligment.${var.aligment}" />
+                        </div>
+                        <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                          <s:message code="spss.measureLevel.${var.measureLevel}" />
+                        </div>
+                        <div class="codebookTableHide divTableCell th-width-100 hidefirst">
+                          <s:message code="spss.role.${var.role}" />
+                        </div>
+                        <div class="divTableCell th-width-30">&nbsp;&nbsp;&nbsp;</div>
                         <c:forEach items="${StudyForm.record.attributes}" var="val" varStatus="attnameloop">
-                          <td class="th-width-100"><c:forEach items="${var.attributes}" var="att">
+                          <div class="divTableCell th-width-100">
+                            <c:forEach items="${var.attributes}" var="att">
                               <c:if test="${fn:startsWith(att.label, fn:substringAfter(val.value, '@'))}">
                                 <s:message text="${att.value}" />
                                 <br />
                               </c:if>
-                            </c:forEach></td>
+                            </c:forEach>
+                          </div>
                         </c:forEach>
-                        <td class="th-width-200"><c:forEach items="${var.dw_attributes}" var="val"
-                            varStatus="attloop">
+                        <div class="divTableCell th-width-200">
+                          <c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                             <c:if test="${val.label == 'dw_construct'}">
                               <c:choose>
                                 <c:when test="${not empty StudyForm.study.constructs}">
                                   <sf:select class="form-control"
-                                    path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                    path="record.variables[${loop.index}].dw_attributes[${attloop.index}].value">
                                     <sf:option value="">
                                       <s:message code="record.codebook.no.construct" />
                                     </sf:option>
@@ -152,14 +246,15 @@
                                 </div>
                               </c:if>
                             </c:if>
-                          </c:forEach></td>
-                        <td class="th-width-200"><c:forEach items="${var.dw_attributes}" var="val"
-                            varStatus="attloop">
+                          </c:forEach>
+                        </div>
+                        <div class="divTableCell th-width-200">
+                          <c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                             <c:if test="${val.label == 'dw_measocc'}">
                               <c:choose>
                                 <c:when test="${not empty StudyForm.study.measOcc}">
                                   <sf:select class="form-control"
-                                    path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                    path="record.variables[${loop.index}].dw_attributes[${attloop.index}].value">
                                     <sf:option value="">
                                       <s:message code="record.codebook.no.measocc" />
                                     </sf:option>
@@ -182,14 +277,15 @@
                                 </div>
                               </c:if>
                             </c:if>
-                          </c:forEach></td>
-                        <td class="th-width-200"><c:forEach items="${var.dw_attributes}" var="val"
-                            varStatus="attloop">
+                          </c:forEach>
+                        </div>
+                        <div class="divTableCell th-width-200">
+                          <c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                             <c:if test="${val.label == 'dw_instrument'}">
                               <c:choose>
                                 <c:when test="${not empty StudyForm.study.instruments}">
                                   <sf:select class="form-control"
-                                    path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                    path="record.variables[${loop.index}].dw_attributes[${attloop.index}].value">
                                     <sf:option value="">
                                       <s:message code="record.codebook.no.instrument" />
                                     </sf:option>
@@ -213,19 +309,21 @@
                                 </div>
                               </c:if>
                             </c:if>
-                          </c:forEach></td>
-                        <td class="th-width-300"><c:forEach items="${var.dw_attributes}" var="val"
-                            varStatus="attloop">
+                          </c:forEach>
+                        </div>
+                        <div class="divTableCell th-width-300">
+                          <c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                             <c:if test="${val.label == 'dw_itemtext'}">
                               <sf:textarea class="form-control"
-                                path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value" />
+                                path="record.variables[${loop.index}].dw_attributes[${attloop.index}].value" />
                             </c:if>
-                          </c:forEach></td>
-                        <td class="th-width-100"><c:forEach items="${var.dw_attributes}" var="val"
-                            varStatus="attloop">
+                          </c:forEach>
+                        </div>
+                        <div class="divTableCell th-width-100">
+                          <c:forEach items="${var.dw_attributes}" var="val" varStatus="attloop">
                             <c:if test="${val.label == 'dw_filtervar'}">
                               <sf:select class="form-control"
-                                path="record.variables[${loop.count-1}].dw_attributes[${attloop.count-1}].value">
+                                path="record.variables[${loop.index}].dw_attributes[${attloop.index}].value">
                                 <sf:option value="">
                                   <s:message code="gen.no" />
                                 </sf:option>
@@ -234,12 +332,13 @@
                                 </sf:option>
                               </sf:select>
                             </c:if>
-                          </c:forEach></td>
-                        <td></td>
-                      </tr>
+                          </c:forEach>
+                        </div>
+                        <div></div>
+                      </div>
                     </c:forEach>
-                  </tbody>
-                </table>
+                  </div>
+                </div>
               </div>
             </div>
             <c:if test="${allowEdit}">
