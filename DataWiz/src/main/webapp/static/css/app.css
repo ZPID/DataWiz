@@ -716,3 +716,19 @@ label.btn::after {
   background: red;
   color: #fff;
 }
+
+.dwgoup {
+  background-image: url('../images/backtotop.png');
+  background-repeat: no-repeat;
+  background-position: left top;  
+  background-size: 50px 50px;
+  width: 50px;
+  height: 50px; 
+  position: fixed;
+  bottom: 50px;
+  right: 20px;
+  padding: 1em;
+  z-index: 1000;
+  position: fixed;
+  cursor: n-resize;
+}

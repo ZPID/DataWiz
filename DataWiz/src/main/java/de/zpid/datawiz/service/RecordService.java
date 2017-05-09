@@ -418,7 +418,10 @@ public class RecordService {
       log.debug("Parsing Exception during saveCodebook - Code{}; Message: {}", () -> e.getErrorCode(),
           () -> e.getMessage());
     }
-    return setMessageString(parsingErrors.parallelStream().collect(Collectors.toList()));
+    String ret = "";
+    if (parsingErrors != null)
+      ret = setMessageString(parsingErrors.parallelStream().collect(Collectors.toList()));
+    return ret;
   }
 
   /**
@@ -921,10 +924,10 @@ public class RecordService {
   public String setMessageString(List<String> messages) {
     String messageString = null;
     final AtomicInteger count = new AtomicInteger();
-    if (messages != null) {
+    if (messages != null && messages.size() > 0) {
       final int warningSize = messages.size();
       StringBuilder sb = new StringBuilder();
-      messages.parallelStream().forEach(s -> {
+      messages.forEach(s -> {
         sb.append(s);
         if (count.incrementAndGet() < warningSize)
           sb.append("<br />");

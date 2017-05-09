@@ -12,11 +12,12 @@ $tag_box = null;
 (function($, window, document, undefined) {
   $(document).ready(
       function() {
+        backTotop();
         $("#dwmainnavbar").on('affixed-top.bs.affix', function() {
-          $("#navbarlogo").slideUp("slow");
+          $("#navbarlogo").fadeOut();
         });
         $("#dwmainnavbar").on('affix.bs.affix', function() {
-          $("#navbarlogo").slideDown("slow");
+          $("#navbarlogo").fadeIn();
         });
         $.ajaxSetup({
           headers : {
@@ -53,7 +54,8 @@ $tag_box = null;
           showorHideStudyContent();
         } // loading Record Content
         else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
-          $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
+          $("#studyFormDis :input:not([name=pageLoadMin],[name=pageLoadMax],[name=setNumofVars])").attr("disabled",
+              $("#disStudyContent").val() === 'disabled');
           $("#spssSelected").show();
           $("#csvSelected").hide();
           $("#selectedFileType").change(function() {
@@ -65,15 +67,6 @@ $tag_box = null;
               $("#csvSelected").show();
             }
           });
-          if (window.location.pathname.search("/codebook") > 0 || window.location.pathname.search("/data") > 0) {
-            $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
-//            if (detectBrowser() == "edge" || detectBrowser() == "ie") {
-//              $('.browser_wrapper').addClass('old_ie_wrapper');
-//            }
-            // setTimeout(function() {
-            // fixTableHeaderWidth();
-            // }, 0);
-          }
         }// loading Panel Content
         else if (window.location.pathname.search("/panel") > 0) {
           $("#projectfilter").keyup(function() {
@@ -692,70 +685,6 @@ function loadAjaxModal(url, global) {
   }
 }
 
-$('.scrollTable').on('scroll', function() {
-  $(".scrollTable > *").width($(".scrollTable").width() + $(".scrollTable").scrollLeft());
-});
-
-function fixTableHeaderWidth() {
-  setTimeout(function() {
-    var tdHeader = document.getElementById("fixedHeaderTable").rows[0].cells;
-    var tdData = document.getElementById("fixedHeaderTable").rows[1].cells;
-    $.each(tdData, function(i, item) {
-      var dataWidth = tdData[i].offsetWidth;
-      var headWidth = tdHeader[i].offsetWidth;
-      if (dataWidth > headWidth) {
-        if (detectBrowser() == "firefox") {
-          dataWidth = dataWidth - getBorderAndPadding(tdHeader[i]);
-        }
-        tdHeader[i].style.minWidth = dataWidth + 'px';
-      } else if (dataWidth < headWidth) {
-        if (detectBrowser() == "firefox") {
-          headWidth = headWidth - getBorderAndPadding(tdData[i]);
-        }
-        tdData[i].style.minWidth = headWidth + 'px';
-      }
-    });
-  }, 0);
-}
-
-function toggleFullscreen() {
-  console.log("toggleFullscreen")
-  if ($("#fullScreenView").hasClass("scrollTableFullscreen")) {
-    $("#fullScreenView").removeClass("scrollTableFullscreen");
-    $(".scrollTable tbody").removeClass("scrollTableFullScreenTBody").addClass("scrollTableTbody");
-  } else {
-    $("#fullScreenView").addClass("scrollTableFullscreen");
-    $(".scrollTable tbody").addClass("scrollTableFullScreenTBody").removeClass("scrollTableTbody");
-  }
-}
-
-function getBorderAndPadding(element) {
-  var style = element.currentStyle || window.getComputedStyle(element);
-  var padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
-  var border = parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
-  return padding + border;
-}
-
-function detectBrowser() {
-  // Opera 8.0+
-  if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0)
-    return "opera";
-  else if (typeof InstallTrigger !== 'undefined')
-    return "firefox";
-  else if (/constructor/i.test(window.HTMLElement) || (function(p) {
-    return p.toString() === "[object SafariRemoteNotification]";
-  })(!window['safari'] || safari.pushNotification))
-    return "safari";
-  else if (/* @cc_on!@ */false || !!document.documentMode)
-    return "ie";
-  else if (!!window.StyleMedia)
-    return "edge";
-  else if (!!window.chrome && !!window.chrome.webstore)
-    return "chrome";
-  else
-    return "notsupported"
-}
-
 document.onkeypress = stopRKey;
 
 function stopRKey(evt) {
@@ -764,4 +693,29 @@ function stopRKey(evt) {
   if ((evt.which == 13) && (node.type == "text")) {
     return false;
   }
+}
+
+function backTotop() {
+
+  // Der Button wird ausgeblendet
+  $(".dwgoup").hide();
+
+  // Funktion für das Scroll-Verhalten
+  $(function() {
+    $(window).scroll(function() {
+      console.log("scroll " + $(this).scrollTop())
+      if ($(this).scrollTop() > 100) { // Wenn 100 Pixel gescrolled wurde
+        $('.dwgoup').fadeIn();
+      } else {
+        $('.dwgoup').fadeOut();
+      }
+    });
+
+    $('.dwgoup').click(function() { // Klick auf den Button
+      $('body,html').animate({
+        scrollTop : 0
+      }, 800);
+      return false;
+    });
+  });
 }

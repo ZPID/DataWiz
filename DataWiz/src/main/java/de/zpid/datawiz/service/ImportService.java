@@ -15,7 +15,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.any23.encoding.TikaEncodingDetector;
 import org.apache.commons.lang3.StringUtils;
@@ -343,7 +346,6 @@ public class ImportService {
     } else {
       savedVar = new SPSSVarDTO();
     }
-
     long savedId = savedVar.getId();
     savedVar.setId(0);
     long id = curr.getId();
@@ -817,23 +819,34 @@ public class ImportService {
       position++;
     }
     sForm.setDelVars(delVars);
+    AtomicInteger varSize = new AtomicInteger(0);
+    compList.forEach(s -> {
+      int index = varSize.get();
+      varSize.set(s.getMovedTo() > index ? s.getMovedTo() : index);
+    });
+    List<SPSSVarDTO> viewVars = Stream.generate(SPSSVarDTO::new).limit(varSize.get()).collect(Collectors.toList());
+    AtomicInteger atint = new AtomicInteger(0);
+    vars.forEach(s -> viewVars.set(atint.getAndIncrement(), s));
     for (RecordCompareDTO rc : compList) {
       if (rc.getVarStatus().equals(VariableStatus.MOVED)
           || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED)
           || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
           || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
           || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
-        SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get(rc.getMovedFrom() - 1);
-        vars.remove(moved);
-        if (vars.size() < rc.getMovedTo() - 1) {
-          for (int i = vars.size(); i < rc.getMovedTo() - 1; i++)
-            vars.add(new SPSSVarDTO());
+        SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get((rc.getMovedFrom() - 1));
+        if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())) {
+          viewVars.set((rc.getMovedFrom() - 1), new SPSSVarDTO());
+          compList.get((rc.getMovedFrom() - 1)).setKeepExpMeta(false);
+          compList.get((rc.getMovedFrom() - 1)).setVarStatus(VariableStatus.NEW_VAR);
+          compList.get((rc.getMovedFrom() - 1)).setBootstrapItemColor("warning");
+          compList.get((rc.getMovedFrom() - 1)).setMessage(messageSource
+              .getMessage("import.check." + VariableStatus.NEW_VAR.name(), null, LocaleContextHolder.getLocale()));
         }
-        vars.add(rc.getMovedTo() - 1, moved);
+        viewVars.set((rc.getMovedTo() - 1), moved);
       }
     }
     sForm.setCompList(compList);
-    sForm.setViewVars(vars);
+    sForm.setViewVars(viewVars);
   }
 
 }

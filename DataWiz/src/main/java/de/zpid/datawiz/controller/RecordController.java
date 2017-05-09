@@ -122,22 +122,28 @@ public class RecordController {
               (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
                   : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
           new long[] { pid.get(), studyId.get() }, messageSource));
+      if (sForm.getPageLoadMin() == 0) {
+        sForm.setPageLoadMin(1);
+      }
       if (subpage.isPresent() && subpage.get().equals("codebook")) {
-        if (sForm.getPageLoadMin() == 0) {
-          sForm.setPageLoadMin(1);
-        }
-        if (sForm.getPageLoadMax() == 0) {
-          sForm.setPageLoadMax(100);
-        }
         model.put("subnaviActive", PageState.RECORDVAR.name());
         model.put("errorMSG", recordService.validateCodeBook(sForm));
+        if (sForm.getPageLoadMax() == 0) {
+          sForm.setPageLoadMax(
+              sForm.getRecord().getNumberOfVariables() < 100 ? sForm.getRecord().getNumberOfVariables() : 100);
+        }
         ret = "codebook";
         model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
       } else if (subpage.isPresent() && subpage.get().equals("data")) {
         model.put("subnaviActive", PageState.RECORDDATA.name());
+        if (sForm.getPageLoadMax() == 0) {
+          sForm.setPageLoadMax(
+              sForm.getRecord().getNumberOfCases() < 100 ? (int) sForm.getRecord().getNumberOfCases() : 100);
+        }
         ret = "datamatrix";
       } else {
-        if (!recordService.validateCodeBook(sForm).toString().trim().isEmpty()) {
+        String errormsg = recordService.validateCodeBook(sForm);
+        if (errormsg != null && !errormsg.trim().isEmpty()) {
           model.put("errorMSG",
               messageSource.getMessage("record.spss.export.disabled", null, LocaleContextHolder.getLocale()));
           model.put("disableSPSSExport", true);
@@ -290,7 +296,7 @@ public class RecordController {
    * @param model
    * @return
    */
-  @RequestMapping(value = { "", "/{recordId}" }, params = "saveMetaData")
+  @RequestMapping(value = { "", "/{recordId}", "/{recordId}/version/{versionId}" }, params = "saveMetaData")
   public String saveRecordMetaData(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
       @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm,
       final RedirectAttributes redirectAttributes, final ModelMap model) {
@@ -532,20 +538,15 @@ public class RecordController {
    * @return
    */
   @RequestMapping(value = {
-      "/{recordId}/version/{versionId}/codebook" }, method = RequestMethod.POST, params = "setNumofVars")
+      "/{recordId}/version/{versionId}/{pagestate}" }, method = RequestMethod.POST, params = "setNumofVars")
   public String setNumofVars(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
       @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-      @PathVariable final Optional<Long> recordId) {
+      @PathVariable final Optional<Long> recordId, @PathVariable final String pagestate) {
     log.trace("Entering setNumofVars");
     if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
       log.warn(
           "Setting setNumofVars failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
     }
-    if (sForm.getPageLoadMin() < 1)
-      sForm.setPageLoadMin(1);
-    if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
-      sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
-    model.put("subnaviActive", PageState.RECORDVAR.name());
     model.put("errorMSG", recordService.validateCodeBook(sForm));
     model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
     model.put("recordSubMenu", true);
@@ -554,7 +555,21 @@ public class RecordController {
             (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
                 : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
         new long[] { pid.get(), studyId.get() }, messageSource));
-    return "codebook";
+    if (pagestate.equals("codebook")) {
+      if (sForm.getPageLoadMin() < 1)
+        sForm.setPageLoadMin(1);
+      if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
+        sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
+      model.put("subnaviActive", PageState.RECORDVAR.name());
+      return "codebook";
+    } else {
+      if (sForm.getPageLoadMin() < 1)
+        sForm.setPageLoadMin(1);
+      if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfCases())
+        sForm.setPageLoadMax((int) sForm.getRecord().getNumberOfCases());
+      model.put("subnaviActive", PageState.RECORDDATA.name());
+      return "datamatrix";
+    }
   }
 
   /**

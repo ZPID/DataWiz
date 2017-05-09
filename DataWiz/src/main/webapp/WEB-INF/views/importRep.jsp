@@ -46,7 +46,7 @@
         <c:if test="${not empty StudyForm.errors}">
           <div class="form-group">
             <div class="col-sm-12">
-            <sf:label path="warnings">
+              <sf:label path="warnings">
                 <s:message code="dataset.import.report.errors" />
               </sf:label>
               <div class="alert alert-danger" role="alert">
@@ -101,8 +101,15 @@
                                   <td colspan="12"><strong><s:message code="warning.var.added" /></strong></td>
                                 </c:when>
                                 <c:otherwise>
-                                  <c:set var="currVAR" value="${var}" scope="request" />
-                                  <jsp:include page="templates/importTable.jsp" />
+                                  <c:choose>
+                                    <c:when test="${not empty var.type}">
+                                      <c:set var="currVAR" value="${var}" scope="request" />
+                                      <jsp:include page="templates/importTable.jsp" />
+                                    </c:when>
+                                    <c:otherwise>
+                                      <td colspan="12"><strong><s:message code="warning.var.added" /></strong></td>
+                                    </c:otherwise>
+                                  </c:choose>
                                 </c:otherwise>
                               </c:choose>
                               <c:choose>
@@ -120,9 +127,18 @@
                                 </c:otherwise>
                               </c:choose>
                             <tr>
-                              <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
-                                  label="Erweitere Metadaten übernehmen: " /> <s:message
-                                  text="${StudyForm.compList[loop.count-1].message}" /></td>
+                              <c:choose>
+                                <c:when test="${not empty var.type}">
+                                  <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
+                                      label="Erweitere Metadaten übernehmen: " /> <s:message
+                                      text="${StudyForm.compList[loop.count-1].message}" /></td>
+                                </c:when>
+                                <c:otherwise>
+                                  <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
+                                      label="Erweitere Metadaten übernehmen: " disabled="true"/> <s:message
+                                      text="${StudyForm.compList[loop.count-1].message}" /></td>
+                                </c:otherwise>
+                              </c:choose>
                             </tr>
                           </tbody>
                         </table>

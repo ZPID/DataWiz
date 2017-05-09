@@ -54,7 +54,8 @@
                     <strong><s:message code="record.select.vars.from" /></strong>
                   </div>
                   <div class="col-sm-10 text-align-left">
-                    <sf:input class="form-control" path="pageLoadMin" />
+                    <sf:input type="number" onkeyup="this.value=this.value.replace(/[^\d]/,'')" required="required"
+                      class="form-control" path="pageLoadMin" min="0" />
                   </div>
                 </div>
                 <div class="col-sm-2">
@@ -62,7 +63,9 @@
                     <strong><s:message code="record.select.vars.to" /></strong>
                   </div>
                   <div class="col-sm-10 text-align-left">
-                    <sf:input class="form-control" path="pageLoadMax" />
+                    <sf:input type="number" class="form-control" path="pageLoadMax"
+                      onkeyup="this.value=this.value.replace(/[^\d]/,'')" required="required" min="0"
+                      max="${StudyForm.record.numberOfVariables}" />
                   </div>
                 </div>
                 <div class="col-sm-3">
