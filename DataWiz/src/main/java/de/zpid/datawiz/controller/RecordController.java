@@ -314,7 +314,6 @@ public class RecordController {
       model.put("subnaviActive", PageState.RECORDMETA.name());
       ret = "record";
     }
-    System.out.println(sForm.getRecord().getDescription());
     if (ret == null && sForm.getRecord().getDescription().length() > 2000) {
       model.put("errorMSG", messageSource.getMessage("record.desc.size", null, LocaleContextHolder.getLocale()));
       model.put("recordSubMenu", true);

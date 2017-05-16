@@ -413,7 +413,7 @@ public class RecordService {
     Set<String> parsingWarnings = new HashSet<String>();
     try {
       validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, parsingWarnings, null, true);
-      sForm.setWarnings(parsingWarnings.parallelStream().collect(Collectors.toList()));
+      sForm.setWarnings(parsingWarnings);
     } catch (DataWizSystemException e) {
       log.debug("Parsing Exception during saveCodebook - Code{}; Message: {}", () -> e.getErrorCode(),
           () -> e.getMessage());
@@ -935,6 +935,10 @@ public class RecordService {
       messageString = sb.toString();
     }
     return messageString;
+  }
+
+  public String setMessageString(Set<String> messages) {
+    return setMessageString(messages.parallelStream().collect(Collectors.toList()));
   }
 
 }

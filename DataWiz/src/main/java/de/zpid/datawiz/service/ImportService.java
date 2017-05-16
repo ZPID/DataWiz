@@ -91,7 +91,7 @@ public class ImportService {
   public void importFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
       final StudyForm sForm, final UserDTO user) throws DataWizSystemException {
     boolean error = false;
-    List<String> warnings = new ArrayList<>();
+    Set<String> warnings = new HashSet<>();
     List<String> errors = new ArrayList<>();
     if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
         && sForm.getSpssFile().getSize() > 0) {
@@ -126,7 +126,7 @@ public class ImportService {
     sForm.getRecord().getVariables().parallelStream().forEach(var -> {
       if (sortVariableAttributes(var)) {
         if (sForm.getWarnings() == null) {
-          sForm.setWarnings(new ArrayList<String>());
+          sForm.setWarnings(new HashSet<String>());
         }
         // TODO
         sForm.getWarnings().add("Fehler bei den DW Attributen, bitte überprüfen!!!!");
@@ -146,7 +146,7 @@ public class ImportService {
    * @param error
    */
   public Boolean validateCSVFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
-      StudyForm sForm, final UserDTO user, List<String> warnings, List<String> errors) {
+      StudyForm sForm, final UserDTO user, Set<String> warnings, List<String> errors) {
     FileDTO file = null;
     boolean init = true, error = false;
     try {
@@ -595,7 +595,7 @@ public class ImportService {
    * @return
    */
   public Boolean validateSPSSFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
-      StudyForm sForm, final UserDTO user, final List<String> errors, final List<String> warnings) {
+      StudyForm sForm, final UserDTO user, final List<String> errors, final Set<String> warnings) {
     FileDTO file = null;
     Boolean error = false;
     try {
@@ -631,6 +631,7 @@ public class ImportService {
         spssFile.setId(recordId.get());
         spssFile.setChangedBy(user.getEmail());
         spssFile.setChangeLog(sForm.getNewChangeLog());
+        System.err.println();
         sForm.setRecord(spssFile);
         sForm.setFile(file);
       }
@@ -775,11 +776,15 @@ public class ImportService {
       vars.add((SPSSVarDTO) ObjectCloner.deepCopy(tmp));
     }
     int listDiff = vars.size() - sForm.getRecord().getVariables().size();
-    // TODO
-    if (listDiff != 0 && sForm.getWarnings().parallelStream()
-        .filter(match -> "Variablenanzahl geändert hinzugefügt".trim().equals(match)).count() == 0) {
-      // TODO TEXTE
-      sForm.getWarnings().add("Variablenanzahl geändert hinzugefügt".trim());
+    if (vars.size() == 0) {
+      sForm.getWarnings()
+          .add(messageSource.getMessage("record.import.variable.amount.new", null, LocaleContextHolder.getLocale()));
+    } else if (listDiff < 0) {
+      sForm.getWarnings()
+          .add(messageSource.getMessage("record.import.variable.amount.added", null, LocaleContextHolder.getLocale()));
+    } else if (listDiff > 0) {
+      sForm.getWarnings()
+          .add(messageSource.getMessage("record.import.variable.amount.delete", null, LocaleContextHolder.getLocale()));
     }
     int position = 0;
     List<RecordCompareDTO> compList = new ArrayList<RecordCompareDTO>();
@@ -819,7 +824,7 @@ public class ImportService {
       position++;
     }
     sForm.setDelVars(delVars);
-    AtomicInteger varSize = new AtomicInteger(0);
+    AtomicInteger varSize = new AtomicInteger(compList.size());
     compList.forEach(s -> {
       int index = varSize.get();
       varSize.set(s.getMovedTo() > index ? s.getMovedTo() : index);
@@ -834,7 +839,8 @@ public class ImportService {
           || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
           || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
         SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get((rc.getMovedFrom() - 1));
-        if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())) {
+        if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())
+            && viewVars.size() >= (rc.getMovedFrom() - 1)) {
           viewVars.set((rc.getMovedFrom() - 1), new SPSSVarDTO());
           compList.get((rc.getMovedFrom() - 1)).setKeepExpMeta(false);
           compList.get((rc.getMovedFrom() - 1)).setVarStatus(VariableStatus.NEW_VAR);

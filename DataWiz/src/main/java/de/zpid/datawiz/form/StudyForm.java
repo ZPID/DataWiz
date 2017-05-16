@@ -2,6 +2,7 @@ package de.zpid.datawiz.form;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -47,7 +48,7 @@ public class StudyForm implements Serializable {
   private FileDTO file;
   private List<String[]> importMatrix;
   private Boolean parsingError;
-  private List<String> warnings;
+  private Set<String> warnings;
   private List<String> errors;
   private List<RecordCompareDTO> compList;
   private List<SPSSVarDTO> viewVars;
@@ -240,11 +241,11 @@ public class StudyForm implements Serializable {
     this.parsingError = parsingError;
   }
 
-  public List<String> getWarnings() {
+  public Set<String> getWarnings() {
     return warnings;
   }
 
-  public void setWarnings(List<String> warnings) {
+  public void setWarnings(Set<String> warnings) {
     this.warnings = warnings;
   }
 
