@@ -229,4 +229,27 @@ public class MinioUtil {
       return MinioResult.ERROR;
     }
   }
+
+  public MinioResult cleanAndRemoveBucket(final long projectId, final long studyId, final long recordId) {
+    FileDTO file = new FileDTO();
+    file.setProjectId(projectId);
+    file.setStudyId(studyId);
+    file.setRecordID(recordId);
+    final String bucket = setBucket(file);
+    try {
+      if (this.minioClient.bucketExists(bucket)) {
+        Iterable<Result<Item>> blist = this.minioClient.listObjects(bucket);
+        for (Result<Item> result : blist) {
+          Item item = result.get();
+          this.minioClient.removeObject(bucket, item.objectName());
+        }
+        this.minioClient.removeBucket(bucket);
+      }
+    } catch (Exception e) {
+      log.error("ERROR: Bucket [projectId: {}; studyId: {}; recordId: {}] not deleted from Minio - Message: {}",
+          () -> projectId, () -> studyId, () -> recordId, () -> e);
+      return MinioResult.ERROR;
+    }
+    return MinioResult.OK;
+  }
 }

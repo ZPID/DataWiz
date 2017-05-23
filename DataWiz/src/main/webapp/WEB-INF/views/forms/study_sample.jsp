@@ -22,7 +22,18 @@
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.eligibilities}" varStatus="loop">
-          <sf:textarea rows="1" path="study.eligibilities[${loop.index}].text" class="form-control margin-bottom-10" />
+          <s:bind path="study.eligibilities[${loop.index}].text">
+            <c:choose>
+              <c:when test="${status.error}">
+                <sf:textarea rows="1" path="study.eligibilities[${loop.index}].text"
+                  class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+              </c:when>
+              <c:otherwise>
+                <sf:textarea rows="1" path="study.eligibilities[${loop.index}].text"
+                  class="form-control margin-bottom-10" />
+              </c:otherwise>
+            </c:choose>
+          </s:bind>
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">

@@ -11,7 +11,7 @@
 		</layout>
 	</appender>
 	<appender name="TEMP" class="org.apache.log4j.FileAppender">
-		<param name="File" value="/logs/DataWizLog.log" />
+		<param name="File" value="/var/log/tomcat8/DataWizLog.log" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d{yyyy-mm-dd HH:mm:ss,SSS} [%t] %-5p: %c{3} --- %m%n" />
 		</layout>

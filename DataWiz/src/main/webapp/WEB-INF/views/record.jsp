@@ -28,6 +28,16 @@
                 <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#historyModal">
                   <s:message code="record.history.show" />
                 </button>
+                <c:if
+                  test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
+                  ((principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) 
+                  or principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)) and  StudyForm.record.createdBy eq principal.user.email) 
+                  or principal.user.hasRole('ADMIN')}">
+                  <a class="btn btn-danger btn-sm"
+                    href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/deleteRecord" />"
+                    onclick="return confirm('<s:message code="record.delete.popup.msg" />');"><s:message
+                      code="record.delete.button" /></a>
+                </c:if>
               </div>
               <div class="col-sm-12">
                 <h4>

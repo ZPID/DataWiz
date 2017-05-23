@@ -165,12 +165,12 @@ public class ImportService {
         if (ch.name().equals("IBM500")) {
           ch = Charset.forName("Latin1");
         } else if (!ch.name().equals("UTF-8") && !ch.name().equals("Latin1") && !ch.name().equals("ISO-8859-1")) {
-          warnings.add(
-              messageSource.getMessage("warning.charset.detection.standard", null, LocaleContextHolder.getLocale()));
+          warnings.add(messageSource.getMessage("warning.charset.detection.standard", new Object[] { ch.name() },
+              LocaleContextHolder.getLocale()));
         }
       } catch (Exception e1) {
         log.warn("Detecting Charset for CSV File not successful - set Charset to UTF-8");
-        errors.add(messageSource.getMessage("warning.charset.detection", null, LocaleContextHolder.getLocale()));
+        warnings.add(messageSource.getMessage("warning.charset.detection", null, LocaleContextHolder.getLocale()));
       }
       try (CSVReader reader = new CSVReader(
           new InputStreamReader(sForm.getCsvFile().getInputStream(), ch != null ? ch : Charset.forName("UTF-8")),
@@ -291,7 +291,7 @@ public class ImportService {
           for (int i = 1; i <= numOfCol; i++) {
             SPSSVarDTO var = new SPSSVarDTO();
             var.setName("var" + i);
-            var.setPosition(i + 1);
+            var.setPosition(i);
             var.setMissingFormat(SPSSMissing.SPSS_NO_MISSVAL);
             var.setAligment(SPSSAligment.SPSS_ALIGN_LEFT);
             var.setMeasureLevel(SPSSMeasLevel.SPSS_MLVL_UNK);

@@ -190,20 +190,21 @@ public class StudyController {
     if (error) {
       model.put("studySubMenu", true);
       model.put("subnaviActive", PageState.STUDY.name());
-      model.put("errorMSG",
-          recordService.setMessageString(validateErrors.parallelStream().collect(Collectors.toList())));
+      model.put("errorMSG", recordService.setMessageString(validateErrors));
       return "study";
     }
     StudyDTO study = studyService.saveStudyForm(sForm, studyId, pid, user);
     return "redirect:/project/" + pid.get() + "/study/" + study.getId();
   }
 
+  // TODO error TXT
   private boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls,
       final PageState state, Set<String> validateErrors) {
     boolean error = false;
     if (sForm != null && bRes != null) {
       BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
       validator.validate(sForm, bResTmp, cls);
+      //bResTmp.getAllErrors().forEach(System.out::println);
       if (bResTmp.hasErrors()) {
         error = true;
         switch (state) {

@@ -151,6 +151,10 @@ label.btn::after {
   margin-top: 12px;
 }
 
+.marginTop2 {
+  margin-top: 10px;
+}
+
 .gylph-help {
   font-size: 1.2em;
   width: 1.4em;
@@ -227,6 +231,13 @@ label.btn::after {
   font-size: 12px;
   background-color: #337ab7;
   color: white;
+}
+
+.boxShadow {
+  -webkit-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
+  
 }
 
 .breadcrumb a {
@@ -726,7 +737,7 @@ label.btn::after {
 }
 
 .panel-red>.panel-heading {
-  background: red;
+  background: #FFAC3A;
   color: #fff;
 }
 

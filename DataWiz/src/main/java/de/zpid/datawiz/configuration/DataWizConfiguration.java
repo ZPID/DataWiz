@@ -77,6 +77,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   }
 
   @Bean(name = "spss")
+  @Scope("singleton")
   public SPSSIO getSPSSDLL() {
     String OS = System.getProperty("os.name").toLowerCase();
     String path;

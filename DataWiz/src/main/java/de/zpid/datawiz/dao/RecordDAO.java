@@ -269,6 +269,30 @@ public class RecordDAO extends SuperDAO {
   }
 
   /**
+   * 
+   * @param id
+   * @return
+   * @throws Exception
+   */
+  public int deleteVariable(final long id) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute deleteVariable id: " + id);
+    return this.jdbcTemplate.update("DELETE FROM dw_record_variables WHERE id = ? ", id);
+  }
+
+  /**
+   * 
+   * @param id
+   * @return
+   * @throws Exception
+   */
+  public int deleteRecord(final long id) throws Exception {
+    if (log.isDebugEnabled())
+      log.debug("execute deleteRecord id: " + id);
+    return this.jdbcTemplate.update("DELETE FROM dw_record WHERE id = ? ", id);
+  }
+
+  /**
    * Insert the important SPSS MetaData to dw_record_metadata. File Metadata such as fileSize is saved in dw_files
    * 
    * @param record

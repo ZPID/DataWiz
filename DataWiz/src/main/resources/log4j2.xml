@@ -5,7 +5,7 @@
 			<PatternLayout
 				pattern="%highlight{%d{DEFAULT} [%t] %level: %c{3} --- %msg%n}{FATAL=Bright red, ERROR=Bright red, WARN=Bright red, INFO=Bright white, DEBUG=white, TRACE=white}" />
 		</Console>
-		<File name="DataWizLog" fileName="/logs/DataWizLog.log">
+		<File name="DataWizLog" fileName="/var/log/tomcat8/DataWizLog.log">
 			<PatternLayout pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
 		</File>
 		<Async name="Async" bufferSize="262144">
@@ -17,9 +17,9 @@
 	<Loggers>
 		<logger name="org.springframework" level="INFO" />
 		<logger name="org.hibernate" level="INFO" />
-		<logger name="de.zpid" level="INFO" />
+		<logger name="de.zpid" level="TRACE" />
 		<logger name="de.zpid.spss" level="INFO" />
-		<Root level="INFO">
+		<Root level="TRACE">
 			<AppenderRef ref="Async" />
 		</Root>
 	</Loggers>		

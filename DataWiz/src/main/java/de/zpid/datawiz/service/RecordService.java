@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.MinioResult;
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.VariableStatus;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
@@ -137,6 +140,7 @@ public class RecordService {
         if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
           rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
           }.getType()));
+
         if (rec.getVariables() != null && rec.getVariables().size() > 0) {
           int varPosition = 0;
           for (SPSSVarDTO var : rec.getVariables()) {
@@ -167,11 +171,12 @@ public class RecordService {
                 var.setMissingVal3(missing);
             }
             int sd = varPosition++;
-            rec.getDataMatrix().parallelStream().forEach(row -> {
-              if (var.getVarType() == 0 && var.getDecimals() == 0 && row.get(sd) != null
-                  && row.get(sd) instanceof Double)
-                row.set(sd, Math.round(((Double) row.get(sd)).doubleValue()));
-            });
+            if (rec.getDataMatrix() != null && rec.getDataMatrix().size() > 0)
+              rec.getDataMatrix().parallelStream().forEach(row -> {
+                if (var.getVarType() == 0 && var.getDecimals() == 0 && row.get(sd) != null
+                    && row.get(sd) instanceof Double)
+                  row.set(sd, Math.round(((Double) row.get(sd)).doubleValue()));
+              });
           }
         }
       } else {
@@ -275,7 +280,7 @@ public class RecordService {
    */
   public void insertOrUpdateRecordMetadata(final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm,
       final UserDTO user) throws Exception {
-    if (!recordId.isPresent() && sForm.getRecord().getId() <= 0) {
+    if (!recordId.isPresent() || sForm.getRecord().getId() <= 0) {
       sForm.getRecord().setCreatedBy(user.getEmail());
       sForm.getRecord().setStudyId(studyId.get());
       recordDAO.insertRecordMetaData(sForm.getRecord());
@@ -398,9 +403,82 @@ public class RecordService {
       txManager.rollback(status);
       throw new DataWizSystemException(
           messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
-          DataWizErrorCodes.DATABASE_ERROR);
+          DataWizErrorCodes.DATABASE_ERROR, e);
     }
     return msg;
+  }
+
+  /**
+   * @param pid
+   * @param studyId
+   * @param recordId
+   * @param user
+   * @param ret
+   * @return
+   * @throws DataWizSystemException
+   * @throws NoSuchMessageException
+   */
+  public boolean deleteRecord(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId,
+      final UserDTO user) {
+    log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]",
+        () -> recordId.get(), () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+    try {
+      RecordDTO record = recordDAO.findRecordWithID(recordId.get(), 0);
+      if (record != null && (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)
+          || ((user.hasRole(Roles.PROJECT_WRITER, pid.get(), false)
+              || user.hasRole(Roles.DS_WRITER, studyId.get(), true))
+              && record.getCreatedBy().trim().equals(user.getEmail().trim())))) {
+        List<RecordDTO> versions = recordDAO.findRecordVersionList(recordId.get());
+        AtomicBoolean delete = new AtomicBoolean(true);
+        if (versions != null) {
+          versions.parallelStream().forEach(rec -> {
+            if (delete.get())
+              try {
+                rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+              } catch (Exception e) {
+                delete.set(false);
+                log.warn("loading Variables for record [versionsId: {}] error: ", () -> rec.getVersionId(), () -> e);
+              }
+          });
+        }
+        recordDAO.deleteRecord(recordId.get());
+        if (versions != null) {
+          versions.parallelStream().forEach(rec -> {
+            if (rec.getVariables() != null) {
+              rec.getVariables().parallelStream().forEach(var -> {
+                if (delete.get())
+                  try {
+                    recordDAO.deleteVariable(var.getId());
+                  } catch (Exception e) {
+                    delete.set(false);
+                    log.warn("Deleting Variable [varId: {}] error: ", () -> var.getId(), () -> e);
+                  }
+              });
+            }
+          });
+        }
+        if (delete.get()
+            && minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get()).equals(MinioResult.OK)) {
+          txManager.commit(status);
+          if (log.isTraceEnabled())
+            log.trace("Method deleteRecord completed");
+          return true;
+        } else {
+          log.warn("Record [id: {}] not delteted: Transaction was rolled back!");
+          txManager.rollback(status);
+          return false;
+        }
+      } else {
+        log.warn("User [email:{}; id: {}] tried to delete Record [projectId: {}; recordId: {}; studyId: {}]",
+            () -> user.getEmail(), () -> user.getId(), () -> pid, () -> studyId, () -> recordId);
+        return false;
+      }
+    } catch (Exception e) {
+      txManager.rollback(status);
+      log.warn("DeleteRecord Database-Exception:", () -> e);
+      return false;
+    }
   }
 
   /**
@@ -644,7 +722,7 @@ public class RecordService {
             new Object[] { value,
                 messageSource.getMessage(switchtoMissing ? "dataset.import.report.codebook.missings"
                     : "dataset.import.report.codebook.values", null, LocaleContextHolder.getLocale()),
-                var.getName(), var.getDecimals(), var.getWidth() },
+                var.getName(), var.getDecimals(), var.getWidth(), var.getPosition() },
             LocaleContextHolder.getLocale()));
   }
 
@@ -938,7 +1016,10 @@ public class RecordService {
   }
 
   public String setMessageString(Set<String> messages) {
-    return setMessageString(messages.parallelStream().collect(Collectors.toList()));
+    if (messages != null)
+      return setMessageString(messages.parallelStream().collect(Collectors.toList()));
+    else
+      return null;
   }
 
 }

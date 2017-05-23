@@ -116,17 +116,15 @@
                   <div class="col-sm-10">
                     <c:choose>
                       <c:when test="${empty form.studies}">
-                        <div class="panel ">
-                          <div class="panel-heading" style="background-color: white;">
-                            <s:message text="noch keine Studien vorhanden" />
-                          </div>
+                        <div class="marginTop2">
+                          <s:message code="project.panel.no.studies" />
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default">
+                        <div class="panel panel-default boxShadow">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
-                            style="cursor: pointer; background-color: white;">
-                            <s:message code="project.panel.project.studies.showhide" />
+                            style="cursor: pointer;">
+                            <strong><s:message code="project.panel.project.studies.showhide" /></strong>
                           </div>
                           <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
                             <div class="panel-group">
@@ -207,17 +205,15 @@
                   <div class="col-sm-10">
                     <c:choose>
                       <c:when test="${empty form.sharedUser or fn:length(form.sharedUser) eq 1}">
-                        <div class="panel panel-default">
-                          <div class="panel-heading" style="background-color: white;">
-                            <s:message text="Sie haben das Projekt noch nicht geteilt" />
-                          </div>
+                        <div class="marginTop2">
+                          <s:message code="project.panel.not.shared" />
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default">
+                        <div class="panel panel-default boxShadow">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
-                            style="cursor: pointer; background-color: white;">
-                            <s:message code="project.panel.project.shared.showhide" />
+                            style="cursor: pointer;">
+                            <strong><s:message code="project.panel.project.shared.showhide" /></strong>
                           </div>
                           <div class="panel-collapse collapse" id="panel_user_${loop.count}">
                             <div class="list-group">

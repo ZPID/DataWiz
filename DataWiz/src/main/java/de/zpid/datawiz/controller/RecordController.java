@@ -110,7 +110,7 @@ public class RecordController {
       try {
         sForm = recordService.setStudyform(pid, studyId, recordId, versionId, subpage, parsingErrors);
       } catch (Exception e) {
-        exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e,
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e,
             "recordService.setStudyform");
       }
     }
@@ -199,6 +199,36 @@ public class RecordController {
     if (log.isTraceEnabled())
       log.trace("Method uploadFile completed - mapping to {}", ret);
     return ret;
+  }
+
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param recordId
+   * @param model
+   * @param redirectAttributes
+   * @param sForm
+   * @return
+   */
+  @RequestMapping(value = { "/{recordId}/deleteRecord" }, method = RequestMethod.GET)
+  public String deleteRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+      @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
+      @ModelAttribute("StudyForm") StudyForm sForm) {
+    final UserDTO user = UserUtil.getCurrentUser();
+    log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]",
+        () -> recordId.get(), () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+    if(recordService.deleteRecord(pid, studyId, recordId, user)){      
+      return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
+    }
+    else {
+      model.put("subnaviActive", PageState.RECORDMETA.name());
+      model.put("recordSubMenu", true);
+      model.put("errorMSG",
+          messageSource.getMessage("record.not.deleted.error", null, LocaleContextHolder.getLocale()));
+      return "/record";
+    }
+
   }
 
   /**
