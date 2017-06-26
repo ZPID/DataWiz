@@ -59,8 +59,12 @@ public class ExceptionService {
             messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
       } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED)) {
-        redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("import.error.file.extension",
-            new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("import.error.file.extension", null, LocaleContextHolder.getLocale()));
+        ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+      } else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.IMPORT_FILE_IS_EMPTY)) {
+        redirectAttributes.addFlashAttribute("errorMSG",
+            messageSource.getMessage("import.error.file.null", null, LocaleContextHolder.getLocale()));
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
       } else if (dwe.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
         model

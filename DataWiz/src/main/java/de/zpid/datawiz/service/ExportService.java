@@ -66,7 +66,6 @@ public class ExportService {
     } else if (exportType.equals("SPSS")) {
       content = exportSPSSFile(record, res);
     } else if (exportType.equals("PDF")) {
-      System.out.println(attachments);
       content = itextUtil.createPdf(record, false, attachments);
     } else if (exportType.equals("CSVZIP")) {
       List<Entry<String, byte[]>> files = new ArrayList<>();

@@ -42,26 +42,31 @@
             </span>
           </div>
         </c:forEach>
-        <c:if test="${StudyForm.projectContributors.size() > 0}">
-          <div class="input-group">
-            <sf:select path="hiddenVar" class="form-control">
-              <sf:option value="-1">
-                <s:message code="gen.select" />
-              </sf:option>
-              <c:forEach items="${StudyForm.projectContributors}" var="contri" varStatus="coloop">
-                <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
-                <sf:option value="${coloop.index}">
-                  <s:message text="${fn:trim(contriName)}" />
+        <c:choose>
+          <c:when test="${not empty StudyForm.projectContributors && fn:length(StudyForm.projectContributors) gt 0}">
+            <div class="input-group">
+              <sf:select path="hiddenVar" class="form-control">
+                <sf:option value="-1">
+                  <s:message code="gen.select" />
                 </sf:option>
-              </c:forEach>
-            </sf:select>
-            <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri"
-                onclick="setScrollPosition();">
-                <s:message code="gen.add" />
-              </sf:button>
-            </span>
-          </div>
-        </c:if>
+                <c:forEach items="${StudyForm.projectContributors}" var="contri" varStatus="coloop">
+                  <c:set value="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" var="contriName" />
+                  <sf:option value="${coloop.index}">
+                    <s:message text="${fn:trim(contriName)}" />
+                  </sf:option>
+                </c:forEach>
+              </sf:select>
+              <span class="input-group-btn"> <sf:button class="btn btn-success" name="addContri"
+                  onclick="setScrollPosition();">
+                  <s:message code="gen.add" />
+                </sf:button>
+              </span>
+            </div>
+          </c:when>
+          <c:otherwise>
+            <s:message code="study.contributors.no.project.contributors" />
+          </c:otherwise>
+        </c:choose>
       </div>
       <s:message code="study.contributors.help" var="appresmess" />
       <%@ include file="../templates/helpblock.jsp"%>
@@ -86,7 +91,8 @@
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
         </div>
       </div>
-      <sf:select path="study.completeSel" class="form-control">
+      <sf:select path="study.completeSel" class="form-control" id="selectCompleteSel"
+        onchange="switchViewIfSelected('selectCompleteSel','EXCERPT');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -102,9 +108,11 @@
     </div>
   </div>
   <!-- study.excerpt -->
-  <c:set var="valimages" value="${valimag1}" />
-  <c:set var="input_vars" value="study.excerpt;study.excerpt; ; ;row" />
-  <%@ include file="../templates/gen_textarea.jsp"%>
+  <div id="contentCompleteSel">
+    <c:set var="valimages" value="${valimag1}" />
+    <c:set var="input_vars" value="study.excerpt;study.excerpt; ; ;row" />
+    <%@ include file="../templates/gen_textarea.jsp"%>
+  </div>
   <!-- study.prevWork -->
   <div class="form-group">
     <div class="col-sm-12">

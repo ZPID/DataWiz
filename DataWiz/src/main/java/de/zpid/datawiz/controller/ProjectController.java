@@ -267,7 +267,6 @@ public class ProjectController extends SuperController {
       pForm.setContributors(new ArrayList<ContributorDTO>());
     }
     pForm.getContributors().add(0, (ContributorDTO) applicationContext.getBean("ContributorDTO"));
-    // pForm.getContributors().add(new ContributorDTO());
     return "project";
   }
 

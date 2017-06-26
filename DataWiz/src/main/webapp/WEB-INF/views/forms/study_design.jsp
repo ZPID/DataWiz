@@ -149,7 +149,8 @@
         </div>
       </div>
       <div class="panel panel-default panel-body margin-bottom-0 form-group-clean">
-        <label class="btn btn-default col-sm-3"> <sf:checkbox path="study.surveyIntervention" /> <s:message
+        <label class="btn btn-default col-sm-3"> <sf:checkbox path="study.surveyIntervention"
+            onchange="switchViewIfChecked('selectSurveyIntervention')" id="selectSurveyIntervention" /> <s:message
             code="study.intervention.survey" />
         </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox path="study.testIntervention" />
           <s:message code="study.intervention.test" />
@@ -373,33 +374,38 @@
     </div>
   </div>
   <!-- study.surveyType -->
-  <div class="form-group">
-    <div class="col-sm-12">
-      <div class="row">
-        <div class="col-sm-11">
-          <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
+  <div class="contentSurveyIntervention">
+    <div class="form-group">
+      <div class="col-sm-12">
+        <div class="row">
+          <div class="col-sm-11">
+            <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
+          </div>
+          <div class="col-sm-1 text-align-right">
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
+              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          </div>
         </div>
-        <div class="col-sm-1 text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
-        </div>
+        <sf:select path="study.surveyType" class="form-control">
+          <sf:option value="">
+            <s:message code="gen.select" />
+          </sf:option>
+          <sf:option value="HARDLYINSTRUMENT">
+            <s:message code="study.surveyType.hardlyinstrument" />
+          </sf:option>
+          <sf:option value="PARTIALLYINSTRUMENT">
+            <s:message code="study.surveyType.partiallyinstrument" />
+          </sf:option>
+          <sf:option value="FULLYINSTRUMENT">
+            <s:message code="study.surveyType.fullyinstrument" />
+          </sf:option>
+          <sf:option value="MIXEDINSTRUMENT">
+            <s:message code="study.surveyType.mixedinstrument" />
+          </sf:option>
+        </sf:select>
+        <s:message code="study.surveyType.help" var="appresmess" />
+        <%@ include file="../templates/helpblock.jsp"%>
       </div>
-      <sf:select path="study.surveyType" class="form-control">
-        <sf:option value="">
-          <s:message code="gen.select" />
-        </sf:option>
-        <sf:option value="HARDLYINSTRUMENT">
-          <s:message code="study.surveyType.hardlyinstrument" />
-        </sf:option>
-        <sf:option value="PARTIALLYINSTRUMENT">
-          <s:message code="study.surveyType.partiallyinstrument" />
-        </sf:option>
-        <sf:option value="FULLYINSTRUMENT">
-          <s:message code="study.surveyType.fullyinstrument" />
-        </sf:option>
-      </sf:select>
-      <s:message code="study.surveyType.help" var="appresmess" />
-      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- study.constructs -->

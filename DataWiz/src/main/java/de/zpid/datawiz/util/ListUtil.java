@@ -50,4 +50,12 @@ public class ListUtil {
   public static void deleteEmptyStudyListTypes(final List<StudyListTypesDTO> fst) {
     fst.removeIf(p -> p.getText().trim().equals(""));
   }
+
+  public static <T> List<T> addObject(List<T> list, T obj) {
+    if (list == null)
+      list = new ArrayList<T>();
+    if (list.size() < 1)
+      list.add(obj);
+    return list;
+  }
 }

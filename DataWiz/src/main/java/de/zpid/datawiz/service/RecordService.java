@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -349,7 +348,7 @@ public class RecordService {
     String msg = null;
     TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
     try {
-      lastVersion = (recordDAO.findRecordWithID(currentVersion.getId(), 0));
+      lastVersion = recordDAO.findRecordWithID(currentVersion.getId(), 0);
       lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
       lastVersion.setAttributes(recordDAO.findRecordAttributes(lastVersion.getVersionId(), false));
       lastVersion.setDataMatrixJson(recordDAO.findMatrixByVersionId(lastVersion.getVersionId()));
@@ -430,36 +429,22 @@ public class RecordService {
               || user.hasRole(Roles.DS_WRITER, studyId.get(), true))
               && record.getCreatedBy().trim().equals(user.getEmail().trim())))) {
         List<RecordDTO> versions = recordDAO.findRecordVersionList(recordId.get());
-        AtomicBoolean delete = new AtomicBoolean(true);
         if (versions != null) {
-          versions.parallelStream().forEach(rec -> {
-            if (delete.get())
-              try {
-                rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
-              } catch (Exception e) {
-                delete.set(false);
-                log.warn("loading Variables for record [versionsId: {}] error: ", () -> rec.getVersionId(), () -> e);
-              }
-          });
+          for (RecordDTO rec : versions) {
+            rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+          }
         }
         recordDAO.deleteRecord(recordId.get());
         if (versions != null) {
-          versions.parallelStream().forEach(rec -> {
+          for (RecordDTO rec : versions) {
             if (rec.getVariables() != null) {
-              rec.getVariables().parallelStream().forEach(var -> {
-                if (delete.get())
-                  try {
-                    recordDAO.deleteVariable(var.getId());
-                  } catch (Exception e) {
-                    delete.set(false);
-                    log.warn("Deleting Variable [varId: {}] error: ", () -> var.getId(), () -> e);
-                  }
-              });
+              for (SPSSVarDTO var : rec.getVariables()) {
+                recordDAO.deleteVariable(var.getId());
+              }
             }
-          });
+          }
         }
-        if (delete.get()
-            && minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get()).equals(MinioResult.OK)) {
+        if (minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get()).equals(MinioResult.OK)) {
           txManager.commit(status);
           if (log.isTraceEnabled())
             log.trace("Method deleteRecord completed");
@@ -838,8 +823,8 @@ public class RecordService {
             throw new DataWizSystemException("Minio returns an error MinioResult: " + res.name(),
                 DataWizErrorCodes.MINIO_SAVE_ERROR);
           }
-          txManager.commit(status);
         }
+        txManager.commit(status);
       } catch (Exception e) {
         txManager.rollback(status);
         if (file.getFilePath() != null && !file.getFilePath().isEmpty())

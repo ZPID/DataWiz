@@ -40,8 +40,7 @@ $tag_box = null;
           });
         } // loading Project Content without study!
         else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
-          setProjectSubmenu(null);
-          startTagging();
+          // startTagging();
         } // loading Study Content
         else if (window.location.pathname.search("/study") > 0
             && (window.location.pathname.search("/record") <= 0 || window.location.pathname.search("/records") > 0)) {
@@ -88,6 +87,7 @@ $tag_box = null;
         $(".uploader").fadeOut("slow");
       });
 })(window.jQuery, window, document);
+
 $(".projectContentClick").click(function() {
   $("#pagePosi").val($(this).attr("id"));
   setProjectSubmenu($(this).attr("id"));
@@ -375,6 +375,8 @@ function showorHideStudyContent() {
   switchViewIfSelected('selectObsUnit', 'OTHER');
   switchViewIfChecked('selectExperimentalIntervention');
   switchViewIfSelected('selectPrevWork', 'OTHER');
+  switchViewIfSelected('selectCompleteSel', 'EXCERPT');
+  switchViewIfChecked('selectSurveyIntervention');
   for (var i = 0; i < $("#constructSize").val(); i++) {
     switchViewIfSelected('selectConstructType' + i, 'OTHER');
   }

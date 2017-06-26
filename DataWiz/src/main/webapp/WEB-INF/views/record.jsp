@@ -129,7 +129,7 @@
                       </sf:label>
                       <div>
                         <sf:label class="btn btn-primary form-control" path="spssFile">
-                          <input id="spssFile" name="spssFile" type="file" style="display: none;" accept=".sav,.por"
+                          <input id="spssFile" name="spssFile" type="file" style="display: none;" accept=".sav"
                             onchange="shortFilename('upload-spss-file-info',$(this).val());" />
                           <s:message code="record.spssFile.button" />
                         </sf:label>

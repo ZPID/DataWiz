@@ -62,46 +62,7 @@ public class ContributorDAO extends SuperDAO {
         () -> ((cContri != null) ? cContri.size() : "null"));
     return cContri;
   }
-
-  public int[] deleteFromStudy(final List<ContributorDTO> contri) {
-    log.trace("execute deleteFromStudy [size: {}]", () -> contri.size());
-    int[] ret = this.jdbcTemplate.batchUpdate(
-        "DELETE FROM dw_study_contributors WHERE project_id = ? AND study_id = ? AND contributor_id= ?",
-        new BatchPreparedStatementSetter() {
-          public void setValues(PreparedStatement ps, int i) throws SQLException {
-            ContributorDTO cont = contri.get(i);
-            ps.setLong(1, cont.getProjectId());
-            ps.setLong(2, cont.getStudyId());
-            ps.setLong(3, cont.getId());
-          }
-
-          public int getBatchSize() {
-            return contri.size();
-          }
-        });
-    log.debug("leaving deleteFromStudy with result: [size: {}]", () -> ret.length);
-    return ret;
-  }
-
-  public int[] insertIntoStudy(final List<ContributorDTO> contri, final Long studyId) {
-    log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
-    int[] ret = this.jdbcTemplate.batchUpdate(
-        "Insert INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
-        new BatchPreparedStatementSetter() {
-          public void setValues(PreparedStatement ps, int i) throws SQLException {
-            ContributorDTO cont = contri.get(i);
-            ps.setLong(1, cont.getProjectId());
-            ps.setLong(2, studyId);
-            ps.setLong(3, cont.getId());
-          }
-          public int getBatchSize() {
-            return contri.size();
-          }
-        });
-    log.debug("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
-    return ret;
-  }
-
+  
   public ContributorDTO findPrimaryContributorByProject(ProjectDTO project) throws Exception {
     if (log.isDebugEnabled())
       log.debug("execute findPrimaryContributorByProject for project [id: " + project.getId() + " name: "
@@ -123,6 +84,76 @@ public class ContributorDAO extends SuperDAO {
       log.debug("leaving findPrimaryContributorByProject with contributor: " + contri);
     return contri;
   }
+
+  public int deleteFromProject(ContributorDTO contri) {
+    log.trace("execute deleteFromProject [projectId: {}; contributorId]", () -> contri.getProjectId(),
+        () -> contri.getId());
+    int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?",
+        contri.getProjectId(), contri.getId());
+    log.debug("leaving deleteFromProject with result: [success: {}]", () -> chk);
+    return chk;
+  }
+
+  public int[] deleteFromStudy(final List<ContributorDTO> contri) {
+    log.trace("execute deleteFromStudy [size: {}]", () -> contri.size());
+    int[] ret = this.jdbcTemplate.batchUpdate(
+        "DELETE FROM dw_study_contributors WHERE project_id = ? AND study_id = ? AND contributor_id= ?",
+        new BatchPreparedStatementSetter() {
+          public void setValues(PreparedStatement ps, int i) throws SQLException {
+            ContributorDTO cont = contri.get(i);
+            ps.setLong(1, cont.getProjectId());
+            ps.setLong(2, cont.getStudyId());
+            ps.setLong(3, cont.getId());
+          }
+
+          public int getBatchSize() {
+            return contri.size();
+          }
+        });
+    log.debug("leaving deleteFromStudy with result: [size: {}]", () -> ret.length);
+    return ret;
+  }
+
+  public int[] insertStudyRelation(final List<ContributorDTO> contri, final Long studyId) {
+    log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
+    int[] ret = this.jdbcTemplate.batchUpdate(
+        "Insert INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
+        new BatchPreparedStatementSetter() {
+          public void setValues(PreparedStatement ps, int i) throws SQLException {
+            ContributorDTO cont = contri.get(i);
+            ps.setLong(1, cont.getProjectId());
+            ps.setLong(2, studyId);
+            ps.setLong(3, cont.getId());
+          }
+          public int getBatchSize() {
+            return contri.size();
+          }
+        });
+    log.debug("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
+    return ret;
+  }
+  
+  //TODO
+  public int[] insertIntoProject(final List<ContributorDTO> contri, final Long studyId) {
+    log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
+    int[] ret = this.jdbcTemplate.batchUpdate(
+        "Insert INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
+        new BatchPreparedStatementSetter() {
+          public void setValues(PreparedStatement ps, int i) throws SQLException {
+            ContributorDTO cont = contri.get(i);
+            ps.setLong(1, cont.getProjectId());
+            ps.setLong(2, studyId);
+            ps.setLong(3, cont.getId());
+          }
+          public int getBatchSize() {
+            return contri.size();
+          }
+        });
+    log.debug("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
+    return ret;
+  }
+
+
 
   /**
    * @param rs

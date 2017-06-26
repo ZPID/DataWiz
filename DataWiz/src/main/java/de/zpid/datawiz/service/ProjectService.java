@@ -22,6 +22,7 @@ import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -33,6 +34,7 @@ import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Service
@@ -151,7 +153,8 @@ public class ProjectService {
     // load /project data
     if (call == null || call.equals(PageState.PROJECT)) {
       pForm.setTags(new ArrayList<String>(tagDAO.findTagsByProjectID(pForm.getProject()).values()));
-      pForm.setContributors(contributorDAO.findByProject(pForm.getProject(), false, false));
+      pForm.setContributors(
+          ListUtil.addObject(contributorDAO.findByProject(pForm.getProject(), false, false), new ContributorDTO()));
       pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pForm.getProject()));
     } // load /project/xx/studies
     else if (call.equals(PageState.STUDIES)) {
@@ -212,6 +215,7 @@ public class ProjectService {
       if (pForm != null && pForm.getProject() != null && user != null) {
         if (pForm.getProject().getId() <= 0) {
           pForm.getProject().setOwnerId(user.getId());
+          pForm.getProject().setLastUserId(user.getId());
           int chk = projectDAO.insertProject(pForm.getProject());
           if (chk > 0) {
             roleDAO.saveRole(new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), chk, 0, Roles.REL_ROLE.name()));
@@ -222,6 +226,7 @@ public class ProjectService {
             success = false;
           }
         } else {
+          pForm.getProject().setLastUserId(user.getId());
           projectDAO.updateProject(pForm.getProject());
         }
       } else {

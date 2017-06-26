@@ -291,7 +291,7 @@ public class StudyService {
           if (dbList != null)
             contributorDAO.deleteFromStudy(dbList);
           if (study.getContributors() != null)
-            contributorDAO.insertIntoStudy(study.getContributors(), study.getId());
+            contributorDAO.insertStudyRelation(study.getContributors(), study.getId());
         }
         // update SOFTWARE
         updateStudyListItems(study.getId(), study.getSoftware(), DWFieldTypes.SOFTWARE);
@@ -468,16 +468,25 @@ public class StudyService {
   public void setStudyDTO(final StudyDTO study) throws Exception {
     if (study != null && study.getId() > 0) {
       study.setContributors(contributorDAO.findByStudy(study.getId()));
-      study.setSoftware(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE));
-      study.setPubOnData(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.PUBONDATA));
-      study.setConflInterests(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.CONFLINTEREST));
-      study.setRelTheorys(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.RELTHEORY));
-      study.setObjectives(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.OBJECTIVES));
-      study.setMeasOcc(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.MEASOCCNAME));
-      study.setInterArms(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.INTERARMS));
-      study.setConstructs(studyConstructDAO.findAllByStudy(study.getId()));
-      study.setInstruments(studyInstrumentDAO.findAllByStudy(study.getId(), false));
-      study.setEligibilities(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.ELIGIBILITY));
+      study.setSoftware(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE), new StudyListTypesDTO()));
+      study.setPubOnData(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.PUBONDATA), new StudyListTypesDTO()));
+      study.setConflInterests(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.CONFLINTEREST), new StudyListTypesDTO()));
+      study.setRelTheorys(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.RELTHEORY), new StudyListTypesDTO()));
+      study.setObjectives(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.OBJECTIVES), new StudyListTypesDTO()));
+      study.setMeasOcc(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.MEASOCCNAME), new StudyListTypesDTO()));
+      study.setInterArms(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.INTERARMS), new StudyListTypesDTO()));
+      study.setConstructs(ListUtil.addObject(studyConstructDAO.findAllByStudy(study.getId()), new StudyConstructDTO()));
+      study.setInstruments(
+          ListUtil.addObject(studyInstrumentDAO.findAllByStudy(study.getId(), false), new StudyInstrumentDTO()));
+      study.setEligibilities(ListUtil.addObject(
+          studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.ELIGIBILITY), new StudyListTypesDTO()));
       study.setUsedCollectionModes(
           formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.COLLECTIONMODE, true));
       study.setUsedSourFormat(

@@ -109,7 +109,7 @@ public class StudyDTO implements Serializable {
   /** Study26 */
   /* private List<Boolean> interTimeTable; */
   /** Study27 */
-  @Pattern(regexp = "(^$|HARDLYINSTRUMENT|PARTIALLYINSTRUMENT|FULLYINSTRUMENT)", groups = StDesignVal.class)
+  @Pattern(regexp = "(^$|HARDLYINSTRUMENT|PARTIALLYINSTRUMENT|FULLYINSTRUMENT|MIXEDINSTRUMENT)", groups = StDesignVal.class)
   private String surveyType;
   /** Study28/ Study29 */
   @Valid

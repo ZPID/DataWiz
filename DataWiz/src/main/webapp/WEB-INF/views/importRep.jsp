@@ -11,28 +11,28 @@
           <s:message code="dataset.import.report.info" />
         </div>
       </div>
-      <c:choose>
-        <c:when test="${not empty StudyForm.errors}">
-          <div class="form-group">
-            <div class="col-sm-12">
-              <sf:label path="warnings">
-                <s:message code="dataset.import.report.errors" />
-              </sf:label>
-              <div class="alert alert-danger" role="alert">
-                <c:forEach items="${StudyForm.errors}" var="error">
-                  <div>
-                    <s:message text="${error}" />
-                  </div>
-                </c:forEach>
+      <c:url var="accessUrl"
+        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
+      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
+        <c:set var="selectedType" value="${StudyForm.selectedFileType}" scope="request" />
+        <c:choose>
+          <c:when test="${not empty StudyForm.errors}">
+            <div class="form-group">
+              <div class="col-sm-12">
+                <sf:label path="warnings">
+                  <s:message code="dataset.import.report.errors" />
+                </sf:label>
+                <div class="alert alert-danger" role="alert">
+                  <c:forEach items="${StudyForm.errors}" var="error">
+                    <div>
+                      <s:message text="${error}" />
+                    </div>
+                  </c:forEach>
+                </div>
               </div>
             </div>
-          </div>
-        </c:when>
-        <c:otherwise>
-          <c:url var="accessUrl"
-            value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
-          <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
-            <c:set var="selectedType" value="${StudyForm.selectedFileType}" scope="request" />
+          </c:when>
+          <c:otherwise>
             <!-- Messages -->
             <%@ include file="templates/message.jsp"%>
             <c:if test="${not empty StudyForm.warnings}">
@@ -262,9 +262,9 @@
                 </button>
               </div>
             </div>
-          </sf:form>
-        </c:otherwise>
-      </c:choose>
+          </c:otherwise>
+        </c:choose>
+      </sf:form>
     </div>
   </div>
 </div>

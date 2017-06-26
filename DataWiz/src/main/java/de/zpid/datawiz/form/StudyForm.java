@@ -30,7 +30,7 @@ public class StudyForm implements Serializable {
   private List<RecordDTO> records;
   private int hiddenVar;
   private int delPos;
-  private int scrollPosition;
+  private String scrollPosition;
   private String fileType;
   private String jQueryMap;
 
@@ -113,11 +113,11 @@ public class StudyForm implements Serializable {
     this.delPos = delPos;
   }
 
-  public int getScrollPosition() {
+  public String getScrollPosition() {
     return scrollPosition;
   }
 
-  public void setScrollPosition(int scrollPosition) {
+  public void setScrollPosition(String scrollPosition) {
     this.scrollPosition = scrollPosition;
   }
 

@@ -376,7 +376,6 @@ public class RecordDAO extends SuperDAO {
         ps.setString(4, record.getCreatedBy());
         ps.setString(5, record.getDescription());
         ps.setString(6, record.getFileName());
-        System.err.println(record.getDescription());
         return ps;
       }
     }, holder);

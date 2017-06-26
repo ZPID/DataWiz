@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -42,13 +43,7 @@ public class ProjectDAO extends SuperDAO {
         + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 " + "GROUP BY dw_project.id";
     List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] { user.getId() }, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
-        project.setId(rs.getInt("id"));
-        project.setTitle(rs.getString("name"));
-        project.setOwnerId(rs.getLong("owner_id"));
-        project.setDescription(rs.getString("description"));
-        project.setCreated(rs.getTimestamp("created").toLocalDateTime());
-        return project;
+        return setProjectDTO(rs);
       }
     });
     log.debug("Transaction for findAllByUserID returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
@@ -60,13 +55,7 @@ public class ProjectDAO extends SuperDAO {
     String sql = "SELECT * FROM dw_project ORDER BY dw_project.owner_id";
     List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<ProjectDTO>() {
       public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
-        project.setId(rs.getInt("id"));
-        project.setTitle(rs.getString("name"));
-        project.setOwnerId(rs.getLong("owner_id"));
-        project.setDescription(rs.getString("description"));
-        project.setCreated(rs.getTimestamp("created").toLocalDateTime());
-        return project;
+        return setProjectDTO(rs);
       }
     });
     log.debug("Transaction for findAllByUserID returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
@@ -85,67 +74,18 @@ public class ProjectDAO extends SuperDAO {
    */
   public ProjectDTO findById(final long projectId) throws Exception {
     log.trace("execute findById for project [id: " + projectId + "]");
-    ProjectDTO project = jdbcTemplate.query(
-        // "SELECT dw_user_roles.*, dw_project.*, dw_roles.type FROM dw_project"
-        // + " LEFT JOIN dw_user_roles ON dw_project.id = dw_user_roles.project_id"
-        // + " LEFT JOIN dw_roles ON dw_roles.id = dw_user_roles.role_id"
-        // + " WHERE dw_project.id = ? AND dw_user_roles.user_id = ?",
-        "SELECT dw_project.* FROM dw_project WHERE  dw_project.id = ?", new Object[] { projectId },
-        new ResultSetExtractor<ProjectDTO>() {
+    ProjectDTO project = jdbcTemplate.query("SELECT dw_project.* FROM dw_project WHERE  dw_project.id = ?",
+        new Object[] { projectId }, new ResultSetExtractor<ProjectDTO>() {
           @Override
           public ProjectDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (rs.next()) {
-              ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
-              project.setId(rs.getInt("id"));
-              project.setTitle(rs.getString("name"));
-              project.setOwnerId(rs.getLong("owner_id"));
-              project.setDescription(rs.getString("description"));
-              project.setCreated(rs.getTimestamp("created").toLocalDateTime());
-              return project;
+              return setProjectDTO(rs);
             }
             return null;
           }
         });
     log.debug("Transaction for findById returned [id: {}]", () -> ((project != null) ? project.getTitle() : "null"));
     return project;
-  }
-
-  public int updateProject(final ProjectDTO project) throws Exception {
-    log.trace("execute updateProject for project [id: {}]", () -> project.getId());
-    int chk = this.jdbcTemplate.update("UPDATE dw_project SET name = ?, description = ? WHERE id = ?",
-        project.getTitle(), project.getDescription(), project.getId());
-    log.debug("Transaction for updateProject returned [success: {}]", () -> chk);
-    return chk;
-  }
-
-  public int insertProject(final ProjectDTO project) throws Exception {
-    log.trace("execute insertProject [title: {}]", () -> project.getTitle());
-    KeyHolder holder = new GeneratedKeyHolder();
-    final String stmt = "INSERT INTO dw_project (name, description, created, owner_id) VALUES (?,?,?,?)";
-    this.jdbcTemplate.update(new PreparedStatementCreator() {
-      @Override
-      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-        PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, project.getTitle());
-        ps.setString(2, project.getDescription());
-        ps.setString(3, LocalDateTime.now().toString());
-        ps.setLong(4, project.getOwnerId());
-        return ps;
-      }
-    }, holder);
-    final int key = (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
-    log.debug("Transaction for insertProject returned [key: {}]", () -> key);
-    return key;
-  }
-
-  public int insertInviteEntree(final long projectId, final String userMail, final String adminMail) {
-    log.trace("execute instertUsertoProject for project [id: {}], User [id: {}] by Admin [email: {}]", () -> projectId,
-        () -> userMail, () -> adminMail);
-    int chk = this.jdbcTemplate.update(
-        "INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)",
-        userMail, adminMail, projectId, UUID.randomUUID().toString(), LocalDateTime.now().toString());
-    log.debug("Transaction for insertInviteEntree returned [success: {}]", () -> chk);
-    return chk;
   }
 
   public String findValFromInviteData(final String email, final long projectId, final String val) throws Exception {
@@ -201,5 +141,72 @@ public class ProjectDAO extends SuperDAO {
         userMailOld, projectId);
     log.debug("Transaction for updateInvitationEntree returned [success: {}]", () -> chk);
     return chk;
+  }
+
+  public int updateProject(final ProjectDTO project) throws Exception {
+    log.trace("execute updateProject for project [id: {}]", () -> project.getId());
+    int chk = this.jdbcTemplate.update(
+        "UPDATE dw_project SET last_user_id = ?, last_edit = ?, title = ?, "
+            + "project_ident = ?, funding = ?, grant_number = ?, description = ? WHERE id = ?",
+        project.getLastUserId(), LocalDateTime.now().toString(), project.getTitle(), project.getProjectIdent(),
+        project.getFunding(), project.getGrantNumber(), project.getDescription(), project.getId());
+    log.debug("Transaction for updateProject returned [success: {}]", () -> chk);
+    return chk;
+  }
+
+  public int insertProject(final ProjectDTO project) throws Exception {
+    log.trace("execute insertProject [title: {}]", () -> project.getTitle());
+    KeyHolder holder = new GeneratedKeyHolder();
+    final String stmt = "INSERT INTO dw_project (owner_id, created, last_user_id, last_edit, title, project_ident, funding, "
+        + "grant_number, description) VALUES (?,?,?,?,?,?,?,?,?)";
+    this.jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+        ps.setLong(1, project.getOwnerId());
+        ps.setString(2, LocalDateTime.now().toString());
+        ps.setLong(3, project.getLastUserId());
+        ps.setString(4, LocalDateTime.now().toString());
+        ps.setString(5, project.getTitle());
+        ps.setString(6, project.getProjectIdent());
+        ps.setString(7, project.getFunding());
+        ps.setString(8, project.getGrantNumber());
+        ps.setString(9, project.getDescription());
+        return ps;
+      }
+    }, holder);
+    final int key = (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
+    log.debug("Transaction for insertProject returned [key: {}]", () -> key);
+    return key;
+  }
+
+  public int insertInviteEntree(final long projectId, final String userMail, final String adminMail) {
+    log.trace("execute instertUsertoProject for project [id: {}], User [id: {}] by Admin [email: {}]", () -> projectId,
+        () -> userMail, () -> adminMail);
+    int chk = this.jdbcTemplate.update(
+        "INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)",
+        userMail, adminMail, projectId, UUID.randomUUID().toString(), LocalDateTime.now().toString());
+    log.debug("Transaction for insertInviteEntree returned [success: {}]", () -> chk);
+    return chk;
+  }
+
+  /**
+   * @param rs
+   * @return
+   * @throws SQLException
+   */
+  private ProjectDTO setProjectDTO(ResultSet rs) throws SQLException {
+    ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
+    project.setId(rs.getInt("id"));
+    project.setOwnerId(rs.getLong("owner_id"));
+    project.setCreated(rs.getTimestamp("created").toLocalDateTime());
+    project.setLastUserId(rs.getLong("last_user_id"));
+    project.setLastEdit(rs.getTimestamp("last_edit").toLocalDateTime());
+    project.setTitle(rs.getString("title"));
+    project.setProjectIdent(rs.getString("project_ident"));
+    project.setFunding(rs.getString("funding"));
+    project.setGrantNumber(rs.getString("grant_number"));
+    project.setDescription(rs.getString("description"));
+    return project;
   }
 }

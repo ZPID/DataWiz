@@ -93,12 +93,32 @@ public class ImportService {
     boolean error = false;
     Set<String> warnings = new HashSet<>();
     List<String> errors = new ArrayList<>();
+    String fileType = null;
+    String[] file = null;
     if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
-        && sForm.getSpssFile().getSize() > 0) {
+        && sForm.getSpssFile().getOriginalFilename() != null) {
+      file = sForm.getSpssFile().getOriginalFilename().split("\\.");
+    } else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV")
+        && sForm.getCsvFile() != null && sForm.getCsvFile().getOriginalFilename() != null) {
+      file = sForm.getCsvFile().getOriginalFilename().split("\\.");
+    }
+    if (file != null && file.length > 1)
+      fileType = file[file.length - 1].trim().toLowerCase();
+    System.err.println(fileType);
+    if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
+        && sForm.getSpssFile().getSize() > 0 && fileType != null && fileType.equals("sav")) {
       error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors, warnings);
     } else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV")
-        && sForm.getCsvFile() != null && sForm.getCsvFile().getSize() > 0) {
+        && sForm.getCsvFile() != null && sForm.getCsvFile().getSize() > 0 && fileType != null
+        && (fileType.equals("csv") || fileType.equals("txt") || fileType.equals("dat"))) {
       error = validateCSVFile(pid, studyId, recordId, sForm, user, warnings, errors);
+    } else if ((sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS")
+        && (sForm.getSpssFile() == null || sForm.getSpssFile().getSize() <= 0))
+        || (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV")
+            && (sForm.getCsvFile() == null || sForm.getCsvFile().getSize() <= 0))) {
+      throw new DataWizSystemException(messageSource.getMessage("logging.selected.file.empty",
+          new Object[] { sForm.getSelectedFileType() }, LocaleContextHolder.getLocale()),
+          DataWizErrorCodes.IMPORT_FILE_IS_EMPTY);
     } else {
       throw new DataWizSystemException(messageSource.getMessage("logging.selected.filetype.missmatch",
           new Object[] { sForm.getSelectedFileType() }, LocaleContextHolder.getLocale()),

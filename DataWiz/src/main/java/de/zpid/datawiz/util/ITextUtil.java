@@ -76,6 +76,7 @@ public class ITextUtil {
     StringBuilder res = new StringBuilder();
     byte[] content = null;
     String dir = fileUtil.setFolderPath("temp");
+    Files.createDirectories(Paths.get(dir));
     String filename = UUID.randomUUID().toString() + ".pdf";
     PdfADocument pdf = openPDFADocument(record, dir + filename, encrypt, res);
     if (pdf != null) {
@@ -340,7 +341,6 @@ public class ITextUtil {
     prop.setCompressionLevel(CompressionConstants.BEST_COMPRESSION);
     prop.setPdfVersion(PdfVersion.PDF_1_7);
     PdfADocument pdf = null;
-
     try {
       pdf = new PdfADocument(new PdfWriter(dest, prop), PdfAConformanceLevel.PDF_A_3U, new PdfOutputIntent("Custom", "",
           "http://www.color.org", "sRGB IEC61966-2.1", this.getClass().getClassLoader().getResourceAsStream(ICC)));

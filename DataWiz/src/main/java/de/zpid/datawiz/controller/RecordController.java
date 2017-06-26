@@ -192,7 +192,7 @@ public class RecordController {
         ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get()
             + "/importReport";
       } catch (DataWizSystemException e) {
-        exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e,
+        ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e,
             "importService.importFile");
       }
     }
