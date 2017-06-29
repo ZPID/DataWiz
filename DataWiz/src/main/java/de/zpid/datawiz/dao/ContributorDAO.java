@@ -1,17 +1,25 @@
 package de.zpid.datawiz.dao;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.ContributorDTO;
@@ -19,14 +27,19 @@ import de.zpid.datawiz.dto.ProjectDTO;
 
 @Repository
 @Scope("singleton")
-public class ContributorDAO extends SuperDAO {
+public class ContributorDAO {
+
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  protected JdbcTemplate jdbcTemplate;
 
   private static Logger log = LogManager.getLogger(ContributorDAO.class);
 
   public ContributorDAO() {
     super();
     if (log.isInfoEnabled())
-      log.info("Loading ContributorDAO as Singleton and Service");
+      log.info("Loading ContributorDAO as Singleton and Repository");
   }
 
   public List<ContributorDTO> findByProject(final ProjectDTO project, final boolean withStudy,
@@ -62,11 +75,10 @@ public class ContributorDAO extends SuperDAO {
         () -> ((cContri != null) ? cContri.size() : "null"));
     return cContri;
   }
-  
+
   public ContributorDTO findPrimaryContributorByProject(ProjectDTO project) throws Exception {
-    if (log.isDebugEnabled())
-      log.debug("execute findPrimaryContributorByProject for project [id: " + project.getId() + " name: "
-          + project.getTitle() + "]");
+    log.trace("execute findPrimaryContributorByProject for project [id: {}, name: {}]", () -> project.getId(),
+        () -> project.getTitle());
     String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
         + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
         + "dw_contributors.primaryContributor IS TRUE AND dw_study_contributors.project_id = ?";
@@ -86,11 +98,18 @@ public class ContributorDAO extends SuperDAO {
   }
 
   public int deleteFromProject(ContributorDTO contri) {
-    log.trace("execute deleteFromProject [projectId: {}; contributorId]", () -> contri.getProjectId(),
+    log.trace("execute deleteFromProject [projectId: {}; contributorId: {}]", () -> contri.getProjectId(),
         () -> contri.getId());
     int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?",
         contri.getProjectId(), contri.getId());
     log.debug("leaving deleteFromProject with result: [success: {}]", () -> chk);
+    return chk;
+  }
+
+  public int deleteContributor(ContributorDTO contri) {
+    log.trace("execute deleteContributor [contributorId: {}]", () -> contri.getId());
+    int chk = this.jdbcTemplate.update("DELETE FROM dw_contributors WHERE id= ?", contri.getId());
+    log.debug("leaving deleteContributor with result: [success: {}]", () -> chk);
     return chk;
   }
 
@@ -117,7 +136,7 @@ public class ContributorDAO extends SuperDAO {
   public int[] insertStudyRelation(final List<ContributorDTO> contri, final Long studyId) {
     log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
     int[] ret = this.jdbcTemplate.batchUpdate(
-        "Insert INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
+        "INSERT INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
         new BatchPreparedStatementSetter() {
           public void setValues(PreparedStatement ps, int i) throws SQLException {
             ContributorDTO cont = contri.get(i);
@@ -125,26 +144,7 @@ public class ContributorDAO extends SuperDAO {
             ps.setLong(2, studyId);
             ps.setLong(3, cont.getId());
           }
-          public int getBatchSize() {
-            return contri.size();
-          }
-        });
-    log.debug("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
-    return ret;
-  }
-  
-  //TODO
-  public int[] insertIntoProject(final List<ContributorDTO> contri, final Long studyId) {
-    log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
-    int[] ret = this.jdbcTemplate.batchUpdate(
-        "Insert INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
-        new BatchPreparedStatementSetter() {
-          public void setValues(PreparedStatement ps, int i) throws SQLException {
-            ContributorDTO cont = contri.get(i);
-            ps.setLong(1, cont.getProjectId());
-            ps.setLong(2, studyId);
-            ps.setLong(3, cont.getId());
-          }
+
           public int getBatchSize() {
             return contri.size();
           }
@@ -153,7 +153,49 @@ public class ContributorDAO extends SuperDAO {
     return ret;
   }
 
+  // TODO
+  public int insertContributor(final ContributorDTO contri) {
+    log.trace("execute insertContributor [contributor: {}]", () -> contri);
+    KeyHolder holder = new GeneratedKeyHolder();
+    final String stmt = "INSERT INTO dw_contributors (sort, title, first_name, last_name, institution, department, orcid, primaryContributor) "
+        + "VALUES (?,?,?,?,?,?,?,?)";
+    int chk = this.jdbcTemplate.update(new PreparedStatementCreator() {
+      @Override
+      public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+        ps.setInt(1, contri.getSort());
+        ps.setString(2, contri.getTitle());
+        ps.setString(3, contri.getFirstName());
+        ps.setString(4, contri.getLastName());
+        ps.setString(5, contri.getInstitution());
+        ps.setString(6, contri.getDepartment());
+        ps.setString(7, contri.getOrcid());
+        ps.setBoolean(8, contri.getPrimaryContributor() != null ? contri.getPrimaryContributor() : false);
+        return ps;
+      }
+    }, holder);
+    contri.setId((holder.getKey().longValue() > 0) ? holder.getKey().longValue() : -1);
+    log.debug("leaving insertContributor with result: [success: {}]", () -> chk);
+    return chk;
+  }
 
+  public int insertProjectRelation(ContributorDTO contri) {
+    log.trace("execute insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
+    int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)",
+        contri.getProjectId(), contri.getId());
+    log.debug("leaving insertIntoProject with result: [success: {}]", () -> ret);
+    return ret;
+  }
+
+  public int updateContributor(ContributorDTO contri) {
+    log.trace("execute updateContributor [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
+    int ret = this.jdbcTemplate.update(
+        "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ? WHERE dw_contributors.id = ?",
+        contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(),
+        contri.getOrcid(), contri.getId());
+    log.debug("leaving updateContributor with result: [success: {}]", () -> ret);
+    return ret;
+  }
 
   /**
    * @param rs

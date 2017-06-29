@@ -66,44 +66,98 @@
                   <!-- PrimaryContributor title -->
                   <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.title" /></label>
                   <div class="col-md-3">
-                    <s:message code="gen.title.ph" var="reg_first" />
-                    <sf:input path="primaryContributor.title" class="form-control" placeholder="${reg_first}" />
+                    <s:bind path="primaryContributor.title">
+                      <c:choose>
+                        <c:when test="${status.error}">
+                          <sf:input path="primaryContributor.title" class="form-control" style="border: 1px solid red;"
+                            title="${status.errorMessage}" data-toggle="tooltip" />
+                        </c:when>
+                        <c:otherwise>
+                          <sf:input path="primaryContributor.title" class="form-control" />
+                        </c:otherwise>
+                      </c:choose>
+                    </s:bind>
                   </div>
                   <!-- PrimaryContributor ORCID -->
                   <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.orcid" /></label>
                   <div class="col-md-3">
-                    <s:message code="gen.orcid.ph" var="reg_first" />
-                    <sf:input path="primaryContributor.orcid" class="form-control" placeholder="${reg_first}" />
+                    <s:bind path="primaryContributor.orcid">
+                      <c:choose>
+                        <c:when test="${status.error}">
+                          <sf:input path="primaryContributor.orcid" class="form-control" style="border: 1px solid red;"
+                            title="${status.errorMessage}" data-toggle="tooltip" />
+                        </c:when>
+                        <c:otherwise>
+                          <sf:input path="primaryContributor.orcid" class="form-control" />
+                        </c:otherwise>
+                      </c:choose>
+                    </s:bind>
                   </div>
                 </div>
                 <div class="form-group">
                   <!-- PrimaryContributor firstName -->
                   <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.firstName" /></label>
                   <div class="col-md-3">
-                    <s:message code="gen.firstName.ph" var="reg_first" />
-                    <sf:input path="primaryContributor.firstName" class="form-control" placeholder="${reg_first}" />
+                    <s:bind path="primaryContributor.firstName">
+                      <c:choose>
+                        <c:when test="${status.error}">
+                          <sf:input path="primaryContributor.firstName" class="form-control"
+                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                        </c:when>
+                        <c:otherwise>
+                          <sf:input path="primaryContributor.firstName" class="form-control" />
+                        </c:otherwise>
+                      </c:choose>
+                    </s:bind>
                   </div>
                   <!-- PrimaryContributor lastName -->
                   <label for="inputValue" class="col-md-2 control-label"><s:message code="gen.lastName" /></label>
                   <div class="col-md-3">
-                    <s:message code="gen.lastName.ph" var="reg_first" />
-                    <sf:input path="primaryContributor.lastName" class="form-control" placeholder="${reg_first}" />
+                    <s:bind path="primaryContributor.lastName">
+                      <c:choose>
+                        <c:when test="${status.error}">
+                          <sf:input path="primaryContributor.lastName" class="form-control"
+                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                        </c:when>
+                        <c:otherwise>
+                          <sf:input path="primaryContributor.lastName" class="form-control" />
+                        </c:otherwise>
+                      </c:choose>
+                    </s:bind>
                   </div>
                 </div>
                 <div class="form-group">
                   <!-- PrimaryContributor institution -->
                   <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.institution" /></label>
                   <div class="col-md-8">
-                    <s:message code="gen.institution.ph" var="reg_first" />
-                    <sf:input path="primaryContributor.institution" class="form-control" placeholder="${reg_first}" />
+                    <s:bind path="primaryContributor.institution">
+                      <c:choose>
+                        <c:when test="${status.error}">
+                          <sf:input path="primaryContributor.institution" class="form-control"
+                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                        </c:when>
+                        <c:otherwise>
+                          <sf:input path="primaryContributor.institution" class="form-control" />
+                        </c:otherwise>
+                      </c:choose>
+                    </s:bind>
                   </div>
                 </div>
                 <div class="form-group">
                   <!-- Contributors department-->
                   <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.department" /></label>
                   <div class="col-md-8">
-                    <s:message code="gen.department.ph" var="reg_first" />
-                    <sf:input path="primaryContributor.department" class="form-control" placeholder="${reg_first}" />
+                    <s:bind path="primaryContributor.department">
+                      <c:choose>
+                        <c:when test="${status.error}">
+                          <sf:input path="primaryContributor.department" class="form-control"
+                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                        </c:when>
+                        <c:otherwise>
+                          <sf:input path="primaryContributor.department" class="form-control" />
+                        </c:otherwise>
+                      </c:choose>
+                    </s:bind>
                   </div>
                 </div>
               </li>
@@ -126,49 +180,95 @@
                 <li class="list-group-item">
                   <div class="form-group">
                     <!-- Contributors title -->
-                    <label for="inputKey" class="col-md-2 control-label">Titel</label>
+                    <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.title" /></label>
                     <div class="col-md-4">
-                      <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].title" class="form-control"
-                        placeholder="${reg_first}" />
+                      <s:bind path="contributors[${coloop.count-1}].title">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:input path="contributors[${coloop.count-1}].title" class="form-control"
+                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:input path="contributors[${coloop.count-1}].title" class="form-control" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind>
                     </div>
-                    <label for="inputKey" class="col-md-1 control-label">ORCID</label>
+                    <label for="inputKey" class="col-md-1 control-label"><s:message code="gen.orcid" /></label>
                     <div class="col-md-4">
-                      <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control"
-                        placeholder="${reg_first}" />
-                      <sf:errors path="contributors[${coloop.count-1}].orcid" cssClass="alert alert-danger"
-                        element="div" htmlEscape="false" />
+                      <s:bind path="contributors[${coloop.count-1}].orcid">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control"
+                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind>
                     </div>
                   </div> <!-- Contributors first and lastname-->
                   <div class="form-group">
-                    <label for="inputKey" class="col-md-2 control-label">Vorname</label>
+                    <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.firstName" /></label>
                     <div class="col-md-4">
-                      <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control"
-                        placeholder="${reg_first}" />
+                      <s:bind path="contributors[${coloop.count-1}].firstName">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control"
+                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind>
                     </div>
-                    <label for="inputValue" class="col-md-1 control-label">Nachname</label>
+                    <label for="inputValue" class="col-md-1 control-label"><s:message code="gen.lastName" /></label>
                     <div class="col-md-4">
-                      <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control"
-                        placeholder="${reg_first}" />
+                      <s:bind path="contributors[${coloop.count-1}].lastName">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control"
+                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind>
                     </div>
                   </div> <!-- Contributors institution-->
                   <div class="form-group">
-                    <label for="inputKey" class="col-md-2 control-label">Institut</label>
+                    <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.institution" /></label>
                     <div class="col-md-9">
-                      <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].institution" class="form-control"
-                        placeholder="${reg_first}" />
+                      <s:bind path="contributors[${coloop.count-1}].institution">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:input path="contributors[${coloop.count-1}].institution" class="form-control"
+                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:input path="contributors[${coloop.count-1}].institution" class="form-control" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind>
                     </div>
                   </div> <!-- Contributors department-->
                   <div class="form-group">
-                    <label for="inputKey" class="col-md-2 control-label">Abteilung</label>
+                    <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.department" /></label>
                     <div class="col-md-9">
-                      <s:message code="project.edit.title.ph" var="reg_first" />
-                      <sf:input path="contributors[${coloop.count-1}].department" class="form-control"
-                        placeholder="${reg_first}" />
+                      <s:bind path="contributors[${coloop.count-1}].department">
+                        <c:choose>
+                          <c:when test="${status.error}">
+                            <sf:input path="contributors[${coloop.count-1}].department" class="form-control"
+                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          </c:when>
+                          <c:otherwise>
+                            <sf:input path="contributors[${coloop.count-1}].department" class="form-control" />
+                          </c:otherwise>
+                        </c:choose>
+                      </s:bind>
                     </div>
                     <div class="col-md-1 col-sm-12 text-align-right">
                       <sf:button type="submit" name="deleteContributor" class="btn btn-danger btn-sm"

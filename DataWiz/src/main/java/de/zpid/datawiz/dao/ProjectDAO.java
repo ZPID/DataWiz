@@ -5,15 +5,17 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +28,12 @@ import de.zpid.datawiz.dto.UserDTO;
 
 @Repository
 @Scope("singleton")
-public class ProjectDAO extends SuperDAO {
+public class ProjectDAO {
+
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  protected JdbcTemplate jdbcTemplate;
 
   private static Logger log = LogManager.getLogger(ProjectDAO.class);
 

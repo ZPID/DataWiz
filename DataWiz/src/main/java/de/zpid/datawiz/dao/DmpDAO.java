@@ -6,8 +6,11 @@ import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +19,13 @@ import de.zpid.datawiz.dto.ProjectDTO;
 
 @Repository
 @Scope("singleton")
-public class DmpDAO extends SuperDAO {
-  
+public class DmpDAO {
+
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  protected JdbcTemplate jdbcTemplate;
+
   private static Logger log = LogManager.getLogger(DmpDAO.class);
 
   public DmpDAO() {

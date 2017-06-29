@@ -1,11 +1,10 @@
 package de.zpid.datawiz.configuration;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,7 +29,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   UserDetailsService userDetailsService;
 
   @Autowired
-  DataSource dataSource;
+  protected JdbcTemplate jdbcTemplate;
 
   @Autowired
   public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
@@ -56,31 +55,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     CharacterEncodingFilter filter = new CharacterEncodingFilter();
     filter.setEncoding("UTF-8");
     filter.setForceEncoding(true);
-    http.addFilterBefore(filter,CsrfFilter.class);
-    http.authorizeRequests()
-            .antMatchers("/", "/home", "/register", "/login").permitAll()
-            .antMatchers("/admin/**").access("hasRole('ADMIN')")
-            .antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**").access("hasRole('USER') or hasRole('ADMIN')")
-            .and()
-        .formLogin()
-            .defaultSuccessUrl("/panel")
-            .loginPage("/login").permitAll().usernameParameter("email").passwordParameter("password")
-            .and()
-        .rememberMe()
-            .rememberMeParameter("remember-me")
-            .tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400)
-            .and()
-        .csrf()
-            .and()
-        .exceptionHandling()
-            .accessDeniedPage("/Access_Denied")
-            .and()
-        .logout()
-            .deleteCookies("remember-me")
-            .and()
-        .sessionManagement()
-            .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            .invalidSessionUrl("/login?session=timeout");
+    http.addFilterBefore(filter, CsrfFilter.class);
+    http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**")
+        .access("hasRole('ADMIN')").antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**")
+        .access("hasRole('USER') or hasRole('ADMIN')").and().formLogin().defaultSuccessUrl("/panel").loginPage("/login")
+        .permitAll().usernameParameter("email").passwordParameter("password").and().rememberMe()
+        .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400)
+        .and().csrf().and().exceptionHandling().accessDeniedPage("/Access_Denied").and().logout()
+        .deleteCookies("remember-me").and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+        .invalidSessionUrl("/login?session=timeout");
   }
 
   @Override
@@ -91,7 +74,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   @Bean
   public PersistentTokenRepository persistentTokenRepository() {
     JdbcTokenRepositoryImpl tokenRepositoryImpl = new JdbcTokenRepositoryImpl();
-    tokenRepositoryImpl.setDataSource(dataSource);
+    tokenRepositoryImpl.setDataSource(jdbcTemplate.getDataSource());
     return tokenRepositoryImpl;
   }
 }

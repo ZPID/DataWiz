@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -23,16 +24,24 @@ public class ProjectDTO implements Serializable {
   /**
    * Not the database ID - this is used for documentation and is not unique!
    */
+  @Size(min = 0, max = 250)
   private String projectIdent;
+
+  @Size(min = 0, max = 1000)
   private String funding;
+
+  @Size(min = 0, max = 250)
   private String grantNumber;
-  private String thesaurusType;
-  private String copyright;
+
+  @Size(min = 0, max = 5000)
   private String description;
 
   private LocalDateTime created;
   private long lastUserId;
   private LocalDateTime lastEdit;
+  private String thesaurusType;
+
+  private String copyright;
 
   public long getId() {
     return id;

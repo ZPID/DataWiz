@@ -18,14 +18,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.SmartValidator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -56,7 +57,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   private static Logger log = LogManager.getLogger(DataWizConfiguration.class);
 
   @Autowired
-  private Environment env;  
+  private Environment env;
 
   @Bean(name = "PropertiesFile")
   public static PropertyPlaceholderConfigurer properties() {
@@ -67,7 +68,6 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   }
 
   @Bean(name = "sessionTimeout")
-  @Scope("singleton")
   public int getSessionTimeout() {
     try {
       return Integer.parseInt(env.getRequiredProperty("session.timeout").trim());
@@ -76,15 +76,35 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     }
   }
 
+  private DataSource getDataSource() {
+    DriverManagerDataSource dataSource = new DriverManagerDataSource();
+    dataSource.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName"));
+    dataSource.setUrl(env.getRequiredProperty("dataSource.url"));
+    dataSource.setUsername(env.getRequiredProperty("dataSource.username"));
+    dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
+    log.info("dataSource succesfully loaded");
+    return dataSource;
+  }
+
+  @Bean
+  public PlatformTransactionManager txManager() {
+    return new DataSourceTransactionManager(getDataSource());
+  }
+
+  @Bean(name = "jdbcTemplate")
+  @Transactional
+  public JdbcTemplate jdbcTemplate() {
+    return new JdbcTemplate(getDataSource());
+  }
+
   @Bean(name = "spss")
-  @Scope("singleton")
   public SPSSIO getSPSSDLL() {
     String OS = System.getProperty("os.name").toLowerCase();
     String path;
     if (OS.contains("win"))
-      path = env.getRequiredProperty("spss.absoluth.path").trim();
+      path = env.getRequiredProperty("spss.absoluth.path.windows").trim();
     else
-      path = env.getRequiredProperty("spss.absoluth.path.test").trim();
+      path = env.getRequiredProperty("spss.absoluth.path.unix").trim();
     log.info("Loading SPSSDLL with path: {}", () -> path);
     SPSSIO.setAbsoluteLibPath(path);
     return new SPSSIO();
@@ -146,23 +166,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
     return resolver;
   }
 
-  @Bean(name = "dataSource")
-  public DataSource getDataSource() {
-    DriverManagerDataSource dataSource = new DriverManagerDataSource();
-    dataSource.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName"));
-    dataSource.setUrl(env.getRequiredProperty("dataSource.url"));
-    dataSource.setUsername(env.getRequiredProperty("dataSource.username"));
-    dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
-    log.info("dataSource succesfully loaded");
-    return dataSource;
-  }
-
-  @Bean
-  public PlatformTransactionManager txManager() {
-    return new DataSourceTransactionManager(getDataSource());
-  }
-
-  @Bean(name = "minioUtil", destroyMethod = "close")
+  @Bean(name = "minioUtil")
   public MinioUtil minioUtil() {
     return new MinioUtil(env, true);
   }
@@ -185,7 +189,7 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
   }
 
   @PreDestroy
-  public void destroy() {    
+  public void destroy() {
     log.warn("Destroy DataWiz Application - ");
     ConnectionPool.getDefault().evictAll();
     Enumeration<Driver> drivers = DriverManager.getDrivers();

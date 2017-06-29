@@ -26,6 +26,7 @@ import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.SavedState;
@@ -111,7 +112,8 @@ public class DMPController extends SuperController {
     }
     String pName = "";
     try {
-      projectService.getProjectForm(pForm, pid, user, PageState.DMP, projectService.checkProjectRoles(user, pid, 0, false, false));
+      projectService.getProjectForm(pForm, pid, user, PageState.DMP,
+          projectService.checkProjectRoles(user, pid, 0, false, false));
       if (pForm != null && pForm.getProject() != null && pForm.getProject().getTitle() != null
           && !pForm.getProject().getTitle().trim().isEmpty()) {
         pName = pForm.getProject().getTitle();
@@ -130,7 +132,8 @@ public class DMPController extends SuperController {
           messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
     }
-    model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
+    model.put("breadcrumpList",
+        BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
     model.put("subnaviActive", PageState.DMP.name());
     model.put("ProjectForm", pForm);
     return "dmp";
@@ -157,7 +160,7 @@ public class DMPController extends SuperController {
       }
       hasErrors = true;
     }
-    if (hasErrors || !projectService.saveOrUpdateProject(pForm)) {
+    if (hasErrors || !projectService.saveOrUpdateProject(pForm).equals(DataWizErrorCodes.OK)) {
       bRes.reject("globalErrors",
           messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
       hasErrors = true;

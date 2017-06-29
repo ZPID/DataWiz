@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -35,6 +36,7 @@ import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
@@ -229,27 +231,30 @@ public class ProjectController extends SuperController {
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
   public String saveProject(@ModelAttribute("ProjectForm") ProjectForm pForm, BindingResult bindingResult,
       ModelMap model, RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute saveProject()");
-    }
+    log.trace("Entering saveProject");
     validator.validate(pForm, bindingResult, ProjectDTO.ProjectVal.class);
+    validator.validate(pForm, bindingResult);
+    List<ContributorDTO> cContri = projectService.validateContributors(pForm, bindingResult);
     if (bindingResult.hasErrors()) {
       if (log.isInfoEnabled()) {
         log.info("bindingResult has Errors " + bindingResult.getAllErrors().toString());
       }
+      model.put("errorMSG",
+          messageSource.getMessage("error.project.validation", null, LocaleContextHolder.getLocale()));
       return "project";
     }
-    if (!projectService.saveOrUpdateProject(pForm)) {
-      // TODO vern�nftige Fehlerausgabe
-      model.put("saveState", SavedState.ERROR.toString());
-      model.put("saveStateMsg", "fehler!!!!");
+    pForm.setContributors(cContri);
+    DataWizErrorCodes state = projectService.saveOrUpdateProject(pForm);
+    log.debug("Leaving saveProject with result: [code: {}]", () -> state.name());
+    if (!state.equals(DataWizErrorCodes.OK)) {
+      model.put("errorMSG",
+          messageSource.getMessage("project.save.error." + state.name(), null, LocaleContextHolder.getLocale()));
       return "project";
     } else {
-      redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS);
-      redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
+      redirectAttributes.addFlashAttribute("successMSG",
+          messageSource.getMessage("project.save.error." + state.name(), null, LocaleContextHolder.getLocale()));
       return "redirect:/project/" + pForm.getProject().getId();
     }
-
   }
 
   /**
@@ -260,9 +265,7 @@ public class ProjectController extends SuperController {
    */
   @RequestMapping(value = { "", "/{pid}" }, params = { "addContributor" }, method = RequestMethod.POST)
   public String addContributor(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute addContributor");
-    }
+    log.trace("execute addContributor");
     if (pForm.getContributors() == null) {
       pForm.setContributors(new ArrayList<ContributorDTO>());
     }
@@ -278,16 +281,13 @@ public class ProjectController extends SuperController {
    */
   @RequestMapping(value = { "", "/{pid}" }, params = { "deleteContributor" }, method = RequestMethod.POST)
   public String deleteContributor(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute deleteContributor");
-    }
+    log.trace("execute deleteContributor");
     if (pForm.getContributors() == null) {
       pForm.setContributors(new ArrayList<ContributorDTO>());
     }
     ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
     pForm.getContributors().remove(pForm.getDelPos());
-    // TODO DELETE FUNCTION
-
+    contributorDAO.deleteContributor(selected);
     return "project";
   }
 

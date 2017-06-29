@@ -3,6 +3,7 @@ package de.zpid.datawiz.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +12,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
@@ -29,6 +34,7 @@ import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
@@ -62,6 +68,8 @@ public class ProjectService {
   protected ClassPathXmlApplicationContext applicationContext;
   @Autowired
   protected UserDAO userDAO;
+  @Autowired
+  private PlatformTransactionManager txManager;
 
   private static Logger log = LogManager.getLogger(ProjectService.class);
 
@@ -207,9 +215,10 @@ public class ProjectService {
    * @param pForm
    * @return
    */
-  public boolean saveOrUpdateProject(final ProjectForm pForm) {
-    log.trace("Entering saveOrUpdateProject(SuperController) for project [id: {}] ", () -> pForm.getProject().getId());
-    boolean success = true;
+  public DataWizErrorCodes saveOrUpdateProject(final ProjectForm pForm) {
+    log.trace("Entering saveOrUpdateProject for project [id: {}] ", () -> pForm.getProject().getId());
+    DataWizErrorCodes success = DataWizErrorCodes.OK;
+    TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
     try {
       UserDTO user = UserUtil.getCurrentUser();
       if (pForm != null && pForm.getProject() != null && user != null) {
@@ -223,22 +232,33 @@ public class ProjectService {
                 new UserRoleDTO(Roles.PROJECT_ADMIN.toInt(), user.getId(), chk, 0, Roles.PROJECT_ADMIN.name()));
             pForm.getProject().setId(chk);
           } else {
-            success = false;
+            success = DataWizErrorCodes.MISSING_PID_ERROR;
           }
         } else {
           pForm.getProject().setLastUserId(user.getId());
           projectDAO.updateProject(pForm.getProject());
         }
+        for (ContributorDTO contri : pForm.getContributors()) {
+          contri.setProjectId(pForm.getProject().getId());
+          if (contri.getId() <= 0) {
+            contributorDAO.insertContributor(contri);
+            contributorDAO.insertProjectRelation(contri);
+          } else {
+            contributorDAO.updateContributor(contri);
+          }
+        }
       } else {
-        success = false;
+        success = DataWizErrorCodes.NO_DATA_ERROR;
       }
       if (UserUtil.getCurrentUser() != null)
         UserUtil.getCurrentUser().setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
+      txManager.commit(status);
     } catch (Exception e) {
-      log.error("Project saving not sucessful error:", e);
-      success = false;
+      txManager.rollback(status);
+      log.error("Project saving not sucessful error:", () -> e);
+      success = DataWizErrorCodes.DATABASE_ERROR;
     }
-    log.trace("Method saveOrUpdateProject(SuperController) completed with sucess={}", success);
+    log.trace("Method saveOrUpdateProject completed with sucess={}", success.name());
     return success;
   }
 
@@ -295,6 +315,45 @@ public class ProjectService {
     log.debug("Method gcheckProjectRoles(SuperController) ended without result for user [id: {}] and project [id: {}]",
         () -> user.getId(), () -> pid);
     return null;
+  }
+
+  /**
+   * @param pForm
+   * @param bindingResult
+   */
+  public List<ContributorDTO> validateContributors(ProjectForm pForm, BindingResult bindingResult) {
+    List<ContributorDTO> cContri = new ArrayList<ContributorDTO>();
+    AtomicInteger contriCount = new AtomicInteger(0);
+    if (pForm.getContributors() != null)
+      pForm.getContributors().forEach(contri -> {
+        if (contri != null && (!contri.getTitle().trim().equals("") || !contri.getOrcid().trim().equals("")
+            || !contri.getInstitution().trim().equals("") || !contri.getDepartment().trim().equals("")
+            || !contri.getFirstName().trim().equals("") || !contri.getLastName().trim().equals(""))) {
+          if (contri.getFirstName().trim().equals("")) {
+            bindingResult.rejectValue("contributors[" + contriCount.get() + "].firstName",
+                "error.contributor.lastName.firstname");
+          }
+          if (contri.getLastName().trim().equals("")) {
+            bindingResult.rejectValue("contributors[" + contriCount.getAndIncrement() + "].lastName",
+                "error.contributor.lastName.firstname");
+          }
+          cContri.add(contri);
+        }
+      });
+    if (pForm.getPrimaryContributor() != null && (!pForm.getPrimaryContributor().getTitle().trim().equals("")
+        || !pForm.getPrimaryContributor().getOrcid().trim().equals("")
+        || !pForm.getPrimaryContributor().getInstitution().trim().equals("")
+        || !pForm.getPrimaryContributor().getDepartment().trim().equals("")
+        || !pForm.getPrimaryContributor().getFirstName().trim().equals("")
+        || !pForm.getPrimaryContributor().getLastName().trim().equals(""))) {
+      if (pForm.getPrimaryContributor().getFirstName().trim().equals(""))
+        bindingResult.rejectValue("primaryContributor.firstName", "error.contributor.lastName.firstname");
+      if (pForm.getPrimaryContributor().getLastName().trim().equals(""))
+        bindingResult.rejectValue("primaryContributor.lastName", "error.contributor.lastName.firstname");
+      pForm.getPrimaryContributor().setPrimaryContributor(true);
+      cContri.add(pForm.getPrimaryContributor());
+    }
+    return cContri;
   }
 
 }
