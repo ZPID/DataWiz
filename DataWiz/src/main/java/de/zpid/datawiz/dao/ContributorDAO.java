@@ -97,7 +97,7 @@ public class ContributorDAO {
     return contri;
   }
 
-  public int deleteFromProject(ContributorDTO contri) {
+  public int deleteFromProject(ContributorDTO contri) throws Exception {
     log.trace("execute deleteFromProject [projectId: {}; contributorId: {}]", () -> contri.getProjectId(),
         () -> contri.getId());
     int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?",
@@ -106,14 +106,14 @@ public class ContributorDAO {
     return chk;
   }
 
-  public int deleteContributor(ContributorDTO contri) {
+  public int deleteContributor(ContributorDTO contri) throws Exception {
     log.trace("execute deleteContributor [contributorId: {}]", () -> contri.getId());
     int chk = this.jdbcTemplate.update("DELETE FROM dw_contributors WHERE id= ?", contri.getId());
     log.debug("leaving deleteContributor with result: [success: {}]", () -> chk);
     return chk;
   }
 
-  public int[] deleteFromStudy(final List<ContributorDTO> contri) {
+  public int[] deleteFromStudy(final List<ContributorDTO> contri) throws Exception {
     log.trace("execute deleteFromStudy [size: {}]", () -> contri.size());
     int[] ret = this.jdbcTemplate.batchUpdate(
         "DELETE FROM dw_study_contributors WHERE project_id = ? AND study_id = ? AND contributor_id= ?",
@@ -133,7 +133,7 @@ public class ContributorDAO {
     return ret;
   }
 
-  public int[] insertStudyRelation(final List<ContributorDTO> contri, final Long studyId) {
+  public int[] insertStudyRelation(final List<ContributorDTO> contri, final Long studyId) throws Exception {
     log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
     int[] ret = this.jdbcTemplate.batchUpdate(
         "INSERT INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
@@ -154,7 +154,7 @@ public class ContributorDAO {
   }
 
   // TODO
-  public int insertContributor(final ContributorDTO contri) {
+  public int insertContributor(final ContributorDTO contri) throws Exception {
     log.trace("execute insertContributor [contributor: {}]", () -> contri);
     KeyHolder holder = new GeneratedKeyHolder();
     final String stmt = "INSERT INTO dw_contributors (sort, title, first_name, last_name, institution, department, orcid, primaryContributor) "
@@ -179,7 +179,7 @@ public class ContributorDAO {
     return chk;
   }
 
-  public int insertProjectRelation(ContributorDTO contri) {
+  public int insertProjectRelation(ContributorDTO contri) throws Exception {
     log.trace("execute insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
     int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)",
         contri.getProjectId(), contri.getId());
@@ -187,7 +187,7 @@ public class ContributorDAO {
     return ret;
   }
 
-  public int updateContributor(ContributorDTO contri) {
+  public int updateContributor(ContributorDTO contri) throws Exception {
     log.trace("execute updateContributor [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
     int ret = this.jdbcTemplate.update(
         "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ? WHERE dw_contributors.id = ?",

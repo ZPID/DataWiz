@@ -1,26 +1,25 @@
 package de.zpid.datawiz.controller;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +33,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.MinioResult;
@@ -44,6 +42,8 @@ import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.service.ExceptionService;
+import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -54,7 +54,22 @@ import de.zpid.datawiz.util.UserUtil;
 public class ProjectController extends SuperController {
 
   @Autowired
-  StudyService studyService;
+  protected MessageSource messageSource;
+  @Autowired
+  private StudyService studyService;
+  @Autowired
+  private ExceptionService exceptionService;
+  @Autowired
+  protected ClassPathXmlApplicationContext applicationContext;
+  @Autowired
+  protected SmartValidator validator;
+  @Autowired
+  private ProjectService projectService;
+
+  @ModelAttribute("ProjectForm")
+  protected ProjectForm createProjectForm() {
+    return (ProjectForm) applicationContext.getBean("ProjectForm");
+  }
 
   private static Logger log = LogManager.getLogger(ProjectController.class);
 
@@ -66,8 +81,8 @@ public class ProjectController extends SuperController {
   /**
    * 
    * @param pid
-   * @param pForm
    * @param model
+   * @param redirectAttributes
    * @return
    */
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
@@ -79,10 +94,7 @@ public class ProjectController extends SuperController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
-
-    // create new pform!
     ProjectForm pForm = createProjectForm();
-    // TODO
     String name = messageSource.getMessage("breadcrumb.new.project", null, LocaleContextHolder.getLocale());
     if (pid.isPresent()) {
       try {
@@ -95,8 +107,8 @@ public class ProjectController extends SuperController {
         projectService.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
         name = pForm.getProject().getTitle();
       } catch (Exception e) {
-        // TODO
-        log.warn(e.getMessage());
+        log.warn("Exception during projectService.getProjectForm for [user: {}, pid: {}]", () -> user.getId(),
+            () -> pid, () -> e);
         String redirectMessage = "";
         if (e instanceof DataWizException) {
           redirectMessage = "project.not.available";
@@ -109,6 +121,10 @@ public class ProjectController extends SuperController {
             messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
         return "redirect:/panel";
       }
+    } else {
+      List<ContributorDTO> cContri = new ArrayList<>();
+      cContri.add(new ContributorDTO());
+      pForm.setContributors(cContri);
     }
     model.put("breadcrumpList",
         BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, null, messageSource));
@@ -117,6 +133,13 @@ public class ProjectController extends SuperController {
     return "project";
   }
 
+  /**
+   * 
+   * @param pid
+   * @param model
+   * @param redirectAttributes
+   * @return
+   */
   @RequestMapping(value = { "/{pid}/studies" }, method = RequestMethod.GET)
   public String showStudiesPage(@PathVariable Optional<Long> pid, ModelMap model,
       RedirectAttributes redirectAttributes) {
@@ -139,7 +162,6 @@ public class ProjectController extends SuperController {
         model.put("hideMenu", true);
       }
       projectService.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
-
     } catch (Exception e) {
       // TODO
       log.warn(e.getMessage());
@@ -162,6 +184,14 @@ public class ProjectController extends SuperController {
     return "studies";
   }
 
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param model
+   * @param redirectAttributes
+   * @return
+   */
   @RequestMapping(value = { "/{pid}/material", "/{pid}/study/{studyId}/material" }, method = RequestMethod.GET)
   public String showMaterialPage(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model,
       RedirectAttributes redirectAttributes) {
@@ -177,45 +207,19 @@ public class ProjectController extends SuperController {
             messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
         ret = "redirect:/panel";
       }
-      if (studyId.isPresent())
-        ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
-      // TODO PROJEKT ZUGRIFF SCHREIBRECHTE
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
     }
     ProjectForm pForm = createProjectForm();
     if (ret == null) {
-      try {
+      if (projectService.setMaterialForm(pid, studyId, model, redirectAttributes, user, pForm)) {
         ret = "material";
-        Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
-        projectService.getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
-        if (!studyId.isPresent()) {
-          model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
-              new String[] { pForm.getProject().getTitle() }, null, messageSource));
-          model.put("studyId", -1);
-        } else {
-          StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
-          studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid.get(), model);
-          pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
-          model.put("studySubMenu", true);
-        }
-      } catch (Exception e) {
-        // TODO
-        log.warn(e.getMessage());
-        String redirectMessage = "";
-        if (e instanceof DataWizException) {
-          redirectMessage = "project.not.available";
-        } else if (e instanceof DataWizSecurityException) {
-          redirectMessage = "project.access.denied";
-        } else {
-          redirectMessage = "dbs.sql.exception";
-        }
-        redirectAttributes.addFlashAttribute("errorMSG",
-            messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+        model.put("studyId", studyId.isPresent() ? studyId.get() : -1);
+        model.put("projectId", pid.get());
+        model.put("ProjectForm", pForm);
+        model.put("subnaviActive", PageState.MATERIAL.name());
+      } else {
         ret = "redirect:/panel";
       }
-      model.put("studyId", studyId.isPresent() ? studyId.get() : -1);
-      model.put("projectId", pid.get());
-      model.put("ProjectForm", pForm);
-      model.put("subnaviActive", PageState.MATERIAL.name());
     }
     return ret;
   }
@@ -287,7 +291,12 @@ public class ProjectController extends SuperController {
     }
     ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
     pForm.getContributors().remove(pForm.getDelPos());
-    contributorDAO.deleteContributor(selected);
+    try {
+      contributorDAO.deleteContributor(selected);
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     return "project";
   }
 
@@ -472,33 +481,13 @@ public class ProjectController extends SuperController {
    */
   @RequestMapping(value = { "/{pid}/img/{imgId}", "/{pid}/study/{studyId}/img/{imgId}" }, method = RequestMethod.GET)
   private void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
-    FileDTO file;
     final int thumbHeight = 98;
     final int maxWidth = 160;
     try {
-      file = fileDAO.findById(imgId);
-      // fileUtil.setFileBytes(file);
-      if (minioUtil.getFile(file).equals(MinioResult.OK)) {
-        if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null
-            && !file.getContentType().toLowerCase().contains("icon")) {
-          OutputStream sos = response.getOutputStream();
-          BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
-          int scale = 1;
-          if (bImage.getHeight() > thumbHeight)
-            scale = bImage.getHeight() / thumbHeight;
-          if (bImage.getWidth() / scale > maxWidth)
-            scale = bImage.getWidth() / maxWidth;
-          if (scale > 0) {
-            BufferedImage bf = fileUtil.scaleImage(bImage, bImage.getWidth() / scale, bImage.getHeight() / scale);
-            response.setContentType(file.getContentType());
-            ImageIO.write(bf, "jpg", sos);
-            sos.flush();
-          }
-          sos.close();
-        }
-      }
+      projectService.scaleAndSetThumbnail(imgId, response, thumbHeight, maxWidth);
     } catch (Exception e) {
       log.warn("Warn: setThumbnailImage throws an exception: ", () -> e);
     }
   }
+
 }

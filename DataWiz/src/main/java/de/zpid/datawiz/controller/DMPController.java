@@ -160,11 +160,11 @@ public class DMPController extends SuperController {
       }
       hasErrors = true;
     }
-    if (hasErrors || !projectService.saveOrUpdateProject(pForm).equals(DataWizErrorCodes.OK)) {
-      bRes.reject("globalErrors",
-          messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
-      hasErrors = true;
-    }
+    // if (hasErrors || !projectService.saveOrUpdateProject(pForm).equals(DataWizErrorCodes.OK)) {
+    // bRes.reject("globalErrors",
+    // messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
+    // hasErrors = true;
+    // }
     if (!hasErrors && pForm.getDmp() != null && (pForm.getDmp().getId() <= 0)) {
       try {
         int chk = dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
@@ -294,14 +294,14 @@ public class DMPController extends SuperController {
       }
       if (log.isEnabled(Level.INFO)) {
         log.info("Validation Errors for cat: " + cat.toString());
-        bRes.reject("globalErrors", messageSource.getMessage("dmp.edit." + cat.toString() + ".globalerror.valid", null,
-            LocaleContextHolder.getLocale()));
+        bRes.reject("globalErrors", messageSource.getMessage(
+            "dmp.edit." + cat.name().toLowerCase() + ".globalerror.valid", null, LocaleContextHolder.getLocale()));
       }
       return true;
     }
     if (changed <= 0) {
-      bRes.reject("globalErrors", messageSource.getMessage("dmp.edit." + cat.toString() + ".globalerror.save", null,
-          LocaleContextHolder.getLocale()));
+      bRes.reject("globalErrors", messageSource.getMessage("dmp.edit." + cat.name().toLowerCase() + ".globalerror.save",
+          null, LocaleContextHolder.getLocale()));
       return true;
     }
     return false;

@@ -2,9 +2,11 @@ package de.zpid.datawiz.util;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileVisitResult;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import org.apache.logging.log4j.LogManager;
@@ -71,6 +75,34 @@ public class FileUtil {
       }
     }
     return img;
+  }
+
+  /**
+   * @param response
+   * @param file
+   * @param thumbHeight
+   * @param maxWidth
+   * @throws IOException
+   */
+  public void buildThumbNailAndSetToResponse(HttpServletResponse response, FileDTO file, final int thumbHeight,
+      final int maxWidth) throws IOException {
+    if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null
+        && !file.getContentType().toLowerCase().contains("icon")) {
+      OutputStream sos = response.getOutputStream();
+      BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
+      int scale = 1;
+      if (bImage.getHeight() > thumbHeight)
+        scale = bImage.getHeight() / thumbHeight;
+      if (bImage.getWidth() / scale > maxWidth)
+        scale = bImage.getWidth() / maxWidth;
+      if (scale > 0) {
+        BufferedImage bf = scaleImage(bImage, bImage.getWidth() / scale, bImage.getHeight() / scale);
+        response.setContentType(file.getContentType());
+        ImageIO.write(bf, "jpg", sos);
+        sos.flush();
+      }
+      sos.close();
+    }
   }
 
   public FileDTO buildFileDTO(final long projectID, final long studyID, final long recordID, final long version,

@@ -1,9 +1,12 @@
 package de.zpid.datawiz.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -29,18 +33,23 @@ import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
+import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
+import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ListUtil;
+import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Service
@@ -70,8 +79,43 @@ public class ProjectService {
   protected UserDAO userDAO;
   @Autowired
   private PlatformTransactionManager txManager;
+  @Autowired
+  private StudyService studyService;
+  @Autowired
+  protected FileUtil fileUtil;
+  @Autowired
+  protected MinioUtil minioUtil;
 
   private static Logger log = LogManager.getLogger(ProjectService.class);
+
+  /**
+   * 
+   * @param pid
+   * @param studyId
+   * @param redirectAttributes
+   * @param onlyWrite
+   * @param user
+   * @return
+   */
+  public String checkUserAccess(final Optional<Long> pid, final Optional<Long> studyId,
+      final RedirectAttributes redirectAttributes, final boolean onlyWrite, final UserDTO user) {
+    String ret = null;
+    if (user == null) {
+      log.warn("Auth User Object == null - redirect to login");
+      ret = "redirect:/login";
+    }
+    if (!pid.isPresent()
+        || checkProjectRoles(user, pid.get(), studyId.isPresent() ? studyId.get() : -1, onlyWrite, true) == null) {
+      log.warn(
+          "WARN: access denied because of: " + (!pid.isPresent() ? "missing project identifier"
+              : "user [id: {}] has no rights to read/write study [id: {}]"),
+          () -> user.getId(), () -> studyId.isPresent() ? studyId.get() : 0);
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
+      ret = !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
+    }
+    return ret;
+  }
 
   /**
    * Checks if the passed UserDTO has the PROJECT_ADMIN role.
@@ -147,7 +191,7 @@ public class ProjectService {
       log.trace("Method getProjectData(SuperController) successfully completed");
     } else {
       log.warn("ProjectID or UserDTO is empty - NULL returned!");
-      throw new DataWizException("ProjectID or UserDTO is empty - getProjectForm(SuperController) aborted!");
+      throw new DataWizException("ProjectID or UserDTO is empty - getProjectForm() aborted!");
     }
   }
 
@@ -354,6 +398,65 @@ public class ProjectService {
       cContri.add(pForm.getPrimaryContributor());
     }
     return cContri;
+  }
+
+  /**
+   * @param pid
+   * @param studyId
+   * @param model
+   * @param redirectAttributes
+   * @param user
+   * @param pForm
+   * @return
+   */
+  public Boolean setMaterialForm(Optional<Long> pid, Optional<Long> studyId, ModelMap model,
+      RedirectAttributes redirectAttributes, UserDTO user, ProjectForm pForm) {
+    Boolean success = true;
+    try {
+      Roles role = checkProjectRoles(user, pid.get(), 0, false, true);
+      getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
+      if (!studyId.isPresent()) {
+        model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT,
+            new String[] { pForm.getProject().getTitle() }, null, messageSource));
+        model.put("studyId", -1);
+      } else {
+        StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
+        studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid.get(), model);
+        pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
+        model.put("studySubMenu", true);
+      }
+    } catch (Exception e) {
+      log.warn("Error in setMaterialForm Message: ", () -> e);
+      String redirectMessage = "";
+      if (e instanceof DataWizException) {
+        redirectMessage = "project.not.available";
+      } else if (e instanceof DataWizSecurityException) {
+        redirectMessage = "project.access.denied";
+      } else {
+        redirectMessage = "dbs.sql.exception";
+      }
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
+      success = false;
+    }
+    return success;
+  }
+
+  /**
+   * @param imgId
+   * @param response
+   * @param thumbHeight
+   * @param maxWidth
+   * @throws Exception
+   * @throws IOException
+   */
+  public void scaleAndSetThumbnail(long imgId, HttpServletResponse response, final int thumbHeight, final int maxWidth)
+      throws Exception, IOException {
+    FileDTO file = fileDAO.findById(imgId);
+    // fileUtil.setFileBytes(file);
+    if (minioUtil.getFile(file).equals(MinioResult.OK)) {
+      fileUtil.buildThumbNailAndSetToResponse(response, file, thumbHeight, maxWidth);
+    }
   }
 
 }

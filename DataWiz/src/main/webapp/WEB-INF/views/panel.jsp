@@ -27,23 +27,25 @@
         <input type="hidden" value="<s:message code="study.panel.no.description" />" id="unsetStudyDescription">
         <input type="hidden" value="<s:message code="project.panel.no.researcher" />" id="unsetResearcher">
         <div class="panel-group">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <div class="row">
-                <s:message code="project.filter.placeholder" var="filterPH" />
-                <div class="col-sm-11">
-                  <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}"
-                    style="width: 100%">
-                </div>
-                <div class="form-group">
-                  <select id="filterSelect" class="form-control">
-                    <option value="project"><s:message code="project.panel.select.project" /></option>
-                    <option value="study"><s:message code="project.panel.select.study" /></option>
-                  </select>
+          <c:if test="${not empty CProjectForm}">
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <div class="row">
+                  <s:message code="project.filter.placeholder" var="filterPH" />
+                  <div class="col-sm-11">
+                    <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}"
+                      style="width: 100%">
+                  </div>
+                  <div class="form-group">
+                    <select id="filterSelect" class="form-control">
+                      <option value="project"><s:message code="project.panel.select.project" /></option>
+                      <option value="study"><s:message code="project.panel.select.study" /></option>
+                    </select>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </c:if>
           <c:forEach items="${CProjectForm}" var="form" varStatus="loop">
             <c:choose>
               <c:when test="${principal.user.hasRole('PROJECT_ADMIN', form.project.id, false)}">

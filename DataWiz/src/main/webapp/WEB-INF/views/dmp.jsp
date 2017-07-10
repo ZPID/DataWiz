@@ -28,17 +28,24 @@
       <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
         <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message
               code="dmp.submenu.administrative" /></a></li>
-        <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message code="dmp.submenu.research" /></a></li>
-        <li role="presentation" id="metadataActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.metadata" /></a></li>
-        <li role="presentation" id="accessActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.access" /></a></li>
-        <li role="presentation" id="storageActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.storage" /></a></li>
+        <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message
+              code="dmp.submenu.research" /></a></li>
+        <li role="presentation" id="metadataActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.metadata" /></a></li>
+        <li role="presentation" id="accessActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.access" /></a></li>
+        <li role="presentation" id="storageActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.storage" /></a></li>
         <li role="presentation" id="organizationActiveClick" class="projectContentClick"><a><s:message
               code="dmp.submenu.organization" /></a></li>
-        <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.ethical" /></a></li>
-        <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.costs" /></a></li>
+        <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.ethical" /></a></li>
+        <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.costs" /></a></li>
       </ul>
       <c:url var="dmpUrl" value="/dmp/${ProjectForm.project.id}" />
-      <sf:form action="${dmpUrl}" commandName="ProjectForm" class="form-horizontal" role="form" id="dmpForm" onsubmit="checkOnSubmit();">
+      <sf:form action="${dmpUrl}" commandName="ProjectForm" class="form-horizontal" role="form" id="dmpForm"
+        onsubmit="checkOnSubmit();">
         <sf:hidden path="pagePosi" id="pagePosi" />
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <!-- Messages -->
@@ -62,12 +69,12 @@
         <!-- START costs Content -->
         <jsp:include page="forms/dmp_costs.jsp" />
         <!-- Buttons -->
-        <div class="form-group">
-          <div class="col-sm-offset-0 col-md-12">
-            <button type="reset" class="btn btn-default">
-              <s:message code="gen.reset" />
-            </button>
-            <sf:button type="submit" class="btn btn-success">
+        <div class="row">
+          <div class="col-md-6 text-align-left">
+            <a href="<c:url value="/panel" />" class="btn btn-default btn-sm"><s:message code="back.to.panel" /></a>
+          </div>
+          <div class="col-md-6 text-align-right">
+            <sf:button type="submit" class="btn btn-success btn-sm">
               <s:message code="gen.submit" />
             </sf:button>
           </div>

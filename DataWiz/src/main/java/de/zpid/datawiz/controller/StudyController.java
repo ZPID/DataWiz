@@ -32,6 +32,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExceptionService;
+import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
@@ -54,6 +55,8 @@ public class StudyController {
   protected SmartValidator validator;
   @Autowired
   private RecordService recordService;
+  @Autowired
+  private ProjectService projectService;
 
   private static Logger log = LogManager.getLogger(StudyController.class);
 
@@ -83,10 +86,10 @@ public class StudyController {
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
       log.trace("Entering showStudyPage(edit) for study [id: {}]", () -> studyId.get());
-      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
     } else {
       log.trace("Entering showStudyPage(create) study");
-      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     }
     String jQueryMap = "";
     if (sForm != null && sForm.getjQueryMap() != null && !sForm.getjQueryMap().isEmpty()) {
@@ -128,7 +131,7 @@ public class StudyController {
     final UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering showRecordOverview for study [id: {}] and user [email: {}]", () -> studyId.get(),
         () -> user.getEmail());
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
     if (ret == null) {
       try {
         StudyForm sForm = createStudyForm();
@@ -167,10 +170,10 @@ public class StudyController {
     final UserDTO user = UserUtil.getCurrentUser();
     if (studyId.isPresent()) {
       log.trace("Entering saveStudy(edit) for study [id: {}]", () -> studyId.get());
-      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
     } else {
       log.trace("Entering saveStudy(create)");
-      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     }
     if (ret != null)
       return ret;
@@ -249,7 +252,7 @@ public class StudyController {
       @PathVariable final Optional<Long> studyId) {
     log.trace("Entering changeStudyLock");
     UserDTO user = UserUtil.getCurrentUser();
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     if ((sForm == null || sForm.getStudy() == null || sForm.getProject() == null || sForm.getProject().getId() == 0)
         && ret == null)
       ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();

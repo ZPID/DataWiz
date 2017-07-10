@@ -11,20 +11,30 @@
   <!-- Projectname -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label class="required" for="project.title"><s:message code="dmp.edit.projectname" /></label>
-      <div>
-        <s:message code="project.edit.title.ph" var="placeholder" />
-        <sf:input path="project.title" class="form-control" placeholder="${placeholder}" />
-        <sf:errors path="project.title" cssClass="alert alert-danger" element="div" />
+      <label for="project.title"><s:message code="dmp.edit.projectname" /></label>
+      <div class="well" style="">
+        <s:message text="${ProjectForm.project.title}" />
       </div>
     </div>
   </div>
   <!-- projectaims -->
-  <s:message text="projectAims" var="dmp_var_name" />
-  <%@ include file="../templates/textarea.jsp"%>
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label for="project.description"><s:message code="dmp.edit.projectAims" /></label>
+      <div class="well" style="">
+        <s:message text="${ProjectForm.project.description}" />
+      </div>
+    </div>
+  </div>
   <!-- projectSponsors -->
-  <s:message text="projectSponsors" var="dmp_var_name" />
-  <%@ include file="../templates/dmp_input.jsp"%>
+  <div class="form-group">
+    <div class="col-sm-12">
+      <label for="project.funding"><s:message code="dmp.edit.projectSponsors" /></label>
+      <div class="well" style="">
+        <s:message text="${ProjectForm.project.funding}" />
+      </div>
+    </div>
+  </div>
   <!-- duration -->
   <s:message text="duration" var="dmp_var_name" />
   <%@ include file="../templates/dmp_input.jsp"%>
@@ -34,64 +44,11 @@
   <!-- PrimaryContributor -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label for="project.title"><s:message code="dmp.edit.leader" /></label>
-      <div>
-        <ul class="list-group">
-          <li class="list-group-item">
-            <div class="row">
-              <div class="form-group">
-                <!-- PrimaryContributor title -->
-                <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.title" /></label>
-                <div class="col-md-3">
-                  <s:message code="gen.title.ph" var="placeholder" />
-                  <sf:input path="primaryContributor.title" class="form-control" placeholder="${placeholder}" />
-                </div>
-                <!-- PrimaryContributor ORCID -->
-                <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.orcid" /></label>
-                <div class="col-md-3">
-                  <s:message code="gen.orcid.ph" var="placeholder" />
-                  <sf:input path="primaryContributor.orcid" class="form-control" placeholder="${placeholder}" />
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group">
-                <!-- PrimaryContributor firstName -->
-                <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.firstName" /></label>
-                <div class="col-md-3">
-                  <s:message code="gen.firstName.ph" var="placeholder" />
-                  <sf:input path="primaryContributor.firstName" class="form-control" placeholder="${placeholder}" />
-                </div>
-                <!-- PrimaryContributor lastName -->
-                <label for="inputValue" class="col-md-2 control-label"><s:message code="gen.lastName" /></label>
-                <div class="col-md-3">
-                  <s:message code="gen.lastName.ph" var="placeholder" />
-                  <sf:input path="primaryContributor.lastName" class="form-control" placeholder="${placeholder}" />
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group">
-                <!-- PrimaryContributor institution -->
-                <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.institution" /></label>
-                <div class="col-md-8">
-                  <s:message code="gen.institution.ph" var="placeholder" />
-                  <sf:input path="primaryContributor.institution" class="form-control" placeholder="${placeholder}" />
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="form-group">
-                <!-- Contributors department-->
-                <label for="inputKey" class="col-md-2 control-label"><s:message code="gen.department" /></label>
-                <div class="col-md-8">
-                  <s:message code="gen.department.ph" var="placeholder" />
-                  <sf:input path="primaryContributor.department" class="form-control" placeholder="${placeholder}" />
-                </div>
-              </div>
-            </div>
-          </li>
-        </ul>
+      <label for="primaryContributor.firstName"><s:message code="dmp.edit.leader" /></label>
+      <s:message var="primaryName"
+        text="${ProjectForm.primaryContributor.title}&nbsp;${ProjectForm.primaryContributor.firstName}&nbsp;${ProjectForm.primaryContributor.lastName}" />
+      <div class="well" style="">
+        <s:message text="${fn:trim(primaryName)}" />
       </div>
     </div>
   </div>

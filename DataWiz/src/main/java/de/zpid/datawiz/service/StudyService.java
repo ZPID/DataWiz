@@ -50,8 +50,6 @@ public class StudyService {
   private static Logger log = LogManager.getLogger(StudyService.class);
 
   @Autowired
-  private ProjectService projectService;
-  @Autowired
   private MessageSource messageSource;
   @Autowired
   private ContributorDAO contributorDAO;
@@ -74,34 +72,7 @@ public class StudyService {
   @Autowired
   private PlatformTransactionManager txManager;
 
-  /**
-   * 
-   * @param pid
-   * @param studyId
-   * @param redirectAttributes
-   * @param onlyWrite
-   * @param user
-   * @return
-   */
-  public String checkStudyAccess(final Optional<Long> pid, final Optional<Long> studyId,
-      final RedirectAttributes redirectAttributes, final boolean onlyWrite, final UserDTO user) {
-    String ret = null;
-    if (user == null) {
-      log.warn("Auth User Object == null - redirect to login");
-      ret = "redirect:/login";
-    }
-    if (!pid.isPresent() || projectService.checkProjectRoles(user, pid.get(), studyId.isPresent() ? studyId.get() : -1,
-        onlyWrite, true) == null) {
-      log.warn(
-          "WARN: access denied because of: " + (!pid.isPresent() ? "missing project identifier"
-              : "user [id: {}] has no rights to read/write study [id: {}]"),
-          () -> user.getId(), () -> studyId.isPresent() ? studyId.get() : 0);
-      redirectAttributes.addFlashAttribute("errorMSG",
-          messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
-      ret = !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
-    }
-    return ret;
-  }
+
 
   /**
    * 

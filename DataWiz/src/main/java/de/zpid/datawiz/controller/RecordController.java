@@ -40,8 +40,8 @@ import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ExportService;
 import de.zpid.datawiz.service.ImportService;
+import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.service.RecordService;
-import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.UserUtil;
@@ -59,8 +59,6 @@ public class RecordController {
   @Autowired
   private RecordService recordService;
   @Autowired
-  private StudyService studyService;
-  @Autowired
   private ExportService exportService;
   @Autowired
   private ImportService importService;
@@ -72,6 +70,8 @@ public class RecordController {
   private ClassPathXmlApplicationContext applicationContext;
   @Autowired
   private ExceptionService exceptionService;
+  @Autowired
+  private ProjectService projectService;
 
   public RecordController() {
     super();
@@ -99,10 +99,10 @@ public class RecordController {
     if (recordId.isPresent()) {
       log.trace("Entering showRecord(edit) for [recordId: {}; studyId {}; projectId {}]", () -> recordId.get(),
           () -> studyId.get(), () -> pid.get());
-      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user);
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
     } else {
       log.trace("Entering showRecord(create) ");
-      ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+      ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     }
     StudyForm sForm = null;
     List<String> parsingErrors = new ArrayList<String>();
@@ -176,7 +176,7 @@ public class RecordController {
     final UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering  uploadFile for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]",
         () -> recordId.get(), () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       if (sForm.getNewChangeLog() == null || sForm.getNewChangeLog().isEmpty()) {
         if (log.isDebugEnabled())
@@ -218,10 +218,9 @@ public class RecordController {
     final UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]",
         () -> recordId.get(), () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
-    if(recordService.deleteRecord(pid, studyId, recordId, user)){      
+    if (recordService.deleteRecord(pid, studyId, recordId, user)) {
       return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
-    }
-    else {
+    } else {
       model.put("subnaviActive", PageState.RECORDMETA.name());
       model.put("recordSubMenu", true);
       model.put("errorMSG",
@@ -248,7 +247,7 @@ public class RecordController {
     final UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering  showImportReport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]",
         () -> recordId.get(), () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       try {
         importService.loadImportReport(recordId, sForm);
@@ -287,7 +286,7 @@ public class RecordController {
     final UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering  saveImport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]",
         () -> recordId.get(), () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
       try {
@@ -337,7 +336,7 @@ public class RecordController {
     else
       log.trace("Entering saveRecordMetaData(create) for [studyId {}; projectId {}]", () -> studyId.get(),
           () -> pid.get());
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null && (sForm.getRecord().getRecordName() == null || sForm.getRecord().getRecordName().isEmpty())) {
       model.put("errorMSG", messageSource.getMessage("record.name.missing", null, LocaleContextHolder.getLocale()));
       model.put("recordSubMenu", true);
@@ -497,7 +496,7 @@ public class RecordController {
     RecordDTO record = null;
     StringBuilder res = new StringBuilder();
     byte[] content = null;
-    if (user == null || studyService.checkStudyAccess(pid, studyId, redirectAttributes, false, user) != null) {
+    if (user == null || projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user) != null) {
       log.warn("Auth User Object empty or User is permitted to download this file");
       throw new DWDownloadException("export.access.denied");
     } else {
@@ -669,7 +668,7 @@ public class RecordController {
     UserDTO user = UserUtil.getCurrentUser();
     log.trace("Entering saveCodebook for record [id: {}; current_version{}] and User [email: {}]", () -> recordId,
         () -> versionId, () -> user.getEmail());
-    String ret = studyService.checkStudyAccess(pid, studyId, redirectAttributes, true, user);
+    String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
     if (ret == null) {
       if (sForm.getPageLoadMin() < 1)
         sForm.setPageLoadMin(1);

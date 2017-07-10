@@ -23,7 +23,7 @@ $tag_box = null;
           headers : {
             'X-CSRF-TOKEN' : $('input[name="_csrf"]').val()
           }
-        });
+        });        
         $('[data-toggle="tooltip"]').tooltip()
         // loading DMP Content
         if (window.location.pathname.search("/dmp") > 0) {
