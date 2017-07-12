@@ -2,6 +2,7 @@ package de.zpid.datawiz.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +20,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
@@ -457,6 +461,108 @@ public class ProjectService {
     if (minioUtil.getFile(file).equals(MinioResult.OK)) {
       fileUtil.buildThumbNailAndSetToResponse(response, file, thumbHeight, maxWidth);
     }
+  }
+
+  /**
+   * @param pForm
+   * @throws Exception
+   */
+  public boolean deleteContributor(ProjectForm pForm) throws Exception {
+    if (pForm.getContributors() != null && pForm.getContributors().size() >= pForm.getDelPos()) {
+      ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
+      pForm.getContributors().remove(pForm.getDelPos());
+      if (selected.getId() > 0)
+        return (contributorDAO.deleteContributor(selected) > 0);
+    }
+    return true;
+  }
+
+  /**
+   * @param request
+   * @param pid
+   * @param studyId
+   * @param user
+   */
+  public DataWizErrorCodes saveMaterialToMinoAndDB(MultipartHttpServletRequest request, Optional<Long> pid,
+      Optional<Long> studyId, UserDTO user) {
+    FileDTO file = null;
+    DataWizErrorCodes code = DataWizErrorCodes.OK;
+    try {
+      Iterator<String> itr = request.getFileNames();
+      while (itr.hasNext()) {
+        String filename = itr.next();
+        final MultipartFile mpf = request.getFile(filename);
+        if (mpf != null) {
+          file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(), mpf);
+          // String filePath = fileUtil.saveFile(file);
+          MinioResult res = minioUtil.putFile(file);
+          if (res.equals(MinioResult.OK)) {
+            fileDAO.saveFile(file);
+          } else {
+            log.warn("ERROR: During saveToMinoAndDB - MinioResult: {}", () -> res.name());
+            code = DataWizErrorCodes.MINIO_SAVE_ERROR;
+          }
+        }
+      }
+    } catch (Exception e) {
+      if (file != null && minioUtil.getFile(file).equals(MinioResult.OK)) {
+        minioUtil.deleteFile(file);
+      }
+      log.warn("Exception during file saveToMinoAndDB: ", () -> e);
+      code = DataWizErrorCodes.DATABASE_ERROR;
+    }
+    return code;
+  }
+
+  /**
+   * @param docId
+   * @param response
+   * @param resp
+   * @return
+   */
+  public DataWizErrorCodes prepareMaterialDownload(long docId, HttpServletResponse response) {
+    FileDTO file = null;
+    DataWizErrorCodes code = DataWizErrorCodes.OK;
+    try {
+      file = fileDAO.findById(docId);
+      // fileUtil.setFileBytes(file);
+      MinioResult res = minioUtil.getFile(file);
+      if (res.equals(MinioResult.OK)) {
+        response.setContentType(file.getContentType());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
+        response.setContentLength(file.getContent().length);
+        FileCopyUtils.copy(file.getContent(), response.getOutputStream());
+      } else {
+        log.warn("ERROR: During prepareMaterialDownload - MinioResult: {}", () -> res.name());
+        code = DataWizErrorCodes.MINIO_SAVE_ERROR;
+      }
+    } catch (Exception e) {
+      log.warn("Exception during file prepareMaterialDownload: ", () -> e);
+      code = DataWizErrorCodes.DATABASE_ERROR;
+    }
+    return code;
+  }
+
+  /**
+   * @param docId
+   * @return
+   */
+  public DataWizErrorCodes deleteMaterialfromMinioAndDB(long docId) {
+    DataWizErrorCodes code = DataWizErrorCodes.OK;
+    try {
+      MinioResult res = minioUtil.deleteFile(fileDAO.findById(docId));
+      if (res.equals(MinioResult.OK)) {
+        fileDAO.deleteFile(docId);
+      } else {
+        log.warn("ERROR: During deleteMaterialfromMinioAndDB - MinioResult: {}", () -> res.name());
+        code = DataWizErrorCodes.MINIO_SAVE_ERROR;
+      }
+    } catch (Exception e) {
+      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId,
+          () -> e.getMessage());
+      code = DataWizErrorCodes.DATABASE_ERROR;
+    }
+    return code;
   }
 
 }

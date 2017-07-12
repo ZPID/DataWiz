@@ -1,7 +1,6 @@
 package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -26,39 +24,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.ContributorDTO;
-import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
-import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.exceptions.DataWizException;
 import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
-import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = "/project")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
-public class ProjectController extends SuperController {
+public class ProjectController {
 
   @Autowired
   protected MessageSource messageSource;
-  @Autowired
-  private StudyService studyService;
-  @Autowired
-  private ExceptionService exceptionService;
   @Autowired
   protected ClassPathXmlApplicationContext applicationContext;
   @Autowired
@@ -88,7 +77,7 @@ public class ProjectController extends SuperController {
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
   public String showProjectPage(@PathVariable Optional<Long> pid, ModelMap model,
       RedirectAttributes redirectAttributes) {
-    log.debug("execute showProjectPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
+    log.trace("Entering showProjectPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null (new project)");
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
@@ -143,7 +132,7 @@ public class ProjectController extends SuperController {
   @RequestMapping(value = { "/{pid}/studies" }, method = RequestMethod.GET)
   public String showStudiesPage(@PathVariable Optional<Long> pid, ModelMap model,
       RedirectAttributes redirectAttributes) {
-    log.debug("execute showStudiesPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
+    log.trace("Entering showStudiesPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
     UserDTO user = UserUtil.getCurrentUser();
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
@@ -151,6 +140,7 @@ public class ProjectController extends SuperController {
     }
     ProjectForm pForm = createProjectForm();
     if (!pid.isPresent()) {
+      log.debug("Access denied for showStudiesPage with pid = null");
       redirectAttributes.addFlashAttribute("errorMSG",
           messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
       return "redirect:/panel";
@@ -163,8 +153,7 @@ public class ProjectController extends SuperController {
       }
       projectService.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
     } catch (Exception e) {
-      // TODO
-      log.warn(e.getMessage());
+      log.warn("Exeption during projectService.getProjectForm - Exception: ", () -> e);
       String redirectMessage = "";
       if (e instanceof DataWizException) {
         redirectMessage = "project.not.available";
@@ -195,7 +184,7 @@ public class ProjectController extends SuperController {
   @RequestMapping(value = { "/{pid}/material", "/{pid}/study/{studyId}/material" }, method = RequestMethod.GET)
   public String showMaterialPage(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model,
       RedirectAttributes redirectAttributes) {
-    log.debug("execute showMaterialPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
+    log.trace("execute showMaterialPage for projectID= {}", () -> pid.isPresent() ? pid.get() : "null");
     UserDTO user = UserUtil.getCurrentUser();
     String ret = null;
     if (user == null) {
@@ -225,11 +214,11 @@ public class ProjectController extends SuperController {
   }
 
   /**
-   * TODO SAVE FUNKTION!!!!!
    * 
    * @param pForm
    * @param bindingResult
    * @param model
+   * @param redirectAttributes
    * @return
    */
   @RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
@@ -262,14 +251,13 @@ public class ProjectController extends SuperController {
   }
 
   /**
-   * Adds a new Contributor Object to the contributor list
-   * 
    * @param pForm
+   * @param model
    * @return
    */
   @RequestMapping(value = { "", "/{pid}" }, params = { "addContributor" }, method = RequestMethod.POST)
   public String addContributor(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model) {
-    log.trace("execute addContributor");
+    log.trace("Entering addContributor");
     if (pForm.getContributors() == null) {
       pForm.setContributors(new ArrayList<ContributorDTO>());
     }
@@ -285,36 +273,40 @@ public class ProjectController extends SuperController {
    */
   @RequestMapping(value = { "", "/{pid}" }, params = { "deleteContributor" }, method = RequestMethod.POST)
   public String deleteContributor(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model) {
-    log.trace("execute deleteContributor");
+    log.trace("Entering deleteContributor");
     if (pForm.getContributors() == null) {
       pForm.setContributors(new ArrayList<ContributorDTO>());
     }
-    ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
-    pForm.getContributors().remove(pForm.getDelPos());
     try {
-      contributorDAO.deleteContributor(selected);
+      if (!projectService.deleteContributor(pForm))
+        model.put("errorMSG",
+            messageSource.getMessage("error.project.delete.contributor", null, LocaleContextHolder.getLocale()));
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      model.put("errorMSG",
+          messageSource.getMessage("error.project.delete.contributor", null, LocaleContextHolder.getLocale()));
+      log.warn("Error deleting Contributor for [pid: {}]", () -> pForm.getProject().getId(), () -> e);
     }
+    model.put("successMSG",
+        messageSource.getMessage("project.delete.contributor.success", null, LocaleContextHolder.getLocale()));
     return "project";
   }
 
   /**
-   * Multidata Upload
    * 
    * @param request
    * @param pForm
+   * @param redirectAttributes
+   * @param pid
+   * @param studyId
    * @return
    */
   @RequestMapping(value = { "/{pid}/upload", "/{pid}/study/{studyId}/upload" }, method = RequestMethod.POST)
   public @ResponseBody ResponseEntity<String> uploadFile(MultipartHttpServletRequest request,
-      @ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable Optional<Long> pid,
-      @PathVariable Optional<Long> studyId) {
-    log.trace("Entering uploadFile for Project [id: {}]", () -> pid);
+      @ModelAttribute("ProjectForm") ProjectForm pForm, RedirectAttributes redirectAttributes,
+      @PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId) {
+    log.trace("Entering uploadFile for Project or Study [pid: {}, studyId: {}]", () -> pid, () -> studyId);
     if (!pid.isPresent()) {
       log.warn("ProjectForm is empty or missing values");
-      // TOTO ERROR STRINGS!!!!
       return new ResponseEntity<String>("{\"error\" : \""
           + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
           HttpStatus.INTERNAL_SERVER_ERROR);
@@ -326,46 +318,25 @@ public class ProjectController extends SuperController {
           + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    // TODO LESESCHREIBRECHTE!!!!!!
-    FileDTO file = null;
-    try {
-      Iterator<String> itr = request.getFileNames();
-      while (itr.hasNext()) {
-        String filename = itr.next();
-        log.debug("Saving file [name: {}]", () -> filename);
-        final MultipartFile mpf = request.getFile(filename);
-        if (mpf != null) {
-          file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(), mpf);
-          // String filePath = fileUtil.saveFile(file);
-          MinioResult res = minioUtil.putFile(file);
-          if (res.equals(MinioResult.OK)) {
-            fileDAO.saveFile(file);
-          } else if (res.equals(MinioResult.CONNECTION_ERROR)) {
-            log.error("ERROR: No Connection to Minio Server - please check Settings or Server");
-            return new ResponseEntity<String>("{\"error\" : \""
-                + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale())
-                + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-          } else {
-            log.error("ERROR: During Saving File - MinioResult:", () -> res.name());
-            return new ResponseEntity<String>("{\"error\" : \""
-                + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale())
-                + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
-          }
-        }
-      }
-    } catch (Exception e) {
-      if (file != null && minioUtil.getFile(file).equals(MinioResult.OK)) {
-        minioUtil.deleteFile(file);
-      }
-
-      log.warn("Exception during file upload: ", () -> e);
+    if (projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user) != null) {
+      log.warn("Auth User Object == null - redirect to login");
+      return new ResponseEntity<String>("{\"error\" : \""
+          + messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()) + "\"}",
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    switch (projectService.saveMaterialToMinoAndDB(request, pid, studyId, user)) {
+    case MINIO_SAVE_ERROR:
+      return new ResponseEntity<String>("{\"error\" : \""
+          + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale())
+          + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+    case DATABASE_ERROR:
       return new ResponseEntity<String>("{\"error\" : \""
           + messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()) + "\"}",
           HttpStatus.CONFLICT);
+    default:
+      log.trace("Method uploadFile successfully completed");
+      return new ResponseEntity<String>("", HttpStatus.OK);
     }
-
-    log.trace("Method uploadFile successfully completed");
-    return new ResponseEntity<String>("", HttpStatus.OK);
   }
 
   /**
@@ -379,7 +350,7 @@ public class ProjectController extends SuperController {
   public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable Optional<Long> pid,
       @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes, ModelMap model) {
     if (log.isDebugEnabled()) {
-      log.debug("execute multiSaved()");
+      log.debug("Entering multiSaved for [pid: {}, studyid: {}]", () -> pid, () -> studyId);
     }
     redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
     redirectAttributes.addFlashAttribute("saveStateMsg",
@@ -403,31 +374,26 @@ public class ProjectController extends SuperController {
       "/{pid}/study/{studyId}/download/{docId}" }, method = RequestMethod.GET)
   public @ResponseBody ResponseEntity<String> downloadDocument(@PathVariable long pid, @PathVariable long docId,
       HttpServletResponse response, RedirectAttributes redirectAttributes) {
-    if (log.isDebugEnabled()) {
-      log.debug("execute downloadDocument id=" + docId);
-    }
+    log.trace("Entering downloadDocument [id: {}]", () -> docId);
     UserDTO user = UserUtil.getCurrentUser();
     ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
     if (user == null) {
       log.warn("Auth User Object == null - redirect to login");
       resp = new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
-    }
-    FileDTO file = null;
-    try {
-      file = fileDAO.findById(docId);
-      // fileUtil.setFileBytes(file);
-      if (minioUtil.getFile(file).equals(MinioResult.OK)) {
-        response.setContentType(file.getContentType());
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
-        response.setContentLength(file.getContent().length);
-        FileCopyUtils.copy(file.getContent(), response.getOutputStream());
-      } else {
-        resp = new ResponseEntity<String>("Fehler und so", HttpStatus.NOT_FOUND);
+    } else {
+      switch (projectService.prepareMaterialDownload(docId, response)) {
+      case MINIO_SAVE_ERROR:
+        resp = new ResponseEntity<String>("{\"error\" : \""
+            + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale())
+            + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+      case DATABASE_ERROR:
+        resp = new ResponseEntity<String>("{\"error\" : \""
+            + messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()) + "\"}",
+            HttpStatus.CONFLICT);
+      default:
+        log.debug("Leaving downloadDocument with result: {}", resp.getStatusCode());
+        break;
       }
-    } catch (Exception e) {
-      resp = new ResponseEntity<String>("{}", HttpStatus.CONFLICT);
-      // TODO
-      e.printStackTrace();
     }
     return resp;
   }
@@ -450,23 +416,18 @@ public class ProjectController extends SuperController {
       log.warn("Auth User Object == null - redirect to login");
       return "redirect:/login";
     }
-    SavedState state = SavedState.ERROR;
-    String msg = "material.delete.successful";
-    try {
-      if (minioUtil.deleteFile(fileDAO.findById(docId)).equals(MinioResult.OK)) {
-        fileDAO.deleteFile(docId);
-        state = SavedState.SUCCESS;
-      } else {
-        msg = "material.delete.minio.error";
-      }
-    } catch (Exception e) {
-      msg = "material.delete.db.error";
-      log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId,
-          () -> e.getMessage());
+    switch (projectService.deleteMaterialfromMinioAndDB(docId)) {
+    case MINIO_SAVE_ERROR:
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("material.delete.minio.error", null, LocaleContextHolder.getLocale()));
+    case DATABASE_ERROR:
+      redirectAttributes.addFlashAttribute("errorMSG",
+          messageSource.getMessage("material.delete.db.error", null, LocaleContextHolder.getLocale()));
+    default:
+      redirectAttributes.addFlashAttribute("successMSG",
+          messageSource.getMessage("material.delete.successful", null, LocaleContextHolder.getLocale()));
+      break;
     }
-    redirectAttributes.addFlashAttribute("saveState", state.name());
-    redirectAttributes.addFlashAttribute("saveStateMsg",
-        messageSource.getMessage(msg, null, LocaleContextHolder.getLocale()));
     redirectAttributes.addFlashAttribute("jQueryMap", "material");
     if (studyId.isPresent())
       return "redirect:/project/" + pid + "/study/" + studyId.get() + "/material";
