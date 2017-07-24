@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
+import de.zpid.datawiz.dto.ExportListDTO;
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
@@ -47,6 +48,9 @@ public class ProjectForm implements Serializable {
   // ViewHelper
   private int delPos;
   private String pagePosi;
+
+  // ExportList
+  private List<ExportListDTO> exportList;
 
   public ProjectDTO getProject() {
     return project;
@@ -191,6 +195,14 @@ public class ProjectForm implements Serializable {
   public void setPendingMails(List<String> pendingMails) {
     this.pendingMails = pendingMails;
 
+  }
+
+  public List<ExportListDTO> getExportList() {
+    return exportList;
+  }
+
+  public void setExportList(List<ExportListDTO> exportList) {
+    this.exportList = exportList;
   }
 
 }

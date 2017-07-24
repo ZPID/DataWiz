@@ -22,6 +22,7 @@ public class StudyDTO implements Serializable {
   private boolean currentlyEdit;
   private LocalDateTime editSince;
   private long editUserId;
+  private List<RecordDTO> records;
 
   public interface StGeneralVal {
 
@@ -298,6 +299,22 @@ public class StudyDTO implements Serializable {
 
   public void setEditUserId(long editUserId) {
     this.editUserId = editUserId;
+  }
+
+  public LocalDateTime getLastEdit() {
+    return lastEdit;
+  }
+
+  public void setLastEdit(LocalDateTime lastEdit) {
+    this.lastEdit = lastEdit;
+  }
+
+  public List<RecordDTO> getRecords() {
+    return records;
+  }
+
+  public void setRecords(List<RecordDTO> records) {
+    this.records = records;
   }
 
   public String getTitle() {

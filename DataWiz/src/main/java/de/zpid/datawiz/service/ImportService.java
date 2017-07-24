@@ -576,9 +576,9 @@ public class ImportService {
           break;
         }
       }
+      if (width < 8)
+        width = 8;
       if (type.equals(SPSSVarTypes.SPSS_FMT_A)) {
-        if (width == 0)
-          width = 8;
         caseSize += width;
         var.setVarType(width);
         var.setDecimals(0);

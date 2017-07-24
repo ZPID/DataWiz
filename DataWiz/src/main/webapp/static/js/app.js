@@ -23,7 +23,7 @@ $tag_box = null;
           headers : {
             'X-CSRF-TOKEN' : $('input[name="_csrf"]').val()
           }
-        });        
+        });
         $('[data-toggle="tooltip"]').tooltip()
         // loading DMP Content
         if (window.location.pathname.search("/dmp") > 0) {
@@ -705,7 +705,6 @@ function backTotop() {
   // Funktion für das Scroll-Verhalten
   $(function() {
     $(window).scroll(function() {
-      console.log("scroll " + $(this).scrollTop())
       if ($(this).scrollTop() > 100) { // Wenn 100 Pixel gescrolled wurde
         $('.dwgoup').fadeIn();
       } else {
@@ -720,4 +719,46 @@ function backTotop() {
       return false;
     });
   });
+}
+
+$('.exportlist li :checkbox').on('click', function() {
+  var $chk = $(this), $li = $chk.closest('li'), $ul, $parent;
+  if ($chk.hasClass('li_chkbox')) {
+    $li.siblings().find(':checkbox').not(this).prop('checked', this.checked);
+  }
+  $state = $chk.prop('checked');
+  $ul = $li.closest('ul');
+  if ($state == false) {
+    if ($ul.hasClass('li_head_u3')) {
+      $ul.find('.li_checkbox_a3').prop('checked', this.checked);
+      $ul.parent().closest('ul').find('.li_checkbox_a2').prop('checked', this.checked);
+      $ul.parent().closest('ul').parent().closest('ul').find('.li_checkbox_a1').prop('checked', this.checked);
+    } else if ($ul.hasClass('li_head_u2')) {
+      $ul.find('.li_checkbox_a2').prop('checked', this.checked);
+      $ul.parent().closest('ul').find('.li_checkbox_a1').prop('checked', this.checked);
+    } else if ($ul.hasClass('exportlist')) {
+      $ul.find('.li_checkbox_a1').prop('checked', this.checked);
+    }
+  } else {
+    if ($ul.hasClass('li_head_u3')) {
+      setParentChkbox($chk, '.li_checkbox_a3', 'li_head_u3');
+      setParentChkbox($ul.parent(), '.li_checkbox_a2', 'li_head_u2');
+      setParentChkbox($ul.parent().closest('ul').parent(), '.li_checkbox_a1', 'li_head_u1');
+    } else if ($ul.hasClass('li_head_u2')) {
+      setParentChkbox($chk, '.li_checkbox_a2', 'li_head_u2');
+      setParentChkbox($ul.parent(), '.li_checkbox_a1', 'exportlist');
+    } else if ($ul.hasClass('li_head_u2')) {
+      setParentChkbox($chk, '.li_checkbox_a1', 'exportlist');
+    }
+  }
+});
+
+function setParentChkbox($chk, $checkbox, $li) {
+  $ul = $chk.closest('ul');
+  if ($ul.hasClass($li)) {
+    $chkboxes = $ul.find(":checkbox:not(:checked):not(" + $checkbox + ")");
+    if ($chkboxes.length == 0) {
+      $ul.find($checkbox).prop('checked', true);
+    }
+  }
 }

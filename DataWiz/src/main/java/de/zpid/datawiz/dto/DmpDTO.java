@@ -3166,4 +3166,56 @@ public class DmpDTO implements Serializable {
 
   }
 
+  @Override
+  public String toString() {
+    return "DmpDTO [id=" + id + ", adminChanged=" + adminChanged + ", projectAims=" + projectAims + ", projectSponsors="
+        + projectSponsors + ", duration=" + duration + ", organizations=" + organizations + ", planAims=" + planAims
+        + ", researchChanged=" + researchChanged + ", existingData=" + existingData + ", dataCitation=" + dataCitation
+        + ", existingDataRelevance=" + existingDataRelevance + ", existingDataIntegration=" + existingDataIntegration
+        + ", usedDataTypes=" + usedDataTypes + ", otherDataTypes=" + otherDataTypes + ", dataReproducibility="
+        + dataReproducibility + ", usedCollectionModes=" + usedCollectionModes + ", otherCMIP=" + otherCMIP
+        + ", otherCMINP=" + otherCMINP + ", measOccasions=" + measOccasions + ", reliabilityTraining="
+        + reliabilityTraining + ", multipleMeasurements=" + multipleMeasurements + ", qualitityOther=" + qualitityOther
+        + ", fileFormat=" + fileFormat + ", workingCopy=" + workingCopy + ", workingCopyTxt=" + workingCopyTxt
+        + ", goodScientific=" + goodScientific + ", goodScientificTxt=" + goodScientificTxt + ", subsequentUse="
+        + subsequentUse + ", subsequentUseTxt=" + subsequentUseTxt + ", requirements=" + requirements
+        + ", requirementsTxt=" + requirementsTxt + ", documentation=" + documentation + ", documentationTxt="
+        + documentationTxt + ", dataSelection=" + dataSelection + ", selectionTime=" + selectionTime
+        + ", selectionResp=" + selectionResp + ", selectionSoftware=" + selectionSoftware + ", selectionCriteria="
+        + selectionCriteria + ", storageDuration=" + storageDuration + ", deleteProcedure=" + deleteProcedure
+        + ", metaChanged=" + metaChanged + ", selectedMetaPurposes=" + selectedMetaPurposes + ", metaDescription="
+        + metaDescription + ", metaFramework=" + metaFramework + ", metaGeneration=" + metaGeneration + ", metaMonitor="
+        + metaMonitor + ", metaFormat=" + metaFormat + ", sharingChanged=" + sharingChanged + ", releaseObligation="
+        + releaseObligation + ", expectedGroups=" + expectedGroups + ", searchableData=" + searchableData
+        + ", expectedUsage=" + expectedUsage + ", publStrategy=" + publStrategy + ", accessReasonAuthor="
+        + accessReasonAuthor + ", noAccessReason=" + noAccessReason + ", noAccessReasonOther=" + noAccessReasonOther
+        + ", depositName=" + depositName + ", transferTime=" + transferTime + ", sensitiveData=" + sensitiveData
+        + ", initialUsage=" + initialUsage + ", usageRestriction=" + usageRestriction + ", accessCosts=" + accessCosts
+        + ", accessCostsTxt=" + accessCostsTxt + ", accessTermsImplementation=" + accessTermsImplementation
+        + ", clarifiedRights=" + clarifiedRights + ", clarifiedRightsTxt=" + clarifiedRightsTxt
+        + ", acquisitionAgreement=" + acquisitionAgreement + ", usedPID=" + usedPID + ", usedPIDTxt=" + usedPIDTxt
+        + ", storageChanged=" + storageChanged + ", storageResponsible=" + storageResponsible + ", storageTechnologies="
+        + storageTechnologies + ", storagePlaces=" + storagePlaces + ", storageBackups=" + storageBackups
+        + ", storageTransfer=" + storageTransfer + ", storageExpectedSize=" + storageExpectedSize
+        + ", storageRequirements=" + storageRequirements + ", storageRequirementsTxt=" + storageRequirementsTxt
+        + ", storageSuccession=" + storageSuccession + ", storageSuccessionTxt=" + storageSuccessionTxt
+        + ", organizationChanged=" + organizationChanged + ", frameworkNationality=" + frameworkNationality
+        + ", frameworkNationalityTxt=" + frameworkNationalityTxt + ", responsibleUnit=" + responsibleUnit
+        + ", involvedInstitutions=" + involvedInstitutions + ", involvedInformed=" + involvedInformed
+        + ", contributionsDefined=" + contributionsDefined + ", contributionsDefinedTxt=" + contributionsDefinedTxt
+        + ", givenConsent=" + givenConsent + ", managementWorkflow=" + managementWorkflow + ", managementWorkflowTxt="
+        + managementWorkflowTxt + ", staffDescription=" + staffDescription + ", staffDescriptionTxt="
+        + staffDescriptionTxt + ", funderRequirements=" + funderRequirements + ", providerRequirements="
+        + providerRequirements + ", repoPolicies=" + repoPolicies + ", repoPoliciesResponsible="
+        + repoPoliciesResponsible + ", planningAdherence=" + planningAdherence + ", ethicalChanged=" + ethicalChanged
+        + ", dataProtection=" + dataProtection + ", protectionRequirements=" + protectionRequirements
+        + ", consentObtained=" + consentObtained + ", consentObtainedTxt=" + consentObtainedTxt + ", sharingConsidered="
+        + sharingConsidered + ", irbApproval=" + irbApproval + ", irbApprovalTxt=" + irbApprovalTxt
+        + ", sensitiveDataIncluded=" + sensitiveDataIncluded + ", sensitiveDataIncludedTxt=" + sensitiveDataIncludedTxt
+        + ", externalCopyright=" + externalCopyright + ", externalCopyrightTxt=" + externalCopyrightTxt
+        + ", internalCopyright=" + internalCopyright + ", internalCopyrightTxt=" + internalCopyrightTxt
+        + ", costsChanged=" + costsChanged + ", specificCosts=" + specificCosts + ", specificCostsTxt="
+        + specificCostsTxt + ", ariseCosts=" + ariseCosts + ", bearCost=" + bearCost + "]";
+  }
+
 }

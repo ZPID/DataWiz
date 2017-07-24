@@ -67,7 +67,7 @@ public class StudyDAO {
           @Override
           public StudyDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
             if (rs.next()) {
-              return setStudyDTO(rs, false, onlyLockInfo);
+              return setStudyDTO(rs, onlyInfoMetaData, onlyLockInfo);
             }
             return null;
           }

@@ -42,8 +42,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import com.mysql.jdbc.AbandonedConnectionCleanupThread;
-import com.squareup.okhttp.ConnectionPool;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.spss.SPSSIO;
@@ -190,21 +189,23 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 
   @PreDestroy
   public void destroy() {
-    log.warn("Destroy DataWiz Application - ");
-    ConnectionPool.getDefault().evictAll();
+    log.info("Destroy DataWiz Application");
     Enumeration<Driver> drivers = DriverManager.getDrivers();
     while (drivers.hasMoreElements()) {
       Driver driver = drivers.nextElement();
       try {
         DriverManager.deregisterDriver(driver);
-        log.warn(String.format("Driver %s deregistered", driver));
+        log.info("Driver {} deregistered", () -> driver);
       } catch (SQLException e) {
         e.printStackTrace();
       }
     }
-    AbandonedConnectionCleanupThread.uncheckedShutdown();
+    try {
+      AbandonedConnectionCleanupThread.shutdown();
+    } catch (InterruptedException e) {
+      log.warn("SEVERE problem cleaning up: ", () -> e);
+    }
     context.destroy();
     context.close();
-
   }
 }
