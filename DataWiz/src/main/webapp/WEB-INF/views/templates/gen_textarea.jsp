@@ -1,3 +1,4 @@
+<%@ include file="includes.jsp"%>
 <%-- 
  String input_vars are seperated with ';' and is now splitted into an array
  input_vars[0] = var name in dmp or form file
