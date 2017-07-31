@@ -70,7 +70,7 @@
             </c:choose>
             <div class="panel <s:message text="${pRole}"/> projectpanel">
               <div class="panel-heading projectTitle"
-                onclick="location.href='<c:url value="project/${form.project.id}"/>';" style="cursor: pointer;">
+                onclick="location.href='<c:url value="project/${form.project.id}"/>';" style="cursor: pointer;">                
                 <strong><s:message text="${form.project.title}" /></strong>
               </div>
               <c:set var="firstIn" value="" />
