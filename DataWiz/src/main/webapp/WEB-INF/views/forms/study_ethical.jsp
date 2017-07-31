@@ -68,10 +68,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.persDataColl"><s:message code="study.persDataColl" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
         </div>
       </div>
@@ -93,10 +93,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.persDataPres"><s:message code="study.persDataPres" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-align-right">
             <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
           </div>
         </div>
@@ -127,10 +127,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.copyright"><s:message code="study.copyright" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
         </div>
       </div>

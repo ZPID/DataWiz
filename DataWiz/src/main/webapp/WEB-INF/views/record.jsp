@@ -79,7 +79,7 @@
         <c:set var="input_vars" value="record.description;record.description; ; ;row" />
         <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
-          <div class="col-md-6 ">
+          <div class="col-md-6">
             <a href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" />"
               class="btn btn-default btn-sm"><s:message code="record.back.to.overview" /></a>
           </div>

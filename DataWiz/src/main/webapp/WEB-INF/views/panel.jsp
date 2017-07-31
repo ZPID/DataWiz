@@ -32,12 +32,12 @@
               <div class="panel-heading">
                 <div class="row">
                   <s:message code="project.filter.placeholder" var="filterPH" />
-                  <div class="col-sm-11">
+                  <div class="col-sm-10">
                     <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}"
                       style="width: 100%">
                   </div>
-                  <div class="form-group">
-                    <select id="filterSelect" class="form-control">
+                  <div class="col-sm-2 form-group">
+                    <select id="filterSelect" class="form-control" style="width: 100%">
                       <option value="project"><s:message code="project.panel.select.project" /></option>
                       <option value="study"><s:message code="project.panel.select.study" /></option>
                     </select>

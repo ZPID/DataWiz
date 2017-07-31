@@ -30,8 +30,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label for="project.funding"><s:message code="dmp.edit.projectSponsors" /></label>
-      <div class="well" style="">
-        <s:message text="${ProjectForm.project.funding}" />
+      <div class="well" style=""><s:message text="${ProjectForm.project.funding}" />
       </div>
     </div>
   </div>
