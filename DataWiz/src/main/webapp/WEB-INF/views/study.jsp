@@ -100,12 +100,12 @@
         <hr />
         <c:if test="${allowEdit}">
           <div class="row">
-            <div class="col-md-6 text-align-left">
+            <div class="col-xs-6 text-align-left">
               <button type="reset" class="btn btn-default btn-sm">
                 <s:message code="gen.reset" />
               </button>
             </div>
-            <div class="col-md-6 text-align-right">
+            <div class="col-xs-6 text-align-right">
               <sf:button type="submit" class="btn btn-success btn-sm">
                 <s:message code="gen.submit" />
               </sf:button>

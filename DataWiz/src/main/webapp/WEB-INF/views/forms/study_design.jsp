@@ -12,10 +12,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.objectives"><s:message code="study.objectives" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
             src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
@@ -72,10 +72,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.relTheorys"><s:message code="study.relTheorys" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-align-right">
           <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
@@ -109,10 +109,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.repMeasures"><s:message code="study.repMeasures" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
             src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
@@ -140,10 +140,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.surveyIntervention"><s:message code="study.intervention" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
             src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
@@ -168,10 +168,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.interTypeExp"><s:message code="study.interTypeExp" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
             <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
               src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
@@ -195,10 +195,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.interTypeDes"><s:message code="study.interTypeDes" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
             <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
               src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
@@ -225,10 +225,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.interTypeLab"><s:message code="study.interTypeLab" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
             <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
               src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
@@ -252,10 +252,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.randomization"><s:message code="study.randomization" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
             <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
               src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
@@ -279,10 +279,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.interArms"><s:message code="study.interArms" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-align-right">
             <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
         </div>
@@ -315,10 +315,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.measOcc"><s:message code="study.measOcc" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-align-right">
           <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
@@ -378,10 +378,10 @@
     <div class="form-group">
       <div class="col-sm-12">
         <div class="row">
-          <div class="col-sm-11">
+          <div class="col-xs-10 col-sm-11">
             <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
           </div>
-          <div class="col-sm-1 text-align-right">
+          <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
             <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
               src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
@@ -412,10 +412,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.constructs"><s:message code="study.constructs" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
             src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
@@ -508,10 +508,10 @@
   <div class="form-group">
     <div class="col-sm-12">
       <div class="row">
-        <div class="col-sm-11">
+        <div class="col-xs-10 col-sm-11">
           <label class="control-label " for="study.instruments"><s:message code="study.instruments" /></label>
         </div>
-        <div class="col-sm-1 text-align-right">
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
             src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>

@@ -16,12 +16,12 @@
   <div class="col-sm-12">
     <s:message code="${input_vars[1]}" var="labeltxt" />
     <div class="row">
-      <div class="col-sm-11">
+      <div class="col-xs-10 col-sm-11">
         <c:if test="${not empty labeltxt}">
           <label class="control-label ${input_vars[2]}" for="${input_vars[0]}"><s:message text="${labeltxt}" /></label>
         </c:if>
       </div>
-      <div class="col-sm-1 text-align-right">
+      <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
         <c:set var="valimages" value="${fn:split(valimages, ';')}" />
         <c:forEach items="${valimages}" var="imglabel">
           <c:if test="${imglabel ne '' && imglabel ne ' '}">
