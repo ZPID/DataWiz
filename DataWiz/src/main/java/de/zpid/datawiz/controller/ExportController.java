@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -203,11 +201,11 @@ public class ExportController extends SuperController {
 						for (ExportStudyDTO studyEx : exportForm.getStudies()) {
 							List<FileDTO> sFiles = null;
 							StudyDTO study = null;
-							if (studyEx.isExportMetaData() || studyEx.isExportStudyMaterial()) {
-								StudyDTO studyDB = studyDAO.findById(studyEx.getStudyId(), exportForm.getProjectId(), false, false);
-								if (studyDB != null) {
-									studyService.setStudyDTO(studyDB);
-									String studyFolder = STUDY_FOLDER + formatFilename(studyDB.getTitle()) + "/";
+							StudyDTO studyDB = studyDAO.findById(studyEx.getStudyId(), exportForm.getProjectId(), false, false);
+							if (studyDB != null) {
+								String studyFolder = STUDY_FOLDER + formatFilename(studyDB.getTitle()) + "/";
+								studyService.setStudyDTO(studyDB);
+								if (studyEx.isExportMetaData() || studyEx.isExportStudyMaterial()) {
 									if (studyEx.isExportMetaData()) {
 										study = studyDB;
 									} else {
@@ -228,33 +226,34 @@ public class ExportController extends SuperController {
 										    new Object[] { "createProjectDocument", exportForm.toString() }, LocaleContextHolder.getLocale()),
 										    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 									}
-									// Create Records
-									if (studyEx.getRecords() != null) {
-										for (ExportRecordDTO recordEx : studyEx.getRecords()) {
-											RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
-											if (recordDB != null) {
-												List<String> parsingErrors = new LinkedList<>();
-												recordService.setRecordDTO(parsingErrors, recordDB);
-												// TODO
-												String recordFolder = studyFolder + RECORD_FOLDER + formatFilename(recordDB.getRecordName()) + "/";
-												Document rdoc = ddi.createRecordDocument(recordDB);
-												if (rdoc != null) {
-													files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_FILE_NAME, createByteArrayFromXML(rdoc)));
-												} else {
-													throw new DataWizSystemException(messageSource.getMessage("logging.xml.create.error",
-													    new Object[] { "createProjectDocument", exportForm.toString() }, LocaleContextHolder.getLocale()),
-													    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
-												}
+								}
+								// Create Records
+								if (studyEx.getRecords() != null) {
+									for (ExportRecordDTO recordEx : studyEx.getRecords()) {
+										RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
+										if (recordDB != null) {
+											List<String> parsingErrors = new LinkedList<>();
+											recordService.setRecordDTO(parsingErrors, recordDB);
+											// TODO
+											String recordFolder = studyFolder + RECORD_FOLDER + formatFilename(recordDB.getRecordName()) + "/";
+											Document rdoc = ddi.createRecordDocument(recordDB);
+											if (rdoc != null) {
+												files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_FILE_NAME, createByteArrayFromXML(rdoc)));
+											} else {
+												throw new DataWizSystemException(messageSource.getMessage("logging.xml.create.error",
+												    new Object[] { "createProjectDocument", exportForm.toString() }, LocaleContextHolder.getLocale()),
+												    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 											}
 										}
 									}
-
-								} else {
-									throw new DataWizSystemException(
-									    messageSource.getMessage("logging.study.not.found", new Object[] { studyEx.getStudyId() }, LocaleContextHolder.getLocale()),
-									    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 								}
+
+							} else {
+								throw new DataWizSystemException(
+								    messageSource.getMessage("logging.study.not.found", new Object[] { studyEx.getStudyId() }, LocaleContextHolder.getLocale()),
+								    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 							}
+
 						}
 					}
 

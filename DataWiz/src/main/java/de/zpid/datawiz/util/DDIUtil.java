@@ -1,6 +1,9 @@
 package de.zpid.datawiz.util;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,6 +12,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +33,9 @@ import de.zpid.spss.dto.SPSSVarDTO;
 @Component
 @Scope("singleton")
 public class DDIUtil {
+
+	@Autowired
+	protected MessageSource messageSource;
 
 	private static Logger log = LogManager.getLogger(DDIUtil.class);
 	private final Namespace ddi = new Namespace("ddi", "ddi:codebook:2_5");
@@ -76,7 +84,7 @@ public class DDIUtil {
 		Document doc = createDoc();
 		Element root = addAndReturnRoot(doc, true);
 		try {
-			exportStd(project, study, user, root);
+			exportStd(project, study, user, root, Locale.ENGLISH);
 			if (sFiles != null)
 				exportZus(sFiles, root.addElement(new QName("otherMat", ddi)));
 		} catch (Exception e) {
@@ -296,93 +304,95 @@ public class DDIUtil {
 		}
 	}
 
-	private void addTextElement(final Element parent, final String name, final Namespace nsp, final Object text) {
-		String input = null;
-		if (text == null) {
-			input = "";
-		} else if (text instanceof Number) {
-			input = String.valueOf(text);
-		} else if (text instanceof Boolean) {
-			input = (boolean) (text) ? "yes" : "no";
-		} else if (text instanceof String) {
-			input = (String) text;
-		}
-		if (nsp == null)
-			parent.addElement(name.trim()).addText(input);
-		else
-			parent.addElement(new QName(name.trim(), nsp)).addText(input);
-	}
-
-	private Element addAndReturnElement(final Element parent, final String name, final Namespace nsp) {
-		Element el;
-		if (nsp == null)
-			el = parent.addElement(name.trim());
-		else
-			el = parent.addElement(new QName(name, nsp));
-		return el;
-	}
-
-	private void exportStd(ProjectDTO project, StudyDTO study, UserDTO user, Element root) throws Exception {
+	private void exportStd(ProjectDTO project, StudyDTO study, UserDTO user, Element root, Locale locale) throws Exception {
 		// docDscr start
-		Element docDscr = addAndReturnElement(root, "docDscr", this.xmlns);
-		Element citation = addAndReturnElement(docDscr, "citation", null);
+		createDocDscr(study.getTitle(), study.getTransTitle(), study.getInternalID(), user, root, locale);
+		// stdyDscr start
+		Element stdyDscr = addAndReturnElement(root, "stdyDscr", this.xmlns);
+		Element citation = addAndReturnElement(stdyDscr, "citation", null);
 		Element titlStmt = addAndReturnElement(citation, "titlStmt", null);
 		addTextElement(titlStmt, "titl", null, study.getTitle());
 		addTextElement(titlStmt, "parTitl", null, study.getTransTitle());
 		addTextElement(titlStmt, "IDNo", null, study.getInternalID());
-		Element prodStmt = addAndReturnElement(citation, "prodStmt", null);
-		addTextElement(prodStmt, "producer", null, user.getEmail().toString());
-		addTextElement(prodStmt, "software", null, "DataWiz");
-		// docDscr end
-		// stdyDscr start
-		Element stdyDscr = addAndReturnElement(root, "stdyDscr", this.xmlns);
-		citation = addAndReturnElement(stdyDscr, "citation", null);
-		titlStmt = addAndReturnElement(citation, "titlStmt", null);
-		addTextElement(titlStmt, "titl", null, study.getTitle());
-		addTextElement(titlStmt, "parTitl", null, study.getTransTitle());
-		addTextElement(titlStmt, "IDNo", null, study.getInternalID());
 		Element rspStmt = addAndReturnElement(citation, "rspStmt", null);
-		if (study.getContributors() != null)
+		if (study.getContributors() != null && study.getContributors().size() > 0)
 			for (ContributorDTO contributor : study.getContributors()) {
 				Element authEnty = addAndReturnElement(rspStmt, "AuthEnty", null);
-				authEnty.addElement(new QName("title", dwz)).addText(contributor.getTitle());
-				authEnty.addElement(new QName("firstName", dwz)).addText(contributor.getFirstName());
-				authEnty.addElement(new QName("lastName", dwz)).addText(contributor.getLastName());
-				authEnty.addElement(new QName("institution", dwz)).addText(contributor.getInstitution());
-				authEnty.addElement(new QName("department", dwz)).addText(contributor.getDepartment());
-				authEnty.addElement(new QName("orcid", dwz)).addText(contributor.getOrcid());
+				authEnty.addAttribute("affiliation", contributor.getInstitution());
+				Element list = addAndReturnElement(authEnty, "list", null);
+				setListItems(list, messageSource.getMessage("export.ddi.study.role", null, locale),
+				    contributor.getPrimaryContributor() ? messageSource.getMessage("export.ddi.study.role.pi", null, locale)
+				        : messageSource.getMessage("export.ddi.study.role.re", null, locale));
+				setListItems(list, messageSource.getMessage("export.ddi.study.title", null, locale), contributor.getTitle());
+				setListItems(list, messageSource.getMessage("export.ddi.study.orcid", null, locale), contributor.getOrcid());
+				setListItems(list, messageSource.getMessage("export.ddi.study.firstName", null, locale), contributor.getFirstName());
+				setListItems(list, messageSource.getMessage("export.ddi.study.lastName", null, locale), contributor.getLastName());
+				setListItems(list, messageSource.getMessage("export.ddi.study.department", null, locale), contributor.getDepartment());
 			}
-		prodStmt = citation.addElement(new QName("prodStmt", ddi));
-		addTextElement(prodStmt, "producer", null, "");
-		Element ware2 = prodStmt.addElement(new QName("software", ddi));
-		if (study.getSoftware() != null)
-			for (StudyListTypesDTO software : study.getSoftware()) {
-				ware2.addElement(new QName("item", dwz)).addText(software.getText() != null ? software.getText() : "");
+		Element prodStmt = addAndReturnElement(citation, "prodStmt", null);
+		Element copyright = addAndReturnElement(prodStmt, "copyright", null);
+		Element list = addAndReturnElement(copyright, "list", null);
+		setListItems(list, messageSource.getMessage("study.copyright", null, locale),
+		    messageSource.getMessage(study.isCopyright() ? "export.boolean.true" : "export.boolean.false", null, locale));
+		if (study.isCopyright())
+			setListItems(list, messageSource.getMessage("study.copyrightHolder", null, locale), study.getCopyrightHolder());
+		setListItems(list, messageSource.getMessage("study.thirdParty", null, locale),
+		    messageSource.getMessage(study.isThirdParty() ? "export.boolean.true" : "export.boolean.false", null, locale));
+		if (study.isThirdParty())
+			setListItems(list, messageSource.getMessage("study.thirdPartyHolder", null, locale), study.getThirdPartyHolder());
+		if (study.getSoftware() != null && study.getSoftware().size() > 0) {
+			Element software = addAndReturnElement(prodStmt, "software", null);
+			list = addAndReturnElement(software, "list", null);
+			for (StudyListTypesDTO sw : study.getSoftware()) {
+				addTextElement(list, "itm", null, sw.getText());
 			}
-		prodStmt.addElement(new QName("fundAg", ddi)).addText(project.getFunding());
-		prodStmt.addElement(new QName("grantNumber", ddi)).addText(project.getGrantNumber());
+		}
+		addTextElement(prodStmt, "fundAg", null, project.getFunding());
+		addTextElement(prodStmt, "grantNo", null, project.getGrantNumber());
+		Element stdyInfo = addAndReturnElement(stdyDscr, "stdyInfo", null);
 
-		Element dist = citation.addElement(new QName("distStmt", ddi));
-		// dist.addElement(new QName("distrbtr", ddi)).addText();
-		Element info = stdyDscr.addElement(new QName("stdyInfo", ddi));
-		Element subj = info.addElement(new QName("subject", ddi));
+		if ((study.getsAbstract() != null && !study.getsAbstract().isEmpty())
+		    || (study.getsAbstractTrans() != null && !study.getsAbstractTrans().isEmpty())) {
+			Element abstr = addAndReturnElement(stdyInfo, "abstract", null);
+			list = addAndReturnElement(abstr, "list", null);
+			setListItems(list, messageSource.getMessage("study.sAbstract", null, locale), study.getsAbstract());
+			setListItems(list, messageSource.getMessage("study.sAbstractTrans", null, locale), study.getsAbstractTrans());
+		}
+		Element sumDscr = addAndReturnElement(stdyInfo, "sumDscr", null);
+		addTextElement(sumDscr, "collDate", null, study.getCollStart(), new SimpleEntry<String, String>("event", "start"));
+		addTextElement(sumDscr, "collDate", null, study.getCollEnd(), new SimpleEntry<String, String>("event", "end"));
+		addTextElement(sumDscr, "nation", null, study.getCountry());
+		if ((study.getCity() != null && !study.getCity().isEmpty()) || (study.getRegion() != null && !study.getRegion().isEmpty())) {
+			list = addAndReturnElement(addAndReturnElement(sumDscr, "geogCover", null), "list", null);
+			setListItems(list, messageSource.getMessage("study.city", null, locale), study.getCity());
+			setListItems(list, messageSource.getMessage("study.region", null, locale), study.getRegion());
+		}
+		if (study.getObsUnit() != null && !study.getObsUnit().isEmpty()) {
+			Element anlyUnit = addAndReturnElement(sumDscr, "anlyUnit", null);
+			addTextElement(anlyUnit, "concept", null, messageSource.getMessage("study.obsUnit", null, locale));
+			addTextElement(anlyUnit, "txt", null, messageSource.getMessage("study.obsUnit." + study.getObsUnit().trim().toLowerCase(), null, locale));
+			if (study.getObsUnit().trim().toLowerCase().equals("other")) {
+				anlyUnit = addAndReturnElement(sumDscr, "anlyUnit", null);
+				addTextElement(anlyUnit, "concept", null, messageSource.getMessage("export.ddi.obsUnit.other", null, locale));
+				addTextElement(anlyUnit, "txt", null, study.getObsUnitOther());
+			}
 
-		subj.addElement(new QName("keyword", ddi)).addText("");
+		}
+		/*
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 		
+		 */
+		Element sum = addAndReturnElement(stdyInfo, "sumDscr", null);
 
-		Element abst = stdyDscr.addElement(new QName("abstract", ddi));
-		abst.addElement(new QName("sAbstract", dwz)).addText(study.getsAbstract());
-		abst.addElement(new QName("sAbstractTrans", dwz)).addText(study.getsAbstractTrans());
-		Element sum = stdyDscr.addElement(new QName("sumDscr", ddi));
-		Element dte = sum.addElement(new QName("collDate", ddi));
-		dte.addElement(new QName("collStart", dwz)).addText(String.valueOf(study.getCollStart()));
-		dte.addElement(new QName("collEnd", dwz)).addText(String.valueOf(study.getCollEnd()));
-		sum.addElement(new QName("nation", ddi)).addText(study.getCountry());
-		Element geo = sum.addElement(new QName("geogCover", ddi));
-		geo.addElement(new QName("city", dwz)).addText(study.getCity());
-		geo.addElement(new QName("region", dwz)).addText(study.getRegion());
-		Element anly = sum.addElement(new QName("anlyUnit", ddi));
-		anly.addElement(new QName("select", dwz)).addText(study.getObsUnit());
-		anly.addElement(new QName("optional", dwz)).addText(study.getObsUnitOther());
+		// anly.addElement(new QName("select", dwz)).addText(study.getObsUnit());
+		// anly.addElement(new QName("optional", dwz)).addText(study.getObsUnitOther());
 		Element uni = sum.addElement(new QName("universe", ddi));
 		Element eligs = uni.addElement(new QName("eligibilities", dwz));
 		if (study.getEligibilities() != null)
@@ -578,6 +588,94 @@ public class DDIUtil {
 			variable.addElement(new QName("notes", ddi)).addText(String.valueOf(((SPSSVarDTO) vars).getRole()));
 		}
 
+	}
+
+	/**
+	 * 
+	 * @param titl
+	 * @param parTitl
+	 * @param idno
+	 * @param user
+	 * @param root
+	 * @param locale
+	 */
+	private void createDocDscr(final String titl, final String parTitl, final String idno, final UserDTO user, final Element root,
+	    final Locale locale) {
+		Element docDscr = addAndReturnElement(root, "docDscr", this.xmlns);
+		Element citation = addAndReturnElement(docDscr, "citation", null);
+		Element titlStmt = addAndReturnElement(citation, "titlStmt", null);
+		addTextElement(titlStmt, "titl", null, titl);
+		addTextElement(titlStmt, "parTitl", null, parTitl);
+		addTextElement(titlStmt, "IDNo", null, idno);
+		Element prodStmt = addAndReturnElement(citation, "prodStmt", null);
+		Element producer = addAndReturnElement(prodStmt, "producer", null);
+		producer.addAttribute("affiliation", user.getInstitution());
+		producer.addAttribute("role", messageSource.getMessage("export.ddi.study.producer.role", null, locale));
+		Element list = addAndReturnElement(producer, "list", null);
+		setListItems(list, messageSource.getMessage("export.ddi.study.title", null, locale), user.getTitle());
+		setListItems(list, messageSource.getMessage("export.ddi.study.orcid", null, locale), user.getOrcid());
+		setListItems(list, messageSource.getMessage("export.ddi.study.firstName", null, locale), user.getFirstName());
+		setListItems(list, messageSource.getMessage("export.ddi.study.lastName", null, locale), user.getLastName());
+		setListItems(list, messageSource.getMessage("export.ddi.study.department", null, locale), user.getDepartment());
+		addTextElement(prodStmt, "software", null, messageSource.getMessage("export.ddi.study.software", null, locale));
+	}
+
+	/**
+	 * 
+	 * @param parent
+	 * @param name
+	 * @param nsp
+	 * @param text
+	 * @param attributes
+	 */
+	private void addTextElement(final Element parent, final String name, final Namespace nsp, final Object text,
+	    final SimpleEntry<?, ?>... attributes) {
+		String input = null;
+		if (text == null) {
+			input = "";
+		} else if (text instanceof Number) {
+			input = String.valueOf(text);
+		} else if (text instanceof Boolean) {
+			input = (boolean) (text) ? "yes" : "no";
+		} else if (text instanceof String) {
+			input = String.valueOf(text);
+		} else {
+			input = String.valueOf(text);
+		}
+		if (input != null && !input.isEmpty()) {
+			Element e = addAndReturnElement(parent, name.trim(), nsp);
+			e.addText(input);
+			if (attributes != null) {
+				for (SimpleEntry<?, ?> m : attributes) {
+					e.addAttribute(String.valueOf(m.getKey()), String.valueOf(m.getValue()));
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * 
+	 * @param parent
+	 * @param name
+	 * @param nsp
+	 * @return
+	 */
+	private Element addAndReturnElement(final Element parent, final String name, final Namespace nsp) {
+		Element el;
+		if (nsp == null)
+			el = parent.addElement(name.trim());
+		else
+			el = parent.addElement(new QName(name, nsp));
+		return el;
+	}
+
+	private void setListItems(final Element list, final String label, final String p) {
+		if (p != null && !p.isEmpty()) {
+			Element list_item = addAndReturnElement(list, "itm", null);
+			addTextElement(list_item, "label", null, label);
+			addTextElement(list_item, "p", null, p);
+		}
 	}
 
 }
