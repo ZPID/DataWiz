@@ -23,7 +23,7 @@
       <div class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.objectives}" varStatus="loop">
           <div class="row margin-bottom-10">
-            <div class="col-sm-10">
+            <div class="col-xs-9 col-sm-10">
               <s:bind path="study.objectives[${loop.index}].text">
                 <c:choose>
                   <c:when test="${status.error}">
@@ -38,7 +38,7 @@
                 </c:choose>
               </s:bind>
             </div>
-            <div class="col-sm-2">
+            <div class="col-xs-3 col-sm-2">
               <sf:select class="form-control col-sm-2" path="study.objectives[${loop.index}].objectivetype">
                 <sf:option value="">
                   <s:message code="gen.select" />

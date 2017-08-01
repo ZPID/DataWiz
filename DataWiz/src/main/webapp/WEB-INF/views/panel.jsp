@@ -76,10 +76,10 @@
               <c:set var="firstIn" value="" />
               <div class="panel-body">
                 <div class="row" style="padding-bottom: 10px;">
-                  <div class="col-sm-2 text-align-right">
+                  <div class="col-xs-1 col-sm-2 text-align-right">
                     <strong><s:message code="project.panel.project.description" /></strong>
                   </div>
-                  <div class="col-sm-10 projectDescription">
+                  <div class="col-xs-12 col-sm-10 projectDescription">
                     <c:choose>
                       <c:when test="${not empty form.project.description}">
                         <s:message text="${form.project.description}" />
@@ -91,10 +91,10 @@
                   </div>
                 </div>
                 <div class="row" style="padding-bottom: 10px;">
-                  <div class="col-sm-2 text-align-right">
+                  <div class="col-xs-1 col-sm-2 text-align-right">
                     <strong><s:message code="project.panel.project.researcher" /></strong>
                   </div>
-                  <div class="col-sm-10 projectResearcher">
+                  <div class="col-xs-12 col-sm-10 projectResearcher">
                     <c:choose>
                       <c:when test="${not empty form.contributors && form.contributors.size() > 0 }">
                         <c:forEach items="${form.contributors}" var="contri" varStatus="contriloop">
@@ -112,10 +112,10 @@
                 </div>
                 <!-- studies -->
                 <div class="row" style="padding-bottom: 10px;">
-                  <div class="col-sm-2 text-align-right" style="padding-top: 12px;">
+                  <div class="col-xs-1 col-sm-2 text-align-right" style="padding-top: 12px;">
                     <strong><s:message code="project.panel.project.studies" /></strong>
                   </div>
-                  <div class="col-sm-10">
+                  <div class="col-xs-12 col-sm-10">
                     <c:choose>
                       <c:when test="${empty form.studies}">
                         <div class="marginTop2">
@@ -151,10 +151,10 @@
                                     </div>
                                     <div class="panel-body">
                                       <div class="row" style="padding-bottom: 10px;">
-                                        <div class="col-sm-2 text-align-right">
+                                        <div class="col-xs-1 col-sm-2 text-align-right">
                                           <strong><s:message code="project.panel.project.description" /></strong>
                                         </div>
-                                        <div class="col-sm-10 studyDescriptionFilter">
+                                        <div class="col-xs-12 col-sm-10 studyDescriptionFilter">
                                           <c:choose>
                                             <c:when test="${not empty study.sAbstract}">
                                               <s:message text="${study.sAbstract}" />
@@ -166,10 +166,10 @@
                                         </div>
                                       </div>
                                       <div class="row" style="padding-bottom: 10px;">
-                                        <div class="col-sm-2 text-align-right">
+                                        <div class="col-xs-1 col-sm-2 text-align-right">
                                           <strong><s:message code="project.panel.project.researcher" /></strong>
                                         </div>
-                                        <div class="col-sm-10 studyResearcherFilter">
+                                        <div class="col-xs-12 col-sm-10 studyResearcherFilter">
                                           <c:choose>
                                             <c:when
                                               test="${not empty study.contributors && study.contributors.size() > 0 }">
@@ -201,10 +201,10 @@
                 </div>
                 <!-- sharedUser -->
                 <div class="row">
-                  <div class="col-sm-2 text-align-right" style="padding-top: 10px;">
+                  <div class="col-xs-1 col-sm-2 text-align-right" style="padding-top: 10px;">
                     <strong><s:message code="project.panel.project.shared" /></strong>
                   </div>
-                  <div class="col-sm-10">
+                  <div class="col-xs-12 col-sm-10">
                     <c:choose>
                       <c:when test="${empty form.sharedUser or fn:length(form.sharedUser) eq 1}">
                         <div class="marginTop2">
@@ -222,10 +222,10 @@
                               <c:forEach items="${form.sharedUser}" var="user" varStatus="loop2">
                                 <div class="list-group-item">
                                   <div class="row">
-                                    <div class="col-sm-3" style="padding-top: 10px">
+                                    <div class="col-xs-6 col-sm-3" style="padding-top: 10px">
                                       <s:message text="${user.firstName} ${user.lastName}(${user.email})" />
                                     </div>
-                                    <div class="col-sm-9">
+                                    <div class="col-xs-6 col-sm-9">
                                       <div class="list-group" style="margin-bottom: 0px; margin-top:">
                                         <c:forEach items="${user.globalRoles}" var="userRole">
                                           <c:if test="${userRole.type ne 'REL_ROLE'}">

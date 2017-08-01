@@ -69,10 +69,10 @@
             <div class="panel-body">
               <!-- Description -->
               <div class="row" style="padding-bottom: 10px;">
-                <div class="col-sm-2 text-align-right">
+                <div class="col-xs-1 col-sm-2 text-align-right">
                   <strong><s:message code="project.panel.project.description" /></strong>
                 </div>
-                <div class="col-sm-10">
+                <div class="col-xs-12 col-sm-10">
                   <c:choose>
                     <c:when test="${not empty cstud.sAbstract}">
                       <s:message text="${cstud.sAbstract}" />
@@ -85,10 +85,10 @@
               </div>
               <!-- Contributor -->
               <div class="row" style="padding-bottom: 10px;">
-                <div class="col-sm-2 text-align-right">
+                <div class="col-xs-1 col-sm-2 text-align-right">
                   <strong><s:message code="project.panel.project.researcher" /></strong>
                 </div>
-                <div class="col-sm-10 studyResearcherFilter">
+                <div class="col-xs-12 col-sm-10 studyResearcherFilter">
                   <c:choose>
                     <c:when test="${not empty cstud.contributors && cstud.contributors.size() > 0 }">
                       <c:forEach items="${cstud.contributors}" var="contri" varStatus="contriloop">
