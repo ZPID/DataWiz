@@ -13,54 +13,35 @@
           <s:message code="project.export.info" />
         </div>
       </div>
-      <s:message text="${ProjectForm.project.id}" var="projectId" />
-      <c:url var="accessUrl" value="/export/${projectId}" />
-      <sf:form action="${accessUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
-        <c:set var="exportCount" value="0" />
+      <c:url var="accessUrl" value="/export/${ExportProjectForm.projectId}" />
+      <sf:form action="${accessUrl}" commandName="ExportProjectForm" class="form-horizontal" role="form">
         <ul class="list-group exportlist">
           <li class="list-group-item">
             <div class="row">
               <div class="col-sm-11">
-                <sf:label path="project.title">
-                  <s:message text="${ProjectForm.project.title}" />
-                </sf:label>
+                <b><s:message text="${ExportProjectForm.projectTitle}" /></b>
               </div>
               <div class="col-sm-1">
-                <sf:checkbox class="li_chkbox li_checkbox_a1" path="exportList[${exportCount}].export" />
-                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                  value="PROJECT_EXPORT_FULL" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                  name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" />
+                <sf:checkbox class="li_chkbox li_checkbox_a1" path="exportFullProject" />
               </div>
             </div>
           </li>
           <li class="list-group-item"><div class="row">
               <div class="col-sm-11">Project-Metadaten</div>
               <div class="col-sm-1">
-                <c:set var="exportCount" value="${exportCount + 1}" />
-                <sf:checkbox path="exportList[${exportCount}].export" />
-                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                  value="PROJECT_EXPORT_METADATA" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                  name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" />
+                <sf:checkbox path="exportMetaData" />
               </div>
             </div></li>
           <li class="list-group-item"><div class="row">
               <div class="col-sm-11">Datenmanagment</div>
               <div class="col-sm-1">
-                <c:set var="exportCount" value="${exportCount + 1}" />
-                <sf:checkbox path="exportList[${exportCount}].export" />
-                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                  value="PROJECT_EXPORT_DMP" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                  name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" />
+                <sf:checkbox path="exportDMP" />
               </div>
             </div></li>
           <li class="list-group-item"><div class="row">
               <div class="col-sm-11">ProjectMaterialien</div>
               <div class="col-sm-1">
-                <c:set var="exportCount" value="${exportCount + 1}" />
-                <sf:checkbox path="exportList[${exportCount}].export" />
-                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                  value="PROJECT_EXPORT_MATERIAL" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                  name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" />
+                <sf:checkbox path="exportProjectMaterial" />
               </div>
             </div></li>
           <li class="list-group-item" style="background-color: #eee;">
@@ -68,49 +49,39 @@
               <div class="col-sm-12">
                 <label>Studien</label>
               </div>
-            </div> <c:forEach items="${ProjectForm.studies}" var="study">
-              <s:message text="${study.id}" var="studyId" />
+            </div> <c:forEach items="${ExportProjectForm.studies}" var="study" varStatus="studyLoop">
               <ul class="list-group li_head_u2" style="position: relative; right: -12px;">
                 <li class="list-group-item">
                   <div class="row">
                     <div class="col-sm-11">
-                      <sf:label path="project.title">
-                        <s:message text="${study.title}" />
-                      </sf:label>
+                      <b><s:message text="${study.studyTitle}" /></b>
                     </div>
                     <div class="col-sm-1">
-                      <c:set var="exportCount" value="${exportCount + 1}" />
-                      <sf:checkbox path="exportList[${exportCount}].export" class="li_chkbox li_checkbox_a2" />
-                      <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                        value="STUDY_EXPORT_FULL" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                        name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" /> <input
-                        id="exportList${exportCount}.studyId" name="exportList[${exportCount}].studyId"
-                        value="${studyId}" type="hidden" />
+                      <sf:checkbox path="studies[${studyLoop.index}].exportFullStudy" class="li_chkbox li_checkbox_a2" />
                     </div>
                   </div>
                 </li>
+                <c:if test="${not empty study.warnings}">
+                  <li class="list-group-item list-group-item-danger">
+                    <div class="row">
+                      <c:forEach items="${study.warnings}" var="studyWarn">
+                        <div class="col-sm-11" style="text-align: center;">
+                          <s:message text="${studyWarn}" />
+                        </div>
+                      </c:forEach>
+                    </div>
+                  </li>
+                </c:if>
                 <li class="list-group-item"><div class="row">
                     <div class="col-sm-11">Studien-Metadaten</div>
                     <div class="col-sm-1">
-                      <c:set var="exportCount" value="${exportCount + 1}" />
-                      <sf:checkbox path="exportList[${exportCount}].export" />
-                      <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                        value="STUDY_EXPORT_METADATA" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                        name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" /> <input
-                        id="exportList${exportCount}.studyId" name="exportList[${exportCount}].studyId"
-                        value="${studyId}" type="hidden" />
+                      <sf:checkbox path="studies[${studyLoop.index}].exportMetaData" />
                     </div>
                   </div></li>
                 <li class="list-group-item"><div class="row">
                     <div class="col-sm-11">Studien-Materialien</div>
                     <div class="col-sm-1">
-                      <c:set var="exportCount" value="${exportCount + 1}" />
-                      <sf:checkbox path="exportList[${exportCount}].export" />
-                      <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                        value="STUDY_EXPORT_MATERIAL" type="hidden" /> <input id="exportList${exportCount}.projectId"
-                        name="exportList[${exportCount}].projectId" value="${projectId}" type="hidden" /> <input
-                        id="exportList${exportCount}.studyId" name="exportList[${exportCount}].studyId"
-                        value="${studyId}" type="hidden" />
+                      <sf:checkbox path="studies[${studyLoop.index}].exportStudyMaterial" />
                     </div>
                   </div></li>
                 <c:if test="${not empty study.records}">
@@ -121,74 +92,35 @@
                           <label>Datensätze</label>
                         </div>
                       </div>
-                      <c:forEach items="${study.records}" var="record">
-                        <s:message text="${record.id}" var="recordId" />
-                        <s:message text="${record.versionId}" var="versionId" />
+                      <c:forEach items="${study.records}" var="record" varStatus="recordLoop">
                         <ul class="list-group li_head_u3" style="position: relative; right: -12px;">
                           <li class="list-group-item">
                             <div class="row">
                               <div class="col-sm-11">
-                                <sf:label path="project.title">
-                                  <s:message text="${record.recordName}" />
-                                </sf:label>
+                                <b><s:message text="${record.recordTitle}" /></b>
                               </div>
                               <div class="col-sm-1">
-                                <c:set var="exportCount" value="${exportCount + 1}" />
-                                <sf:checkbox path="exportList[${exportCount}].export" class="li_chkbox li_checkbox_a3" />
-                                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                                  value="RECORD_EXPORT_FULL" type="hidden" /> <input
-                                  id="exportList${exportCount}.projectId" name="exportList[${exportCount}].projectId"
-                                  value="${projectId}" type="hidden" /> <input id="exportList${exportCount}.studyId"
-                                  name="exportList[${exportCount}].studyId" value="${studyId}" type="hidden" /> <input
-                                  id="exportList${exportCount}.recordId" name="exportList[${exportCount}].recordId"
-                                  value="${recordId}" type="hidden" /><input id="exportList${exportCount}.versionId"
-                                  name="exportList[${exportCount}].versionId" value="${versionId}" type="hidden" />
+                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportFullRecord"
+                                  class="li_chkbox li_checkbox_a3" />
                               </div>
                             </div>
                           </li>
                           <li class="list-group-item"><div class="row">
                               <div class="col-sm-11">Datensatz-Metadaten</div>
                               <div class="col-sm-1">
-                                <c:set var="exportCount" value="${exportCount + 1}" />
-                                <sf:checkbox path="exportList[${exportCount}].export" />
-                                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                                  value="RECORD_EXPORT_METADATA" type="hidden" /> <input
-                                  id="exportList${exportCount}.projectId" name="exportList[${exportCount}].projectId"
-                                  value="${projectId}" type="hidden" /> <input id="exportList${exportCount}.studyId"
-                                  name="exportList[${exportCount}].studyId" value="${studyId}" type="hidden" /> <input
-                                  id="exportList${exportCount}.recordId" name="exportList[${exportCount}].recordId"
-                                  value="${recordId}" type="hidden" /><input id="exportList${exportCount}.versionId"
-                                  name="exportList[${exportCount}].versionId" value="${versionId}" type="hidden" />
+                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMetaData" />
                               </div>
                             </div></li>
                           <li class="list-group-item"><div class="row">
                               <div class="col-sm-11">Codebook</div>
                               <div class="col-sm-1">
-                                <c:set var="exportCount" value="${exportCount + 1}" />
-                                <sf:checkbox path="exportList[${exportCount}].export" />
-                                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                                  value="RECORD_EXPORT_CODEBOOK" type="hidden" /> <input
-                                  id="exportList${exportCount}.projectId" name="exportList[${exportCount}].projectId"
-                                  value="${projectId}" type="hidden" /> <input id="exportList${exportCount}.studyId"
-                                  name="exportList[${exportCount}].studyId" value="${studyId}" type="hidden" /> <input
-                                  id="exportList${exportCount}.recordId" name="exportList[${exportCount}].recordId"
-                                  value="${recordId}" type="hidden" /><input id="exportList${exportCount}.versionId"
-                                  name="exportList[${exportCount}].versionId" value="${versionId}" type="hidden" />
+                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportCodebook" />
                               </div>
                             </div></li>
                           <li class="list-group-item"><div class="row">
                               <div class="col-sm-11">Datenmatrix</div>
                               <div class="col-sm-1">
-                                <c:set var="exportCount" value="${exportCount + 1}" />
-                                <sf:checkbox path="exportList[${exportCount}].export" />
-                                <input id="exportList${exportCount}.state" name="exportList[${exportCount}].state"
-                                  value="RECORD_EXPORT_MATRIX" type="hidden" /> <input
-                                  id="exportList${exportCount}.projectId" name="exportList[${exportCount}].projectId"
-                                  value="${projectId}" type="hidden" /> <input id="exportList${exportCount}.studyId"
-                                  name="exportList[${exportCount}].studyId" value="${studyId}" type="hidden" /> <input
-                                  id="exportList${exportCount}.recordId" name="exportList[${exportCount}].recordId"
-                                  value="${recordId}" type="hidden" /> <input id="exportList${exportCount}.versionId"
-                                  name="exportList[${exportCount}].versionId" value="${versionId}" type="hidden" />
+                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMatrix" />
                               </div>
                             </div></li>
                         </ul>

@@ -133,51 +133,7 @@ public class RecordService {
         sForm.setRecords(recordDAO.findRecordVersionList(recordId.get()));
       }
       if (rec != null) {
-        rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
-        rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
-        rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
-        if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
-          rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
-          }.getType()));
-
-        if (rec.getVariables() != null && rec.getVariables().size() > 0) {
-          int varPosition = 0;
-          for (SPSSVarDTO var : rec.getVariables()) {
-            var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
-            importService.sortVariableAttributes(var);
-            var.setValues(recordDAO.findVariableValues(var.getId(), false));
-            // SET DATE VALUES TO VIEW DATE (d.M.yyyy)
-            if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE)) {
-              var.getValues().parallelStream().forEach(value -> {
-                String viewDate = null;
-                viewDate = parseDateToViewTime(value.getValue(), var.getType(), parsingErrors, var, "value-label",
-                    false);
-                if (viewDate != null)
-                  value.setValue(viewDate);
-              });
-              String missing;
-              missing = parseDateToViewTime(var.getMissingVal1(), var.getType(), parsingErrors, var, "missingVal1",
-                  true);
-              if (missing != null)
-                var.setMissingVal1(missing);
-              missing = parseDateToViewTime(var.getMissingVal2(), var.getType(), parsingErrors, var, "missingVal2",
-                  true);
-              if (missing != null)
-                var.setMissingVal2(missing);
-              missing = parseDateToViewTime(var.getMissingVal3(), var.getType(), parsingErrors, var, "missingVal3",
-                  true);
-              if (missing != null)
-                var.setMissingVal3(missing);
-            }
-            int sd = varPosition++;
-            if (rec.getDataMatrix() != null && rec.getDataMatrix().size() > 0)
-              rec.getDataMatrix().parallelStream().forEach(row -> {
-                if (var.getVarType() == 0 && var.getDecimals() == 0 && row.get(sd) != null
-                    && row.get(sd) instanceof Double)
-                  row.set(sd, Math.round(((Double) row.get(sd)).doubleValue()));
-              });
-          }
-        }
+        setRecordDTO(parsingErrors, rec);
       } else {
         throw new DataWizSystemException(
             messageSource.getMessage("logging.record.not.found", new Object[] { recordId.get() }, Locale.ENGLISH),
@@ -187,6 +143,54 @@ public class RecordService {
     }
     return sForm;
   }
+
+	public void setRecordDTO(final List<String> parsingErrors, RecordDTO rec) throws Exception {
+		rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+		rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
+		rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
+		if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
+		  rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
+		  }.getType()));
+
+		if (rec.getVariables() != null && rec.getVariables().size() > 0) {
+		  int varPosition = 0;
+		  for (SPSSVarDTO var : rec.getVariables()) {
+		    var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
+		    importService.sortVariableAttributes(var);
+		    var.setValues(recordDAO.findVariableValues(var.getId(), false));
+		    // SET DATE VALUES TO VIEW DATE (d.M.yyyy)
+		    if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE)) {
+		      var.getValues().parallelStream().forEach(value -> {
+		        String viewDate = null;
+		        viewDate = parseDateToViewTime(value.getValue(), var.getType(), parsingErrors, var, "value-label",
+		            false);
+		        if (viewDate != null)
+		          value.setValue(viewDate);
+		      });
+		      String missing;
+		      missing = parseDateToViewTime(var.getMissingVal1(), var.getType(), parsingErrors, var, "missingVal1",
+		          true);
+		      if (missing != null)
+		        var.setMissingVal1(missing);
+		      missing = parseDateToViewTime(var.getMissingVal2(), var.getType(), parsingErrors, var, "missingVal2",
+		          true);
+		      if (missing != null)
+		        var.setMissingVal2(missing);
+		      missing = parseDateToViewTime(var.getMissingVal3(), var.getType(), parsingErrors, var, "missingVal3",
+		          true);
+		      if (missing != null)
+		        var.setMissingVal3(missing);
+		    }
+		    int sd = varPosition++;
+		    if (rec.getDataMatrix() != null && rec.getDataMatrix().size() > 0)
+		      rec.getDataMatrix().parallelStream().forEach(row -> {
+		        if (var.getVarType() == 0 && var.getDecimals() == 0 && row.get(sd) != null
+		            && row.get(sd) instanceof Double)
+		          row.set(sd, Math.round(((Double) row.get(sd)).doubleValue()));
+		      });
+		  }
+		}
+	}
 
   /**
    * @param valueString
