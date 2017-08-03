@@ -1,5 +1,6 @@
 package de.zpid.datawiz.util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -118,7 +119,7 @@ public class MinioUtil {
           break;
         }
       }
-      ByteArrayInputStream bais = new ByteArrayInputStream(file.getContent());
+      BufferedInputStream bais = new BufferedInputStream(new ByteArrayInputStream(file.getContent()));
       this.minioClient.putObject(bucket, filePath, bais, bais.available(), file.getContentType());
       bais.close();
     } catch (Exception e) {

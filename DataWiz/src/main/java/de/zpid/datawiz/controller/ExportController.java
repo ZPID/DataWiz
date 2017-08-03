@@ -6,6 +6,7 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -42,6 +43,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ExportProjectForm;
+import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExportService;
 import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
@@ -218,7 +220,12 @@ public class ExportController extends SuperController {
 										if (sFiles != null && sFiles.size() > 0)
 											setAdditionalFilestoExportList(files, sFiles, studyFolder + FILES_PROJECT_FOLDER);
 									}
-									Document sdoc = ddi.createStudyDocument(projectDB, study, sFiles, user);
+									StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
+									sForm.setProject(projectDB);
+									sForm.setStudy(study);
+									sForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
+									sForm.setSourFormat(formTypeDAO.findAllByType(true, DWFieldTypes.DATAFORMAT));
+									Document sdoc = ddi.createStudyDocument(sForm, sFiles, user);
 									if (sdoc != null) {
 										files.add(new SimpleEntry<String, byte[]>(studyFolder + STUDY_FILE_NAME, createByteArrayFromXML(sdoc)));
 									} else {
