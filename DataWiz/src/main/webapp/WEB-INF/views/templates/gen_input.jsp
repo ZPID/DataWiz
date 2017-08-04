@@ -53,8 +53,8 @@
     </div>
     <c:if test="${not empty appresmess}">
       <div class="help-block ${input_vars[4]}">
-        <div class="col-sm-1 glyphicon glyphicon-info-sign gylph-help"></div>
-        <div class="col-sm-10">
+        <div class="col-xs-1 glyphicon glyphicon-info-sign gylph-help"></div>
+        <div class="col-xs-11">
           <s:message text="${appresmess}" />
         </div>
       </div>
