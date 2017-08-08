@@ -243,7 +243,14 @@ label.btn::after {
 .breadcrumb a {
   color: white;
 }
-
+.breadcrumb li {
+  white-space:nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.breadcrumb > *:nth-child(n+2) {
+  display: none;
+}
 .bractive {
   color: #bbb;
 }
@@ -306,8 +313,8 @@ label.btn::after {
   }
   .breadcrumb {
     left: 0%;
-    top: 8px;
-  }
+  	top: 8px;
+  }  
   #navbarlogo {
     height: 0px;
     position: relative;
@@ -347,6 +354,12 @@ label.btn::after {
   .breadcrumb {
     left: 5%;
   }
+  .breadcrumb > *:nth-last-child(-n+2) {
+    display:inline-block;
+  }
+  .breadcrumb li {
+    max-width: 250px;
+  }
   #navbarlogo {
     height: 48px;
     position: relative;
@@ -379,6 +392,12 @@ label.btn::after {
   }
   .breadcrumb {
     left: 10%;
+  }
+  .breadcrumb > *:nth-last-child(-n+3) {
+    display:inline-block;
+  }
+  .breadcrumb li {
+    max-width: 400px;
   }
   #navbarlogo {
     height: 48px;
