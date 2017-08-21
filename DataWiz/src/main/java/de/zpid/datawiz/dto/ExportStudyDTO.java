@@ -12,6 +12,7 @@ public class ExportStudyDTO implements Serializable {
 	private boolean exportMetaData;
 	private boolean exportStudyMaterial;
 	private List<ExportRecordDTO> records;
+	private List<FileDTO> material;
 	private List<String> warnings;
 
 	public long getStudyId() {
@@ -68,6 +69,14 @@ public class ExportStudyDTO implements Serializable {
 
 	public void setWarnings(List<String> warnings) {
 		this.warnings = warnings;
+	}
+
+	public List<FileDTO> getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(List<FileDTO> material) {
+		this.material = material;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import de.zpid.datawiz.dto.ExportStudyDTO;
+import de.zpid.datawiz.dto.FileDTO;
 
 public class ExportProjectForm implements Serializable {
 
@@ -15,6 +16,7 @@ public class ExportProjectForm implements Serializable {
 	private boolean exportDMP;
 	private boolean exportProjectMaterial;
 	private List<ExportStudyDTO> studies;
+	private List<FileDTO> material;
 
 	public long getProjectId() {
 		return projectId;
@@ -70,6 +72,14 @@ public class ExportProjectForm implements Serializable {
 
 	public void setStudies(List<ExportStudyDTO> studies) {
 		this.studies = studies;
+	}
+
+	public List<FileDTO> getMaterial() {
+		return material;
+	}
+
+	public void setMaterial(List<FileDTO> material) {
+		this.material = material;
 	}
 
 	@Override

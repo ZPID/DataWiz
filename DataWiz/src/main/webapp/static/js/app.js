@@ -25,6 +25,7 @@ $tag_box = null;
           }
         });
         $('[data-toggle="tooltip"]').tooltip()
+        
         // loading DMP Content
         if (window.location.pathname.search("/dmp") > 0) {
           $("#dmpForm :input").prop("disabled", false);

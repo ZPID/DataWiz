@@ -51,7 +51,7 @@ public class UserDAO {
    *         passed ID.
    * @throws SQLException
    */
-  public UserDTO findById(final long id) throws SQLException {
+  public UserDTO findById(final long id) throws Exception {
     log.trace("Entering findById [id: {}]", () -> id);
     final UserDTO user = this.jdbcTemplate.query("SELECT * FROM dw_user WHERE id= ?", new Object[] { id },
         new ResultSetExtractor<UserDTO>() {

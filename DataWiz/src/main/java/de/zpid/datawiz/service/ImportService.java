@@ -328,6 +328,7 @@ public class ImportService {
 					record.setVariables(vars);
 					record.setDataMatrix(matrix);
 					record.setDataMatrixJson(new Gson().toJson(record.getDataMatrix()));
+					record.setFileName(sForm.getCsvFile().getOriginalFilename());
 					sForm.setRecord(record);
 					sForm.setImportMatrix(importMatrix);
 					sForm.setFile(file);
@@ -640,6 +641,7 @@ public class ImportService {
 				spssFile.setId(recordId.get());
 				spssFile.setChangedBy(user.getEmail());
 				spssFile.setChangeLog(sForm.getNewChangeLog());
+				spssFile.setFileName(sForm.getSpssFile().getOriginalFilename());
 				sForm.setRecord(spssFile);
 				sForm.setFile(file);
 			}
