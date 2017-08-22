@@ -54,6 +54,7 @@ import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ExportProjectForm;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.util.ConsistencyCheckUtil;
 import de.zpid.datawiz.util.DDIUtil;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ITextUtil;
@@ -109,8 +110,8 @@ public class ExportService {
 	private RecordService recordService;
 	@Autowired
 	private StudyService studyService;
-	
-	
+	@Autowired
+	private ConsistencyCheckUtil ccUtil;
 
 	/**
 	 * 
@@ -150,13 +151,14 @@ public class ExportService {
 									studExp.getRecords().add(recExp);
 								}
 							}
-							List<String> warnings = new ArrayList<>();
-							// TODO
-							warnings.add("this is only a test");
-							studExp.setWarnings(warnings);
+							ccUtil.checkStudyConsisty(studExp, studyDAO.findById(study.getId(), project.getId(), false, false));
 							exportForm.getStudies().add(studExp);
 						}
 					}
+					
+					
+					
+					
 				} else {
 					throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[] { pid }, Locale.ENGLISH),
 					    DataWizErrorCodes.PROJECT_NOT_AVAILABLE);

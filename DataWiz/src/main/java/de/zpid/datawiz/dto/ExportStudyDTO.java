@@ -14,6 +14,7 @@ public class ExportStudyDTO implements Serializable {
 	private List<ExportRecordDTO> records;
 	private List<FileDTO> material;
 	private List<String> warnings;
+	private List<String> notices;
 
 	public long getStudyId() {
 		return studyId;
@@ -79,10 +80,19 @@ public class ExportStudyDTO implements Serializable {
 		this.material = material;
 	}
 
+	public List<String> getNotices() {
+		return notices;
+	}
+
+	public void setNotices(List<String> notices) {
+		this.notices = notices;
+	}
+
 	@Override
 	public String toString() {
 		return "ExportStudyDTO [studyId=" + studyId + ", studyTitle=" + studyTitle + ", exportFullStudy=" + exportFullStudy + ", exportMetaData="
-		    + exportMetaData + ", exportStudyMaterial=" + exportStudyMaterial + ", records=" + records + ", warnings=" + warnings + "]";
+		    + exportMetaData + ", exportStudyMaterial=" + exportStudyMaterial + ", records=" + records + ", material=" + material + ", warnings="
+		    + warnings + ", notices=" + notices + "]";
 	}
 
 }

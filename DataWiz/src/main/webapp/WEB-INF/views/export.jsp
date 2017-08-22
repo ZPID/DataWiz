@@ -26,6 +26,28 @@
               </div>
             </div>
           </li>
+          <c:if test="${not empty ExportProjectForm.warnings}">
+            <li class="list-group-item list-group-item-danger">
+              <div class="row">
+                <c:forEach items="${ExportProjectForm.warnings}" var="studyWarn">
+                  <div class="col-sm-10 col-sm-offset-1">
+                    <s:message text="${studyWarn}" />
+                  </div>
+                </c:forEach>
+              </div>
+            </li>
+          </c:if>
+          <c:if test="${not empty ExportProjectForm.notices}">
+            <li class="list-group-item list-group-item-info">
+              <div class="row">
+                <c:forEach items="${ExportProjectForm.notices}" var="notice">
+                  <div class="col-sm-10 col-sm-offset-1">
+                    <s:message text="${notice}" />
+                  </div>
+                </c:forEach>
+              </div>
+            </li>
+          </c:if>
           <li class="list-group-item"><div class="row">
               <div class="col-sm-11">
                 <s:message code="export.view.project.meta" />
@@ -142,8 +164,19 @@
                   <li class="list-group-item list-group-item-danger">
                     <div class="row">
                       <c:forEach items="${study.warnings}" var="studyWarn">
-                        <div class="col-sm-11" style="text-align: center;">
+                        <div class="col-sm-10 col-sm-offset-1">
                           <s:message text="${studyWarn}" />
+                        </div>
+                      </c:forEach>
+                    </div>
+                  </li>
+                </c:if>
+                <c:if test="${not empty study.notices}">
+                  <li class="list-group-item list-group-item-info">
+                    <div class="row">
+                      <c:forEach items="${study.notices}" var="notice">
+                        <div class="col-sm-10 col-sm-offset-1">
+                          <s:message text="${notice}" />
                         </div>
                       </c:forEach>
                     </div>

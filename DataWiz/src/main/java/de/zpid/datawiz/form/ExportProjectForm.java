@@ -17,6 +17,8 @@ public class ExportProjectForm implements Serializable {
 	private boolean exportProjectMaterial;
 	private List<ExportStudyDTO> studies;
 	private List<FileDTO> material;
+	private List<String> warnings;
+	private List<String> notices;
 
 	public long getProjectId() {
 		return projectId;
@@ -82,11 +84,27 @@ public class ExportProjectForm implements Serializable {
 		this.material = material;
 	}
 
+	public List<String> getWarnings() {
+		return warnings;
+	}
+
+	public void setWarnings(List<String> warnings) {
+		this.warnings = warnings;
+	}
+
+	public List<String> getNotices() {
+		return notices;
+	}
+
+	public void setNotices(List<String> notices) {
+		this.notices = notices;
+	}
+
 	@Override
 	public String toString() {
 		return "ExportProjectForm [projectId=" + projectId + ", projectTitle=" + projectTitle + ", exportFullProject=" + exportFullProject
 		    + ", exportMetaData=" + exportMetaData + ", exportDMP=" + exportDMP + ", exportProjectMaterial=" + exportProjectMaterial + ", studies="
-		    + studies + "]";
+		    + studies + ", material=" + material + ", warnings=" + warnings + ", notices=" + notices + "]";
 	}
 
 }
