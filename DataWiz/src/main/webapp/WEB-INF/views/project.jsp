@@ -302,10 +302,10 @@
         </div> --%>
         <!-- Buttons -->
         <div class="row">
-          <div class="col-md-6 text-align-left">
+          <div class="col-xs-6 text-align-left">
             <a href="<c:url value="/panel" />" class="btn btn-default btn-sm"><s:message code="back.to.panel" /></a>
           </div>
-          <div class="col-md-6 text-align-right">
+          <div class="col-xs-6 text-align-right">
             <sf:button type="submit" class="btn btn-success btn-sm" id="meta_submit">
               <s:message code="gen.submit" />
             </sf:button>

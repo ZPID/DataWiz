@@ -18,14 +18,14 @@
           <c:otherwise>
             <div class="row">
               <div class="col-sm-12 text-align-right">
-                <!-- Trigger the modal with a button -->
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#uploadModal">
+                <!-- Trigger the modal with a button -->                
+                <button type="button" class="btn btn-primary btn-sm btn-xs-block" data-toggle="modal" data-target="#uploadModal">
                   <s:message code="record.upload.new.file" />
                 </button>
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exportModal">
+                <button type="button" class="btn btn-primary btn-sm btn-xs-block" data-toggle="modal" data-target="#exportModal">
                   <s:message code="export.show.modal.button" />
-                </button>
-                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#historyModal">
+                </button>                
+                <button type="button" class="btn btn-primary btn-sm btn-xs-block" data-toggle="modal" data-target="#historyModal">
                   <s:message code="record.history.show" />
                 </button>
                 <c:if
@@ -33,11 +33,11 @@
                   ((principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) 
                   or principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)) and  StudyForm.record.createdBy eq principal.user.email) 
                   or principal.user.hasRole('ADMIN')}">
-                  <a class="btn btn-danger btn-sm"
+                  <a class="btn btn-danger btn-sm btn-xs-block"
                     href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/deleteRecord" />"
                     onclick="return confirm('<s:message code="record.delete.popup.msg" />');"><s:message
                       code="record.delete.button" /></a>
-                </c:if>
+                </c:if>                
               </div>
               <div class="col-sm-12">
                 <h4>
@@ -79,11 +79,11 @@
         <c:set var="input_vars" value="record.description;record.description; ; ;row" />
         <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
-          <div class="col-md-6">
+          <div class="col-xs-6">
             <a href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" />"
               class="btn btn-default btn-sm"><s:message code="record.back.to.overview" /></a>
           </div>
-          <div class="col-md-6 text-align-right">
+          <div class="col-xs-6 text-align-right">
             <sf:button class="btn btn-success btn-sm" name="saveMetaData">
               <s:message code="gen.submit" />
             </sf:button>

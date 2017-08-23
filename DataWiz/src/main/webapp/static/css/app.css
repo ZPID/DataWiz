@@ -315,6 +315,16 @@ label.btn::after {
     left: 0%;
   	top: 8px;
   }  
+  .btn-xs-block {
+  	display:block;
+  	width:90%;
+  	margin: auto;
+  }
+  .btn-block + .btn-xs-block,
+  .btn-xs-block + .btn-block,
+  .btn-xs-block + .btn-xs-block {
+  	margin-top: 0.5rem;
+  }
   #navbarlogo {
     height: 0px;
     position: relative;
