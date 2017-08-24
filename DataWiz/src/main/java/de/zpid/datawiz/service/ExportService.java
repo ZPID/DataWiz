@@ -151,14 +151,11 @@ public class ExportService {
 									studExp.getRecords().add(recExp);
 								}
 							}
-							ccUtil.checkStudyConsisty(studExp, studyDAO.findById(study.getId(), project.getId(), false, false));
+							ccUtil.checkStudyConsistency(studExp, studyDAO.findById(study.getId(), project.getId(), false, false));
 							exportForm.getStudies().add(studExp);
 						}
-					}
-					
-					
-					
-					
+					}					
+					ccUtil.checkDMPConsistency(exportForm, dmpDAO.findByID(project));					
 				} else {
 					throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[] { pid }, Locale.ENGLISH),
 					    DataWizErrorCodes.PROJECT_NOT_AVAILABLE);

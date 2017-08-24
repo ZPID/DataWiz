@@ -6,7 +6,7 @@ html {
 
 body {
   font-family: 'PT Sans', "helvetica neue", sans-serif;
-  margin-bottom: 60px;
+  margin-bottom: 80px;
 }
 
 .dropzone .dz-preview .dz-error-message {
@@ -423,7 +423,7 @@ label.btn::after {
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 40px;
+  height: 60px;
   background-color: #337ab7;
 }
 /**************** END FOOTER ****************/
@@ -771,17 +771,17 @@ label.btn::after {
 }
 
 .dwgoup {
-  background-image: url('../images/backtotop.png');
+  background-image: url('../images/totop.png');
   background-repeat: no-repeat;
   background-position: left top;
-  background-size: 50px 50px;
-  width: 50px;
-  height: 50px;
+  background-size: 46px 46px;
+  width: 46px;
+  height: 46px;
   position: fixed;
-  bottom: 50px;
-  right: 20px;
+  bottom: 7px;
+  right: 7px;
   padding: 1em;
   z-index: 1000;
   position: fixed;
-  cursor: n-resize;
+  cursor: pointer;
 }

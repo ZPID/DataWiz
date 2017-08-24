@@ -101,6 +101,8 @@ public class ExportController {
 				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
 				response.getOutputStream().write(export);
 				response.flushBuffer();
+				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { exportForm.getProjectTitle() }, null, messageSource));
+				model.put("subnaviActive", PageState.EXPORT.name());
 			} else {
 				log.warn("Method exportProject->exportZip completed with an error - DWDownloadException thrown: ", res.toString());
 				throw new DWDownloadException(res.toString());

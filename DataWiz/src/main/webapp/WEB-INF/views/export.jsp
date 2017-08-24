@@ -28,24 +28,20 @@
           </li>
           <c:if test="${not empty ExportProjectForm.warnings}">
             <li class="list-group-item list-group-item-danger">
-              <div class="row">
+              <ul class="row">
                 <c:forEach items="${ExportProjectForm.warnings}" var="studyWarn">
-                  <div class="col-sm-10 col-sm-offset-1">
-                    <s:message text="${studyWarn}" />
-                  </div>
+                  <li class="col-sm-10 col-sm-offset-1"><s:message text="${studyWarn}" /></li>
                 </c:forEach>
-              </div>
+              </ul>
             </li>
           </c:if>
           <c:if test="${not empty ExportProjectForm.notices}">
             <li class="list-group-item list-group-item-info">
-              <div class="row">
+              <ul class="row">
                 <c:forEach items="${ExportProjectForm.notices}" var="notice">
-                  <div class="col-sm-10 col-sm-offset-1">
-                    <s:message text="${notice}" />
-                  </div>
+                  <li class="col-sm-10 col-sm-offset-1"><s:message text="${notice}" /></li>
                 </c:forEach>
-              </div>
+              </ul>
             </li>
           </c:if>
           <li class="list-group-item"><div class="row">
@@ -96,8 +92,8 @@
                     </div>
                     <table class="table table-striped">
                       <tr>
-                        <th>name</th>
-                        <th>size</th>
+                        <th><s:message code="export.view.filename" /></th>
+                        <th><s:message code="export.view.filesize" /></th>
                       </tr>
                       <c:set var="totalSize" value="0" />
                       <c:forEach items="${ExportProjectForm.material}" var="file">
@@ -110,11 +106,13 @@
                                 text="${file.fileName}" /></a></td>
                           <td><c:choose>
                               <c:when test="${file.fileSize>(1000000)}">
-                                <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000000}" /> MB
-                          </c:when>
+                                <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000000}" />
+                                <s:message code="export.view.mb" />
+                              </c:when>
                               <c:otherwise>
-                                <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000}" /> KB
-                          </c:otherwise>
+                                <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000}" />
+                                <s:message code="export.view.kb" />
+                              </c:otherwise>
                             </c:choose></td>
                         </tr>
                         <c:if test="${sizeWarn}">
@@ -123,14 +121,16 @@
                         <c:set var="totalSize" value="${totalSize + file.fileSize}" />
                       </c:forEach>
                       <tr>
-                        <td class="text-right">Gesamtgröße:</td>
+                        <td class="text-right"><s:message code="export.view.totalsize" /></td>
                         <td><c:choose>
                             <c:when test="${totalSize>(1000000)}">
-                              <fmt:formatNumber type="number" maxFractionDigits="2" value="${totalSize/1000000}" /> MB
-                          </c:when>
+                              <fmt:formatNumber type="number" maxFractionDigits="2" value="${totalSize/1000000}" />
+                              <s:message code="export.view.mb" />
+                            </c:when>
                             <c:otherwise>
-                              <fmt:formatNumber type="number" maxFractionDigits="2" value="${totalSize/1000}" /> KB
-                          </c:otherwise>
+                              <fmt:formatNumber type="number" maxFractionDigits="2" value="${totalSize/1000}" />
+                              <s:message code="export.view.kb" />
+                            </c:otherwise>
                           </c:choose></td>
                       </tr>
                     </table>
@@ -146,7 +146,7 @@
           <li class="list-group-item" style="background-color: #eee;">
             <div class="form-group">
               <div class="col-sm-12">
-                <label>Studien</label>
+                <label><s:message code="export.view.studies" /></label>
               </div>
             </div> <c:forEach items="${ExportProjectForm.studies}" var="study" varStatus="studyLoop">
               <ul class="list-group li_head_u2" style="position: relative; right: -12px;">
@@ -162,28 +162,28 @@
                 </li>
                 <c:if test="${not empty study.warnings}">
                   <li class="list-group-item list-group-item-danger">
-                    <div class="row">
+                    <ul class="row" type="circle">
                       <c:forEach items="${study.warnings}" var="studyWarn">
-                        <div class="col-sm-10 col-sm-offset-1">
-                          <s:message text="${studyWarn}" />
-                        </div>
+                        <li class="col-sm-10 col-sm-offset-1"><s:message text="${studyWarn}" /></li>
                       </c:forEach>
-                    </div>
+                    </ul>
                   </li>
                 </c:if>
                 <c:if test="${not empty study.notices}">
                   <li class="list-group-item list-group-item-info">
-                    <div class="row">
-                      <c:forEach items="${study.notices}" var="notice">
-                        <div class="col-sm-10 col-sm-offset-1">
-                          <s:message text="${notice}" />
-                        </div>
-                      </c:forEach>
+                    <div>
+                      <ul class="row" type="circle">
+                        <c:forEach items="${study.notices}" var="notice">
+                          <li class="col-sm-10 col-sm-offset-1"><s:message text="${notice}" /></li>
+                        </c:forEach>
+                      </ul>
                     </div>
                   </li>
                 </c:if>
                 <li class="list-group-item"><div class="row">
-                    <div class="col-sm-11">Studien-Metadaten</div>
+                    <div class="col-sm-11">
+                      <s:message code="export.view.studymeta" />
+                    </div>
                     <div class="col-sm-1">
                       <sf:checkbox path="studies[${studyLoop.index}].exportMetaData" />
                     </div>
@@ -209,7 +209,7 @@
                           </div>
                         </div>
                         <div class="col-sm-1">
-                          <sf:checkbox path="exportProjectMaterial" />
+                          <sf:checkbox path="studies[${studyLoop.index}].exportStudyMaterial" />
                         </div>
                         <c:set var="globalSizeWarn" value="false" />
                       </div>
@@ -220,8 +220,8 @@
                           </div>
                           <table class="table table-striped">
                             <tr>
-                              <th>name</th>
-                              <th>size</th>
+                              <th><s:message code="export.view.filename" /></th>
+                              <th><s:message code="export.view.filesize" /></th>
                             </tr>
                             <c:set var="totalSize" value="0" />
                             <c:forEach items="${study.material}" var="file">
@@ -247,7 +247,7 @@
                               <c:set var="totalSize" value="${totalSize + file.fileSize}" />
                             </c:forEach>
                             <tr>
-                              <td class="text-right">Gesamtgröße:</td>
+                              <td class="text-right"><s:message code="export.view.totalsize" /></td>
                               <td><c:choose>
                                   <c:when test="${totalSize>(1000000)}">
                                     <fmt:formatNumber type="number" maxFractionDigits="2" value="${totalSize/1000000}" /> MB
@@ -272,7 +272,7 @@
                     <div>
                       <div class="form-group">
                         <div class="col-sm-12">
-                          <label>Datensätze</label>
+                          <label><s:message code="export.view.records" /></label>
                         </div>
                       </div>
                       <c:forEach items="${study.records}" var="record" varStatus="recordLoop">
@@ -289,19 +289,25 @@
                             </div>
                           </li>
                           <li class="list-group-item"><div class="row">
-                              <div class="col-sm-11">Datensatz-Metadaten</div>
+                              <div class="col-sm-11">
+                                <s:message code="export.view.recordmeta" />
+                              </div>
                               <div class="col-sm-1">
                                 <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMetaData" />
                               </div>
                             </div></li>
                           <li class="list-group-item"><div class="row">
-                              <div class="col-sm-11">Codebook</div>
+                              <div class="col-sm-11">
+                                <s:message code="export.view.codebook" />
+                              </div>
                               <div class="col-sm-1">
                                 <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportCodebook" />
                               </div>
                             </div></li>
                           <li class="list-group-item"><div class="row">
-                              <div class="col-sm-11">Datenmatrix</div>
+                              <div class="col-sm-11">
+                                <s:message code="export.view.matrix" />
+                              </div>
                               <div class="col-sm-1">
                                 <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMatrix" />
                               </div>
@@ -315,7 +321,13 @@
             </c:forEach>
           </li>
         </ul>
-        <sf:button>Wenn Sie das lesen, retten Sie mich aus den Fängen von MK!!!</sf:button>
+        <div class="row">
+          <div class="col-sm-12 text-align-right">
+            <sf:button type="submit" class="btn btn-success btn-sm" id="meta_submit">
+              <s:message code="export.view.submit" />
+            </sf:button>
+          </div>
+        </div>
       </sf:form>
     </div>
   </div>

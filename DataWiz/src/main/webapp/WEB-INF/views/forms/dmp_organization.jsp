@@ -20,13 +20,10 @@
               <s:message code="dmp.edit.select.option.default" />
             </sf:option>
             <sf:option value="national">
-              <s:message code="dmp.edit.frameworkNationality.option1" />
+              <s:message code="dmp.edit.frameworkNationality.national" />
             </sf:option>
-            <sf:option value="international_no_specific">
-              <s:message code="dmp.edit.frameworkNationality.option2" />
-            </sf:option>
-            <sf:option value="international_specific">
-              <s:message code="dmp.edit.frameworkNationality.option3" />
+            <sf:option value="international">
+              <s:message code="dmp.edit.frameworkNationality.international" />
             </sf:option>
           </sf:select>
           <s:message code="dmp.edit.frameworkNationality.help" var="appresmess" />

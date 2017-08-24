@@ -35,13 +35,13 @@
               <s:message code="dmp.edit.select.option.default" />
             </sf:option>
             <sf:option value="repository">
-              <s:message code="dmp.edit.publStrategy.option1" />
+              <s:message code="dmp.edit.publStrategy.repository" />
             </sf:option>
             <sf:option value="author">
-              <s:message code="dmp.edit.publStrategy.option2" />
+              <s:message code="dmp.edit.publStrategy.author" />
             </sf:option>
             <sf:option value="nopubl">
-              <s:message code="dmp.edit.publStrategy.option3" />
+              <s:message code="dmp.edit.publStrategy.nopubl" />
             </sf:option>
           </sf:select>
           <s:message code="dmp.edit.publStrategy.help" var="appresmess" />
