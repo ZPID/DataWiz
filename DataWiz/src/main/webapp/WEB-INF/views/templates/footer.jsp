@@ -1,35 +1,35 @@
 <footer class="footer">
   <div class="row">
     <div class="col-sm-4"></div>
-    <div class="col-sm-4" style="text-align: center; top: 7px;">
+    <div class="col-sm-4" style="text-align: center; top: 10px;">
     <div style="display: inline-block;">
         <a href="http://leibniz-psychology.org" target="_blank"> <img alt="ZPID" title="ZPID"
-          src="<c:url value='/static/images/social_grey/zpid.png' />" height="46px">
+          src="<c:url value='/static/images/social_grey/zpid.png' />" height="40px">
         </a>
       </div>
       <div style="display: inline-block;">
         <a href="https://github.com/ZPID/DataWiz" target="_blank"> <img alt="GitHub" title="GitHub"
-          src="<c:url value='/static/images/social_grey/Github.png' />" height="46px">
+          src="<c:url value='/static/images/social_grey/Github.png' />" height="40px">
         </a>
       </div>
       <div style="display: inline-block;">
         <a href="#" target="_blank"> <img alt="LinkedIn" title="LinkedIn" src="<c:url value='/static/images/social_grey/Linkedin.png' />"
-          height="46px">
+          height="40px">
         </a>
       </div>
       <div style="display: inline-block;">
         <a href="https://twitter.com/zpid" target="_blank"> <img alt="Twitter" title="Twitter"
-          src="<c:url value='/static/images/social_grey/Twitter.png' />" height="46px">
+          src="<c:url value='/static/images/social_grey/Twitter.png' />" height="40px">
         </a>
       </div>
       <div style="display: inline-block;">
         <a href="https://www.facebook.com/ZPID.LeibnizZentrum" target="_blank"> <img alt="Facebook" title="Facebook"
-          src="<c:url value='/static/images/social_grey/Facebook.png' />" height="46px">
+          src="<c:url value='/static/images/social_grey/Facebook.png' />" height="40px">
         </a>
       </div>
       <div style="display: inline-block;">
         <a href="https://plus.google.com/103866060623786692682" target="_blank"> <img alt="Google+" title="Google+"
-          src="<c:url value='/static/images/social_grey/Google+.png' />" height="46px">
+          src="<c:url value='/static/images/social_grey/Google+.png' />" height="40px">
         </a>
       </div>
     </div>

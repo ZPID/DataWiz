@@ -774,12 +774,12 @@ label.btn::after {
   background-image: url('../images/totop.png');
   background-repeat: no-repeat;
   background-position: left top;
-  background-size: 46px 46px;
-  width: 46px;
-  height: 46px;
+  background-size: 40px 40px;
+  width: 40px;
+  height: 40px;
   position: fixed;
-  bottom: 7px;
-  right: 7px;
+  bottom: 10px;
+  right: 10px;
   padding: 1em;
   z-index: 1000;
   position: fixed;

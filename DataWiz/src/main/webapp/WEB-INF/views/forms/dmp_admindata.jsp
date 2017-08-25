@@ -20,7 +20,15 @@
   <!-- projectaims -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label for="project.description"><s:message code="dmp.edit.projectAims" /></label>
+      <div class="row">
+        <div class="col-xs-10 col-sm-11">
+          <label for="project.description"><s:message code="dmp.edit.projectAims" /></label>
+        </div>
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /><img src="/DataWiz/static/images/${valimag2}" class="infoImages" /><img
+            src="/DataWiz/static/images/${valimag3}" class="infoImages" />
+        </div>
+      </div>
       <div class="well" style="">
         <s:message text="${ProjectForm.project.description}" />
       </div>
@@ -29,21 +37,38 @@
   <!-- projectSponsors -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label for="project.funding"><s:message code="dmp.edit.projectSponsors" /></label>
-      <div class="well" style=""><s:message text="${ProjectForm.project.funding}" />
+      <div class="row">
+        <div class="col-xs-10 col-sm-11">
+          <label for="project.funding"><s:message code="dmp.edit.projectSponsors" /></label>
+        </div>
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
+          <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
+      <div class="well" style="">
+        <s:message text="${ProjectForm.project.funding}" />
       </div>
     </div>
   </div>
   <!-- duration -->
-  <s:message text="duration" var="dmp_var_name" />
-  <%@ include file="../templates/dmp_input.jsp"%>
+  <c:set var="input_vars" value="dmp.duration;dmp.edit.duration; ; ;row" />
+  <c:set var="valimages" value="${valimag2}" />
+  <%@ include file="../templates/gen_input.jsp"%>
   <!-- organizations -->
-  <s:message text="organizations" var="dmp_var_name" />
-  <%@ include file="../templates/dmp_input.jsp"%>
+  <c:set var="input_vars" value="dmp.organizations;dmp.edit.organizations; ; ;row" />
+  <c:set var="valimages" value="${valimag2}" />
+  <%@ include file="../templates/gen_input.jsp"%>
   <!-- PrimaryContributor -->
   <div class="form-group">
     <div class="col-sm-12">
-      <label for="primaryContributor.firstName"><s:message code="dmp.edit.leader" /></label>
+      <div class="row">
+        <div class="col-xs-10 col-sm-11">
+          <label for="primaryContributor"><s:message code="dmp.edit.leader" /></label>
+        </div>
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
+          <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+        </div>
+      </div>
       <s:message var="primaryName"
         text="${ProjectForm.primaryContributor.title}&nbsp;${ProjectForm.primaryContributor.firstName}&nbsp;${ProjectForm.primaryContributor.lastName}" />
       <div class="well" style="">
@@ -52,6 +77,6 @@
     </div>
   </div>
   <!-- planAims -->
-  <s:message text="planAims" var="dmp_var_name" />
-  <%@ include file="../templates/textarea.jsp"%>
+  <c:set var="input_vars" value="dmp.planAims;dmp.edit.planAims; ; ;row" />
+  <%@ include file="../templates/gen_textarea.jsp"%>
 </div>
