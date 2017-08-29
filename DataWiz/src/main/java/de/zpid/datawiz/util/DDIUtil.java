@@ -192,7 +192,7 @@ public class DDIUtil {
 		Element pubst = shrng.addElement(new QName("publicStrategy", this.dwz));
 		pubst.addElement(new QName("select", this.dwz)).addText(dmp.getPublStrategy());
 		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getDepositName());
-		pubst.addElement(new QName("searchableData", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isSearchableData()));
+		pubst.addElement(new QName("searchableData", this.dwz)).addElement(new QName("select", this.dwz)).addText(dmp.getSearchableData());
 		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getTransferTime());
 		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getSensitiveData());
 		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getInitialUsage());

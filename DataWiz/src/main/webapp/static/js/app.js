@@ -342,7 +342,7 @@ function showorHideDMPContent() {
   switchViewIfSelected('selectUsedPID', 'other');
   switchViewIfSelected('selectstorageRequirements', 1);
   switchViewIfSelected('selectstorageSuccession', 1);
-  switchViewIfSelected('selectframeworkNationality', 'international_specific');
+  switchViewIfSelected('selectframeworkNationality', 'international');
   switchViewIfSelected('selectcontributionsDefined', 1);
   switchViewIfSelected('selectinvolvedInformed', 1);
   switchViewIfSelected('selectmanagementWorkflow', 1);
