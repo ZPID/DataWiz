@@ -8,18 +8,19 @@
       <div class="page-header">
         <c:url var="projectUrl" value="study" />
         <div class="row">
-          <c:if
-            test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
-                  principal.user.hasRole('PROJECT_WRITER', ProjectForm.project.id, false) or principal.user.hasRole('ADMIN')}">
-            <div class="col-sm-12 text-align-right">
-              <a href="${projectUrl}" class="btn btn-success btn-sm"><s:message code="study.create.button" /></a>
-            </div>
-          </c:if>
-          <div class="col-sm-12">
+          
+          <div class="col-sm-10">
             <h4>
               <s:message code="project.studies.headline" />
             </h4>
           </div>
+          <c:if
+            test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
+                  principal.user.hasRole('PROJECT_WRITER', ProjectForm.project.id, false) or principal.user.hasRole('ADMIN')}">
+            <div class="col-sm-2 text-align-right">
+              <a href="${projectUrl}" class="btn btn-success btn-sm"><s:message code="study.create.button" /></a>
+            </div>
+          </c:if>
         </div>
         <div>
           <s:message code="project.studies.info" />

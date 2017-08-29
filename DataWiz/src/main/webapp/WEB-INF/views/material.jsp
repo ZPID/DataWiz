@@ -54,12 +54,12 @@
               role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
           </div>
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-xs-6">
               <button class="btn btn-danger btn-sm" id="dz-reset-button">
                 <s:message code="material.dropzone.reset.btn" />
               </button>
             </div>
-            <div class="col-sm-6 text-align-right">
+            <div class="col-xs-6 text-align-right">
               <button class="btn btn-success btn-sm" id="dz-upload-button">
                 <s:message code="material.dropzone.upload.btn" />
               </button>

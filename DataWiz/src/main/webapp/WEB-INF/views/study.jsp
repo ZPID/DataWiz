@@ -20,6 +20,11 @@
           </c:when>
           <c:otherwise>
             <div class="row">
+              <div class="col-xs-8 col-sm-9">
+                <h4>
+                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
+                </h4>
+              </div>
               <c:set var="allowEdit" value="false" />
               <c:if
                 test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
@@ -27,7 +32,7 @@
                         principal.user.hasRole('ADMIN') or 
                         principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
-                <div class="col-sm-12 text-align-right">
+                <div class="col-xs-4 col-sm-3 text-align-right">
                   <c:url var="accessUrl"
                     value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                   <c:choose>
@@ -40,11 +45,7 @@
                   </c:choose>
                 </div>
               </c:if>
-              <div class="col-sm-12">
-                <h4>
-                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
-                </h4>
-              </div>
+              
             </div>
             <div>
               <s:message code="study.edit.basis.info" />

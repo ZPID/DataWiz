@@ -131,11 +131,13 @@
         <%@ include file="templates/gen_input.jsp"%>
         <!-- back and submit -->
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
-            <button type="reset" class="btn btn-default">
+          <div class="col-xs-6">
+            <button type="reset" class="btn btn-default btn-sm">
               <s:message code="gen.reset" />
             </button>
-            <button type="submit" class="btn btn-success">
+          </div>
+          <div class="col-xs-6 text-align-right">
+            <button type="submit" class="btn btn-success btn-sm">
               <s:message code="gen.submit" />
             </button>
           </div>

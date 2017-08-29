@@ -6,22 +6,23 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <div class="row">
+        <div class="row">        
+          <div class="col-xs-8 col-sm-9">
+            <h4>
+              <s:message code="record.overview.headline" />
+            </h4>
+          </div>
           <c:if
             test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
                             principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) or 
                             principal.user.hasRole('ADMIN') or 
                             principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
-            <div class="col-sm-12 text-align-right">
+            <div class="col-xs-4 col-sm-3 text-align-right">
               <a href='<c:url value="record/"/>' class="btn btn-success btn-sm"><s:message
                   code="record.create.new.record" /></a>
             </div>
           </c:if>
-          <div class="col-sm-12">
-            <h4>
-              <s:message code="record.overview.headline" />
-            </h4>
-          </div>
+          
         </div>
         <div>
           <s:message code="record.overview.info" />

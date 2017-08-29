@@ -368,7 +368,7 @@ label.btn::after {
   .breadcrumb {
     left: 5%;
   }
-  .breadcrumb > *:nth-last-child(-n+2) {
+  .breadcrumb > *:nth-last-child(-n+1) {
     display:inline-block;
   }
   .breadcrumb li {
@@ -381,7 +381,25 @@ label.btn::after {
     top: 2x;
   }
 }
+/* Breite ab 980 pixel */
+@media ( min-width : 980px) {
+  .breadcrumb > *:nth-last-child(-n+2) {
+    display:inline-block;
+  }
+  .breadcrumb li {
+    max-width: 250px;
+  }
+}
 /* Breite ab 1200 pixel */
+@media ( min-width : 1200px) {
+  .breadcrumb > *:nth-last-child(-n+3) {
+    display:inline-block;
+  }
+  .breadcrumb li {
+    max-width: 300px;
+  }
+}
+/* Breite ab 1600 pixel */
 @media ( min-width : 1600px) {
   .login_container {
     background-color: white;
@@ -407,11 +425,11 @@ label.btn::after {
   .breadcrumb {
     left: 10%;
   }
-  .breadcrumb > *:nth-last-child(-n+3) {
+  .breadcrumb > *:nth-last-child(-n+4) {
     display:inline-block;
   }
   .breadcrumb li {
-    max-width: 400px;
+    max-width: 300px;
   }
   #navbarlogo {
     height: 48px;

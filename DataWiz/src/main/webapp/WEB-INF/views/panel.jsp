@@ -6,14 +6,14 @@
     <div class="content-padding">
       <div class="page-header">
         <c:url var="projectUrl" value="/project" />
-        <div class="row">
-          <div class="col-sm-12 text-align-right">
-            <a href="${projectUrl}/" class="btn btn-success btn-sm"><s:message code="project.create.button" /></a>
-          </div>
-          <div class="col-sm-12">
+        <div class="row">          
+          <div class="col-xs-8 col-sm-10">
             <h4>
               <s:message code="projects.overview.headline" />
             </h4>
+          </div>
+          <div class="col-xs-4 col-sm-2 text-align-right">
+            <a href="${projectUrl}/" class="btn btn-success btn-sm"><s:message code="project.create.button" /></a>
           </div>
         </div>
         <div>
