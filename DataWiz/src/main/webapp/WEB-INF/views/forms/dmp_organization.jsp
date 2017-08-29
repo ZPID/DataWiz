@@ -13,9 +13,16 @@
     <li class="list-group-item">
       <div class="form-group">
         <div class="col-sm-12">
-          <label for="dmp.frameworkNationality"><s:message code="dmp.edit.frameworkNationality" /></label>
+          <div class="row">
+            <div class="col-xs-10 col-sm-11">
+              <label for="dmp.frameworkNationality"><s:message code="dmp.edit.frameworkNationality" /></label>
+            </div>
+            <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
+              <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            </div>
+          </div>
           <sf:select class="form-control" path="dmp.frameworkNationality" id="selectframeworkNationality"
-            onchange="switchViewIfSelected('selectframeworkNationality', 'international_specific');">
+            onchange="switchViewIfSelected('selectframeworkNationality', 'international');">
             <sf:option value="">
               <s:message code="dmp.edit.select.option.default" />
             </sf:option>
@@ -30,28 +37,24 @@
           <%@ include file="../templates/helpblock.jsp"%>
           <!-- frameworkNationalityTxt -->
           <div id="contentframeworkNationality">
-            <s:message text="frameworkNationalityTxt" var="dmp_var_name" />
-            <%@ include file="../templates/textarea.jsp"%>
+            <c:set var="input_vars" value="dmp.frameworkNationalityTxt;dmp.edit.frameworkNationalityTxt; ; ;row" />
+            <c:set var="valimages" value="${valimag2}" />
+            <%@ include file="../templates/gen_textarea.jsp"%>
           </div>
         </div>
       </div>
     </li>
     <!-- responsibleUnit -->
-    <li class="list-group-item">
-      <s:message text="responsibleUnit" var="dmp_var_name" />
-      <%@ include file="../templates/textarea.jsp"%>
+    <li class="list-group-item"><s:message text="responsibleUnit" var="dmp_var_name" /> <%@ include file="../templates/textarea.jsp"%>
     </li>
     <!-- involvedInstitutions -->
-    <li class="list-group-item">
-      <s:message text="involvedInstitutions" var="dmp_var_name" /> 
-      <%@ include file="../templates/textarea.jsp"%>
+    <li class="list-group-item"><s:message text="involvedInstitutions" var="dmp_var_name" /> <%@ include file="../templates/textarea.jsp"%>
     </li>
     <!-- involvedInformed -->
     <li class="list-group-item"><s:message text="involvedInformed" var="dmp_var_name" />
       <div class="form-group">
         <div class="col-sm-12">
-          <label for="dmp.${dmp_var_name}">
-            <s:message code="dmp.edit.${dmp_var_name}" />
+          <label for="dmp.${dmp_var_name}"> <s:message code="dmp.edit.${dmp_var_name}" />
           </label>
           <sf:select class="form-control" path="dmp.${dmp_var_name}" id="select${dmp_var_name}"
             onchange="switchViewIfSelected('select${dmp_var_name}', 1);">
@@ -71,41 +74,25 @@
         </div>
       </div></li>
     <!-- managementWorkflow -->
-    <li class="list-group-item">
-      <s:message text="managementWorkflow" var="dmp_var_name" />
-      <s:message text="1" var="dmp_explain_at" />
-      <%@ include file="../templates/selectYesNoWithReason.jsp"%>
-    </li>
+    <li class="list-group-item"><s:message text="managementWorkflow" var="dmp_var_name" /> <s:message text="1" var="dmp_explain_at" /> <%@ include
+        file="../templates/selectYesNoWithReason.jsp"%></li>
     <!-- staffDescription -->
-    <li class="list-group-item">
-      <s:message text="staffDescription" var="dmp_var_name" /> 
-      <s:message text="1" var="dmp_explain_at" />
-      <%@ include file="../templates/selectYesNoWithReason.jsp"%>
-    </li>
+    <li class="list-group-item"><s:message text="staffDescription" var="dmp_var_name" /> <s:message text="1" var="dmp_explain_at" /> <%@ include
+        file="../templates/selectYesNoWithReason.jsp"%></li>
     <!-- funderRequirements -->
-    <li class="list-group-item">
-      <s:message text="funderRequirements" var="dmp_var_name" /> 
-      <%@ include file="../templates/textarea.jsp"%>
+    <li class="list-group-item"><s:message text="funderRequirements" var="dmp_var_name" /> <%@ include file="../templates/textarea.jsp"%>
     </li>
     <!-- providerRequirements -->
-    <li class="list-group-item contentExistingData">
-      <s:message text="providerRequirements" var="dmp_var_name" /> 
-      <%@ include file="../templates/textarea.jsp"%>
-    </li>
+    <li class="list-group-item contentExistingData"><s:message text="providerRequirements" var="dmp_var_name" /> <%@ include
+        file="../templates/textarea.jsp"%></li>
     <!-- repoPolicies -->
-    <li class="list-group-item contentPublStrategy0 contentPublStrategy1">
-      <s:message text="repoPolicies" var="dmp_var_name" /> 
-      <%@ include file="../templates/textarea.jsp"%>
-    </li>
+    <li class="list-group-item contentPublStrategy0 contentPublStrategy1"><s:message text="repoPolicies" var="dmp_var_name" /> <%@ include
+        file="../templates/textarea.jsp"%></li>
     <!-- repoPoliciesResponsible -->
-    <li class="list-group-item contentPublStrategy0 contentPublStrategy1">
-      <s:message text="repoPoliciesResponsible" var="dmp_var_name" />
-      <%@ include file="../templates/textarea.jsp"%>
-    </li>
+    <li class="list-group-item contentPublStrategy0 contentPublStrategy1"><s:message text="repoPoliciesResponsible" var="dmp_var_name" /> <%@ include
+        file="../templates/textarea.jsp"%></li>
     <!-- planningAdherence -->
-    <li class="list-group-item">
-      <s:message text="planningAdherence" var="dmp_var_name" /> 
-      <%@ include file="../templates/textarea.jsp"%>
+    <li class="list-group-item"><s:message text="planningAdherence" var="dmp_var_name" /> <%@ include file="../templates/textarea.jsp"%>
     </li>
   </ul>
 </div>
