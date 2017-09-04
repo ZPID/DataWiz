@@ -60,6 +60,9 @@ public class ExceptionService {
 			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.IMPORT_FILE_IS_EMPTY)) {
 				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("import.error.file.null", null, LocaleContextHolder.getLocale()));
 				ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.MISSING_UID_ERROR)) {
+				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
+				ret = "redirect:/login";
 			} else if (dwe.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
 				model.put("errormsg",
 				    messageSource.getMessage("dbs.sql.exception",

@@ -34,14 +34,6 @@ public class DmpDTO implements Serializable {
 	public interface AdminVal {
 	}
 
-	/** DMP02. */
-	@Size(min = 0, max = 2000, groups = AdminVal.class)
-	private String projectAims;
-
-	/** DMP03. */
-	@Size(min = 0, max = 250, groups = AdminVal.class)
-	private String projectSponsors;
-
 	/** DMP04. */
 	@Size(min = 0, max = 250, groups = AdminVal.class)
 	private String duration;
@@ -127,37 +119,17 @@ public class DmpDTO implements Serializable {
 	/** DMP19 - Antwortoption DMP18 */
 	private boolean workingCopy;
 
-	/** DMP19 - Antwortoption DMP18. */
-	@Size(min = 0, max = 250, groups = ResearchVal.class)
-	private String workingCopyTxt;
-
 	/** DMP20 - Antwortoption DMP18. */
 	private boolean goodScientific;
-
-	/** DMP20 - Antwortoption DMP18. */
-	@Size(min = 0, max = 250, groups = ResearchVal.class)
-	private String goodScientificTxt;
 
 	/** DMP21 - Antwortoption DMP18. */
 	private boolean subsequentUse;
 
-	/** DMP21 - Antwortoption DMP18. */
-	@Size(min = 0, max = 250, groups = ResearchVal.class)
-	private String subsequentUseTxt;
-
 	/** DMP22 - Antwortoption DMP18. */
 	private boolean requirements;
 
-	/** DMP22 - Antwortoption DMP18. */
-	@Size(min = 0, max = 250, groups = ResearchVal.class)
-	private String requirementsTxt;
-
 	/** DMP23 - Antwortoption DMP18. */
 	private boolean documentation;
-
-	/** DMP23 - Antwortoption DMP18. */
-	@Size(min = 0, max = 250, groups = ResearchVal.class)
-	private String documentationTxt;
 
 	/** DMP86 - Does data selection take place?. */
 	private boolean dataSelection;
@@ -170,14 +142,6 @@ public class DmpDTO implements Serializable {
 	/** DMP25 - DMP86 ja. */
 	@Size(min = 0, max = 500, groups = ResearchVal.class)
 	private String selectionResp;
-
-	/** DMP26 - DMP86 ja. */
-	@Size(min = 0, max = 500, groups = ResearchVal.class)
-	private String selectionSoftware;
-
-	/** DMP27 - DMP86 ja. */
-	@Size(min = 0, max = 1000, groups = ResearchVal.class)
-	private String selectionCriteria;
 
 	/** DMP28. */
 	@Size(min = 0, max = 500, groups = ResearchVal.class)
@@ -233,10 +197,6 @@ public class DmpDTO implements Serializable {
 	/** DMP39. */
 	private boolean releaseObligation;
 
-	/** DMP40. */
-	@Size(min = 0, max = 1000, groups = SharingVal.class)
-	private String expectedGroups;
-
 	/** DMP42. */
 	@Size(min = 0, max = 1000, groups = SharingVal.class)
 	private String searchableData;
@@ -283,20 +243,8 @@ public class DmpDTO implements Serializable {
 	/** DMP49. */
 	private boolean accessCosts;
 
-	/** DMP49 - if accessCost == true. */
-	@Size(min = 0, max = 500, groups = SharingVal.class)
-	private String accessCostsTxt;
-
-	/** DMP50. */
-	@Size(min = 0, max = 2000, groups = SharingVal.class)
-	private String accessTermsImplementation;
-
 	/** DMP51. */
 	private boolean clarifiedRights;
-
-	/** DMP51 - if clarifiedRights == true. */
-	@Size(min = 0, max = 500, groups = SharingVal.class)
-	private String clarifiedRightsTxt;
 
 	/** DMP52. */
 	private boolean acquisitionAgreement;
@@ -412,18 +360,6 @@ public class DmpDTO implements Serializable {
 	@Size(min = 0, max = 2000, groups = OrganizationVal.class)
 	private String funderRequirements;
 
-	/** DMP69. */
-	@Size(min = 0, max = 2000, groups = OrganizationVal.class)
-	private String providerRequirements;
-
-	/** DMP70 -> if DMP43 archive or repo. */
-	@Size(min = 0, max = 1000, groups = OrganizationVal.class)
-	private String repoPolicies;
-
-	/** DMP71 -> if DMP43 archive or repo. */
-	@Size(min = 0, max = 1000, groups = OrganizationVal.class)
-	private String repoPoliciesResponsible;
-
 	/** DMP72. */
 	@Size(min = 0, max = 1000, groups = OrganizationVal.class)
 	private String planningAdherence;
@@ -500,10 +436,6 @@ public class DmpDTO implements Serializable {
 	@Size(min = 0, max = 1000, groups = CostsVal.class)
 	private String specificCostsTxt;
 
-	/** DMP84. -> if DMP83 == true */
-	@Size(min = 0, max = 1000, groups = CostsVal.class)
-	private String ariseCosts;
-
 	/** DMP85. -> if DMP83 == true */
 	@Size(min = 0, max = 1000, groups = CostsVal.class)
 	private String bearCost;
@@ -524,24 +456,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public boolean isAdminChanged() {
 		return adminChanged;
-	}
-
-	/**
-	 * Getter for {@link #projectAims}.
-	 *
-	 * @return projectAims
-	 */
-	public String getProjectAims() {
-		return projectAims;
-	}
-
-	/**
-	 * Getter for {@link #projectSponsors}.
-	 *
-	 * @return projectSponsors
-	 */
-	public String getProjectSponsors() {
-		return projectSponsors;
 	}
 
 	/**
@@ -725,30 +639,12 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #workingCopyTxt}.
-	 *
-	 * @return workingCopyTxt
-	 */
-	public String getWorkingCopyTxt() {
-		return workingCopyTxt;
-	}
-
-	/**
 	 * Checks if is {@link #goodScientific}.
 	 *
 	 * @return true, if is good scientific
 	 */
 	public boolean isGoodScientific() {
 		return goodScientific;
-	}
-
-	/**
-	 * Getter for {@link #goodScientificTxt}.
-	 *
-	 * @return goodScientificTxt
-	 */
-	public String getGoodScientificTxt() {
-		return goodScientificTxt;
 	}
 
 	/**
@@ -761,15 +657,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #subsequentUseTxt}.
-	 *
-	 * @return subsequentUseTxt
-	 */
-	public String getSubsequentUseTxt() {
-		return subsequentUseTxt;
-	}
-
-	/**
 	 * Checks if is {@link #requirements}.
 	 *
 	 * @return true, if is requirements
@@ -779,30 +666,12 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #requirementsTxt}.
-	 *
-	 * @return requirementsTxt
-	 */
-	public String getRequirementsTxt() {
-		return requirementsTxt;
-	}
-
-	/**
 	 * Checks if is {@link #documentation}.
 	 *
 	 * @return true, if is documentation
 	 */
 	public boolean isDocumentation() {
 		return documentation;
-	}
-
-	/**
-	 * Getter for {@link #documentationTxt}.
-	 *
-	 * @return documentationTxt
-	 */
-	public String getDocumentationTxt() {
-		return documentationTxt;
 	}
 
 	/**
@@ -830,24 +699,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public String getSelectionResp() {
 		return selectionResp;
-	}
-
-	/**
-	 * Getter for {@link #selectionSoftware}.
-	 *
-	 * @return selectionSoftware
-	 */
-	public String getSelectionSoftware() {
-		return selectionSoftware;
-	}
-
-	/**
-	 * Getter for {@link #selectionCriteria}.
-	 *
-	 * @return selectionCriteria
-	 */
-	public String getSelectionCriteria() {
-		return selectionCriteria;
 	}
 
 	/**
@@ -947,15 +798,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public boolean isReleaseObligation() {
 		return releaseObligation;
-	}
-
-	/**
-	 * Getter for {@link #expectedGroups}.
-	 *
-	 * @return expectedGroups
-	 */
-	public String getExpectedGroups() {
-		return expectedGroups;
 	}
 
 	/**
@@ -1067,39 +909,12 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #accessCostsTxt}.
-	 *
-	 * @return accessCostsTxt
-	 */
-	public String getAccessCostsTxt() {
-		return accessCostsTxt;
-	}
-
-	/**
-	 * Getter for {@link #accessTermsImplementation}.
-	 *
-	 * @return accessTermsImplementation
-	 */
-	public String getAccessTermsImplementation() {
-		return accessTermsImplementation;
-	}
-
-	/**
 	 * Checks if is {@link #clarifiedRights}.
 	 *
 	 * @return true, if is clarified rights
 	 */
 	public boolean isClarifiedRights() {
 		return clarifiedRights;
-	}
-
-	/**
-	 * Getter for {@link #clarifiedRightsTxt}.
-	 *
-	 * @return clarifiedRightsTxt
-	 */
-	public String getClarifiedRightsTxt() {
-		return clarifiedRightsTxt;
 	}
 
 	/**
@@ -1355,33 +1170,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #providerRequirements}.
-	 *
-	 * @return providerRequirements
-	 */
-	public String getProviderRequirements() {
-		return providerRequirements;
-	}
-
-	/**
-	 * Getter for {@link #repoPolicies}.
-	 *
-	 * @return repoPolicies
-	 */
-	public String getRepoPolicies() {
-		return repoPolicies;
-	}
-
-	/**
-	 * Getter for {@link #repoPoliciesResponsible}.
-	 *
-	 * @return repoPoliciesResponsible
-	 */
-	public String getRepoPoliciesResponsible() {
-		return repoPoliciesResponsible;
-	}
-
-	/**
 	 * Getter for {@link #planningAdherence}.
 	 *
 	 * @return planningAdherence
@@ -1544,15 +1332,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #ariseCosts}.
-	 *
-	 * @return ariseCosts
-	 */
-	public String getAriseCosts() {
-		return ariseCosts;
-	}
-
-	/**
 	 * Getter for {@link #bearCost}.
 	 *
 	 * @return bearCost
@@ -1579,32 +1358,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public void setAdminChanged(boolean adminChanged) {
 		this.adminChanged = adminChanged;
-	}
-
-	/**
-	 * Setter for {@link #projectAims}.
-	 *
-	 * @param projectAims
-	 *          -> this.projectAims
-	 */
-	public void setProjectAims(String projectAims) {
-		if (!Objects.equals(this.projectAims, projectAims)) {
-			this.projectAims = projectAims;
-			this.adminChanged = true;
-		}
-	}
-
-	/**
-	 * Setter for {@link #projectSponsors}.
-	 *
-	 * @param projectSponsors
-	 *          -> this.projectSponsors
-	 */
-	public void setProjectSponsors(String projectSponsors) {
-		if (!Objects.equals(this.projectSponsors, projectSponsors)) {
-			this.projectSponsors = projectSponsors;
-			this.adminChanged = true;
-		}
 	}
 
 	/**
@@ -1878,20 +1631,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Setter for {@link #workingCopyTxt}.
-	 *
-	 * @param workingCopyTxt
-	 *          -> this.workingCopyTxt
-	 */
-	public void setWorkingCopyTxt(String workingCopyTxt) {
-		if (!Objects.equals(this.workingCopyTxt, workingCopyTxt)) {
-			this.workingCopyTxt = workingCopyTxt;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
 	 * Setter for {@link #goodScientific}.
 	 *
 	 * @param goodScientific
@@ -1900,20 +1639,6 @@ public class DmpDTO implements Serializable {
 	public void setGoodScientific(boolean goodScientific) {
 		if (!Objects.equals(this.goodScientific, goodScientific)) {
 			this.goodScientific = goodScientific;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #goodScientificTxt}.
-	 *
-	 * @param goodScientificTxt
-	 *          -> this.goodScientificTxt
-	 */
-	public void setGoodScientificTxt(String goodScientificTxt) {
-		if (!Objects.equals(this.goodScientificTxt, goodScientificTxt)) {
-			this.goodScientificTxt = goodScientificTxt;
 			this.researchChanged = true;
 		}
 
@@ -1934,20 +1659,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Setter for {@link #subsequentUseTxt}.
-	 *
-	 * @param subsequentUseTxt
-	 *          -> this.subsequentUseTxt
-	 */
-	public void setSubsequentUseTxt(String subsequentUseTxt) {
-		if (!Objects.equals(this.subsequentUseTxt, subsequentUseTxt)) {
-			this.subsequentUseTxt = subsequentUseTxt;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
 	 * Setter for {@link #requirements}.
 	 *
 	 * @param requirements
@@ -1962,20 +1673,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Setter for {@link #requirementsTxt}.
-	 *
-	 * @param requirementsTxt
-	 *          -> this.requirementsTxt
-	 */
-	public void setRequirementsTxt(String requirementsTxt) {
-		if (!Objects.equals(this.requirementsTxt, requirementsTxt)) {
-			this.requirementsTxt = requirementsTxt;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
 	 * Setter for {@link #documentation}.
 	 *
 	 * @param documentation
@@ -1984,20 +1681,6 @@ public class DmpDTO implements Serializable {
 	public void setDocumentation(boolean documentation) {
 		if (!Objects.equals(this.documentation, documentation)) {
 			this.documentation = documentation;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #documentationTxt}.
-	 *
-	 * @param documentationTxt
-	 *          -> this.documentationTxt
-	 */
-	public void setDocumentationTxt(String documentationTxt) {
-		if (!Objects.equals(this.documentationTxt, documentationTxt)) {
-			this.documentationTxt = documentationTxt;
 			this.researchChanged = true;
 		}
 
@@ -2040,34 +1723,6 @@ public class DmpDTO implements Serializable {
 	public void setSelectionResp(String selectionResp) {
 		if (!Objects.equals(this.selectionResp, selectionResp)) {
 			this.selectionResp = selectionResp;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #selectionSoftware}.
-	 *
-	 * @param selectionSoftware
-	 *          -> this.selectionSoftware
-	 */
-	public void setSelectionSoftware(String selectionSoftware) {
-		if (!Objects.equals(this.selectionSoftware, selectionSoftware)) {
-			this.selectionSoftware = selectionSoftware;
-			this.researchChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #selectionCriteria}.
-	 *
-	 * @param selectionCriteria
-	 *          -> this.selectionCriteria
-	 */
-	public void setSelectionCriteria(String selectionCriteria) {
-		if (!Objects.equals(this.selectionCriteria, selectionCriteria)) {
-			this.selectionCriteria = selectionCriteria;
 			this.researchChanged = true;
 		}
 
@@ -2124,7 +1779,6 @@ public class DmpDTO implements Serializable {
 				this.selectedMetaPurposes = selectedMetaPurposes;
 				this.metaChanged = true;
 			}
-
 	}
 
 	/**
@@ -2138,7 +1792,6 @@ public class DmpDTO implements Serializable {
 			this.metaDescription = metaDescription;
 			this.metaChanged = true;
 		}
-
 	}
 
 	/**
@@ -2152,7 +1805,6 @@ public class DmpDTO implements Serializable {
 			this.metaFramework = metaFramework;
 			this.metaChanged = true;
 		}
-
 	}
 
 	/**
@@ -2166,7 +1818,6 @@ public class DmpDTO implements Serializable {
 			this.metaGeneration = metaGeneration;
 			this.metaChanged = true;
 		}
-
 	}
 
 	/**
@@ -2194,7 +1845,6 @@ public class DmpDTO implements Serializable {
 			this.metaFormat = metaFormat;
 			this.metaChanged = true;
 		}
-
 	}
 
 	/**
@@ -2218,21 +1868,6 @@ public class DmpDTO implements Serializable {
 			this.releaseObligation = releaseObligation;
 			this.sharingChanged = true;
 		}
-
-	}
-
-	/**
-	 * Setter for {@link #expectedGroups}.
-	 *
-	 * @param expectedGroups
-	 *          -> this.expectedGroups
-	 */
-	public void setExpectedGroups(String expectedGroups) {
-		if (!Objects.equals(this.expectedGroups, expectedGroups)) {
-			this.expectedGroups = expectedGroups;
-			this.sharingChanged = true;
-		}
-
 	}
 
 	/**
@@ -2246,7 +1881,6 @@ public class DmpDTO implements Serializable {
 			this.searchableData = searchableData;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2260,7 +1894,6 @@ public class DmpDTO implements Serializable {
 			this.expectedUsage = expectedUsage;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2274,7 +1907,6 @@ public class DmpDTO implements Serializable {
 			this.publStrategy = publStrategy;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2288,7 +1920,6 @@ public class DmpDTO implements Serializable {
 			this.accessReasonAuthor = accessReasonAuthor;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2302,7 +1933,6 @@ public class DmpDTO implements Serializable {
 			this.noAccessReason = noAccessReason;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2330,7 +1960,6 @@ public class DmpDTO implements Serializable {
 			this.depositName = depositName;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2344,7 +1973,6 @@ public class DmpDTO implements Serializable {
 			this.transferTime = transferTime;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2358,7 +1986,6 @@ public class DmpDTO implements Serializable {
 			this.sensitiveData = sensitiveData;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2372,7 +1999,6 @@ public class DmpDTO implements Serializable {
 			this.initialUsage = initialUsage;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2386,7 +2012,6 @@ public class DmpDTO implements Serializable {
 			this.usageRestriction = usageRestriction;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2400,35 +2025,6 @@ public class DmpDTO implements Serializable {
 			this.accessCosts = accessCosts;
 			this.sharingChanged = true;
 		}
-
-	}
-
-	/**
-	 * Setter for {@link #accessCostsTxt}.
-	 *
-	 * @param accessCostsTxt
-	 *          -> this.accessCostsTxt
-	 */
-	public void setAccessCostsTxt(String accessCostsTxt) {
-		if (!Objects.equals(this.accessCostsTxt, accessCostsTxt)) {
-			this.accessCostsTxt = accessCostsTxt;
-			this.sharingChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #accessTermsImplementation}.
-	 *
-	 * @param accessTermsImplementation
-	 *          -> this.accessTermsImplementation
-	 */
-	public void setAccessTermsImplementation(String accessTermsImplementation) {
-		if (!Objects.equals(this.accessTermsImplementation, accessTermsImplementation)) {
-			this.accessTermsImplementation = accessTermsImplementation;
-			this.sharingChanged = true;
-		}
-
 	}
 
 	/**
@@ -2442,21 +2038,6 @@ public class DmpDTO implements Serializable {
 			this.clarifiedRights = clarifiedRights;
 			this.sharingChanged = true;
 		}
-
-	}
-
-	/**
-	 * Setter for {@link #clarifiedRightsTxt}.
-	 *
-	 * @param clarifiedRightsTxt
-	 *          -> this.clarifiedRightsTxt
-	 */
-	public void setClarifiedRightsTxt(String clarifiedRightsTxt) {
-		if (!Objects.equals(this.clarifiedRightsTxt, clarifiedRightsTxt)) {
-			this.clarifiedRightsTxt = clarifiedRightsTxt;
-			this.sharingChanged = true;
-		}
-
 	}
 
 	/**
@@ -2470,7 +2051,6 @@ public class DmpDTO implements Serializable {
 			this.acquisitionAgreement = acquisitionAgreement;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2484,7 +2064,6 @@ public class DmpDTO implements Serializable {
 			this.usedPID = usedPID;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2498,7 +2077,6 @@ public class DmpDTO implements Serializable {
 			this.usedPIDTxt = usedPIDTxt;
 			this.sharingChanged = true;
 		}
-
 	}
 
 	/**
@@ -2522,7 +2100,6 @@ public class DmpDTO implements Serializable {
 			this.storageResponsible = storageResponsible;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2550,7 +2127,6 @@ public class DmpDTO implements Serializable {
 			this.storagePlaces = storagePlaces;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2564,7 +2140,6 @@ public class DmpDTO implements Serializable {
 			this.storageBackups = storageBackups;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2578,7 +2153,6 @@ public class DmpDTO implements Serializable {
 			this.storageTransfer = storageTransfer;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2592,7 +2166,6 @@ public class DmpDTO implements Serializable {
 			this.storageExpectedSize = storageExpectedSize;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2606,7 +2179,6 @@ public class DmpDTO implements Serializable {
 			this.storageRequirements = storageRequirements;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2620,7 +2192,6 @@ public class DmpDTO implements Serializable {
 			this.storageRequirementsTxt = storageRequirementsTxt;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2634,7 +2205,6 @@ public class DmpDTO implements Serializable {
 			this.storageSuccession = storageSuccession;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2648,7 +2218,6 @@ public class DmpDTO implements Serializable {
 			this.storageSuccessionTxt = storageSuccessionTxt;
 			this.storageChanged = true;
 		}
-
 	}
 
 	/**
@@ -2672,7 +2241,6 @@ public class DmpDTO implements Serializable {
 			this.frameworkNationality = frameworkNationality;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2686,7 +2254,6 @@ public class DmpDTO implements Serializable {
 			this.frameworkNationalityTxt = frameworkNationalityTxt;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2700,7 +2267,6 @@ public class DmpDTO implements Serializable {
 			this.responsibleUnit = responsibleUnit;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2714,7 +2280,6 @@ public class DmpDTO implements Serializable {
 			this.involvedInstitutions = involvedInstitutions;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2728,7 +2293,6 @@ public class DmpDTO implements Serializable {
 			this.involvedInformed = involvedInformed;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2742,7 +2306,6 @@ public class DmpDTO implements Serializable {
 			this.contributionsDefined = contributionsDefined;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2756,7 +2319,6 @@ public class DmpDTO implements Serializable {
 			this.contributionsDefinedTxt = contributionsDefinedTxt;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2770,7 +2332,6 @@ public class DmpDTO implements Serializable {
 			this.givenConsent = givenConsent;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2784,7 +2345,6 @@ public class DmpDTO implements Serializable {
 			this.managementWorkflow = managementWorkflow;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2798,7 +2358,6 @@ public class DmpDTO implements Serializable {
 			this.managementWorkflowTxt = managementWorkflowTxt;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2812,7 +2371,6 @@ public class DmpDTO implements Serializable {
 			this.staffDescription = staffDescription;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2826,7 +2384,6 @@ public class DmpDTO implements Serializable {
 			this.staffDescriptionTxt = staffDescriptionTxt;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2840,49 +2397,6 @@ public class DmpDTO implements Serializable {
 			this.funderRequirements = funderRequirements;
 			this.organizationChanged = true;
 		}
-
-	}
-
-	/**
-	 * Setter for {@link #providerRequirements}.
-	 *
-	 * @param providerRequirements
-	 *          -> this.providerRequirements
-	 */
-	public void setProviderRequirements(String providerRequirements) {
-		if (!Objects.equals(this.providerRequirements, providerRequirements)) {
-			this.providerRequirements = providerRequirements;
-			this.organizationChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #repoPolicies}.
-	 *
-	 * @param repoPolicies
-	 *          -> this.repoPolicies
-	 */
-	public void setRepoPolicies(String repoPolicies) {
-		if (!Objects.equals(this.repoPolicies, repoPolicies)) {
-			this.repoPolicies = repoPolicies;
-			this.organizationChanged = true;
-		}
-
-	}
-
-	/**
-	 * Setter for {@link #repoPoliciesResponsible}.
-	 *
-	 * @param repoPoliciesResponsible
-	 *          -> this.repoPoliciesResponsible
-	 */
-	public void setRepoPoliciesResponsible(String repoPoliciesResponsible) {
-		if (!Objects.equals(this.repoPoliciesResponsible, repoPoliciesResponsible)) {
-			this.repoPoliciesResponsible = repoPoliciesResponsible;
-			this.organizationChanged = true;
-		}
-
 	}
 
 	/**
@@ -2896,7 +2410,6 @@ public class DmpDTO implements Serializable {
 			this.planningAdherence = planningAdherence;
 			this.organizationChanged = true;
 		}
-
 	}
 
 	/**
@@ -2920,7 +2433,6 @@ public class DmpDTO implements Serializable {
 			this.dataProtection = dataProtection;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -2934,7 +2446,6 @@ public class DmpDTO implements Serializable {
 			this.protectionRequirements = protectionRequirements;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -2948,7 +2459,6 @@ public class DmpDTO implements Serializable {
 			this.consentObtained = consentObtained;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -2962,7 +2472,6 @@ public class DmpDTO implements Serializable {
 			this.consentObtainedTxt = consentObtainedTxt;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -2976,7 +2485,6 @@ public class DmpDTO implements Serializable {
 			this.sharingConsidered = sharingConsidered;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -2990,7 +2498,6 @@ public class DmpDTO implements Serializable {
 			this.irbApproval = irbApproval;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3004,7 +2511,6 @@ public class DmpDTO implements Serializable {
 			this.irbApprovalTxt = irbApprovalTxt;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3018,7 +2524,6 @@ public class DmpDTO implements Serializable {
 			this.sensitiveDataIncluded = sensitiveDataIncluded;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3032,7 +2537,6 @@ public class DmpDTO implements Serializable {
 			this.sensitiveDataIncludedTxt = sensitiveDataIncludedTxt;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3046,7 +2550,6 @@ public class DmpDTO implements Serializable {
 			this.externalCopyright = externalCopyright;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3060,7 +2563,6 @@ public class DmpDTO implements Serializable {
 			this.externalCopyrightTxt = externalCopyrightTxt;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3074,7 +2576,6 @@ public class DmpDTO implements Serializable {
 			this.internalCopyright = internalCopyright;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3088,7 +2589,6 @@ public class DmpDTO implements Serializable {
 			this.internalCopyrightTxt = internalCopyrightTxt;
 			this.ethicalChanged = true;
 		}
-
 	}
 
 	/**
@@ -3112,7 +2612,6 @@ public class DmpDTO implements Serializable {
 			this.specificCosts = specificCosts;
 			this.costsChanged = true;
 		}
-
 	}
 
 	/**
@@ -3126,21 +2625,6 @@ public class DmpDTO implements Serializable {
 			this.specificCostsTxt = specificCostsTxt;
 			this.costsChanged = true;
 		}
-
-	}
-
-	/**
-	 * Setter for {@link #ariseCosts}.
-	 *
-	 * @param ariseCosts
-	 *          -> this.ariseCosts
-	 */
-	public void setAriseCosts(String ariseCosts) {
-		if (!Objects.equals(this.ariseCosts, ariseCosts)) {
-			this.ariseCosts = ariseCosts;
-			this.costsChanged = true;
-		}
-
 	}
 
 	/**
@@ -3154,49 +2638,42 @@ public class DmpDTO implements Serializable {
 			this.bearCost = bearCost;
 			this.costsChanged = true;
 		}
-
 	}
 
 	@Override
 	public String toString() {
-		return "DmpDTO [id=" + id + ", adminChanged=" + adminChanged + ", projectAims=" + projectAims + ", projectSponsors=" + projectSponsors
-		    + ", duration=" + duration + ", organizations=" + organizations + ", planAims=" + planAims + ", researchChanged=" + researchChanged
-		    + ", existingData=" + existingData + ", dataCitation=" + dataCitation + ", existingDataRelevance=" + existingDataRelevance
-		    + ", existingDataIntegration=" + existingDataIntegration + ", usedDataTypes=" + usedDataTypes + ", otherDataTypes=" + otherDataTypes
-		    + ", dataReproducibility=" + dataReproducibility + ", usedCollectionModes=" + usedCollectionModes + ", otherCMIP=" + otherCMIP
-		    + ", otherCMINP=" + otherCMINP + ", measOccasions=" + measOccasions + ", reliabilityTraining=" + reliabilityTraining
-		    + ", multipleMeasurements=" + multipleMeasurements + ", qualitityOther=" + qualitityOther + ", fileFormat=" + fileFormat + ", workingCopy="
-		    + workingCopy + ", workingCopyTxt=" + workingCopyTxt + ", goodScientific=" + goodScientific + ", goodScientificTxt=" + goodScientificTxt
-		    + ", subsequentUse=" + subsequentUse + ", subsequentUseTxt=" + subsequentUseTxt + ", requirements=" + requirements + ", requirementsTxt="
-		    + requirementsTxt + ", documentation=" + documentation + ", documentationTxt=" + documentationTxt + ", dataSelection=" + dataSelection
-		    + ", selectionTime=" + selectionTime + ", selectionResp=" + selectionResp + ", selectionSoftware=" + selectionSoftware
-		    + ", selectionCriteria=" + selectionCriteria + ", storageDuration=" + storageDuration + ", deleteProcedure=" + deleteProcedure
+		return "DmpDTO [id=" + id + ", adminChanged=" + adminChanged + ", duration=" + duration + ", organizations=" + organizations + ", planAims="
+		    + planAims + ", researchChanged=" + researchChanged + ", existingData=" + existingData + ", dataCitation=" + dataCitation
+		    + ", existingDataRelevance=" + existingDataRelevance + ", existingDataIntegration=" + existingDataIntegration + ", usedDataTypes="
+		    + usedDataTypes + ", otherDataTypes=" + otherDataTypes + ", dataReproducibility=" + dataReproducibility + ", usedCollectionModes="
+		    + usedCollectionModes + ", otherCMIP=" + otherCMIP + ", otherCMINP=" + otherCMINP + ", measOccasions=" + measOccasions
+		    + ", reliabilityTraining=" + reliabilityTraining + ", multipleMeasurements=" + multipleMeasurements + ", qualitityOther=" + qualitityOther
+		    + ", fileFormat=" + fileFormat + ", workingCopy=" + workingCopy + ", goodScientific=" + goodScientific + ", subsequentUse=" + subsequentUse
+		    + ", requirements=" + requirements + ", documentation=" + documentation + ", dataSelection=" + dataSelection + ", selectionTime="
+		    + selectionTime + ", selectionResp=" + selectionResp + ", storageDuration=" + storageDuration + ", deleteProcedure=" + deleteProcedure
 		    + ", metaChanged=" + metaChanged + ", selectedMetaPurposes=" + selectedMetaPurposes + ", metaDescription=" + metaDescription
 		    + ", metaFramework=" + metaFramework + ", metaGeneration=" + metaGeneration + ", metaMonitor=" + metaMonitor + ", metaFormat=" + metaFormat
-		    + ", sharingChanged=" + sharingChanged + ", releaseObligation=" + releaseObligation + ", expectedGroups=" + expectedGroups
-		    + ", searchableData=" + searchableData + ", expectedUsage=" + expectedUsage + ", publStrategy=" + publStrategy + ", accessReasonAuthor="
-		    + accessReasonAuthor + ", noAccessReason=" + noAccessReason + ", noAccessReasonOther=" + noAccessReasonOther + ", depositName=" + depositName
-		    + ", transferTime=" + transferTime + ", sensitiveData=" + sensitiveData + ", initialUsage=" + initialUsage + ", usageRestriction="
-		    + usageRestriction + ", accessCosts=" + accessCosts + ", accessCostsTxt=" + accessCostsTxt + ", accessTermsImplementation="
-		    + accessTermsImplementation + ", clarifiedRights=" + clarifiedRights + ", clarifiedRightsTxt=" + clarifiedRightsTxt
-		    + ", acquisitionAgreement=" + acquisitionAgreement + ", usedPID=" + usedPID + ", usedPIDTxt=" + usedPIDTxt + ", storageChanged="
-		    + storageChanged + ", storageResponsible=" + storageResponsible + ", storageTechnologies=" + namingCon + ", storagePlaces=" + storagePlaces
-		    + ", storageBackups=" + storageBackups + ", storageTransfer=" + storageTransfer + ", storageExpectedSize=" + storageExpectedSize
-		    + ", storageRequirements=" + storageRequirements + ", storageRequirementsTxt=" + storageRequirementsTxt + ", storageSuccession="
-		    + storageSuccession + ", storageSuccessionTxt=" + storageSuccessionTxt + ", organizationChanged=" + organizationChanged
-		    + ", frameworkNationality=" + frameworkNationality + ", frameworkNationalityTxt=" + frameworkNationalityTxt + ", responsibleUnit="
-		    + responsibleUnit + ", involvedInstitutions=" + involvedInstitutions + ", involvedInformed=" + involvedInformed + ", contributionsDefined="
-		    + contributionsDefined + ", contributionsDefinedTxt=" + contributionsDefinedTxt + ", givenConsent=" + givenConsent + ", managementWorkflow="
-		    + managementWorkflow + ", managementWorkflowTxt=" + managementWorkflowTxt + ", staffDescription=" + staffDescription
-		    + ", staffDescriptionTxt=" + staffDescriptionTxt + ", funderRequirements=" + funderRequirements + ", providerRequirements="
-		    + providerRequirements + ", repoPolicies=" + repoPolicies + ", repoPoliciesResponsible=" + repoPoliciesResponsible + ", planningAdherence="
-		    + planningAdherence + ", ethicalChanged=" + ethicalChanged + ", dataProtection=" + dataProtection + ", protectionRequirements="
-		    + protectionRequirements + ", consentObtained=" + consentObtained + ", consentObtainedTxt=" + consentObtainedTxt + ", sharingConsidered="
-		    + sharingConsidered + ", irbApproval=" + irbApproval + ", irbApprovalTxt=" + irbApprovalTxt + ", sensitiveDataIncluded="
-		    + sensitiveDataIncluded + ", sensitiveDataIncludedTxt=" + sensitiveDataIncludedTxt + ", externalCopyright=" + externalCopyright
-		    + ", externalCopyrightTxt=" + externalCopyrightTxt + ", internalCopyright=" + internalCopyright + ", internalCopyrightTxt="
-		    + internalCopyrightTxt + ", costsChanged=" + costsChanged + ", specificCosts=" + specificCosts + ", specificCostsTxt=" + specificCostsTxt
-		    + ", ariseCosts=" + ariseCosts + ", bearCost=" + bearCost + "]";
+		    + ", sharingChanged=" + sharingChanged + ", releaseObligation=" + releaseObligation + ", searchableData=" + searchableData
+		    + ", expectedUsage=" + expectedUsage + ", publStrategy=" + publStrategy + ", accessReasonAuthor=" + accessReasonAuthor + ", noAccessReason="
+		    + noAccessReason + ", noAccessReasonOther=" + noAccessReasonOther + ", depositName=" + depositName + ", transferTime=" + transferTime
+		    + ", sensitiveData=" + sensitiveData + ", initialUsage=" + initialUsage + ", usageRestriction=" + usageRestriction + ", accessCosts="
+		    + accessCosts + ", clarifiedRights=" + clarifiedRights + ", acquisitionAgreement=" + acquisitionAgreement + ", usedPID=" + usedPID
+		    + ", usedPIDTxt=" + usedPIDTxt + ", storageChanged=" + storageChanged + ", storageResponsible=" + storageResponsible + ", namingCon="
+		    + namingCon + ", storagePlaces=" + storagePlaces + ", storageBackups=" + storageBackups + ", storageTransfer=" + storageTransfer
+		    + ", storageExpectedSize=" + storageExpectedSize + ", storageRequirements=" + storageRequirements + ", storageRequirementsTxt="
+		    + storageRequirementsTxt + ", storageSuccession=" + storageSuccession + ", storageSuccessionTxt=" + storageSuccessionTxt
+		    + ", organizationChanged=" + organizationChanged + ", frameworkNationality=" + frameworkNationality + ", frameworkNationalityTxt="
+		    + frameworkNationalityTxt + ", responsibleUnit=" + responsibleUnit + ", involvedInstitutions=" + involvedInstitutions + ", involvedInformed="
+		    + involvedInformed + ", contributionsDefined=" + contributionsDefined + ", contributionsDefinedTxt=" + contributionsDefinedTxt
+		    + ", givenConsent=" + givenConsent + ", managementWorkflow=" + managementWorkflow + ", managementWorkflowTxt=" + managementWorkflowTxt
+		    + ", staffDescription=" + staffDescription + ", staffDescriptionTxt=" + staffDescriptionTxt + ", funderRequirements=" + funderRequirements
+		    + ", planningAdherence=" + planningAdherence + ", ethicalChanged=" + ethicalChanged + ", dataProtection=" + dataProtection
+		    + ", protectionRequirements=" + protectionRequirements + ", consentObtained=" + consentObtained + ", consentObtainedTxt=" + consentObtainedTxt
+		    + ", sharingConsidered=" + sharingConsidered + ", irbApproval=" + irbApproval + ", irbApprovalTxt=" + irbApprovalTxt
+		    + ", sensitiveDataIncluded=" + sensitiveDataIncluded + ", sensitiveDataIncludedTxt=" + sensitiveDataIncludedTxt + ", externalCopyright="
+		    + externalCopyright + ", externalCopyrightTxt=" + externalCopyrightTxt + ", internalCopyright=" + internalCopyright
+		    + ", internalCopyrightTxt=" + internalCopyrightTxt + ", costsChanged=" + costsChanged + ", specificCosts=" + specificCosts
+		    + ", specificCostsTxt=" + specificCostsTxt + ", bearCost=" + bearCost + "]";
 	}
 
 }

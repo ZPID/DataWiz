@@ -378,6 +378,7 @@ function showorHideStudyContent() {
 	switchViewIfSelected('selectPrevWork', 'OTHER');
 	switchViewIfSelected('selectCompleteSel', 'EXCERPT');
 	switchViewIfChecked('selectSurveyIntervention');
+	switchViewIfSelected('selectrepMeasures', 'MULTIPLE');
 	for (var i = 0; i < $("#constructSize").val(); i++) {
 		switchViewIfSelected('selectConstructType' + i, 'OTHER');
 	}

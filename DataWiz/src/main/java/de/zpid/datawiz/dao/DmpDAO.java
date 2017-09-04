@@ -45,8 +45,6 @@ public class DmpDAO {
 					DmpDTO dmp = (DmpDTO) applicationContext.getBean("DmpDTO");
 					dmp.setId(rs.getLong("id"));
 					// ***************** Administrative Data *****************
-					dmp.setProjectAims(rs.getString("projectAims"));
-					dmp.setProjectSponsors(rs.getString("projectSponsors"));
 					dmp.setDuration(rs.getString("duration"));
 					dmp.setOrganizations(rs.getString("organizations"));
 					dmp.setPlanAims(rs.getString("planAims"));
@@ -65,20 +63,13 @@ public class DmpDAO {
 					dmp.setQualitityOther(rs.getString("qualitityOther"));
 					dmp.setFileFormat(rs.getString("fileFormat"));
 					dmp.setWorkingCopy(rs.getBoolean("workingCopy"));
-					dmp.setWorkingCopyTxt(rs.getString("workingCopyTxt"));
 					dmp.setGoodScientific(rs.getBoolean("goodScientific"));
-					dmp.setGoodScientificTxt(rs.getString("goodScientificTxt"));
 					dmp.setSubsequentUse(rs.getBoolean("subsequentUse"));
-					dmp.setSubsequentUseTxt(rs.getString("subsequentUseTxt"));
 					dmp.setRequirements(rs.getBoolean("requirements"));
-					dmp.setRequirementsTxt(rs.getString("requirementsTxt"));
 					dmp.setDocumentation(rs.getBoolean("documentation"));
-					dmp.setDocumentationTxt(rs.getString("documentationTxt"));
 					dmp.setDataSelection(rs.getBoolean("dataSelection"));
 					dmp.setSelectionTime(rs.getString("selectionTime"));
 					dmp.setSelectionResp(rs.getString("selectionResp"));
-					dmp.setSelectionSoftware(rs.getString("selectionSoftware"));
-					dmp.setSelectionCriteria(rs.getString("selectionCriteria"));
 					dmp.setStorageDuration(rs.getString("storageDuration"));
 					dmp.setDeleteProcedure(rs.getString("deleteProcedure"));
 					// ***************** MetaData Data *****************
@@ -89,7 +80,6 @@ public class DmpDAO {
 					dmp.setMetaFormat(rs.getString("metaFormat"));
 					// ***************** Data Sharing *****************
 					dmp.setReleaseObligation(rs.getBoolean("releaseObligation"));
-					dmp.setExpectedGroups(rs.getString("expectedGroups"));
 					dmp.setSearchableData(rs.getString("searchableData"));
 					dmp.setExpectedUsage(rs.getString("expectedUsage"));
 					dmp.setPublStrategy(rs.getString("publStrategy"));
@@ -102,10 +92,7 @@ public class DmpDAO {
 					dmp.setInitialUsage(rs.getString("initialUsage"));
 					dmp.setUsageRestriction(rs.getString("usageRestriction"));
 					dmp.setAccessCosts(rs.getBoolean("accessCosts"));
-					dmp.setAccessCostsTxt(rs.getString("accessCostsTxt"));
-					dmp.setAccessTermsImplementation(rs.getString("accessTermsImplementation"));
 					dmp.setClarifiedRights(rs.getBoolean("clarifiedRights"));
-					dmp.setClarifiedRightsTxt(rs.getString("clarifiedRightsTxt"));
 					dmp.setAcquisitionAgreement(rs.getBoolean("acquisitionAgreement"));
 					dmp.setUsedPID(rs.getString("usedPID"));
 					dmp.setUsedPIDTxt(rs.getString("usedPIDTxt"));
@@ -134,9 +121,6 @@ public class DmpDAO {
 					dmp.setStaffDescription(rs.getBoolean("staffDescription"));
 					dmp.setStaffDescriptionTxt(rs.getString("staffDescriptionTxt"));
 					dmp.setFunderRequirements(rs.getString("funderRequirements"));
-					dmp.setProviderRequirements(rs.getString("providerRequirements"));
-					dmp.setRepoPolicies(rs.getString("repoPolicies"));
-					dmp.setRepoPoliciesResponsible(rs.getString("repoPoliciesResponsible"));
 					dmp.setPlanningAdherence(rs.getString("planningAdherence"));
 					// ***************** Ethical and legal aspects *****************
 					dmp.setDataProtection(rs.getBoolean("dataProtection"));
@@ -155,7 +139,6 @@ public class DmpDAO {
 					// ***************** Costs *****************
 					dmp.setSpecificCosts(rs.getString("specificCosts"));
 					dmp.setSpecificCostsTxt(rs.getString("specificCostsTxt"));
-					dmp.setAriseCosts(rs.getString("ariseCosts"));
 					dmp.setBearCost(rs.getString("bearCost"));
 					rs.close();
 					return dmp;
@@ -171,9 +154,8 @@ public class DmpDAO {
 	public int updateAdminData(DmpDTO dmp) throws Exception {
 		if (log.isDebugEnabled())
 			log.debug("execute updateAdminData for [id: " + dmp.getId() + "]");
-		return this.jdbcTemplate.update(
-		    "UPDATE dw_dmp SET projectAims = ?, projectSponsors = ?, duration = ?, organizations = ?, planAims = ? WHERE id = ?", dmp.getProjectAims(),
-		    dmp.getProjectSponsors(), dmp.getDuration(), dmp.getOrganizations(), dmp.getPlanAims(), dmp.getId());
+		return this.jdbcTemplate.update("UPDATE dw_dmp SET duration = ?, organizations = ?, planAims = ? WHERE id = ?", dmp.getDuration(),
+		    dmp.getOrganizations(), dmp.getPlanAims(), dmp.getId());
 	}
 
 	public int updateResearchData(final DmpDTO dmp) throws Exception {
@@ -183,17 +165,13 @@ public class DmpDAO {
 		    "UPDATE dw_dmp SET existingData = ?, dataCitation = ?, existingDataRelevance = ?, existingDataIntegration = ?,"
 		        + " otherDataTypes = ?, dataReproducibility = ?, otherCMIP = ?, otherCMINP = ?, measOccasions = ?,"
 		        + " reliabilityTraining = ?, multipleMeasurements = ?, qualitityOther = ?, fileFormat = ?,"
-		        + " workingCopy = ?, workingCopyTxt = ?, goodScientific = ?, goodScientificTxt = ?,"
-		        + " subsequentUse = ?, subsequentUseTxt = ?, requirements = ?, requirementsTxt = ?,"
-		        + " documentation = ?, documentationTxt = ?, dataSelection = ?, selectionTime = ?, selectionResp = ?,"
-		        + " selectionSoftware = ?, selectionCriteria = ?, storageDuration = ?, deleteProcedure = ?" + " WHERE id = ?",
+		        + " workingCopy = ?, goodScientific = ?, subsequentUse = ?, requirements = ?,"
+		        + " documentation = ?, dataSelection = ?, selectionTime = ?, selectionResp = ?, storageDuration = ?, deleteProcedure = ? WHERE id = ?",
 		    dmp.getExistingData(), dmp.getDataCitation(), dmp.getExistingDataRelevance(), dmp.getExistingDataIntegration(), dmp.getOtherDataTypes(),
 		    dmp.getDataReproducibility(), dmp.getOtherCMIP(), dmp.getOtherCMINP(), dmp.getMeasOccasions(), dmp.getReliabilityTraining(),
-		    dmp.getMultipleMeasurements(), dmp.getQualitityOther(), dmp.getFileFormat(), dmp.isWorkingCopy(), dmp.getWorkingCopyTxt(),
-		    dmp.isGoodScientific(), dmp.getGoodScientificTxt(), dmp.isSubsequentUse(), dmp.getSubsequentUseTxt(), dmp.isRequirements(),
-		    dmp.getRequirementsTxt(), dmp.isDocumentation(), dmp.getDocumentationTxt(), dmp.isDataSelection(), dmp.getSelectionTime(),
-		    dmp.getSelectionResp(), dmp.getSelectionSoftware(), dmp.getSelectionCriteria(), dmp.getStorageDuration(), dmp.getDeleteProcedure(),
-		    dmp.getId());
+		    dmp.getMultipleMeasurements(), dmp.getQualitityOther(), dmp.getFileFormat(), dmp.isWorkingCopy(), dmp.isGoodScientific(),
+		    dmp.isSubsequentUse(), dmp.isRequirements(), dmp.isDocumentation(), dmp.isDataSelection(), dmp.getSelectionTime(), dmp.getSelectionResp(),
+		    dmp.getStorageDuration(), dmp.getDeleteProcedure(), dmp.getId());
 		return ret;
 	}
 
@@ -210,16 +188,14 @@ public class DmpDAO {
 		if (log.isDebugEnabled())
 			log.debug("execute updateSharingData for [id: " + dmp.getId() + "]");
 		return this.jdbcTemplate.update(
-		    "UPDATE dw_dmp SET releaseObligation = ?, expectedGroups = ?, searchableData = ?, expectedUsage = ?, "
+		    "UPDATE dw_dmp SET releaseObligation = ?, searchableData = ?, expectedUsage = ?, "
 		        + "publStrategy = ?, accessReasonAuthor = ?, noAccessReason = ?, noAccessReasonOther = ?, "
-		        + "depositName = ?, transferTime = ?, sensitiveData= ?, initialUsage = ?, "
-		        + "usageRestriction = ?, accessCosts = ?, accessCostsTxt = ?, accessTermsImplementation = ?, "
-		        + "clarifiedRights = ?, clarifiedRightsTxt = ?, acquisitionAgreement = ?, usedPID = ?, " + "usedPIDTxt = ? WHERE id = ?",
-		    dmp.isReleaseObligation(), dmp.getExpectedGroups(), dmp.getSearchableData(), dmp.getExpectedUsage(), dmp.getPublStrategy(),
-		    dmp.getAccessReasonAuthor(), dmp.getNoAccessReason(), dmp.getNoAccessReasonOther(), dmp.getDepositName(), dmp.getTransferTime(),
-		    dmp.getSensitiveData(), dmp.getInitialUsage(), dmp.getUsageRestriction(), dmp.isAccessCosts(), dmp.getAccessCostsTxt(),
-		    dmp.getAccessTermsImplementation(), dmp.isClarifiedRights(), dmp.getClarifiedRightsTxt(), dmp.isAcquisitionAgreement(), dmp.getUsedPID(),
-		    dmp.getUsedPIDTxt(), dmp.getId());
+		        + "depositName = ?, transferTime = ?, sensitiveData= ?, initialUsage = ?, usageRestriction = ?, accessCosts = ?,"
+		        + "clarifiedRights = ?, acquisitionAgreement = ?, usedPID = ?, " + "usedPIDTxt = ? WHERE id = ?",
+		    dmp.isReleaseObligation(), dmp.getSearchableData(), dmp.getExpectedUsage(), dmp.getPublStrategy(), dmp.getAccessReasonAuthor(),
+		    dmp.getNoAccessReason(), dmp.getNoAccessReasonOther(), dmp.getDepositName(), dmp.getTransferTime(), dmp.getSensitiveData(),
+		    dmp.getInitialUsage(), dmp.getUsageRestriction(), dmp.isAccessCosts(), dmp.isClarifiedRights(), dmp.isAcquisitionAgreement(),
+		    dmp.getUsedPID(), dmp.getUsedPIDTxt(), dmp.getId());
 	}
 
 	public int updateStorageData(DmpDTO dmp) throws Exception {
@@ -241,13 +217,11 @@ public class DmpDAO {
 		    "UPDATE dw_dmp SET frameworkNationality = ?, frameworkNationalityTxt = ?, responsibleUnit = ?, "
 		        + "involvedInstitutions = ?, involvedInformed = ?, contributionsDefined = ?, "
 		        + "contributionsDefinedTxt = ?, givenConsent = ?, managementWorkflow = ?, "
-		        + "managementWorkflowTxt = ?, staffDescription = ?, staffDescriptionTxt = ?, "
-		        + "funderRequirements = ?, providerRequirements = ?, repoPolicies = ?, " + "repoPoliciesResponsible = ?, planningAdherence = ? "
-		        + "WHERE id = ?",
+		        + "managementWorkflowTxt = ?, staffDescription = ?, staffDescriptionTxt = ?, funderRequirements = ?, planningAdherence = ? WHERE id = ?",
 		    dmp.getFrameworkNationality(), dmp.getFrameworkNationalityTxt(), dmp.getResponsibleUnit(), dmp.getInvolvedInstitutions(),
 		    dmp.isInvolvedInformed(), dmp.isContributionsDefined(), dmp.getContributionsDefinedTxt(), dmp.isGivenConsent(), dmp.isManagementWorkflow(),
 		    dmp.getManagementWorkflowTxt(), dmp.isStaffDescription(), dmp.getStaffDescriptionTxt(), dmp.getFunderRequirements(),
-		    dmp.getProviderRequirements(), dmp.getRepoPolicies(), dmp.getRepoPoliciesResponsible(), dmp.getPlanningAdherence(), dmp.getId());
+		    dmp.getPlanningAdherence(), dmp.getId());
 	}
 
 	public int updateEthicalData(DmpDTO dmp) throws Exception {
@@ -266,8 +240,8 @@ public class DmpDAO {
 	public int updateCostsData(DmpDTO dmp) throws Exception {
 		if (log.isDebugEnabled())
 			log.debug("execute updateCostsData for [id: " + dmp.getId() + "]");
-		return this.jdbcTemplate.update("UPDATE dw_dmp SET specificCosts = ?, specificCostsTxt = ?, ariseCosts = ?, bearCost= ? WHERE id = ?",
-		    dmp.getSpecificCosts(), dmp.getSpecificCostsTxt(), dmp.getAriseCosts(), dmp.getBearCost(), dmp.getId());
+		return this.jdbcTemplate.update("UPDATE dw_dmp SET specificCosts = ?, specificCostsTxt = ?, bearCost= ? WHERE id = ?", dmp.getSpecificCosts(),
+		    dmp.getSpecificCostsTxt(), dmp.getBearCost(), dmp.getId());
 	}
 
 	public int insertNewDMP(BigInteger dmpid) throws Exception {

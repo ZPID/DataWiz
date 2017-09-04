@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,8 @@ import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.SavedState;
-import de.zpid.datawiz.exceptions.DataWizException;
-import de.zpid.datawiz.exceptions.DataWizSecurityException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -41,6 +41,9 @@ import de.zpid.datawiz.util.UserUtil;
 public class DMPController extends SuperController {
 
 	private static Logger log = LogManager.getLogger(DMPController.class);
+
+	@Autowired
+	private ExceptionService exceptionService;
 
 	public DMPController() {
 		super();
@@ -97,7 +100,7 @@ public class DMPController extends SuperController {
 	 * @return
 	 */
 	@RequestMapping(value = "/{pid}", method = RequestMethod.GET)
-	public String editDMP(@PathVariable long pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
+	public String editDMP(@PathVariable Optional<Long> pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
 	    RedirectAttributes redirectAttributes) {
 		if (log.isEnabled(Level.DEBUG)) {
 			log.debug("execute editDMP for projectID=" + pid);
@@ -109,22 +112,12 @@ public class DMPController extends SuperController {
 		}
 		String pName = "";
 		try {
-			projectService.getProjectForm(pForm, pid, user, PageState.DMP, projectService.checkProjectRoles(user, pid, 0, false, false));
+			projectService.getProjectForm(pForm, pid.get(), user, PageState.DMP, projectService.checkProjectRoles(user, pid.get(), 0, false, false));
 			if (pForm != null && pForm.getProject() != null && pForm.getProject().getTitle() != null && !pForm.getProject().getTitle().trim().isEmpty()) {
 				pName = pForm.getProject().getTitle();
 			}
 		} catch (Exception e) {
-			log.warn("Exception: ", e);
-			String redirectMessage = "";
-			if (e instanceof DataWizException) {
-				redirectMessage = "project.not.available";
-			} else if (e instanceof DataWizSecurityException) {
-				redirectMessage = "project.access.denied";
-			} else {
-				redirectMessage = "dbs.sql.exception";
-			}
-			redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage(redirectMessage, null, LocaleContextHolder.getLocale()));
-			return "redirect:/panel";
+			return exceptionService.setErrorMessagesAndRedirects(pid, null, null, model, redirectAttributes, e, "dmpController.editDMP");
 		}
 		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
 		model.put("subnaviActive", PageState.DMP.name());

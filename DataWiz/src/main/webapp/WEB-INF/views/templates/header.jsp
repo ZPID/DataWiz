@@ -1,6 +1,6 @@
 <%@ include file="includes.jsp"%>
 <!DOCTYPE html>
-<c:set var="localeCode" value="${pageContext.response.locale}" /> 
+<c:set var="localeCode" value="${pageContext.response.locale}" />
 <c:choose>
   <c:when test="${localeCode eq 'en'}">
     <html lang="en">
@@ -21,11 +21,19 @@
 <s:eval expression="@environment.getProperty('application.favicon.url')" var="faviconUri" />
 <link rel="icon" href="<c:url value="${faviconUri}" />" type="image/x-icon">
 <link rel="shortcut icon" href="<c:url value="${faviconUri}" />" type="image/x-icon">
+<s:eval expression="@environment.getProperty('datawiz.beta')" var="isBetaVersion" />
 </head>
 <body>
   <sec:authentication var="principal" property="principal" />
   <div class="loader"></div>
   <div id="logo">
-    <s:eval expression="@environment.getProperty('application.logo.url')" var="logoUri" />
-    <img alt="" src="<c:url value="${logoUri}" />">
+    <c:choose>
+      <c:when test="${isBetaVersion}">
+        <s:eval expression="@environment.getProperty('application.logo.url.beta')" var="logoUri" />
+      </c:when>
+      <c:otherwise>
+        <s:eval expression="@environment.getProperty('application.logo.url')" var="logoUri" />
+      </c:otherwise>
+    </c:choose>
+    <img alt="Logo" src="<c:url value="${logoUri}" />">    
   </div>

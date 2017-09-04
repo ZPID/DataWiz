@@ -40,7 +40,7 @@
             <li><a href="<c:url value="/login" />"><s:message code="navbar.main.login" /></a></li>
             <li><a href="<c:url value="/register" />"><s:message code="navbar.main.register" /></a></li>
           </sec:authorize>
-          <li><div style="position:relative; top: 10px;">
+          <li><div style="position: relative; top: 10px;">
               <c:set var="localeCode" value="${pageContext.response.locale}" />
               <c:choose>
                 <c:when test="${localeCode eq 'de'}">
@@ -59,6 +59,14 @@
                 </c:when>
               </c:choose>
             </div></li>
+          <c:if test="${isBetaVersion}">
+            <li>
+              <div style="position: absolute; left: 100%; top: -20px; padding-left: 20px;">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdRx1aiehMr7iUhUjRiZyueuWpDSPE3JURDSGCWtI1H8Ucghg/viewform?c=0&w=1" target="_blank"><img
+                  alt="Logo" src="<c:url value='/static/images/feedback.png' />" height="100px"></a>
+              </div>
+            </li>
+          </c:if>
           <!--         <li>
           <form class="navbar-form" role="search">
             <div class="form-group">

@@ -137,9 +137,9 @@ public class DDIUtil {
 		admin.addElement(new QName("projectname", this.dwz)).addText(project.getTitle());
 		admin.addElement(new QName("IDNo", this.dwz)).addText(String.valueOf(dmp.getId()));
 		Element aims = admin.addElement(new QName("aims", this.dwz));
-		aims.addElement(new QName("proj", this.dwz)).addText(dmp.getProjectAims());
+		aims.addElement(new QName("proj", this.dwz)).addText(project.getDescription());
 		aims.addElement(new QName("plan", this.dwz)).addText(dmp.getPlanAims());
-		admin.addElement(new QName("sponsors", this.dwz)).addText(dmp.getProjectSponsors());
+		admin.addElement(new QName("sponsors", this.dwz)).addText(project.getFunding());
 		admin.addElement(new QName("duration", this.dwz)).addText(dmp.getDuration());
 		admin.addElement(new QName("partners", this.dwz)).addText(dmp.getOrganizations());
 		admin.addElement(new QName("leader", this.dwz));
@@ -199,7 +199,7 @@ public class DDIUtil {
 		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getUsageRestriction());
 		Element accos = pubst.addElement(new QName("accessCosts", this.dwz));
 		accos.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isAccessCosts()));
-		accos.addElement(new QName("optional", this.dwz)).addText(dmp.getAccessCostsTxt());
+		// accos.addElement(new QName("optional", this.dwz)).addText(dmp.getAccessCostsTxt());
 		pubst.addElement(new QName("clarifiedRights", this.dwz)).addElement(new QName("select", this.dwz))
 		    .addText(String.valueOf(dmp.isClarifiedRights()));
 		pubst.addElement(new QName("acquisitionAgreement", this.dwz)).addElement(new QName("select", this.dwz))

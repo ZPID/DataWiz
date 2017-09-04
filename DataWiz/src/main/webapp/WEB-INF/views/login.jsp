@@ -6,6 +6,11 @@
     <div class="login-card content-padding">
       <c:url var="loginUrl" value="/login" />
       <sf:form action="${loginUrl}" commandName="UserDTO" StyleClass="form-horizontal">
+        <c:if test="${isBetaVersion}">
+          <div class="alert alert-danger">
+            <strong><s:message code="datawiz.is.beta.info" /> </strong>
+          </div>
+        </c:if>
         <%@ include file="templates/message.jsp"%>
         <c:if test="${param.error != null}">
           <div class="alert alert-danger">
@@ -48,8 +53,7 @@
         </div>
         <div class="input-group input-sm">
           <div class="checkbox">
-            <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message
-                code="login.remember.me" /></label>
+            <label><input type="checkbox" id="remember-me" name="remember-me"> <s:message code="login.remember.me" /></label>
           </div>
         </div>
         <div class="form-actions">

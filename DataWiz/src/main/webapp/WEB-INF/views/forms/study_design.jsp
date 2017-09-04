@@ -16,8 +16,7 @@
           <label class="control-label " for="study.objectives"><s:message code="study.objectives" /></label>
         </div>
         <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
@@ -27,13 +26,11 @@
               <s:bind path="study.objectives[${loop.index}].text">
                 <c:choose>
                   <c:when test="${status.error}">
-                    <sf:textarea rows="1" path="study.objectives[${loop.index}].text"
-                      class="form-control margin-bottom-10 redborder" title="${status.errorMessage}"
-                      data-toggle="tooltip" />
+                    <sf:textarea rows="1" path="study.objectives[${loop.index}].text" class="form-control margin-bottom-10 redborder"
+                      title="${status.errorMessage}" data-toggle="tooltip" />
                   </c:when>
                   <c:otherwise>
-                    <sf:textarea rows="1" path="study.objectives[${loop.index}].text"
-                      class="form-control margin-bottom-10" />
+                    <sf:textarea rows="1" path="study.objectives[${loop.index}].text" class="form-control margin-bottom-10" />
                   </c:otherwise>
                 </c:choose>
               </s:bind>
@@ -84,8 +81,8 @@
           <s:bind path="study.relTheorys[${loop.index}].text">
             <c:choose>
               <c:when test="${status.error}">
-                <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text"
-                  class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+                <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10 redborder"
+                  title="${status.errorMessage}" data-toggle="tooltip" />
               </c:when>
               <c:otherwise>
                 <sf:textarea rows="1" path="study.relTheorys[${loop.index}].text" class="form-control margin-bottom-10" />
@@ -113,11 +110,11 @@
           <label class="control-label " for="study.repMeasures"><s:message code="study.repMeasures" /></label>
         </div>
         <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
-      <sf:select path="study.repMeasures" class="form-control">
+      <sf:select path="study.repMeasures" class="form-control" id="selectrepMeasures"
+        onchange="switchViewIfSelected('selectrepMeasures', 'MULTIPLE');">
         <sf:option value="">
           <s:message code="gen.select" />
         </sf:option>
@@ -133,9 +130,11 @@
     </div>
   </div>
   <!-- study.timeDim -->
-  <c:set var="input_vars" value="study.timeDim;study.timeDim; ; ;row" />
-  <c:set var="valimages" value="${valimag1}" />
-  <%@ include file="../templates/gen_textarea.jsp"%>
+  <div id="contentrepMeasures">
+    <c:set var="input_vars" value="study.timeDim;study.timeDim; ; ;row" />
+    <c:set var="valimages" value="${valimag1}" />
+    <%@ include file="../templates/gen_textarea.jsp"%>
+  </div>
   <!-- study.intervention -->
   <div class="form-group">
     <div class="col-sm-12">
@@ -144,19 +143,17 @@
           <label class="control-label " for="study.surveyIntervention"><s:message code="study.intervention" /></label>
         </div>
         <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
       <div class="panel panel-default panel-body margin-bottom-0 form-group-clean">
         <label class="btn btn-default col-sm-3"> <sf:checkbox path="study.surveyIntervention"
-            onchange="switchViewIfChecked('selectSurveyIntervention')" id="selectSurveyIntervention" /> <s:message
-            code="study.intervention.survey" />
-        </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox path="study.testIntervention" />
-          <s:message code="study.intervention.test" />
-        </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox
-            path="study.experimentalIntervention" onchange="switchViewIfChecked('selectExperimentalIntervention')"
-            id="selectExperimentalIntervention" /> <s:message code="study.intervention.experimental" />
+            onchange="switchViewIfChecked('selectSurveyIntervention')" id="selectSurveyIntervention" /> <s:message code="study.intervention.survey" />
+        </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox path="study.testIntervention" /> <s:message
+            code="study.intervention.test" />
+        </label> <label class="btn btn-default col-sm-3 col-sm-offset-1"> <sf:checkbox path="study.experimentalIntervention"
+            onchange="switchViewIfChecked('selectExperimentalIntervention')" id="selectExperimentalIntervention" /> <s:message
+            code="study.intervention.experimental" />
         </label>
       </div>
       <s:message code="study.intervention.help" var="appresmess" />
@@ -172,8 +169,7 @@
             <label class="control-label " for="study.interTypeExp"><s:message code="study.interTypeExp" /></label>
           </div>
           <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
         </div>
         <sf:select path="study.interTypeExp" class="form-control">
@@ -199,8 +195,7 @@
             <label class="control-label " for="study.interTypeDes"><s:message code="study.interTypeDes" /></label>
           </div>
           <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
         </div>
         <sf:select path="study.interTypeDes" class="form-control">
@@ -229,8 +224,7 @@
             <label class="control-label " for="study.interTypeLab"><s:message code="study.interTypeLab" /></label>
           </div>
           <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
         </div>
         <sf:select path="study.interTypeLab" class="form-control">
@@ -256,8 +250,7 @@
             <label class="control-label " for="study.randomization"><s:message code="study.randomization" /></label>
           </div>
           <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
         </div>
         <sf:select path="study.randomization" class="form-control">
@@ -291,8 +284,8 @@
             <s:bind path="study.interArms[${loop.index}].text">
               <c:choose>
                 <c:when test="${status.error}">
-                  <sf:textarea rows="1" path="study.interArms[${loop.index}].text"
-                    class="form-control margin-bottom-10 redborder" title="${status.errorMessage}" data-toggle="tooltip" />
+                  <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10 redborder"
+                    title="${status.errorMessage}" data-toggle="tooltip" />
                 </c:when>
                 <c:otherwise>
                   <sf:textarea rows="1" path="study.interArms[${loop.index}].text" class="form-control margin-bottom-10" />
@@ -339,13 +332,11 @@
                     <td><s:bind path="study.measOcc[${loop.index}].text">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:textarea rows="1" path="study.measOcc[${loop.index}].text"
-                              class="form-control margin-bottom-10 redborder" title="${status.errorMessage}"
-                              data-toggle="tooltip" />
+                            <sf:textarea rows="1" path="study.measOcc[${loop.index}].text" class="form-control margin-bottom-10 redborder"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
-                            <sf:textarea rows="1" path="study.measOcc[${loop.index}].text"
-                              class="form-control margin-bottom-10" />
+                            <sf:textarea rows="1" path="study.measOcc[${loop.index}].text" class="form-control margin-bottom-10" />
                           </c:otherwise>
                         </c:choose>
                       </s:bind></td>
@@ -382,8 +373,7 @@
             <label class="control-label " for="study.surveyType"><s:message code="study.surveyType" /></label>
           </div>
           <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-              src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
           </div>
         </div>
         <sf:select path="study.surveyType" class="form-control">
@@ -416,8 +406,7 @@
           <label class="control-label " for="study.constructs"><s:message code="study.constructs" /></label>
         </div>
         <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
@@ -427,13 +416,13 @@
             <!-- study.constructs.name -->
             <div class="form-group margin-bottom-0">
               <div class="col-sm-6 margin-bottom-0">
-                <label class="control-label " for="study.constructs[${loop.index}].name"><s:message
-                    code="study.constructs.name" />&nbsp;<s:message text="${loop.index + 1}" /></label>
+                <label class="control-label " for="study.constructs[${loop.index}].name"><s:message code="study.constructs.name" />&nbsp;<s:message
+                    text="${loop.index + 1}" /></label>
                 <s:bind path="study.constructs[${loop.index}].name">
                   <c:choose>
                     <c:when test="${status.error}">
-                      <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control redborder"
-                        title="${status.errorMessage}" data-toggle="tooltip" />
+                      <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control redborder" title="${status.errorMessage}"
+                        data-toggle="tooltip" />
                     </c:when>
                     <c:otherwise>
                       <sf:textarea rows="1" path="study.constructs[${loop.index}].name" class="form-control " />
@@ -445,10 +434,8 @@
               </div>
               <!-- study.constructs.type -->
               <div class="col-sm-6 margin-bottom-0">
-                <label class="control-label " for="study.constructs[${loop.index}].type"><s:message
-                    code="study.constructs.type" /></label>
-                <sf:select path="study.constructs[${loop.index}].type" class="form-control"
-                  id="selectConstructType${loop.index}"
+                <label class="control-label " for="study.constructs[${loop.index}].type"><s:message code="study.constructs.type" /></label>
+                <sf:select path="study.constructs[${loop.index}].type" class="form-control" id="selectConstructType${loop.index}"
                   onchange="switchViewIfSelected('selectConstructType${loop.index}', 'OTHER');">
                   <sf:option value="">
                     <s:message code="gen.select" />
@@ -473,13 +460,12 @@
             <!-- study.constructs.other -->
             <div class="form-group margin-bottom-0" id="contentConstructType${loop.index}">
               <div class="col-sm-6 col-sm-offset-6">
-                <label class="control-label " for="study.constructs[${loop.index}].other"><s:message
-                    code="study.constructs.other" /></label>
+                <label class="control-label " for="study.constructs[${loop.index}].other"><s:message code="study.constructs.other" /></label>
                 <s:bind path="study.constructs[${loop.index}].other">
                   <c:choose>
                     <c:when test="${status.error}">
-                      <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control redborder"
-                        title="${status.errorMessage}" data-toggle="tooltip" />
+                      <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control redborder" title="${status.errorMessage}"
+                        data-toggle="tooltip" />
                     </c:when>
                     <c:otherwise>
                       <sf:textarea rows="1" path="study.constructs[${loop.index}].other" class="form-control " />
@@ -512,8 +498,7 @@
           <label class="control-label " for="study.instruments"><s:message code="study.instruments" /></label>
         </div>
         <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img
-            src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /> <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
       <div class="panel panel-default panel-body margin-bottom-0">
@@ -530,13 +515,11 @@
                 <label class="control-label " for="study.instruments"><s:message code="study.instrument" />&nbsp;<s:message
                     text="${loop.index + 1}" /></label>
                 <div class="panel panel-default ${redborderErr}">
-                  <div class="panel-heading" data-target="#panel_coll_${loop.index}" data-toggle="collapse"
-                    data-parent="#accordion">
+                  <div class="panel-heading" data-target="#panel_coll_${loop.index}" data-toggle="collapse" data-parent="#accordion">
                     <div class="row">
                       <div class="col-sm-11">
                         <!-- study.instrument.title -->
-                        <c:set var="input_vars"
-                          value="study.instruments[${loop.index}].title;study.instruments.title; ; ;row margin-bottom-0" />
+                        <c:set var="input_vars" value="study.instruments[${loop.index}].title;study.instruments.title; ; ;row margin-bottom-0" />
                         <%@ include file="../templates/gen_input.jsp"%>
                       </div>
                       <div class="col-sm-1">
@@ -547,24 +530,19 @@
                   <div class="panel-collapse collapse" id="panel_coll_${loop.index}">
                     <div class="panel-body">
                       <!-- study.instrument.author -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].author;study.instruments.author; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].author;study.instruments.author; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.citation -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].citation;study.instruments.citation; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].citation;study.instruments.citation; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.summary -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].summary;study.instruments.summary; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].summary;study.instruments.summary; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.theoHint -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].theoHint;study.instruments.theoHint; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].theoHint;study.instruments.theoHint; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.structure -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].structure;study.instruments.structure; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].structure;study.instruments.structure; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.construction -->
                       <c:set var="input_vars"
@@ -579,12 +557,10 @@
                         value="study.instruments[${loop.index}].reliability;study.instruments.reliability; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.validity -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].validity;study.instruments.validity; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].validity;study.instruments.validity; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                       <!-- study.instruments.norm -->
-                      <c:set var="input_vars"
-                        value="study.instruments[${loop.index}].norm;study.instruments.norm; ; ;row margin-bottom-0" />
+                      <c:set var="input_vars" value="study.instruments[${loop.index}].norm;study.instruments.norm; ; ;row margin-bottom-0" />
                       <%@ include file="../templates/gen_textarea.jsp"%>
                     </div>
                   </div>
