@@ -52,33 +52,20 @@ public class DMPController extends SuperController {
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	@ModelAttribute("ProjectForm")
-	public ProjectForm createProjectForm() {
-		return (ProjectForm) applicationContext.getBean("ProjectForm");
-	}
-
-	/**
+	 * This Function is called if an DMP is created without an existing ProjectID.
 	 * 
 	 * @param model
-	 * @return
+	 * @return Mapping to dmp.jsp
 	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public String createDMP(ModelMap model) {
-		if (log.isEnabled(Level.DEBUG)) {
-			log.debug("execute createDMP RequestMethod.GET");
-		}
+		log.trace("entering createDMP without PID");
 		model.put("subnaviActive", "DMP");
-		ProjectForm pForm = createProjectForm();
+		ProjectForm pForm;
 		try {
-			pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));
-			pForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
-			pForm.setMetaPurposes(formTypeDAO.findAllByType(true, DWFieldTypes.METAPORPOSE));
+			pForm = projectService.createProjectForm();
 		} catch (Exception e) {
-			if (log.isEnabled(Level.ERROR))
-				log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
+			log.fatal("ERROR: Database error during projectService.createProjectForm - Exception:", () -> e);
 			model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
 			return "redirect:/panel";
 		}
@@ -86,18 +73,24 @@ public class DMPController extends SuperController {
 		    new String[] { messageSource.getMessage("breadcrumb.new.project", null, LocaleContextHolder.getLocale()) }, null, messageSource));
 		model.put("subnaviActive", PageState.DMP.name());
 		model.put("ProjectForm", pForm);
-		if (log.isEnabled(Level.DEBUG)) {
-			log.debug("Method createDMP successfully completed");
-		}
+		log.trace("Method createDMP successfully completed");
 		return "dmp";
 	}
 
 	/**
 	 * 
+	 * This function loads the DMP data for editing. Therefore, the pid is required. If no DMP is found with the given pid, or other errors occur, the
+	 * exceptionService is called to handle the exceptions and redirect to the correct jsp.
+	 * 
 	 * @param pid
+	 *          ProjectID
 	 * @param pForm
+	 *          ProjectForm
 	 * @param model
-	 * @return
+	 *          ModelMap
+	 * @param redirectAttributes
+	 *          RedirectAttributes
+	 * @return Mapping to dmp.jsp
 	 */
 	@RequestMapping(value = "/{pid}", method = RequestMethod.GET)
 	public String editDMP(@PathVariable Optional<Long> pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
@@ -125,6 +118,15 @@ public class DMPController extends SuperController {
 		return "dmp";
 	}
 
+	/**
+	 * 
+	 * @param pForm
+	 * @param model
+	 * @param redirectAttributes
+	 * @param bRes
+	 * @param pid
+	 * @return
+	 */
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
 	public String saveDMP(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model, RedirectAttributes redirectAttributes, BindingResult bRes,
 	    @PathVariable final Optional<Long> pid) {
@@ -321,6 +323,10 @@ public class DMPController extends SuperController {
 		}
 	}
 
+	/**
+	 * To check the Internet connection, this function is asynchronously called before saving the DMP Data.
+	 * @return
+	 */
 	@RequestMapping(value = { "/checkConnection" })
 	public ResponseEntity<Object> checkConnection() {
 		log.trace("checkConnection");

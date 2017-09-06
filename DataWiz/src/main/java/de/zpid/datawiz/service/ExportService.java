@@ -175,7 +175,7 @@ public class ExportService {
 			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "getExportForm for project", pid }, Locale.ENGLISH));
 			throw new DataWizSystemException(
 			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "getExportForm for project", pid }, Locale.ENGLISH),
-			    DataWizErrorCodes.USER_ACCESS_PERMITTED);
+			    DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED);
 		}
 		return exportForm;
 	}

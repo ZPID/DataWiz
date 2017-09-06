@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,7 @@ import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.enumeration.SavedState;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
@@ -72,6 +74,8 @@ public class ProjectController {
 	private ProjectService projectService;
 	@Autowired
 	private ExceptionService exceptionService;
+	@Autowired
+	private Environment env;
 
 	@ModelAttribute("ProjectForm")
 	protected ProjectForm createProjectForm() {
@@ -429,6 +433,43 @@ public class ProjectController {
 		} catch (Exception e) {
 			log.warn("Warn: setThumbnailImage throws an exception: ", () -> e);
 		}
+	}
+
+	/**
+	 * 
+	 * @param pid
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@RequestMapping(value = { "", "/{pid}/deleteProject" })
+	public String deleteStudy(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
+		UserDTO user = UserUtil.getCurrentUser();
+		String ret = "redirect:/panel";
+		try {
+			projectService.deleteProject(pid, user);
+		} catch (DataWizSystemException e) {
+			if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
+				model.put("errormsg",
+				    messageSource.getMessage("dbs.sql.exception",
+				        new Object[] { env.getRequiredProperty("organisation.admin.email"), e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
+				        LocaleContextHolder.getLocale()));
+				ret = "error";
+			} else if (e.getErrorCode().equals(DataWizErrorCodes.STUDY_DELETE_ERROR)) {
+				model.put("subnaviActive", PageState.RECORDMETA.name());
+				model.put("recordSubMenu", true);
+				model.put("errorMSG", messageSource.getMessage("project.study.delete.error", new Object[] { e.getMessage(), e.getErrorCode() },
+				    LocaleContextHolder.getLocale()));
+				ret = "project";
+			} else {
+				model.put("subnaviActive", PageState.RECORDMETA.name());
+				model.put("recordSubMenu", true);
+				model.put("errorMSG", messageSource.getMessage("project.not.deleted.error", new Object[] { e.getMessage(), e.getErrorCode() },
+				    LocaleContextHolder.getLocale()));
+				ret = "project";
+			}
+		}
+		return ret;
 	}
 
 }

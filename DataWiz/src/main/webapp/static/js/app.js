@@ -764,3 +764,14 @@ function setParentChkbox($chk, $checkbox, $li) {
 		}
 	}
 }
+
+function checkDeletePhrase(phrase) {
+	if ($("#deleteInputTXT").val() == phrase)
+		return true;
+	else {
+		$("#deleteInputTXT").val("");
+		$("#deleteAlert").show();
+		return false;
+	}
+	
+}

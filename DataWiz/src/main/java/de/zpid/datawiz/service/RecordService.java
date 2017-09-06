@@ -397,10 +397,13 @@ public class RecordService {
 	 * @throws DataWizSystemException
 	 * @throws NoSuchMessageException
 	 */
-	public boolean deleteRecord(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final UserDTO user) {
+	public void deleteRecord(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final UserDTO user,
+	    boolean singleCommit) throws DataWizSystemException {
 		log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(),
 		    () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
-		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+		TransactionStatus status = null;
+		if (singleCommit)
+			status = txManager.getTransaction(new DefaultTransactionDefinition());
 		try {
 			RecordDTO record = recordDAO.findRecordWithID(recordId.get(), 0);
 			if (record != null && (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)
@@ -422,25 +425,36 @@ public class RecordService {
 						}
 					}
 				}
-				if (minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get()).equals(MinioResult.OK)) {
-					txManager.commit(status);
-					if (log.isTraceEnabled())
-						log.trace("Method deleteRecord completed");
-					return true;
+				MinioResult res = minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get());
+				if (res.equals(MinioResult.OK)) {
+					if (singleCommit)
+						txManager.commit(status);
+					log.trace("Method deleteRecord completed");
 				} else {
 					log.warn("Record [id: {}] not delteted: Transaction was rolled back!");
-					txManager.rollback(status);
-					return false;
+					throw new DataWizSystemException(messageSource.getMessage("logging.minio.delete.error", new Object[] { res }, Locale.ENGLISH),
+					    DataWizErrorCodes.MINIO_DELETE_ERROR);
 				}
 			} else {
-				log.warn("User [email:{}; id: {}] tried to delete Record [projectId: {}; recordId: {}; studyId: {}]", () -> user.getEmail(),
+				log.warn("User [email:{}; id: {}] tried to delete Record [projectId: {}; studyId: {}; recordId: {}]", () -> user.getEmail(),
 				    () -> user.getId(), () -> pid, () -> studyId, () -> recordId);
-				return false;
+				throw new DataWizSystemException(
+				    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "record", recordId.get() }, Locale.ENGLISH),
+				    DataWizErrorCodes.USER_ACCESS_RECORD_PERMITTED);
 			}
 		} catch (Exception e) {
-			txManager.rollback(status);
-			log.warn("DeleteRecord Database-Exception:", () -> e);
-			return false;
+			if (singleCommit)
+				txManager.rollback(status);
+			if (e instanceof DataWizSystemException) {
+				log.warn("DeleteRecord DataWizSystemException {}:", () -> ((DataWizSystemException) e).getErrorCode(), () -> e);
+				throw new DataWizSystemException(
+				    messageSource.getMessage("logging.record.delete.error", new Object[] { user.getEmail(), "record", recordId.get() }, Locale.ENGLISH),
+				    DataWizErrorCodes.RECORD_DELETE_ERROR);
+			} else {
+				log.warn("DeleteRecord Database-Exception:", () -> e);
+				throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+				    DataWizErrorCodes.DATABASE_ERROR, e);
+			}
 		}
 	}
 

@@ -31,6 +31,7 @@ import de.zpid.datawiz.dao.StudyInstrumentDAO;
 import de.zpid.datawiz.dao.StudyListTypesDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.StudyConstructDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.StudyInstrumentDTO;
@@ -39,6 +40,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
@@ -71,6 +73,8 @@ public class StudyService {
 	private int sessionTimeout;
 	@Autowired
 	private PlatformTransactionManager txManager;
+	@Autowired
+	RecordService recordService;
 
 	/**
 	 * 
@@ -483,6 +487,73 @@ public class StudyService {
 		            (studyName != null && !studyName.trim().isEmpty() ? studyName
 		                : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
 		        new long[] { pid }, messageSource));
+	}
+
+	/**
+	 * 
+	 * @param pid
+	 * @param studyId
+	 * @param user
+	 * @return
+	 */
+	// TODO FEHLERMELDEUNGEN
+	public void deleteStudy(final Optional<Long> pid, final Optional<Long> studyId, final UserDTO user, final Boolean singleCommit)
+	    throws DataWizSystemException {
+		TransactionStatus status = null;
+		if (singleCommit)
+			status = txManager.getTransaction(new DefaultTransactionDefinition());
+		if (!studyId.isPresent()) {
+			log.warn("StudyId emtpy - study delete aborted");
+			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.presentt", null, Locale.ENGLISH),
+			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
+		}
+		if (!pid.isPresent()) {
+			log.warn("ProjectId emtpy - study delete aborted");
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
+			    DataWizErrorCodes.MISSING_PID_ERROR);
+		}
+		if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)) {
+			try {
+				StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, true);
+				if (study != null) {
+					List<RecordDTO> records = recordDAO.findRecordsWithStudyID(studyId.get());
+					if (records != null && !records.isEmpty()) {
+						for (RecordDTO rec : records) {
+							recordService.deleteRecord(pid, studyId, Optional.of(rec.getId()), user, false);
+						}
+					}
+					studyDAO.deleteStudy(study.getId());
+					if (singleCommit)
+						txManager.commit(status);
+				} else {
+					log.warn("No Study found for studyID {}", () -> studyId.get());
+					throw new DataWizSystemException(messageSource.getMessage("logging.study.not.found", new Object[] { studyId.get() }, Locale.ENGLISH),
+					    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
+				}
+			} catch (Exception e) {
+				if (singleCommit)
+					txManager.rollback(status);
+				if (e instanceof DataWizSystemException) {
+					log.warn("DeleteStudy DataWizSystemException:", () -> e);
+					if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)) {
+						throw (DataWizSystemException) e;
+					} else {
+						throw new DataWizSystemException(messageSource.getMessage("logging.record.delete.error",
+						    new Object[] { ((DataWizSystemException) e).getErrorCode(), e.getMessage() }, Locale.ENGLISH), DataWizErrorCodes.RECORD_DELETE_ERROR,
+						    e);
+					}
+				}
+				log.fatal("DeleteStudy Database-Exception:", () -> e);
+				throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+				    DataWizErrorCodes.DATABASE_ERROR, e);
+			}
+		} else {
+			log.warn("User [email:{}; id: {}] tried to delete Study [projectId: {}; studyId: {}]", () -> user.getEmail(), () -> user.getId(),
+			    () -> pid.get(), () -> studyId.get());
+			throw new DataWizSystemException(
+			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "study", studyId.get() }, Locale.ENGLISH),
+			    DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
+		}
 	}
 
 }

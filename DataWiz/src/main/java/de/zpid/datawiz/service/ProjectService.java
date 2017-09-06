@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -152,20 +153,32 @@ public class ProjectService {
 
 	/**
 	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public ProjectForm createProjectForm() throws Exception {
+		ProjectForm pForm = (ProjectForm) applicationContext.getBean("ProjectForm");
+		pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));
+		pForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
+		pForm.setMetaPurposes(formTypeDAO.findAllByType(true, DWFieldTypes.METAPORPOSE));
+		return pForm;
+	}
+
+	/**
+	 * 
 	 * @param pid
 	 * @param user
 	 * @return
 	 * @throws Exception
 	 */
-	public void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final PageState call, Roles userRole)
-	    throws Exception {
+	public void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final PageState call, Roles userRole) throws Exception {
 		log.trace("Entering getProjectData(SuperController) for project [id: {}] and user [mail: {}] ", () -> pid, () -> user.getEmail());
 		// security access check!
 		if (pid > 0 && user != null) {
 			if (userRole == null) {
 				throw new DataWizSystemException(
 				    "SECURITY: User with email: " + user.getEmail() + " tries to get access to project:" + pid + " without having the permissions to read",
-				    DataWizErrorCodes.USER_ACCESS_PERMITTED);
+				    DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED);
 			}
 			final ProjectDTO pdto = projectDAO.findById(pid);
 			if (pdto == null || pdto.getId() <= 0) {
@@ -537,6 +550,65 @@ public class ProjectService {
 			code = DataWizErrorCodes.DATABASE_ERROR;
 		}
 		return code;
+	}
+
+	/**
+	 * 
+	 * @param pid
+	 * @param studyId
+	 * @param user
+	 * @return
+	 */
+	public void deleteProject(final Optional<Long> pid, final UserDTO user) throws DataWizSystemException {
+		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
+		if (!pid.isPresent()) {
+			log.warn("ProjectId emtpy - project delete aborted");
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
+			    DataWizErrorCodes.MISSING_PID_ERROR);
+		}
+		try {
+			ProjectDTO project = projectDAO.findById(pid.get());
+			if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)) {
+				if (project != null) {
+					List<ContributorDTO> contri = contributorDAO.findByProject(project, false, true);
+					List<StudyDTO> studies = studyDAO.findAllStudiesByProjectId(project);
+					if (studies != null && !studies.isEmpty()) {
+						for (StudyDTO study : studies) {
+							studyService.deleteStudy(pid, Optional.of(study.getId()), user, false);
+						}
+					}
+					projectDAO.deleteProject(project.getId());
+					for(ContributorDTO contr : contri) {
+						
+					}
+					txManager.commit(status);
+				} else {
+					log.warn("No Project found for PID {}", () -> pid.get());
+					throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[] { pid.get() }, Locale.ENGLISH),
+					    DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				}
+			} else {
+				log.warn("User [email:{}; id: {}] tried to delete Project [projectId: {}]", () -> user.getEmail(), () -> user.getId(), () -> pid.get());
+				throw new DataWizSystemException(
+				    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "project", pid.get() }, Locale.ENGLISH),
+				    DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED);
+			}
+		} catch (Exception e) {
+			txManager.rollback(status);
+			if (e instanceof DataWizSystemException) {
+				log.warn("DeleteProject DataWizSystemException:", () -> e);
+				if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE)
+				    || ((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED)) {
+					throw (DataWizSystemException) e;
+				} else {
+					throw new DataWizSystemException(messageSource.getMessage("logging.study.delete.error",
+					    new Object[] { ((DataWizSystemException) e).getErrorCode(), e.getMessage() }, Locale.ENGLISH), DataWizErrorCodes.STUDY_DELETE_ERROR, e);
+				}
+			}
+			log.fatal("DeleteStudy Database-Exception:", () -> e);
+			throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+			    DataWizErrorCodes.DATABASE_ERROR, e);
+		}
 	}
 
 }

@@ -9,7 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -29,7 +31,9 @@ import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.StudyInstrumentDTO;
 import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
@@ -57,6 +61,8 @@ public class StudyController {
 	private RecordService recordService;
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private Environment env;
 
 	private static Logger log = LogManager.getLogger(StudyController.class);
 
@@ -515,4 +521,34 @@ public class StudyController {
 		return "study";
 	}
 
+	@RequestMapping(value = { "", "/{studyId}/deleteStudy" })
+	public String deleteStudy(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, final ModelMap model,
+	    final RedirectAttributes redirectAttributes) {
+		UserDTO user = UserUtil.getCurrentUser();
+		String ret = "redirect:/project/" + pid.get() + "/studies";
+		try {
+			studyService.deleteStudy(pid, studyId, user, true);
+		} catch (DataWizSystemException e) {
+			if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
+				model.put("errormsg",
+				    messageSource.getMessage("dbs.sql.exception",
+				        new Object[] { env.getRequiredProperty("organisation.admin.email"), e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'") },
+				        LocaleContextHolder.getLocale()));
+				ret = "error";
+			} else if (e.getErrorCode().equals(DataWizErrorCodes.RECORD_DELETE_ERROR)) {
+				model.put("subnaviActive", PageState.RECORDMETA.name());
+				model.put("recordSubMenu", true);
+				model.put("errorMSG", messageSource.getMessage("study.record.delete.error", new Object[] { e.getMessage(), e.getErrorCode() },
+				    LocaleContextHolder.getLocale()));
+				ret = "study";
+			} else {
+				model.put("subnaviActive", PageState.RECORDMETA.name());
+				model.put("recordSubMenu", true);
+				model.put("errorMSG",
+				    messageSource.getMessage("study.not.deleted.error", new Object[] { e.getMessage(), e.getErrorCode() }, LocaleContextHolder.getLocale()));
+				ret = "study";
+			}
+		}
+		return ret;
+	}
 }

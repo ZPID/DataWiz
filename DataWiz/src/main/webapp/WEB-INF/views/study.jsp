@@ -33,8 +33,7 @@
                         principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
                 <div class="col-xs-4 col-sm-3 text-align-right">
-                  <c:url var="accessUrl"
-                    value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
+                  <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                   <c:choose>
                     <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
                       <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
@@ -43,9 +42,15 @@
                       <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
                     </c:otherwise>
                   </c:choose>
+                  <c:if
+                    test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
+                        principal.user.hasRole('ADMIN')}">
+                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
+                      <s:message code="study.button.delete.study" />
+                    </button>
+                  </c:if>
                 </div>
               </c:if>
-              
             </div>
             <div>
               <s:message code="study.edit.basis.info" />
@@ -56,17 +61,12 @@
       <!-- Submenu -->
       <c:if test="${!hideMenu}">
         <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
-          <li role="presentation" id="basisDataActiveClick" class="studyContentClick"><a><s:message
-                code="study.submenu.basic.data" /></a></li>
+          <li role="presentation" id="basisDataActiveClick" class="studyContentClick"><a><s:message code="study.submenu.basic.data" /></a></li>
           <c:if test="${not empty StudyForm.study.id}">
-            <li role="presentation" id="designActiveClick" class="studyContentClick"><a><s:message
-                  code="study.submenu.design" /></a></li>
-            <li role="presentation" id="sampleActiveClick" class="studyContentClick"><a><s:message
-                  code="study.submenu.sample" /></a></li>
-            <li role="presentation" id="surveyActiveClick" class="studyContentClick"><a><s:message
-                  code="study.submenu.survey" /></a></li>
-            <li role="presentation" id="ethicalActiveClick" class="studyContentClick"><a><s:message
-                  code="study.submenu.ethical" /></a></li>
+            <li role="presentation" id="designActiveClick" class="studyContentClick"><a><s:message code="study.submenu.design" /></a></li>
+            <li role="presentation" id="sampleActiveClick" class="studyContentClick"><a><s:message code="study.submenu.sample" /></a></li>
+            <li role="presentation" id="surveyActiveClick" class="studyContentClick"><a><s:message code="study.submenu.survey" /></a></li>
+            <li role="presentation" id="ethicalActiveClick" class="studyContentClick"><a><s:message code="study.submenu.ethical" /></a></li>
           </c:if>
         </ul>
       </c:if>
@@ -117,4 +117,47 @@
     </div>
   </div>
 </div>
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal fade" role="dialog">
+  <s:message code="study.delete.phrase" var="deletePhrase" />
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header ">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">
+          <s:message code="study.delete.modal.head" arguments="${StudyForm.study.title}" />
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="well marginTop1">
+              <s:message code="study.delete.modal.info" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <label><s:message code="study.delete.modal.label" arguments="${deletePhrase}" /></label>
+          </div>
+          <div class="col-sm-12">
+            <input class="form-control" type="text" id="deleteInputTXT" required="required" />
+            <div class="alert alert-danger" style="display: none;" id="deleteAlert">
+              <s:message code="study.delete.modal.error" />
+            </div>
+          </div>
+        </div>
+        <div class="row"></div>
+      </div>
+      <div class="modal-footer">
+        <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/deleteStudy" />
+        <a href="${accessUrl}" class="btn btn-warning btn-sm" id="deleteBTN" onclick="return checkDeletePhrase('${deletePhrase}')"><s:message
+            code="study.delete.modal.final.del" /></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <%@ include file="templates/footer.jsp"%>

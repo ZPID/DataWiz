@@ -148,7 +148,7 @@ public class DmpDTO implements Serializable {
 	private String storageDuration;
 
 	/** DMP29. */
-	@Size(min = 0, max = 500, groups = ResearchVal.class)
+	@Size(min = 0, max = 1000, groups = ResearchVal.class)
 	private String deleteProcedure;
 
 	// ***************** MetaData Data *****************

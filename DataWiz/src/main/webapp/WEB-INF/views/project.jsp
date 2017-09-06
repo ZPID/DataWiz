@@ -17,9 +17,21 @@
             </div>
           </c:when>
           <c:otherwise>
-            <h4>
-              <s:message code="project.edit.headline" />
-            </h4>
+            <div class="row">
+              <div class="col-xs-8 col-sm-9">
+                <h4>
+                  <s:message code="project.edit.headline" />
+                </h4>
+              </div>
+              <div class="col-xs-4 col-sm-3 text-align-right">
+                <c:if
+                  test="${principal.user.hasRole('ADMIN') or (principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) and (ProjectForm.project.ownerId == principal.user.id))}">
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
+                    <s:message code="project.button.delete" />
+                  </button>
+                </c:if>
+              </div>
+            </div>
             <div>
               <s:message code="project.edit.info" />
             </div>
@@ -53,8 +65,7 @@
           <div class="col-sm-12">
             <div class="row">
               <div class="col-sm-11">
-                <label class="control-label" for="project.title"><s:message
-                    code="project.edit.primaryContributors" /></label>
+                <label class="control-label" for="project.title"><s:message code="project.edit.primaryContributors" /></label>
               </div>
               <div class="col-sm-1 text-align-right">
                 <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
@@ -69,8 +80,8 @@
                     <s:bind path="primaryContributor.title">
                       <c:choose>
                         <c:when test="${status.error}">
-                          <sf:input path="primaryContributor.title" class="form-control" style="border: 1px solid red;"
-                            title="${status.errorMessage}" data-toggle="tooltip" />
+                          <sf:input path="primaryContributor.title" class="form-control" style="border: 1px solid red;" title="${status.errorMessage}"
+                            data-toggle="tooltip" />
                         </c:when>
                         <c:otherwise>
                           <sf:input path="primaryContributor.title" class="form-control" />
@@ -84,8 +95,8 @@
                     <s:bind path="primaryContributor.orcid">
                       <c:choose>
                         <c:when test="${status.error}">
-                          <sf:input path="primaryContributor.orcid" class="form-control" style="border: 1px solid red;"
-                            title="${status.errorMessage}" data-toggle="tooltip" />
+                          <sf:input path="primaryContributor.orcid" class="form-control" style="border: 1px solid red;" title="${status.errorMessage}"
+                            data-toggle="tooltip" />
                         </c:when>
                         <c:otherwise>
                           <sf:input path="primaryContributor.orcid" class="form-control" />
@@ -101,8 +112,8 @@
                     <s:bind path="primaryContributor.firstName">
                       <c:choose>
                         <c:when test="${status.error}">
-                          <sf:input path="primaryContributor.firstName" class="form-control"
-                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          <sf:input path="primaryContributor.firstName" class="form-control" style="border: 1px solid red;"
+                            title="${status.errorMessage}" data-toggle="tooltip" />
                         </c:when>
                         <c:otherwise>
                           <sf:input path="primaryContributor.firstName" class="form-control" />
@@ -116,8 +127,8 @@
                     <s:bind path="primaryContributor.lastName">
                       <c:choose>
                         <c:when test="${status.error}">
-                          <sf:input path="primaryContributor.lastName" class="form-control"
-                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          <sf:input path="primaryContributor.lastName" class="form-control" style="border: 1px solid red;"
+                            title="${status.errorMessage}" data-toggle="tooltip" />
                         </c:when>
                         <c:otherwise>
                           <sf:input path="primaryContributor.lastName" class="form-control" />
@@ -133,8 +144,8 @@
                     <s:bind path="primaryContributor.institution">
                       <c:choose>
                         <c:when test="${status.error}">
-                          <sf:input path="primaryContributor.institution" class="form-control"
-                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          <sf:input path="primaryContributor.institution" class="form-control" style="border: 1px solid red;"
+                            title="${status.errorMessage}" data-toggle="tooltip" />
                         </c:when>
                         <c:otherwise>
                           <sf:input path="primaryContributor.institution" class="form-control" />
@@ -150,8 +161,8 @@
                     <s:bind path="primaryContributor.department">
                       <c:choose>
                         <c:when test="${status.error}">
-                          <sf:input path="primaryContributor.department" class="form-control"
-                            style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                          <sf:input path="primaryContributor.department" class="form-control" style="border: 1px solid red;"
+                            title="${status.errorMessage}" data-toggle="tooltip" />
                         </c:when>
                         <c:otherwise>
                           <sf:input path="primaryContributor.department" class="form-control" />
@@ -185,8 +196,8 @@
                       <s:bind path="contributors[${coloop.count-1}].title">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:input path="contributors[${coloop.count-1}].title" class="form-control"
-                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                            <sf:input path="contributors[${coloop.count-1}].title" class="form-control" style="border: 1px solid red;"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
                             <sf:input path="contributors[${coloop.count-1}].title" class="form-control" />
@@ -199,8 +210,8 @@
                       <s:bind path="contributors[${coloop.count-1}].orcid">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control"
-                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                            <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control" style="border: 1px solid red;"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
                             <sf:input path="contributors[${coloop.count-1}].orcid" class="form-control" />
@@ -215,8 +226,8 @@
                       <s:bind path="contributors[${coloop.count-1}].firstName">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control"
-                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                            <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control" style="border: 1px solid red;"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
                             <sf:input path="contributors[${coloop.count-1}].firstName" class="form-control" />
@@ -229,8 +240,8 @@
                       <s:bind path="contributors[${coloop.count-1}].lastName">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control"
-                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                            <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control" style="border: 1px solid red;"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
                             <sf:input path="contributors[${coloop.count-1}].lastName" class="form-control" />
@@ -245,8 +256,8 @@
                       <s:bind path="contributors[${coloop.count-1}].institution">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:input path="contributors[${coloop.count-1}].institution" class="form-control"
-                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                            <sf:input path="contributors[${coloop.count-1}].institution" class="form-control" style="border: 1px solid red;"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
                             <sf:input path="contributors[${coloop.count-1}].institution" class="form-control" />
@@ -261,8 +272,8 @@
                       <s:bind path="contributors[${coloop.count-1}].department">
                         <c:choose>
                           <c:when test="${status.error}">
-                            <sf:input path="contributors[${coloop.count-1}].department" class="form-control"
-                              style="border: 1px solid red;" title="${status.errorMessage}" data-toggle="tooltip" />
+                            <sf:input path="contributors[${coloop.count-1}].department" class="form-control" style="border: 1px solid red;"
+                              title="${status.errorMessage}" data-toggle="tooltip" />
                           </c:when>
                           <c:otherwise>
                             <sf:input path="contributors[${coloop.count-1}].department" class="form-control" />
@@ -313,6 +324,48 @@
         </div>
       </sf:form>
     </div>
+  </div>
+</div>
+<!-- Delete Modal -->
+<div id="deleteModal" class="modal fade" role="dialog">
+  <s:message code="project.delete.phrase" var="deletePhrase" />
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header ">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">
+          <s:message code="project.delete.modal.head" arguments="${ProjectForm.project.title}" />
+        </h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div class="col-sm-12">
+            <div class="well marginTop1">
+              <s:message code="project.delete.modal.info" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-12">
+            <label><s:message code="project.delete.modal.label" arguments="${deletePhrase}" /></label>
+          </div>
+          <div class="col-sm-12">
+            <input class="form-control" type="text" id="deleteInputTXT" required="required" />
+            <div class="alert alert-danger" style="display: none;" id="deleteAlert">
+              <s:message code="project.delete.modal.error" />
+            </div>
+          </div>
+        </div>
+        <div class="row"></div>
+      </div>
+      <div class="modal-footer">
+        <c:url var="accessUrl" value="/project/${ProjectForm.project.id}/deleteProject" />
+        <a href="${accessUrl}" class="btn btn-warning btn-sm" id="deleteBTN" onclick="return checkDeletePhrase('${deletePhrase}')"><s:message
+            code="project.delete.modal.final.del" /></a>
+      </div>
+    </div>
+
   </div>
 </div>
 <%@ include file="templates/footer.jsp"%>

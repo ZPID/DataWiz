@@ -42,17 +42,26 @@ public class ExceptionService {
 				log.fatal("Exception during {} Message[{}]]", () -> functionName, () -> e);
 			else
 				log.warn("DataWizSystemException during {} Code [{}], Message:", () -> functionName, () -> dwe.getErrorCode().name(), () -> e);
-			if (dwe.getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE) || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_PID_ERROR)
-			    || dwe.getErrorCode().equals(DataWizErrorCodes.USER_ACCESS_PERMITTED)) {
+			if (dwe.getErrorCode().equals(DataWizErrorCodes.PROJECT_NOT_AVAILABLE) || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_PID_ERROR)) {
 				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
+				ret = "redirect:/panel";
+			} else if (dwe.getErrorCode().equals(DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED)) {
+				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
 				ret = "redirect:/panel";
 			} else if (dwe.getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)
 			    || dwe.getErrorCode().equals(DataWizErrorCodes.MISSING_STUDYID_ERROR)) {
 				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("study.not.available", null, LocaleContextHolder.getLocale()));
 				ret = "redirect:/project/" + pid.get() + "/studies";
+			} else if (dwe.getErrorCode().equals(DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED)) {
+				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("study.not.available", null, LocaleContextHolder.getLocale()));
+				ret = "redirect:/project/" + pid.get() + "/studies";
 			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.RECORD_NOT_AVAILABLE)) {
 				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("record.not.available", null, LocaleContextHolder.getLocale()));
 				ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
+			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.RECORD_DELETE_ERROR)) {
+				redirectAttributes.addFlashAttribute("errorMSG", messageSource
+				    .getMessage(recordId.isPresent() ? "record.not.deleted.error" : "study.record.delete.error", null, LocaleContextHolder.getLocale()));
+				ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + (recordId.isPresent() ? "/record/" + recordId.get() : "");
 			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED)) {
 				redirectAttributes.addFlashAttribute("errorMSG",
 				    messageSource.getMessage("import.error.file.extension", null, LocaleContextHolder.getLocale()));
