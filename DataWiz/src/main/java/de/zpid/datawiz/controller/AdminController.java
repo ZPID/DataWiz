@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-public class AdminController extends SuperController {
+public class AdminController{
 
   private static Logger log = LogManager.getLogger(AdminController.class);
 

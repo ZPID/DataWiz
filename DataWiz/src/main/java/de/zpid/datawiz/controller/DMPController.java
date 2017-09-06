@@ -8,7 +8,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import de.zpid.datawiz.dao.DmpDAO;
+import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
@@ -32,18 +37,32 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.service.ExceptionService;
+import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Controller
 @RequestMapping(value = "/dmp")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
-public class DMPController extends SuperController {
+public class DMPController {
 
 	private static Logger log = LogManager.getLogger(DMPController.class);
 
 	@Autowired
+	protected MessageSource messageSource;
+	@Autowired
+	protected ClassPathXmlApplicationContext applicationContext;
+	@Autowired
+	protected SmartValidator validator;
+	@Autowired
+	private ProjectService projectService;
+	@Autowired
 	private ExceptionService exceptionService;
+	// TODO SERVICE CLASS
+	@Autowired
+	private FormTypesDAO formTypeDAO;
+	@Autowired
+	private DmpDAO dmpDAO;
 
 	public DMPController() {
 		super();
@@ -201,12 +220,15 @@ public class DMPController extends SuperController {
 				unChanged = false;
 			}
 		}
-		if (hasErrors || unChanged) {
-			// TODO
+		if (hasErrors) {
+			model.put("errorMSG", messageSource.getMessage("dmp.save.error.msg", null, LocaleContextHolder.getLocale()));
 			return "dmp";
 		}
-		redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS);
-		redirectAttributes.addFlashAttribute("saveStateMsg", "erfolgreich!!!");
+		if (unChanged) {
+			model.put("infoMSG", messageSource.getMessage("dmp.save.no.changes.msg", null, LocaleContextHolder.getLocale()));
+			return "dmp";
+		}
+		redirectAttributes.addFlashAttribute("successMSG", messageSource.getMessage("dmp.save.success.msg", null, LocaleContextHolder.getLocale()));
 		return "redirect:/dmp/" + pForm.getDmp().getId();
 	}
 
@@ -325,6 +347,7 @@ public class DMPController extends SuperController {
 
 	/**
 	 * To check the Internet connection, this function is asynchronously called before saving the DMP Data.
+	 * 
 	 * @return
 	 */
 	@RequestMapping(value = { "/checkConnection" })

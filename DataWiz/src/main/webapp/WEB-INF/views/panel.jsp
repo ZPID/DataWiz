@@ -6,7 +6,7 @@
     <div class="content-padding">
       <div class="page-header">
         <c:url var="projectUrl" value="/project" />
-        <div class="row">          
+        <div class="row">
           <div class="col-xs-8 col-sm-10">
             <h4>
               <s:message code="projects.overview.headline" />
@@ -33,8 +33,7 @@
                 <div class="row">
                   <s:message code="project.filter.placeholder" var="filterPH" />
                   <div class="col-sm-10">
-                    <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}"
-                      style="width: 100%">
+                    <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}" style="width: 100%">
                   </div>
                   <div class="col-sm-2 form-group">
                     <select id="filterSelect" class="form-control" style="width: 100%">
@@ -69,10 +68,19 @@
               </c:otherwise>
             </c:choose>
             <div class="panel <s:message text="${pRole}"/> projectpanel">
-              <div class="panel-heading projectTitle"
-                onclick="location.href='<c:url value="project/${form.project.id}"/>';" style="cursor: pointer;">                
-                <strong><s:message text="${form.project.title}" /></strong>
-              </div>
+              <c:choose>
+                <c:when test="${pRole eq 'panel-default'}">
+                  <div class="panel-heading projectTitle">
+                    <strong><s:message text="${form.project.title}" />&nbsp;<s:message code="project.role.pending.info" /></strong>
+                  </div>
+                </c:when>
+                <c:otherwise>
+                  <div class="panel-heading projectTitle" onclick="location.href='<c:url value="project/${form.project.id}"/>';"
+                    style="cursor: pointer;">
+                    <strong><s:message text="${form.project.title}" /></strong>
+                  </div>
+                </c:otherwise>
+              </c:choose>
               <c:set var="firstIn" value="" />
               <div class="panel-body">
                 <div class="row" style="padding-bottom: 10px;">
@@ -124,8 +132,7 @@
                       </c:when>
                       <c:otherwise>
                         <div class="panel panel-default boxShadow">
-                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
-                            style="cursor: pointer;">
+                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}" style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.studies.showhide" /></strong>
                           </div>
                           <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
@@ -144,8 +151,7 @@
                                     </c:choose>
                                   </c:if>
                                   <div class="panel  <s:message text="${sRole}"/> studyFilter"
-                                    onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
-                                    style="cursor: pointer;">
+                                    onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';" style="cursor: pointer;">
                                     <div class="panel-heading studyTitleFilter">
                                       <strong><s:message text="${study.title}" /></strong>
                                     </div>
@@ -171,12 +177,9 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-10 studyResearcherFilter">
                                           <c:choose>
-                                            <c:when
-                                              test="${not empty study.contributors && study.contributors.size() > 0 }">
-                                              <c:forEach items="${study.contributors}" var="contri"
-                                                varStatus="contriloop">
-                                                <s:message
-                                                  text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
+                                            <c:when test="${not empty study.contributors && study.contributors.size() > 0 }">
+                                              <c:forEach items="${study.contributors}" var="contri" varStatus="contriloop">
+                                                <s:message text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
                                                 <c:if test="${contriloop.index < study.contributors.size()-1}">
                                                   <s:message text="&#044;" />
                                                 </c:if>
@@ -213,8 +216,7 @@
                       </c:when>
                       <c:otherwise>
                         <div class="panel panel-default boxShadow">
-                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
-                            style="cursor: pointer;">
+                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}" style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.shared.showhide" /></strong>
                           </div>
                           <div class="panel-collapse collapse" id="panel_user_${loop.count}">
@@ -222,21 +224,20 @@
                               <c:forEach items="${form.sharedUser}" var="user" varStatus="loop2">
                                 <div class="list-group-item">
                                   <div class="row">
-                                    <div class="col-xs-6 col-sm-3" style="padding-top: 10px">
-                                      <s:message text="${user.firstName} ${user.lastName}(${user.email})" />
+                                    <div class="col-xs-6 col-sm-6" style="padding-top: 10px">
+                                      <s:message text="${user.firstName} ${user.lastName}" />
+                                      (<a href="mailto:${user.email}">${user.email}</a>)
                                     </div>
-                                    <div class="col-xs-6 col-sm-9">
+                                    <div class="col-xs-6 col-sm-6">
                                       <div class="list-group" style="margin-bottom: 0px; margin-top:">
                                         <c:forEach items="${user.globalRoles}" var="userRole">
                                           <c:if test="${userRole.type ne 'REL_ROLE'}">
                                             <div class="list-group-item">
                                               <s:message code="roles.${userRole.type}" />
-                                              <c:if
-                                                test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
+                                              <c:if test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
                                                 <span class="reddot"></span>
                                               </c:if>
-                                              <c:if
-                                                test="${userRole.type eq 'DS_READER' or userRole.type eq 'DS_WRITER'}">
+                                              <c:if test="${userRole.type eq 'DS_READER' or userRole.type eq 'DS_WRITER'}">
                                                 <c:forEach items="${form.studies}" var="study">
                                                   <c:if test="${userRole.studyId eq study.id}">
                                                     <s:message text="&quot; ${study.title}&quot; " />
@@ -269,13 +270,11 @@
                             <javatime:format value="${form.studies[0].timestamp}" style="MS" var="strDate" />
                             <c:choose>
                               <c:when test="${not empty user.lastName && not empty user.firstName}">
-                                <s:message code="panel.last.commit"
-                                  arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
+                                <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
                                   argumentSeparator=";" />
                               </c:when>
                               <c:otherwise>
-                                <s:message code="panel.last.commit" arguments="${strDate};${user.email}"
-                                  htmlEscape="false" argumentSeparator=";" />
+                                <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false" argumentSeparator=";" />
                               </c:otherwise>
                             </c:choose>
                           </c:if>

@@ -4,12 +4,16 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.RoleDAO;
+import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
@@ -29,6 +36,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.service.ExceptionService;
+import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -53,16 +61,40 @@ import de.zpid.datawiz.util.UserUtil;
 @Controller
 @RequestMapping(value = "/access")
 @SessionAttributes({ "ProjectForm", "subnaviActive" })
-public class AccessController extends SuperController {
+public class AccessController {
 
 	private static Logger log = LogManager.getLogger(AccessController.class);
 
 	@Autowired
 	private ExceptionService exceptionService;
+	@Autowired
+	private MessageSource messageSource;
+	@Autowired
+	protected ClassPathXmlApplicationContext applicationContext;
+	@Autowired
+	private ProjectService projectService;
+	@Autowired
+	protected HttpServletRequest request;
+	@Autowired
+	protected Environment env;
+
+	// TODO SERVICE CLASS
+	@Autowired
+	private ProjectDAO projectDAO;
+	@Autowired
+	private RoleDAO roleDAO;
+	@Autowired
+	protected UserDAO userDAO;
+
 
 	public AccessController() {
 		super();
 		log.info("Loading AccessController for mapping /access");
+	}
+
+	@ModelAttribute("ProjectForm")
+	protected ProjectForm createProjectForm() {
+		return (ProjectForm) applicationContext.getBean("ProjectForm");
 	}
 
 	/**

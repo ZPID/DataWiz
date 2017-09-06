@@ -109,7 +109,7 @@ public class ProjectController {
 		if (pid.isPresent()) {
 			try {
 				Roles role = projectService.checkProjectRoles(user, pid.get(), 0, false, true);
-				if ((!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
+				if (role != null && (!role.equals(Roles.ADMIN) && !role.equals(Roles.PROJECT_ADMIN) && !role.equals(Roles.PROJECT_READER)
 				    && !role.equals(Roles.PROJECT_WRITER)) && (role.equals(Roles.DS_READER) || role.equals(Roles.DS_WRITER))) {
 					redirectAttributes.addFlashAttribute("hideMenu", true);
 					return "redirect:/project/" + pid.get() + "/studies";

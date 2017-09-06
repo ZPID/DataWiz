@@ -570,7 +570,7 @@ public class ProjectService {
 			ProjectDTO project = projectDAO.findById(pid.get());
 			if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)) {
 				if (project != null) {
-					List<ContributorDTO> contri = contributorDAO.findByProject(project, false, true);
+					List<ContributorDTO> cContri = contributorDAO.findByProject(project, false, true);
 					List<StudyDTO> studies = studyDAO.findAllStudiesByProjectId(project);
 					if (studies != null && !studies.isEmpty()) {
 						for (StudyDTO study : studies) {
@@ -578,9 +578,10 @@ public class ProjectService {
 						}
 					}
 					projectDAO.deleteProject(project.getId());
-					for(ContributorDTO contr : contri) {
-						
-					}
+					if (cContri != null && !cContri.isEmpty())
+						for (ContributorDTO contri : cContri) {
+							contributorDAO.deleteContributor(contri);
+						}
 					txManager.commit(status);
 				} else {
 					log.warn("No Project found for PID {}", () -> pid.get());

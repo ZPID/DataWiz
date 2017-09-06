@@ -2,6 +2,8 @@ package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.graphbuilder.struc.LinkedList;
 
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.StudyConstructDTO;
@@ -200,27 +204,45 @@ public class StudyController {
 		if (sForm != null && bRes != null) {
 			BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
 			validator.validate(sForm, bResTmp, cls);
-			// bResTmp.getAllErrors().forEach(System.out::println);
-			if (bResTmp.hasErrors()) {
+			List<ObjectError> errors = new ArrayList<>();
+			if (bResTmp != null && bResTmp.hasErrors()) {
+				bResTmp.getAllErrors().parallelStream().forEach(err -> errors.add(err));
+				Iterator<ObjectError> itt = errors.iterator();
+				while (itt.hasNext()) {
+					ObjectError err = itt.next();
+					if (!state.equals(PageState.STUDYGENERAL) && err.getCodes() != null && err.getCodes()[0] != null && (err.getCodes()[0].contains("software")
+					    || err.getCodes()[0].contains("pubOnData") || err.getCodes()[0].contains("conflInterests"))) {
+						itt.remove();
+					} else if (!state.equals(PageState.STUDYDESIGN) && err.getCodes() != null && err.getCodes()[0] != null
+					    && (err.getCodes()[0].contains("objectives") || err.getCodes()[0].contains("relTheorys") || err.getCodes()[0].contains("measOcc")
+					        || err.getCodes()[0].contains("interArms"))) {
+						itt.remove();
+					} else if (!state.equals(PageState.STUDYSAMPLE) && err.getCodes() != null && err.getCodes()[0] != null
+					    && err.getCodes()[0].contains("eligibilities")) {
+						itt.remove();
+					}
+				}
+			}
+			if (!errors.isEmpty()) {
 				error = true;
 				switch (state) {
 				case STUDYGENERAL:
-					validateErrors.add("ERROR GENERAL");
+					validateErrors.add(messageSource.getMessage("study.record.error.global.general", null, LocaleContextHolder.getLocale()));
 					break;
 				case STUDYDESIGN:
-					validateErrors.add("ERROR DESIGN");
+					validateErrors.add(messageSource.getMessage("study.record.error.global.design", null, LocaleContextHolder.getLocale()));
 					break;
 				case STUDYETHICAL:
-					validateErrors.add("ERROR ETHICAL");
+					validateErrors.add(messageSource.getMessage("study.record.error.global.ethical", null, LocaleContextHolder.getLocale()));
 					break;
 				case STUDYSAMPLE:
-					validateErrors.add("ERROR SAMPLE");
+					validateErrors.add(messageSource.getMessage("study.record.error.global.sample", null, LocaleContextHolder.getLocale()));
 					break;
 				case STUDYSURVEY:
-					validateErrors.add("ERROR SURvey");
+					validateErrors.add(messageSource.getMessage("study.record.error.global.survey", null, LocaleContextHolder.getLocale()));
 					break;
 				default:
-					validateErrors.add("ERROR DEFAULT");
+					validateErrors.add(messageSource.getMessage("study.record.error.global.default", null, LocaleContextHolder.getLocale()));
 					break;
 				}
 				for (ObjectError errtmp : bResTmp.getAllErrors()) {
