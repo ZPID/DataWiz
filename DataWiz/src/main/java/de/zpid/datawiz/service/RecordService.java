@@ -1,5 +1,6 @@
 package de.zpid.datawiz.service;
 
+import java.math.BigDecimal;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -118,18 +119,21 @@ public class RecordService {
 		if (sForm.getStudy() == null)
 			throw new DataWizSystemException(messageSource.getMessage("logging.study.not.found", new Object[] { studyId.get() }, Locale.ENGLISH),
 			    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
-		if (subpage.isPresent() && subpage.get().equals("codebook")) {
-			sForm.getStudy().setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
-			sForm.getStudy().setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
-			sForm.getStudy().setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get(), true));
-		}
 		if (recordId.isPresent()) {
 			RecordDTO rec = (recordDAO.findRecordWithID(recordId.get(), (versionId.isPresent() && versionId.get() > 0 ? versionId.get() : 0)));
-			if (!subpage.isPresent()) {
-				sForm.setRecords(recordDAO.findRecordVersionList(recordId.get()));
-			}
 			if (rec != null) {
-				setRecordDTO(parsingErrors, rec);
+				if (!subpage.isPresent()) {
+					sForm.setRecords(recordDAO.findRecordVersionList(recordId.get()));
+				} else if (subpage.get().equals("codebook")) {
+					sForm.getStudy().setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
+					sForm.getStudy().setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
+					sForm.getStudy().setInstruments(studyInstrumentDAO.findAllByStudy(studyId.get(), true));
+					rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+					setCodebook(parsingErrors, rec, false);
+				} else {
+					rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+					setDataMatrix(parsingErrors, rec, false);
+				}
 			} else {
 				throw new DataWizSystemException(messageSource.getMessage("logging.record.not.found", new Object[] { recordId.get() }, Locale.ENGLISH),
 				    DataWizErrorCodes.RECORD_NOT_AVAILABLE);
@@ -139,45 +143,71 @@ public class RecordService {
 		return sForm;
 	}
 
-	public void setRecordDTO(final List<String> parsingErrors, final RecordDTO rec) throws Exception {
-		rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+	public void setCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) throws Exception {
 		rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
-		rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
-		if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
-			rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
-			}.getType()));
-
 		if (rec.getVariables() != null && rec.getVariables().size() > 0) {
-			int varPosition = 0;
 			for (SPSSVarDTO var : rec.getVariables()) {
 				var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
 				importService.sortVariableAttributes(var);
 				var.setValues(recordDAO.findVariableValues(var.getId(), false));
 				// SET DATE VALUES TO VIEW DATE (d.M.yyyy)
-				if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE)) {
-					var.getValues().parallelStream().forEach(value -> {
-						String viewDate = null;
-						viewDate = parseDateToViewTime(value.getValue(), var.getType(), parsingErrors, var, "value-label", false);
-						if (viewDate != null)
-							value.setValue(viewDate);
-					});
-					String missing;
-					missing = parseDateToViewTime(var.getMissingVal1(), var.getType(), parsingErrors, var, "missingVal1", true);
-					if (missing != null)
-						var.setMissingVal1(missing);
-					missing = parseDateToViewTime(var.getMissingVal2(), var.getType(), parsingErrors, var, "missingVal2", true);
-					if (missing != null)
-						var.setMissingVal2(missing);
-					missing = parseDateToViewTime(var.getMissingVal3(), var.getType(), parsingErrors, var, "missingVal3", true);
-					if (missing != null)
-						var.setMissingVal3(missing);
+				if (!isSPSS) {
+					if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE)) {
+						var.getValues().parallelStream().forEach(value -> {
+							String viewDate = null;
+							viewDate = parseDateToViewTime(value.getValue(), var.getType(), parsingErrors, var, "value-label", false);
+							if (viewDate != null)
+								value.setValue(viewDate);
+						});
+						String missing;
+						missing = parseDateToViewTime(var.getMissingVal1(), var.getType(), parsingErrors, var, "missingVal1", true);
+						if (missing != null)
+							var.setMissingVal1(missing);
+						missing = parseDateToViewTime(var.getMissingVal2(), var.getType(), parsingErrors, var, "missingVal2", true);
+						if (missing != null)
+							var.setMissingVal2(missing);
+						missing = parseDateToViewTime(var.getMissingVal3(), var.getType(), parsingErrors, var, "missingVal3", true);
+						if (missing != null)
+							var.setMissingVal3(missing);
+					}
 				}
+			}
+		}
+	}
+
+	public void setDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) throws Exception {
+		rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
+		if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty()) {
+			if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
+				rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
+				}.getType()));
+		}
+		if (!isSPSS && rec.getVariables() != null && rec.getVariables().size() > 0 && rec.getDataMatrix() != null && !rec.getDataMatrix().isEmpty()) {
+			int varPosition = 0;
+			for (SPSSVarDTO var : rec.getVariables()) {
 				int sd = varPosition++;
-				if (rec.getDataMatrix() != null && rec.getDataMatrix().size() > 0)
-					rec.getDataMatrix().parallelStream().forEach(row -> {
-						if (var.getVarType() == 0 && var.getDecimals() == 0 && row.get(sd) != null && row.get(sd) instanceof Double)
-							row.set(sd, Math.round(((Double) row.get(sd)).doubleValue()));
-					});
+				rec.getDataMatrix().parallelStream().forEach(row -> {
+					if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE) && row.get(sd) != null
+					    && !String.valueOf(row.get(sd)).isEmpty()) {
+						String viewDate = null;
+						viewDate = parseDateToViewTime(String.valueOf(row.get(sd)), var.getType(), parsingErrors, var, "matrix-row-" + sd, false);
+						if (viewDate != null && !viewDate.isEmpty()) {
+							row.set(sd, viewDate);
+						}
+					} else if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F) && row.get(sd) != null) {
+						if (!String.valueOf(row.get(sd)).isEmpty()) {
+							BigDecimal dec = new BigDecimal(String.valueOf(row.get(sd)));
+							dec.stripTrailingZeros();
+							if (var.getDecimals() <= 0) {
+								row.set(sd, Math.round(dec.doubleValue()));
+							} else {
+								row.set(sd, dec);
+							}
+						} else {
+							row.set(sd, null);
+						}
+					}
+				});
 			}
 		}
 	}
@@ -333,7 +363,7 @@ public class RecordService {
 			lastVersion = recordDAO.findRecordWithID(currentVersion.getId(), 0);
 			lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
 			lastVersion.setAttributes(recordDAO.findRecordAttributes(lastVersion.getVersionId(), false));
-			lastVersion.setDataMatrixJson(recordDAO.findMatrixByVersionId(lastVersion.getVersionId()));
+			currentVersion.setDataMatrixJson(recordDAO.findMatrixByVersionId(currentVersion.getVersionId()));
 			if (lastVersion.getVariables() != null && lastVersion.getVariables().size() > 0) {
 				for (SPSSVarDTO var : lastVersion.getVariables()) {
 					var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
@@ -593,9 +623,11 @@ public class RecordService {
 		}
 		if (!switchToMissing && (label.isEmpty() || value.isEmpty())) {
 			if (label.isEmpty()) {
-				parsingWarnings.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName() }, LocaleContextHolder.getLocale()));
+				parsingWarnings.add(
+				    messageSource.getMessage("record.value.label.empty", new Object[] { var.getName(), var.getPosition() }, LocaleContextHolder.getLocale()));
 			} else
-				parsingErrors.add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName() }, LocaleContextHolder.getLocale()));
+				parsingErrors.add(
+				    messageSource.getMessage("record.value.label.empty", new Object[] { var.getName(), var.getPosition() }, LocaleContextHolder.getLocale()));
 			varError = true;
 		} else if (switchToMissing && (value == null || value.isEmpty())) {
 			parsingErrors.add(messageSource.getMessage("record.value.missing.empty", new Object[] { var.getName(), missingNum, var.getMissingFormat() },
@@ -728,21 +760,21 @@ public class RecordService {
 	 */
 	public RecordDTO loadRecordExportData(long versionId, long recordId, String exportType, StringBuilder res) throws Exception {
 		RecordDTO record;
+		List<String> parsingErrors = new ArrayList<>();
 		record = recordDAO.findRecordWithID(recordId, versionId);
-		record.setDataMatrixJson(recordDAO.findMatrixByVersionId(versionId));
 		record.setVariables(recordDAO.findVariablesByVersionID(versionId));
-		record.setAttributes(recordDAO.findRecordAttributes(versionId, true));
 		record.setErrors(null);
-		for (SPSSVarDTO var : record.getVariables()) {
-			var.setAttributes(recordDAO.findVariableAttributes(var.getId(), true));
-			if (!exportType.equals("SPSS"))
-				importService.sortVariableAttributes(var);
-			var.setValues(recordDAO.findVariableValues(var.getId(), true));
-		}
+		record.setAttributes(recordDAO.findRecordAttributes(versionId, true));
+		setCodebook(parsingErrors, record, exportType.equals("SPSS") ? true : false);
+		record.setDataMatrixJson(recordDAO.findMatrixByVersionId(versionId));
 		if (record.getDataMatrixJson() != null && !record.getDataMatrixJson().isEmpty()) {
 			record.setDataMatrix(new Gson().fromJson(record.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
 			}.getType()));
 			record.setDataMatrixJson(null);
+		}
+		setDataMatrix(parsingErrors, record, exportType.equals("SPSS") ? true : false);
+		if (!parsingErrors.isEmpty()) {
+			parsingErrors.forEach(s -> res.append(s + "<br />"));
 		}
 		return record;
 	}

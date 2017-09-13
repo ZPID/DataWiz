@@ -17,28 +17,28 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-  @Autowired
-  protected MessageSource messageSource;
-  @Autowired
-  protected Environment env;
+	@Autowired
+	protected MessageSource messageSource;
+	@Autowired
+	protected Environment env;
 
-  public static final String DEFAULT_ERROR_VIEW = "error";
-  private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);
+	public static final String DEFAULT_ERROR_VIEW = "error";
+	private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);
 
-  @ExceptionHandler(value = { DWDownloadException.class })
-  public ModelAndView defaultDWDownloadException(HttpServletRequest request, Exception e) {
-    log.warn("DWDownloadException catched from[{}] Exception: {}", () -> request.getRequestURL(), () -> e.getMessage());
-    ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
-    mav.addObject("errormsg", messageSource.getMessage(e.getMessage(),
-        new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
-    return mav;
-  }
+	@ExceptionHandler(value = { DWDownloadException.class })
+	public ModelAndView defaultDWDownloadException(HttpServletRequest request, Exception e) {
+		log.warn("DWDownloadException catched from[{}] Exception: {}", () -> request.getRequestURL(), () -> e.getMessage());
+		ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
+		mav.addObject("errormsg", messageSource.getMessage(e.getMessage(), new Object[] { env.getRequiredProperty("organisation.admin.email") },
+		    LocaleContextHolder.getLocale()));
+		return mav;
+	}
 
-  @ExceptionHandler(value = { Exception.class })
-  public ModelAndView defaultDataAccessResourceFailureException(HttpServletRequest request, Exception e) {
-    log.fatal("Exception catched from[{}] Exception: ", () -> request.getRequestURL(), () -> e);
-    ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
-    mav.addObject("errormsg", e.getMessage());
-    return mav;
-  }
+	@ExceptionHandler(value = { Exception.class })
+	public ModelAndView defaultDataAccessResourceFailureException(HttpServletRequest request, Exception e) {
+		log.fatal("Exception catched from[{}] Exception: ", () -> request.getRequestURL(), () -> e);
+		ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
+		mav.addObject("errormsg", e.getMessage());
+		return mav;
+	}
 }

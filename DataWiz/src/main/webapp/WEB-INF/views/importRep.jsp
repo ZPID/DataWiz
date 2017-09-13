@@ -11,8 +11,7 @@
           <s:message code="dataset.import.report.info" />
         </div>
       </div>
-      <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
+      <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
       <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
         <c:set var="selectedType" value="${StudyForm.selectedFileType}" scope="request" />
         <c:choose>
@@ -84,11 +83,11 @@
                 <h5>
                   <strong><s:message code="dataset.import.report.codebook" /></strong>
                 </h5>
-                <ul class="list-group pre-y-scrollable max-height-800">
+                <ul class="list-group margin-bottom-2" id="lazyLoadCodebook">
                   <c:set var="newList" value="${StudyForm.record.variables}" />
                   <c:set var="oldList" value="${StudyForm.viewVars}" />
                   <c:forEach items="${oldList}" var="var" varStatus="loop">
-                    <li class="list-group-item">
+                    <li class="list-group-item" style="display: none;">
                       <div class="row">
                         <div class="col-sm-12">
                           <div class="pre-xy-scrollable">
@@ -131,8 +130,7 @@
                                   <c:choose>
                                     <c:when test="${not empty var.type}">
                                       <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
-                                          label="Erweitere Metadaten übernehmen: " /> <s:message
-                                          text="${StudyForm.compList[loop.count-1].message}" /></td>
+                                          label="Erweitere Metadaten übernehmen: " /> <s:message text="${StudyForm.compList[loop.count-1].message}" /></td>
                                     </c:when>
                                     <c:otherwise>
                                       <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
@@ -151,7 +149,7 @@
                   <c:if test="${fn:length(newList) > fn:length(oldList)}">
                     <c:forEach items="${newList}" var="var" varStatus="loop">
                       <c:if test="${loop.count > fn:length(oldList)}">
-                        <li class="list-group-item">
+                        <li class="list-group-item" style="display: none;">
                           <div class="row">
                             <div class="col-sm-12">
                               <div class="pre-xy-scrollable">
@@ -168,8 +166,7 @@
                                     </tr>
                                     <tr>
                                       <td colspan="18"><sf:checkbox path="compList[${loop.count-1}].keepExpMeta"
-                                          label="Erweitere Metadaten übernehmen: " /> <s:message
-                                          text="${StudyForm.compList[loop.count-1].message}" /></td>
+                                          label="Erweitere Metadaten übernehmen: " /> <s:message text="${StudyForm.compList[loop.count-1].message}" /></td>
                                     </tr>
                                   </tbody>
                                 </table>
@@ -181,6 +178,37 @@
                     </c:forEach>
                   </c:if>
                 </ul>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <div style="display: inline-block;">Show</div>
+                    <select style="display: inline-block; width: 26%;" class="form-control input-sm" id="actCodeBookEntreeNum">
+                      <option value="1" label="1" />
+                      <option value="5" label="5" />
+                      <option value="10" label="10" />
+                      <option value="25" label="25" />
+                      <option value="50" label="50" />
+                    </select>
+                    <div style="display: inline-block;">entries:</div>
+                  </div>
+                  <div class="col-sm-4 text-align-right">
+                    <div style="display: inline-block;">Go to Page:</div>
+                    <input style="display: inline-block; width: 26%;" type="text" class="form-control input-sm" id="actCodeBookPage" />
+                    <div style="display: inline-block;" id="maxCodeBookPage"></div>
+                  </div>
+                  <div class="col-sm-5 text-align-right">
+                    <ul class="pagination marginTop0">
+                      <li><a class="codeBookPagerItems" id="pagerCodebookBegin">Begin</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookPrev5">Skip 5</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookPrev2">-2</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookPrev1">-1</a></li>
+                      <li class="active"><a class="codeBookPagerItems" id="pagerCodebookAct">0</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookNext1">+1</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookNext2">+2</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookNext5">Skip 5</a></li>
+                      <li><a class="codeBookPagerItems" id="pagerCodebookEnd">End</a></li>
+                    </ul>
+                  </div>
+                </div>
                 <s:message code="dataset.import.report.codebook.help" var="appresmess" />
                 <%@ include file="templates/helpblock.jsp"%>
               </div>
@@ -226,8 +254,9 @@
                   <h5>
                     <strong><s:message code="dataset.import.report.result.table" /></strong>
                   </h5>
-                  <div class="pre-xy-scrollable margin-bottom-0">
-                    <table class="table table-striped table-bordered table table-condensed matrixtable margin-bottom-0">
+                  <div class="margin-bottom-0">
+                    <table class="table table-striped table-bordered table table-condensed matrixtable margin-bottom-0" id="lazyLoadFinalMatrix"
+                      style="display: none;">
                       <thead>
                         <tr>
                           <c:forEach items="${StudyForm.record.variables}" var="var">
@@ -235,15 +264,6 @@
                           </c:forEach>
                         </tr>
                       </thead>
-                      <tbody>
-                        <c:forEach items="${StudyForm.record.dataMatrix}" var="row">
-                          <tr>
-                            <c:forEach items="${row}" var="value">
-                              <td><s:message text="${value}" /></td>
-                            </c:forEach>
-                          </tr>
-                        </c:forEach>
-                      </tbody>
                     </table>
                   </div>
                   <s:message code="dataset.import.report.result.table.help" var="appresmess" />
@@ -257,7 +277,7 @@
                 </a>
               </div>
               <div class="col-sm-6 text-align-right">
-                <button type="submit" class="btn btn-success btn-sm" name="saveWithNewCodeBook">
+                <button type="submit" class="btn btn-success btn-sm" name="saveWithNewCodeBook" onclick="startLoader();">
                   <s:message code="dataset.submit.import" />
                 </button>
               </div>

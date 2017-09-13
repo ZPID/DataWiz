@@ -154,8 +154,8 @@ public class ExportService {
 							ccUtil.checkStudyConsistency(studExp, studyDAO.findById(study.getId(), project.getId(), false, false));
 							exportForm.getStudies().add(studExp);
 						}
-					}					
-					ccUtil.checkDMPConsistency(exportForm, dmpDAO.findByID(project));					
+					}
+					ccUtil.checkDMPConsistency(exportForm, dmpDAO.findByID(project));
 				} else {
 					throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[] { pid }, Locale.ENGLISH),
 					    DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
@@ -279,14 +279,16 @@ public class ExportService {
 										RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
 										List<String> parsingErrors = new LinkedList<>();
 										if (recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
-											recordService.setRecordDTO(parsingErrors, recordDB);
+											recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
+											recordService.setCodebook(parsingErrors, recordDB, false);
 											record = recordDB;
 										} else if (!recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
 											record.setRecordName(recordDB.getRecordName());
 											record.setVersionId(recordDB.getVersionId());
 											record.setId(recordDB.getId());
 											record.setStudyId(recordDB.getStudyId());
-											recordService.setRecordDTO(parsingErrors, record);
+											record.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
+											recordService.setCodebook(parsingErrors, record, false);
 										} else if (recordEx.isExportMetaData() && !recordEx.isExportCodebook()) {
 											record = recordDB;
 										} else {
@@ -305,8 +307,8 @@ public class ExportService {
 										byte[] content = null;
 										if (recordEx.isExportMatrix()) {
 											RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(recordDB);
-											recordService.setRecordDTO(parsingErrors, copy);
-
+											copy.setVariables(recordDAO.findVariablesByVersionID(copy.getVersionId()));
+											recordService.setDataMatrix(parsingErrors, copy, false);
 											if (!parsingErrors.isEmpty()) {
 												StringBuilder s = new StringBuilder();
 												parsingErrors.forEach(pe -> {
@@ -317,7 +319,6 @@ public class ExportService {
 											}
 											if (copy.getDataMatrix() != null && !copy.getDataMatrix().isEmpty())
 												content = exportCSV(copy, res, true);
-											System.err.println(res.toString());
 											if (content != null && res.toString().trim().isEmpty()) {
 												fileHash = (FileDTO) applicationContext.getBean("FileDTO");
 												fileHash.setMd5checksum(fileUtil.getFileChecksum("MD5", content));
@@ -590,7 +591,9 @@ public class ExportService {
 			}
 			varcount = 1;
 			for (Object obj : row) {
-				if (obj instanceof Number)
+				if (obj == null) {
+					csv.append("");
+				} else if (obj instanceof Number)
 					csv.append(obj);
 				else
 					csv.append("\"" + ((String) obj).replaceAll("\"", "\'") + "\"");

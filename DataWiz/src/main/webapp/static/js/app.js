@@ -655,7 +655,8 @@ function showGlobalAjaxModal(url) {
 }
 
 function asyncSumbit(uri, global) {
-	var str = $("#StudyForm").serialize();
+	var str = $("#studyFormDis").serialize();
+	console.log(str);
 	$.ajax({
 	  type : "post",
 	  data : str,

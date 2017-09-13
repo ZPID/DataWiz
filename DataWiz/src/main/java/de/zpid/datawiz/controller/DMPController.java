@@ -34,7 +34,6 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.enumeration.SavedState;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;

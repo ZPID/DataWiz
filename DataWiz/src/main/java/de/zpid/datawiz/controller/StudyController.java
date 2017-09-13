@@ -27,8 +27,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.graphbuilder.struc.LinkedList;
-
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.StudyConstructDTO;
 import de.zpid.datawiz.dto.StudyDTO;
@@ -197,7 +195,6 @@ public class StudyController {
 		return "redirect:/project/" + pid.get() + "/study/" + study.getId();
 	}
 
-	// TODO error TXT
 	private boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls, final PageState state,
 	    Set<String> validateErrors) {
 		boolean error = false;

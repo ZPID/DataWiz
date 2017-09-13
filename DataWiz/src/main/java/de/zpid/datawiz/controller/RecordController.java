@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.gson.Gson;
+
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
@@ -270,6 +272,12 @@ public class RecordController {
 		return ret;
 	}
 
+	@RequestMapping(value = { "/{recordId}/getMatrixAsync" }, method = RequestMethod.GET)
+	public @ResponseBody String getMatrixAsync(@ModelAttribute("StudyForm") StudyForm sForm) {
+		log.trace("Entering getMatrixAsync for importReport");
+		return new Gson().toJson(sForm.getRecord().getDataMatrix());
+	}
+
 	/**
 	 * 
 	 * @param pid
@@ -497,6 +505,9 @@ public class RecordController {
 		} else {
 			try {
 				record = recordService.loadRecordExportData(versionId, recordId, exportType, res);
+				if (!res.toString().trim().isEmpty()) {
+					record = null;
+				}
 			} catch (Exception e) {
 				record = null;
 				res.insert(0, "dbs.sql.exception");
@@ -512,7 +523,7 @@ public class RecordController {
 					log.error("ERROR: Exception thrown at exportService.getRecordExportContentAsByteArray", () -> recordId, () -> versionId, () -> e);
 				}
 			}
-			if (res.toString().trim().isEmpty() && record != null && content != null) {
+			if (record != null && content != null) {
 				switch (exportType) {
 				case "CSVMatrix":
 					response.setContentType("text/csv");
@@ -564,8 +575,23 @@ public class RecordController {
 		if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
 			log.warn("Setting setNumofVars failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
 		}
-		model.put("errorMSG", recordService.validateCodeBook(sForm));
-		model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
+		String ret = "codebook";
+		if (pagestate.equals("codebook")) {
+			model.put("errorMSG", recordService.validateCodeBook(sForm));
+			model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
+			if (sForm.getPageLoadMin() < 1)
+				sForm.setPageLoadMin(1);
+			if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
+				sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
+			model.put("subnaviActive", PageState.RECORDVAR.name());
+		} else {
+			if (sForm.getPageLoadMin() < 1)
+				sForm.setPageLoadMin(1);
+			if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfCases())
+				sForm.setPageLoadMax((int) sForm.getRecord().getNumberOfCases());
+			model.put("subnaviActive", PageState.RECORDDATA.name());
+			ret = "datamatrix";
+		}
 		model.put("recordSubMenu", true);
 		model.put("breadcrumpList",
 		    BreadCrumpUtil.generateBC(PageState.RECORDS,
@@ -573,21 +599,7 @@ public class RecordController {
 		            (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
 		                : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
 		        new long[] { pid.get(), studyId.get() }, messageSource));
-		if (pagestate.equals("codebook")) {
-			if (sForm.getPageLoadMin() < 1)
-				sForm.setPageLoadMin(1);
-			if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
-				sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
-			model.put("subnaviActive", PageState.RECORDVAR.name());
-			return "codebook";
-		} else {
-			if (sForm.getPageLoadMin() < 1)
-				sForm.setPageLoadMin(1);
-			if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfCases())
-				sForm.setPageLoadMax((int) sForm.getRecord().getNumberOfCases());
-			model.put("subnaviActive", PageState.RECORDDATA.name());
-			return "datamatrix";
-		}
+		return ret;
 	}
 
 	/**
@@ -603,6 +615,7 @@ public class RecordController {
 			log.warn("Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
+		System.err.println(sForm.getRecord().getVariables().get(0));
 		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 

@@ -24,57 +24,55 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  @Qualifier("LoginService")
-  UserDetailsService userDetailsService;
+	@Autowired
+	@Qualifier("LoginService")
+	UserDetailsService userDetailsService;
 
-  @Autowired
-  protected JdbcTemplate jdbcTemplate;
+	@Autowired
+	protected JdbcTemplate jdbcTemplate;
 
-  @Autowired
-  public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userDetailsService);
-    auth.authenticationProvider(authenticationProvider());
-  }
+	@Autowired
+	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userDetailsService);
+		auth.authenticationProvider(authenticationProvider());
+	}
 
-  @Bean
-  public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-  @Bean
-  public DaoAuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-    authenticationProvider.setUserDetailsService(userDetailsService);
-    authenticationProvider.setPasswordEncoder(passwordEncoder());
-    return authenticationProvider;
-  }
+	@Bean
+	public DaoAuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(userDetailsService);
+		authenticationProvider.setPasswordEncoder(passwordEncoder());
+		return authenticationProvider;
+	}
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    CharacterEncodingFilter filter = new CharacterEncodingFilter();
-    filter.setEncoding("UTF-8");
-    filter.setForceEncoding(true);
-    http.addFilterBefore(filter, CsrfFilter.class);
-    http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**")
-        .access("hasRole('ADMIN')").antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**")
-        .access("hasRole('USER') or hasRole('ADMIN')").and().formLogin().defaultSuccessUrl("/panel").loginPage("/login")
-        .permitAll().usernameParameter("email").passwordParameter("password").and().rememberMe()
-        .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400)
-        .and().csrf().and().exceptionHandling().accessDeniedPage("/Access_Denied").and().logout()
-        .deleteCookies("remember-me").and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-        .invalidSessionUrl("/login?session=timeout");
-  }
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		CharacterEncodingFilter filter = new CharacterEncodingFilter();
+		filter.setEncoding("UTF-8");
+		filter.setForceEncoding(true);
+		http.addFilterBefore(filter, CsrfFilter.class);
+		http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**").access("hasRole('ADMIN')")
+		    .antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**").access("hasRole('USER') or hasRole('ADMIN')").and().formLogin()
+		    .defaultSuccessUrl("/panel").loginPage("/login").permitAll().usernameParameter("email").passwordParameter("password").and().rememberMe()
+		    .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400).and().csrf().and()
+		    .exceptionHandling().accessDeniedPage("/Access_Denied").and().logout().deleteCookies("remember-me").and().sessionManagement()
+		    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).invalidSessionUrl("/login?session=timeout");
+	}
 
-  @Override
-  public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/resources/**");
-  }
+	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/resources/**");
+	}
 
-  @Bean
-  public PersistentTokenRepository persistentTokenRepository() {
-    JdbcTokenRepositoryImpl tokenRepositoryImpl = new JdbcTokenRepositoryImpl();
-    tokenRepositoryImpl.setDataSource(jdbcTemplate.getDataSource());
-    return tokenRepositoryImpl;
-  }
+	@Bean
+	public PersistentTokenRepository persistentTokenRepository() {
+		JdbcTokenRepositoryImpl tokenRepositoryImpl = new JdbcTokenRepositoryImpl();
+		tokenRepositoryImpl.setDataSource(jdbcTemplate.getDataSource());
+		return tokenRepositoryImpl;
+	}
 }

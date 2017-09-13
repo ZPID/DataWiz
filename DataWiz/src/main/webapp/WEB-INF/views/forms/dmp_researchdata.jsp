@@ -114,92 +114,96 @@
             src="/DataWiz/static/images/${valimag3}" class="infoImages" />
         </div>
       </div>
-      <div class="form-group">
-        <div class="col-sm-6">
-          <label for="dmp.usedCollectionModes"> <s:message code="dmp.edit.usedCollectionModes.present" />
-          </label>
-          <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
-            <c:if test="${dtype.investPresent}">
-              <c:choose>
-                <c:when test="${dtype.id == 1}">
-                  <label class="btn btn-default chkboxbtn"><sf:checkbox path="dmp.usedCollectionModes" value="${dtype.id}"
-                      onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" /> <s:message
-                      text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
-                </c:when>
-                <c:otherwise>
-                  <label class="btn btn-default chkboxbtn"><sf:checkbox path="dmp.usedCollectionModes" value="${dtype.id}" /> <s:message
-                      text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
-                </c:otherwise>
-              </c:choose>
-            </c:if>
-          </c:forEach>
-          <!-- otherCMIP -->
-          <div id="contentCollectionModesIP">
-            <c:set var="input_vars" value="dmp.otherCMIP;dmp.edit.otherCMIP; ; ;row" />
-            <%@ include file="../templates/gen_textarea.jsp"%>
-          </div>
-        </div>
-        <div class="col-sm-6">
-          <label for="dmp.usedCollectionModes"> <s:message code="dmp.edit.usedCollectionModes.not.present" />
-          </label>
-          <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
-            <c:if test="${not dtype.investPresent}">
-              <c:choose>
-                <c:when test="${dtype.id == 2}">
-                  <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox path="dmp.usedCollectionModes"
-                      value="${dtype.id}" onchange="switchViewIfChecked('selectCollectionModesINP')" id="selectCollectionModesINP" /> <s:message
-                      text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
-                </c:when>
-                <c:otherwise>
-                  <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox path="dmp.usedCollectionModes"
-                      value="${dtype.id}" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
-                </c:otherwise>
-              </c:choose>
-            </c:if>
-          </c:forEach>
-          <!-- otherCMINP -->
-          <div id="contentCollectionModesINP">
-            <c:set var="input_vars" value="dmp.otherCMINP;dmp.edit.otherCMINP; ; ;row" />
-            <%@ include file="../templates/gen_textarea.jsp"%>
-          </div>
-        </div>
-        <div class="col-sm-12">
-          <s:message code="dmp.edit.usedCollectionModes.help" var="appresmess" />
-          <%@ include file="../templates/helpblock.jsp"%>
-        </div>
-      </div>
-      <!--  measOccasions -->
-      <div class="form-group">
-        <div class="col-sm-12">
-          <div class="row">
-            <div class="col-xs-10 col-sm-11">
-              <label for="dmp.measOccasions"><s:message code="dmp.edit.measOccasions" /></label>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <div class="form-group">
+            <div class="col-sm-6">
+              <label for="dmp.usedCollectionModes"> <s:message code="dmp.edit.usedCollectionModes.present" />
+              </label>
+              <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
+                <c:if test="${dtype.investPresent}">
+                  <c:choose>
+                    <c:when test="${dtype.id == 1}">
+                      <label class="btn btn-default chkboxbtn"><sf:checkbox path="dmp.usedCollectionModes" value="${dtype.id}"
+                          onchange="switchViewIfChecked('selectCollectionModesIP')" id="selectCollectionModesIP" /> <s:message
+                          text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                    </c:when>
+                    <c:otherwise>
+                      <label class="btn btn-default chkboxbtn"><sf:checkbox path="dmp.usedCollectionModes" value="${dtype.id}" /> <s:message
+                          text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                    </c:otherwise>
+                  </c:choose>
+                </c:if>
+              </c:forEach>
+              <!-- otherCMIP -->
+              <div id="contentCollectionModesIP">
+                <c:set var="input_vars" value="dmp.otherCMIP;dmp.edit.otherCMIP; ; ;row" />
+                <%@ include file="../templates/gen_textarea.jsp"%>
+              </div>
             </div>
-            <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-              <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
+            <div class="col-sm-6">
+              <label for="dmp.usedCollectionModes"> <s:message code="dmp.edit.usedCollectionModes.not.present" />
+              </label>
+              <c:forEach items="${ProjectForm.collectionModes}" var="dtype">
+                <c:if test="${not dtype.investPresent}">
+                  <c:choose>
+                    <c:when test="${dtype.id == 2}">
+                      <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox path="dmp.usedCollectionModes"
+                          value="${dtype.id}" onchange="switchViewIfChecked('selectCollectionModesINP')" id="selectCollectionModesINP" /> <s:message
+                          text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                    </c:when>
+                    <c:otherwise>
+                      <label class="btn btn-default" style="width: 100%; text-align: left;"><sf:checkbox path="dmp.usedCollectionModes"
+                          value="${dtype.id}" /> <s:message text="${localeCode eq 'de' ? dtype.nameDE : dtype.nameEN}" /> </label>
+                    </c:otherwise>
+                  </c:choose>
+                </c:if>
+              </c:forEach>
+              <!-- otherCMINP -->
+              <div id="contentCollectionModesINP">
+                <c:set var="input_vars" value="dmp.otherCMINP;dmp.edit.otherCMINP; ; ;row" />
+                <%@ include file="../templates/gen_textarea.jsp"%>
+              </div>
+            </div>
+            <div class="col-sm-12">
+              <s:message code="dmp.edit.usedCollectionModes.help" var="appresmess" />
+              <%@ include file="../templates/helpblock.jsp"%>
             </div>
           </div>
-          <sf:select class="form-control" path="dmp.measOccasions">
-            <sf:option value="">
-              <s:message code="gen.select" />
-            </sf:option>
-            <sf:option value="single">
-              <s:message code="dmp.edit.measOccasions.single" />
-            </sf:option>
-            <sf:option value="multi">
-              <s:message code="dmp.edit.measOccasions.multi" />
-            </sf:option>
-          </sf:select>
-          <s:message code="dmp.edit.measOccasions.help" var="appresmess" />
-          <%@ include file="../templates/helpblock.jsp"%>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!--  measOccasions -->
+  <div class="form-group">
+    <div class="col-sm-12">
+      <div class="row">
+        <div class="col-xs-10 col-sm-11">
+          <label for="dmp.measOccasions"><s:message code="dmp.edit.measOccasions" /></label>
+        </div>
+        <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
+          <img src="/DataWiz/static/images/${valimag2}" class="infoImages" />
         </div>
       </div>
+      <sf:select class="form-control" path="dmp.measOccasions">
+        <sf:option value="">
+          <s:message code="gen.select" />
+        </sf:option>
+        <sf:option value="single">
+          <s:message code="dmp.edit.measOccasions.single" />
+        </sf:option>
+        <sf:option value="multi">
+          <s:message code="dmp.edit.measOccasions.multi" />
+        </sf:option>
+      </sf:select>
+      <s:message code="dmp.edit.measOccasions.help" var="appresmess" />
+      <%@ include file="../templates/helpblock.jsp"%>
     </div>
   </div>
   <!-- START Data Reproducibility -->
   <div class="form-group">
     <div class="col-sm-12">
-      <div class="row margin-bottom-20">
+      <div class="row margin-bottom-0">
         <div class="col-xs-10 col-sm-11">
           <b><s:message code="dmp.edit.qualityAssurance" /></b>
         </div>
@@ -210,14 +214,11 @@
       </div>
       <ul class="list-group">
         <!--  reliabilityTraining -->
-        <c:set var="input_vars" value="dmp.reliabilityTraining;dmp.edit.reliabilityTraining; ; ;row" />
-        <%@ include file="../templates/gen_textarea.jsp"%>
-        <!--  multipleMeasurements -->
-        <c:set var="input_vars" value="dmp.multipleMeasurements;dmp.edit.multipleMeasurements; ; ;row" />
-        <%@ include file="../templates/gen_textarea.jsp"%>
-        <!--  qualitityOther -->
-        <c:set var="input_vars" value="dmp.qualitityOther;dmp.edit.qualitityOther; ; ;row" />
-        <%@ include file="../templates/gen_textarea.jsp"%>
+        <li class="list-group-item"><c:set var="input_vars" value="dmp.reliabilityTraining;dmp.edit.reliabilityTraining; ; ;row" /> <%@ include
+            file="../templates/gen_textarea.jsp"%> <!--  multipleMeasurements --> <c:set var="input_vars"
+            value="dmp.multipleMeasurements;dmp.edit.multipleMeasurements; ; ;row" /> <%@ include file="../templates/gen_textarea.jsp"%>
+          <!--  qualitityOther --> <c:set var="input_vars" value="dmp.qualitityOther;dmp.edit.qualitityOther; ; ;row" /> <%@ include
+            file="../templates/gen_textarea.jsp"%></li>
       </ul>
     </div>
   </div>
@@ -229,7 +230,7 @@
   <!-- START Reasons for storage -->
   <div class="form-group">
     <div class="col-sm-12">
-      <div class="row margin-bottom-20">
+      <div class="row margin-bottom-0">
         <div class="col-xs-10 col-sm-11">
           <b><s:message code="dmp.edit.storage.headline" /></b>
         </div>
@@ -238,23 +239,16 @@
             src="/DataWiz/static/images/${valimag3}" class="infoImages" />
         </div>
       </div>
-      <!-- workingCopy -->
-      <s:message text="workingCopy" var="dmp_var_name" />
-      <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
-      <!-- goodScientific -->
-      <s:message text="goodScientific" var="dmp_var_name" />
-      <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
-      <!-- subsequentUse -->
-      <s:message text="subsequentUse" var="dmp_var_name" />
-      <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
-      <!-- requirements -->
-      <s:message text="requirements" var="dmp_var_name" />
-      <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
-      <!-- documentation -->
-      <s:message text="documentation" var="dmp_var_name" />
-      <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
-      <s:message code="dmp.edit.storage.help" var="appresmess" />
-      <%@ include file="../templates/helpblock.jsp"%>
+      <ul class="list-group">
+        <li class="list-group-item marginTop0">
+          <!-- workingCopy --> <s:message text="workingCopy" var="dmp_var_name" /> <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
+          <!-- goodScientific --> <s:message text="goodScientific" var="dmp_var_name" /> <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
+          <!-- subsequentUse --> <s:message text="subsequentUse" var="dmp_var_name" /> <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
+          <!-- requirements --> <s:message text="requirements" var="dmp_var_name" /> <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
+          <!-- documentation --> <s:message text="documentation" var="dmp_var_name" /> <%@ include file="../templates/selectYesNoWithoutReason.jsp"%>
+          <s:message code="dmp.edit.storage.help" var="appresmess" /> <%@ include file="../templates/helpblock.jsp"%>
+        </li>
+      </ul>
     </div>
   </div>
   <!-- storageDuration -->

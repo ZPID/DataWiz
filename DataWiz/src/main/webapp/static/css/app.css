@@ -17,7 +17,9 @@ body {
   position: relative;
   top: -50px;
 }
-
+.codeBookPagerItems{
+  cursor: pointer;
+}
 .dropzone .dz-preview .dz-size {
   position: relative;
   top: 12px;
@@ -147,6 +149,10 @@ label.btn::after {
   font-size: 3em
 }
 
+.marginTop0 {
+  margin-top: 0px;
+}
+
 .marginTop1 {
   margin-top: 12px;
 }
@@ -184,6 +190,9 @@ label.btn::after {
 
 .margin-bottom-10 {
   margin-bottom: 10px;
+}
+.margin-bottom-2 {
+  margin-bottom: 2px;
 }
 
 .margin-bottom-20 {
@@ -241,20 +250,22 @@ label.btn::after {
   -webkit-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
   box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.3);
-  
 }
 
 .breadcrumb a {
   color: white;
 }
+
 .breadcrumb li {
-  white-space:nowrap;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.breadcrumb > *:nth-child(n+2) {
+
+.breadcrumb>*:nth-child(n+2) {
   display: none;
 }
+
 .bractive {
   color: #bbb;
 }
@@ -317,17 +328,15 @@ label.btn::after {
   }
   .breadcrumb {
     left: 0%;
-  	top: 8px;
-  }  
-  .btn-xs-block {
-  	display:block;
-  	width:90%;
-  	margin: auto;
+    top: 8px;
   }
-  .btn-block + .btn-xs-block,
-  .btn-xs-block + .btn-block,
-  .btn-xs-block + .btn-xs-block {
-  	margin-top: 0.5rem;
+  .btn-xs-block {
+    display: block;
+    width: 90%;
+    margin: auto;
+  }
+  .btn-block+.btn-xs-block, .btn-xs-block+.btn-block, .btn-xs-block+.btn-xs-block {
+    margin-top: 0.5rem;
   }
   #navbarlogo {
     height: 0px;
@@ -368,8 +377,8 @@ label.btn::after {
   .breadcrumb {
     left: 5%;
   }
-  .breadcrumb > *:nth-last-child(-n+1) {
-    display:inline-block;
+  .breadcrumb>*:nth-last-child(-n+1) {
+    display: inline-block;
   }
   .breadcrumb li {
     max-width: 250px;
@@ -383,8 +392,8 @@ label.btn::after {
 }
 /* Breite ab 980 pixel */
 @media ( min-width : 980px) {
-  .breadcrumb > *:nth-last-child(-n+2) {
-    display:inline-block;
+  .breadcrumb>*:nth-last-child(-n+2) {
+    display: inline-block;
   }
   .breadcrumb li {
     max-width: 250px;
@@ -392,8 +401,8 @@ label.btn::after {
 }
 /* Breite ab 1200 pixel */
 @media ( min-width : 1200px) {
-  .breadcrumb > *:nth-last-child(-n+3) {
-    display:inline-block;
+  .breadcrumb>*:nth-last-child(-n+3) {
+    display: inline-block;
   }
   .breadcrumb li {
     max-width: 300px;
@@ -425,8 +434,8 @@ label.btn::after {
   .breadcrumb {
     left: 10%;
   }
-  .breadcrumb > *:nth-last-child(-n+4) {
-    display:inline-block;
+  .breadcrumb>*:nth-last-child(-n+4) {
+    display: inline-block;
   }
   .breadcrumb li {
     max-width: 300px;
@@ -533,14 +542,12 @@ label.btn::after {
   color: #fefeff;
 }
 
-.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus
-  {
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
   color: #fefeff;
   background-color: #286090;
 }
 
-.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus
-  {
+.navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:hover, .navbar-default .navbar-nav>.open>a:focus {
   color: #fefeff;
   background-color: #286090;
 }
@@ -573,12 +580,11 @@ label.btn::after {
   .navbar-default .navbar-nav .open .dropdown-menu>li>a {
     color: #ffffff;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover, .navbar-default .navbar-nav .open .dropdown-menu>li>a:focus
-    {
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover, .navbar-default .navbar-nav .open .dropdown-menu>li>a:focus {
     color: #fefeff;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu>.active>a, .navbar-default .navbar-nav .open .dropdown-menu>.active>a:hover,
-    .navbar-default .navbar-nav .open .dropdown-menu>.active>a:focus {
+  .navbar-default .navbar-nav .open .dropdown-menu>.active>a, .navbar-default .navbar-nav .open .dropdown-menu>.active>a:hover, .navbar-default .navbar-nav .open .dropdown-menu>.active>a:focus
+    {
     color: #fefeff;
     background-color: #286090;
   }

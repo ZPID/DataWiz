@@ -86,7 +86,6 @@ public class AccessController {
 	@Autowired
 	protected UserDAO userDAO;
 
-
 	public AccessController() {
 		super();
 		log.info("Loading AccessController for mapping /access");
