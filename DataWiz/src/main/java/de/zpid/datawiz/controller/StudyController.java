@@ -2,8 +2,6 @@ package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -16,10 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,48 +39,111 @@ import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
+/**
+ * Controller for mapping "/project/{pid}/study" <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ * 
+ *
+ */
 @Controller
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList", "disStudyContent" })
 public class StudyController {
 
+	/**
+	 * {@link MessageSource}
+	 */
 	@Autowired
 	protected MessageSource messageSource;
+
+	/**
+	 * {@link StudyService}
+	 */
 	@Autowired
 	private StudyService studyService;
+
+	/**
+	 * {@link ExceptionService}
+	 */
 	@Autowired
 	private ExceptionService exceptionService;
+
+	/**
+	 * {@link ClassPathXmlApplicationContext}
+	 */
 	@Autowired
 	protected ClassPathXmlApplicationContext applicationContext;
-	@Autowired
-	protected SmartValidator validator;
+
+	/**
+	 * {@link RecordService}
+	 */
 	@Autowired
 	private RecordService recordService;
+
+	/**
+	 * {@link ProjectService}
+	 */
 	@Autowired
 	private ProjectService projectService;
+
+	/**
+	 * {@link Environment}
+	 */
 	@Autowired
 	private Environment env;
 
+	/**
+	 * {@link Logger}
+	 */
 	private static Logger log = LogManager.getLogger(StudyController.class);
 
+	/**
+	 * Instantiates a new study controller.
+	 */
 	public StudyController() {
 		super();
 		log.info("Loading StudyController for mapping /study");
 	}
 
+	/**
+	 * Creates the study form.
+	 *
+	 * @return the study form
+	 */
 	@ModelAttribute("StudyForm")
 	protected StudyForm createStudyForm() {
 		return (StudyForm) applicationContext.getBean("StudyForm");
 	}
 
 	/**
-	 * 
+	 * Show study page.
+	 *
 	 * @param sForm
+	 *          {@link StudyForm}
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return @return Mapping to study.jsp on success, otherwise exception handling and mapping via exceptionService.setErrorMessagesAndRedirects
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.GET)
 	public String showStudyPage(@ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Optional<Long> pid,
@@ -119,18 +177,26 @@ public class StudyController {
 			} catch (Exception e) {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.setStudyForm");
 			}
+		} else {
+			log.warn("Unexpected event: User [email: {}] tries to showStudyPage for Study [id: {}] without permissions", () -> user.getEmail(),
+			    () -> studyId);
 		}
-		log.trace("Method showStudyPage completed");
+		log.trace("Method showStudyPage completed with mapping to \"{}\"", ret);
 		return ret;
 	}
 
 	/**
+	 * This function loads all records which belongs to the passed study
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to record.jsp on success, otherwise exception handling and mapping via exceptionService.setErrorMessagesAndRedirects
 	 */
 	@RequestMapping(value = { "/{studyId}/records" }, method = RequestMethod.GET)
 	public String showRecordOverview(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, final ModelMap model,
@@ -151,23 +217,35 @@ public class StudyController {
 			} catch (Exception e) {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.setRecordList");
 			}
+		} else {
+			log.warn("Unexpected event: User [email: {}] tries to showRecordOverview for Study [id: {}] without permissions", () -> user.getEmail(),
+			    () -> studyId);
 		}
+		log.trace("Method showRecordOverview completed with mapping to \"{}\"", ret);
 		return ret;
 	}
 
 	/**
-	 * 
+	 * This function validates and saves the Study Data and returns errors to the view if the validation is not successful.
+	 *
 	 * @param sForm
+	 *          StudyForm
 	 * @param model
+	 *          ModelMap
 	 * @param redirectAttributes
+	 *          RedirectAttributes
 	 * @param bRes
+	 *          BindingResult
 	 * @param studyId
+	 *          Study Identifier as Optional&lt;Long&gt;
 	 * @param pid
-	 * @return
+	 *          Project Identifier as Optional&lt;Long&gt;
+	 * @return Mapping to recirect:study on success, otherwise to study.jsp with error messages
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST)
 	public String saveStudy(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model, RedirectAttributes redirectAttributes, BindingResult bRes,
 	    @PathVariable final Optional<Long> studyId, @PathVariable final Optional<Long> pid) {
+		log.trace("Entering saveStudy for Study [id: {}]", () -> studyId);
 		String ret;
 		final UserDTO user = UserUtil.getCurrentUser();
 		if (studyId.isPresent()) {
@@ -177,98 +255,63 @@ public class StudyController {
 			log.trace("Entering saveStudy(create)");
 			ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
 		}
-		if (ret != null)
-			return ret;
-		Set<String> validateErrors = new HashSet<String>();
-		boolean error = validateStudyForm(sForm, bRes, StudyDTO.StGeneralVal.class, PageState.STUDYGENERAL, validateErrors);
-		error = validateStudyForm(sForm, bRes, StudyDTO.StDesignVal.class, PageState.STUDYDESIGN, validateErrors) ? true : error;
-		error = validateStudyForm(sForm, bRes, StudyDTO.StEthicalVal.class, PageState.STUDYETHICAL, validateErrors) ? true : error;
-		error = validateStudyForm(sForm, bRes, StudyDTO.StSampleVal.class, PageState.STUDYSAMPLE, validateErrors) ? true : error;
-		error = validateStudyForm(sForm, bRes, StudyDTO.StSurveyVal.class, PageState.STUDYSURVEY, validateErrors) ? true : error;
-		if (error) {
-			model.put("studySubMenu", true);
-			model.put("subnaviActive", PageState.STUDY.name());
-			model.put("errorMSG", recordService.setMessageString(validateErrors));
-			return "study";
-		}
-		StudyDTO study = studyService.saveStudyForm(sForm, studyId, pid, user);
-		return "redirect:/project/" + pid.get() + "/study/" + study.getId();
-	}
-
-	private boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls, final PageState state,
-	    Set<String> validateErrors) {
-		boolean error = false;
-		if (sForm != null && bRes != null) {
-			BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
-			validator.validate(sForm, bResTmp, cls);
-			List<ObjectError> errors = new ArrayList<>();
-			if (bResTmp != null && bResTmp.hasErrors()) {
-				bResTmp.getAllErrors().parallelStream().forEach(err -> errors.add(err));
-				Iterator<ObjectError> itt = errors.iterator();
-				while (itt.hasNext()) {
-					ObjectError err = itt.next();
-					if (!state.equals(PageState.STUDYGENERAL) && err.getCodes() != null && err.getCodes()[0] != null && (err.getCodes()[0].contains("software")
-					    || err.getCodes()[0].contains("pubOnData") || err.getCodes()[0].contains("conflInterests"))) {
-						itt.remove();
-					} else if (!state.equals(PageState.STUDYDESIGN) && err.getCodes() != null && err.getCodes()[0] != null
-					    && (err.getCodes()[0].contains("objectives") || err.getCodes()[0].contains("relTheorys") || err.getCodes()[0].contains("measOcc")
-					        || err.getCodes()[0].contains("interArms"))) {
-						itt.remove();
-					} else if (!state.equals(PageState.STUDYSAMPLE) && err.getCodes() != null && err.getCodes()[0] != null
-					    && err.getCodes()[0].contains("eligibilities")) {
-						itt.remove();
-					}
-				}
-			}
-			if (!errors.isEmpty()) {
-				error = true;
-				switch (state) {
-				case STUDYGENERAL:
-					validateErrors.add(messageSource.getMessage("study.record.error.global.general", null, LocaleContextHolder.getLocale()));
-					break;
-				case STUDYDESIGN:
-					validateErrors.add(messageSource.getMessage("study.record.error.global.design", null, LocaleContextHolder.getLocale()));
-					break;
-				case STUDYETHICAL:
-					validateErrors.add(messageSource.getMessage("study.record.error.global.ethical", null, LocaleContextHolder.getLocale()));
-					break;
-				case STUDYSAMPLE:
-					validateErrors.add(messageSource.getMessage("study.record.error.global.sample", null, LocaleContextHolder.getLocale()));
-					break;
-				case STUDYSURVEY:
-					validateErrors.add(messageSource.getMessage("study.record.error.global.survey", null, LocaleContextHolder.getLocale()));
-					break;
-				default:
-					validateErrors.add(messageSource.getMessage("study.record.error.global.default", null, LocaleContextHolder.getLocale()));
-					break;
-				}
-				for (ObjectError errtmp : bResTmp.getAllErrors()) {
-					bRes.addError(errtmp);
+		if (ret == null) {
+			Set<String> validateErrors = new HashSet<String>();
+			boolean error = studyService.validateStudyForm(sForm, bRes, StudyDTO.StGeneralVal.class, PageState.STUDYGENERAL, validateErrors);
+			error = studyService.validateStudyForm(sForm, bRes, StudyDTO.StDesignVal.class, PageState.STUDYDESIGN, validateErrors) ? true : error;
+			error = studyService.validateStudyForm(sForm, bRes, StudyDTO.StEthicalVal.class, PageState.STUDYETHICAL, validateErrors) ? true : error;
+			error = studyService.validateStudyForm(sForm, bRes, StudyDTO.StSampleVal.class, PageState.STUDYSAMPLE, validateErrors) ? true : error;
+			error = studyService.validateStudyForm(sForm, bRes, StudyDTO.StSurveyVal.class, PageState.STUDYSURVEY, validateErrors) ? true : error;
+			if (error) {
+				model.put("studySubMenu", true);
+				model.put("subnaviActive", PageState.STUDY.name());
+				model.put("errorMSG", recordService.setMessageString(validateErrors));
+				ret = "study";
+			} else {
+				StudyDTO study = studyService.saveStudyForm(sForm, studyId, pid, user);
+				if (study != null)
+					ret = "redirect:/project/" + pid.get() + "/study/" + study.getId();
+				else {
+					log.warn("Unexpected event: StudyForm is emtpy - Database Error During studyService.saveStudyForm - Transaction was rolled back");
+					ret = "study";
 				}
 			}
 		} else {
-			error = true;
+			log.warn("Unexpected event: User [email: {}] tries to saveStudy for Study [id: {}] without permissions", () -> user.getEmail(), () -> studyId);
 		}
-		return error;
+		log.trace("Method saveStudy completed with mapping to \"{}\"", ret);
+		return ret;
 	}
 
 	/**
-	 * 
+	 * This function switches the edit mode. The study has a lock, so that only one user can edit the study data at the same time. If the study is
+	 * locked by a user, other user have to wait until the user unlock the study, or the session time is over and the study automatically unlocks.
+	 *
 	 * @param sForm
+	 *          the s form
 	 * @param model
+	 *          the model
 	 * @param redirectAttributes
+	 *          the redirect attributes
 	 * @param pid
+	 *          the pid
 	 * @param studyId
-	 * @return
+	 *          the study id
+	 * @return the string
 	 */
 	@RequestMapping(value = { "/{studyId}/switchEditMode" })
 	public String switchEditMode(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model, RedirectAttributes redirectAttributes,
 	    @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId) {
-		log.trace("Entering changeStudyLock");
+		log.trace("Entering switchEditMode for Study [id: {}]", () -> studyId);
 		UserDTO user = UserUtil.getCurrentUser();
 		String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
-		if ((sForm == null || sForm.getStudy() == null || sForm.getProject() == null || sForm.getProject().getId() == 0) && ret == null)
+		if (ret != null)
+			log.warn("Unexpected event: User [email: {}] tries to switchEditMode for Study [id: {}] without permissions", () -> user.getEmail(),
+			    () -> studyId);
+		if ((sForm == null || sForm.getStudy() == null || sForm.getProject() == null || sForm.getProject().getId() == 0) && ret == null) {
+			log.warn("Unexpected event: StudyForm is emtpy - Maybe Session Timeout");
 			ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();
+		}
 		if (ret == null) {
 			ret = "study";
 			try {
@@ -279,6 +322,7 @@ public class StudyController {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.checkActualLock");
 			}
 		}
+		log.trace("Method switchEditMode completed with mapping to \"{}\"", ret);
 		return ret;
 	}
 
@@ -287,9 +331,9 @@ public class StudyController {
 	 * be deleted from the project contributor list. If the study list is NULL, a new ArrayList is created before a new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addContri")
@@ -304,6 +348,7 @@ public class StudyController {
 		}
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addContributor completed with mapping to study.jsp");
 		return "study";
 	}
 
@@ -313,9 +358,9 @@ public class StudyController {
 	 * list for re-selection. If the study list is NULL, a new ArrayList is created before a new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "deleteContri")
@@ -327,17 +372,18 @@ public class StudyController {
 		}
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method deleteContributor completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of Software items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of Software items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addSoftware")
@@ -348,17 +394,18 @@ public class StudyController {
 		sForm.getStudy().getSoftware().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addSoftware completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of PubOnData items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of PubOnData items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addPubOnData")
@@ -369,17 +416,18 @@ public class StudyController {
 		sForm.getStudy().getPubOnData().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addPubOnData completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of ConflInterests items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of ConflInterests items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addConflInterests")
@@ -390,17 +438,18 @@ public class StudyController {
 		sForm.getStudy().getConflInterests().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addConflInterests completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyObjectivesDTO to the List of Objectives items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyObjectivesDTO to the List of Objectives items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addObjectives")
@@ -411,17 +460,18 @@ public class StudyController {
 		sForm.getStudy().getObjectives().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addObjectives completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of RelTheorys items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of RelTheorys items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addRelTheorys")
@@ -432,17 +482,18 @@ public class StudyController {
 		sForm.getStudy().getRelTheorys().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addRelTheorys completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of InterArms items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of InterArms items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addInterArms")
@@ -453,17 +504,18 @@ public class StudyController {
 		sForm.getStudy().getInterArms().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addInterArms completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of MeasOccName items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of MeasOccName items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addMeasOccName")
@@ -474,17 +526,18 @@ public class StudyController {
 		sForm.getStudy().getMeasOcc().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addMeasOccName completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a studyInstrumentDAO to the List of Construct items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a studyInstrumentDAO to the List of Construct items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addConstruct")
@@ -495,17 +548,18 @@ public class StudyController {
 		sForm.getStudy().getConstructs().add((StudyConstructDTO) applicationContext.getBean("StudyConstructDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addConstruct completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyInstrumentDTO to the List of Instrument items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyInstrumentDTO to the List of Instrument items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addInstrument")
@@ -516,17 +570,18 @@ public class StudyController {
 		sForm.getStudy().getInstruments().add((StudyInstrumentDTO) applicationContext.getBean("StudyInstrumentDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addInstrument completed with mapping to study.jsp");
 		return "study";
 	}
 
 	/**
 	 * 
-	 * appends a StudyListTypesDTO to the List of Eligibilities items. If the List is NULL, a new ArrayList is created before the new item is appended.
+	 * Appends a StudyListTypesDTO to the List of Eligibilities items. If the List is NULL, a new ArrayList is created before the new item is appended.
 	 * 
 	 * @param sForm
-	 *          including all study data
+	 *          StudyForm
 	 * @param model
-	 *          transporting the important parameter to the view
+	 *          ModelMap
 	 * @return mapping to "study.jsp"
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.POST, params = "addEligibilities")
@@ -537,17 +592,33 @@ public class StudyController {
 		sForm.getStudy().getEligibilities().add((StudyListTypesDTO) applicationContext.getBean("StudyListTypesDTO"));
 		model.put("studySubMenu", true);
 		model.put("subnaviActive", PageState.STUDY.name());
+		log.trace("Method addEligibilities completed with mapping to study.jsp");
 		return "study";
 	}
 
+	/**
+	 * Delete whole study and dependencies (records, material etc.)
+	 *
+	 * @param pid
+	 *          Project Identifier as Optional&lt;Long&gt;
+	 * @param studyId
+	 *          Study Identifier as Optional&lt;Long&gt;
+	 * @param model
+	 *          ModelMap
+	 * @param redirectAttributes
+	 *          RedirectAttributes
+	 * @return the string
+	 */
 	@RequestMapping(value = { "", "/{studyId}/deleteStudy" })
 	public String deleteStudy(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, final ModelMap model,
 	    final RedirectAttributes redirectAttributes) {
 		UserDTO user = UserUtil.getCurrentUser();
+		log.trace("Entering deleteStudy for Study [id: {}] and User [email: {}]", () -> studyId.get(), () -> user.getEmail());
 		String ret = "redirect:/project/" + pid.get() + "/studies";
 		try {
 			studyService.deleteStudy(pid, studyId, user, true);
 		} catch (DataWizSystemException e) {
+			// log messages are thrown in studyService.deleteStudy
 			if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
 				model.put("errormsg",
 				    messageSource.getMessage("dbs.sql.exception",
@@ -568,6 +639,7 @@ public class StudyController {
 				ret = "study";
 			}
 		}
+		log.trace("Method deleteStudy completed with mapping to \"{}\"", ret);
 		return ret;
 	}
 }

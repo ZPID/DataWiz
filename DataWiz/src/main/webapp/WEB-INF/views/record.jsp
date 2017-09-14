@@ -18,13 +18,13 @@
           <c:otherwise>
             <div class="row">
               <div class="col-sm-12 text-align-right">
-                <!-- Trigger the modal with a button -->                
+                <!-- Trigger the modal with a button -->
                 <button type="button" class="btn btn-primary btn-sm btn-xs-block" data-toggle="modal" data-target="#uploadModal">
                   <s:message code="record.upload.new.file" />
                 </button>
                 <button type="button" class="btn btn-primary btn-sm btn-xs-block" data-toggle="modal" data-target="#exportModal">
                   <s:message code="export.show.modal.button" />
-                </button>                
+                </button>
                 <button type="button" class="btn btn-primary btn-sm btn-xs-block" data-toggle="modal" data-target="#historyModal">
                   <s:message code="record.history.show" />
                 </button>
@@ -35,9 +35,8 @@
                   or principal.user.hasRole('ADMIN')}">
                   <a class="btn btn-danger btn-sm btn-xs-block"
                     href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/deleteRecord" />"
-                    onclick="return confirm('<s:message code="record.delete.popup.msg" />');"><s:message
-                      code="record.delete.button" /></a>
-                </c:if>                
+                    onclick="return confirm('<s:message code="record.delete.popup.msg" />');"><s:message code="record.delete.button" /></a>
+                </c:if>
               </div>
               <div class="col-sm-12">
                 <h4>
@@ -60,10 +59,8 @@
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <c:url var="accessUrl"
-        value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST"
-        enctype="multipart/form-data" id="studyFormDis">
+      <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
+      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST" enctype="multipart/form-data" id="studyFormDis">
         <c:if
           test="${!principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) and
                   !principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) and
@@ -80,8 +77,8 @@
         <%@ include file="templates/gen_textarea.jsp"%>
         <div class="form-group">
           <div class="col-xs-6">
-            <a href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" />"
-              class="btn btn-default btn-sm"><s:message code="record.back.to.overview" /></a>
+            <a href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" />" class="btn btn-default btn-sm"><s:message
+                code="record.back.to.overview" /></a>
           </div>
           <div class="col-xs-6 text-align-right">
             <sf:button class="btn btn-success btn-sm" name="saveMetaData">
@@ -110,9 +107,11 @@
                       <s:message code="record.selectedFileType" />
                     </sf:label>
                     <sf:select path="selectedFileType" class="form-control">
-                      <sf:option value="SPSS">
-                        <s:message code="record.selectedFileType.spss" />
-                      </sf:option>
+                      <c:if test="${isSPSSLibLoaded}">
+                        <sf:option value="SPSS">
+                          <s:message code="record.selectedFileType.spss" />
+                        </sf:option>
+                      </c:if>
                       <sf:option value="CSV">
                         <s:message code="record.selectedFileType.csv" />
                       </sf:option>
@@ -121,25 +120,27 @@
                     <%@ include file="templates/helpblock.jsp"%>
                   </div>
                 </div>
-                <div id="spssSelected">
-                  <div class="form-group">
-                    <div class="col-sm-12">
-                      <sf:label class="control-label" path="spssFile">
-                        <s:message code="record.spssFile.label" />
-                      </sf:label>
-                      <div>
-                        <sf:label class="btn btn-primary form-control" path="spssFile">
-                          <input id="spssFile" name="spssFile" type="file" style="display: none;" accept=".sav"
-                            onchange="shortFilename('upload-spss-file-info',$(this).val());" />
-                          <s:message code="record.spssFile.button" />
+                <c:if test="${isSPSSLibLoaded}">
+                  <div id="spssSelected">
+                    <div class="form-group">
+                      <div class="col-sm-12">
+                        <sf:label class="control-label" path="spssFile">
+                          <s:message code="record.spssFile.label" />
                         </sf:label>
-                        <div class='form-control text-align-center' id="upload-spss-file-info"></div>
+                        <div>
+                          <sf:label class="btn btn-primary form-control" path="spssFile">
+                            <input id="spssFile" name="spssFile" type="file" style="display: none;" accept=".sav"
+                              onchange="shortFilename('upload-spss-file-info',$(this).val());" />
+                            <s:message code="record.spssFile.button" />
+                          </sf:label>
+                          <div class='form-control text-align-center' id="upload-spss-file-info"></div>
+                        </div>
+                        <s:message code="record.spssFile.help" var="appresmess" />
+                        <%@ include file="templates/helpblock.jsp"%>
                       </div>
-                      <s:message code="record.spssFile.help" var="appresmess" />
-                      <%@ include file="templates/helpblock.jsp"%>
                     </div>
                   </div>
-                </div>
+                </c:if>
                 <div id="csvSelected">
                   <div class="form-group">
                     <div class="col-sm-12">
@@ -159,8 +160,7 @@
                   <div class="form-group">
                     <!-- headerRow -->
                     <div class="col-sm-12">
-                      <label class="control-label"><sf:checkbox path="headerRow" /> <s:message
-                          code="record.headerRow" /> </label>
+                      <label class="control-label"><sf:checkbox path="headerRow" /> <s:message code="record.headerRow" /> </label>
                       <s:message code="record.headerRow.help" var="appresmess" />
                       <%@ include file="templates/helpblock.jsp"%>
                     </div>
@@ -286,8 +286,7 @@
                         <div class="col-sm-12 text-align-right">
                           <c:url var="versionUrl"
                             value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${recVersion.versionId}/codebook" />
-                          <a class="btn btn-default btn-sm" href="${versionUrl}"><s:message
-                              code="record.history.modal.select" /></a>
+                          <a class="btn btn-default btn-sm" href="${versionUrl}"><s:message code="record.history.modal.select" /></a>
                         </div>
                         <div class="col-sm-3 text-align-right text-bold">
                           <s:message code="record.history.modal.number" />
@@ -358,47 +357,37 @@
         <ul class="list-group">
           <li class="list-group-item"><b><s:message code="record.export.modal.csv" /></b>
             <ul class="list-group">
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/CSVMatrix', '_blank')" data-dismiss="modal"><s:message
+              <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/CSVMatrix', '_blank')" data-dismiss="modal"><s:message
                   code="record.export.modal.csvmatrix" /></li>
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/CSVCodebook', '_blank')" data-dismiss="modal"><s:message
-                  code="record.export.modal.csvcodebook" /></li>
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/CSVZIP', '_blank')" data-dismiss="modal"><s:message
+              <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/CSVCodebook', '_blank')"
+                data-dismiss="modal"><s:message code="record.export.modal.csvcodebook" /></li>
+              <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/CSVZIP', '_blank')" data-dismiss="modal"><s:message
                   code="record.export.modal.csvboth" /></li>
             </ul></li>
           <li class="list-group-item"><b><s:message code="record.export.modal.spss" /></b>
             <ul class="list-group">
               <c:choose>
-                <c:when test="${disableSPSSExport}">
-                  <li class="list-group-item btn btn-default btn-sm disabled"><s:message
-                      code="record.export.modal.sav" /></li>
+                <c:when test="${disableSPSSExport or not isSPSSLibLoaded}">
+                  <li class="list-group-item btn btn-default btn-sm disabled"><s:message code="record.export.modal.sav" /></li>
                 </c:when>
                 <c:otherwise>
-                  <li class="list-group-item btn btn-default btn-sm"
-                    onclick="window.open('${exportUrl}/export/SPSS', '_blank')" data-dismiss="modal"><s:message
+                  <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/SPSS', '_blank')" data-dismiss="modal"><s:message
                       code="record.export.modal.sav" /></li>
                 </c:otherwise>
               </c:choose>
             </ul></li>
           <li class="list-group-item"><b><s:message code="record.export.modal.json" /></b>
             <ul class="list-group">
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/JSON', '_blank')" data-dismiss="modal"><s:message
+              <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/JSON', '_blank')" data-dismiss="modal"><s:message
                   code="record.export.modal.json.file" /></li>
             </ul></li>
           <li class="list-group-item"><b><s:message code="record.export.modal.pdf" /></b>
             <ul class="list-group">
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/PDF?attachments=false', '_blank')" data-dismiss="modal">
-                <s:message code="record.export.modal.pdf.withoutAtt" />
-              </li>
-              <li class="list-group-item btn btn-default btn-sm"
-                onclick="window.open('${exportUrl}/export/PDF?attachments=true', '_blank')" data-dismiss="modal"><s:message
-                  code="record.export.modal.pdf.withAtt" /></li>
-            </ul> <s:message code="record.export.modal.pdf.help" var="appresmess" /> <%@ include
-              file="templates/helpblock.jsp"%></li>
+              <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/PDF?attachments=false', '_blank')"
+                data-dismiss="modal"><s:message code="record.export.modal.pdf.withoutAtt" /></li>
+              <li class="list-group-item btn btn-default btn-sm" onclick="window.open('${exportUrl}/export/PDF?attachments=true', '_blank')"
+                data-dismiss="modal"><s:message code="record.export.modal.pdf.withAtt" /></li>
+            </ul> <s:message code="record.export.modal.pdf.help" var="appresmess" /> <%@ include file="templates/helpblock.jsp"%></li>
         </ul>
       </div>
       <div class="modal-footer">

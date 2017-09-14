@@ -66,13 +66,14 @@ public class UserController {
 	protected SmartValidator validator;;
 	@Autowired
 	protected HttpServletRequest request;
-
-	// TODO SERVICE CLASS
 	@Autowired
 	protected UserDAO userDAO;
 
 	private static Logger log = LogManager.getLogger(UserController.class);
 
+	/**
+	 * Instantiates a new user controller.
+	 */
 	public UserController() {
 		super();
 		if (log.isInfoEnabled())
@@ -80,11 +81,15 @@ public class UserController {
 	}
 
 	/**
+	 * This function loads the user settings via UserDao an forwards them to usersettings.jsp
 	 * 
 	 * @param userId
+	 *          Optional&lt;long&gt;
 	 * @param model
+	 *          ModelMap
 	 * @param reAtt
-	 * @return
+	 *          RedirectAttributes
+	 * @return usersetting.jsp on sucess, otherwise redirect:/panel on DB error or redirect:/login on Auth error
 	 */
 	@RequestMapping(value = { "", "/{userId}", }, method = RequestMethod.GET)
 	public String showUserSettingPage(@PathVariable final Optional<Long> userId, final ModelMap model, final RedirectAttributes reAtt) {
@@ -114,11 +119,16 @@ public class UserController {
 	}
 
 	/**
+	 * This function validates the User Settings before they where send to the UserDAO for saving. If saving is successful, the new settings are stored
+	 * in the Session, to prevent that the user has to log-out and log-in.
 	 * 
 	 * @param user
+	 *          UserDTO
 	 * @param bRes
+	 *          BindingResult
 	 * @param reAtt
-	 * @return
+	 *          RedirectAttributes
+	 * @return redirect to /usersettings on success, or usersettings.jsp on error with error messages
 	 */
 	@RequestMapping(method = RequestMethod.POST)
 	public String saveUserSettings(@Valid @ModelAttribute("UserDTO") final UserDTO user, final BindingResult bRes, final RedirectAttributes reAtt) {
@@ -169,7 +179,6 @@ public class UserController {
 			// load new UserData into Security
 			if (UserUtil.getCurrentUser().getId() == user.getId())
 				UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));
-			System.out.println(UserUtil.getCurrentUser().getEmail());
 			reAtt.addFlashAttribute("infoMSG",
 			    messageSource.getMessage(changePWD ? "usersettings.save.success.pw" : "usersettings.save.success", null, LocaleContextHolder.getLocale()));
 		} catch (SQLException e) {

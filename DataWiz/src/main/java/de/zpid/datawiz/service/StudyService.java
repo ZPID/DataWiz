@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +20,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.SmartValidator;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dao.ContributorDAO;
@@ -75,6 +80,8 @@ public class StudyService {
 	private PlatformTransactionManager txManager;
 	@Autowired
 	RecordService recordService;
+	@Autowired
+	protected SmartValidator validator;
 
 	/**
 	 * 
@@ -230,6 +237,7 @@ public class StudyService {
 	 * @param user
 	 * @return
 	 */
+	// TODO EXCEPTION OR MESSAGES
 	public StudyDTO saveStudyForm(StudyForm sForm, final Optional<Long> studyId, final Optional<Long> pid, final UserDTO user) {
 		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 		StudyDTO study = null;
@@ -297,6 +305,7 @@ public class StudyService {
 			} catch (Exception e) {
 				log.error("ERROR", e);
 				txManager.rollback(status);
+				return null;
 			}
 		} else {
 			// TODO study null
@@ -554,6 +563,78 @@ public class StudyService {
 			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "study", studyId.get() }, Locale.ENGLISH),
 			    DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
 		}
+	}
+	
+	/**
+	 * Validate study form.
+	 *
+	 * @param sForm
+	 *          the s form
+	 * @param bRes
+	 *          the b res
+	 * @param cls
+	 *          the cls
+	 * @param state
+	 *          the state
+	 * @param validateErrors
+	 *          the validate errors
+	 * @return true, if successful
+	 */
+	public boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls, final PageState state,
+	    Set<String> validateErrors) {
+		boolean error = false;
+		if (sForm != null && bRes != null) {
+			BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
+			validator.validate(sForm, bResTmp, cls);
+			List<ObjectError> errors = new ArrayList<>();
+			if (bResTmp != null && bResTmp.hasErrors()) {
+				bResTmp.getAllErrors().parallelStream().forEach(err -> errors.add(err));
+				Iterator<ObjectError> itt = errors.iterator();
+				while (itt.hasNext()) {
+					ObjectError err = itt.next();
+					if (!state.equals(PageState.STUDYGENERAL) && err.getCodes() != null && err.getCodes()[0] != null && (err.getCodes()[0].contains("software")
+					    || err.getCodes()[0].contains("pubOnData") || err.getCodes()[0].contains("conflInterests"))) {
+						itt.remove();
+					} else if (!state.equals(PageState.STUDYDESIGN) && err.getCodes() != null && err.getCodes()[0] != null
+					    && (err.getCodes()[0].contains("objectives") || err.getCodes()[0].contains("relTheorys") || err.getCodes()[0].contains("measOcc")
+					        || err.getCodes()[0].contains("interArms"))) {
+						itt.remove();
+					} else if (!state.equals(PageState.STUDYSAMPLE) && err.getCodes() != null && err.getCodes()[0] != null
+					    && err.getCodes()[0].contains("eligibilities")) {
+						itt.remove();
+					}
+				}
+			}
+			if (!errors.isEmpty()) {
+				error = true;
+				switch (state) {
+				case STUDYGENERAL:
+					validateErrors.add(messageSource.getMessage("study.record.error.global.general", null, LocaleContextHolder.getLocale()));
+					break;
+				case STUDYDESIGN:
+					validateErrors.add(messageSource.getMessage("study.record.error.global.design", null, LocaleContextHolder.getLocale()));
+					break;
+				case STUDYETHICAL:
+					validateErrors.add(messageSource.getMessage("study.record.error.global.ethical", null, LocaleContextHolder.getLocale()));
+					break;
+				case STUDYSAMPLE:
+					validateErrors.add(messageSource.getMessage("study.record.error.global.sample", null, LocaleContextHolder.getLocale()));
+					break;
+				case STUDYSURVEY:
+					validateErrors.add(messageSource.getMessage("study.record.error.global.survey", null, LocaleContextHolder.getLocale()));
+					break;
+				default:
+					validateErrors.add(messageSource.getMessage("study.record.error.global.default", null, LocaleContextHolder.getLocale()));
+					break;
+				}
+				for (ObjectError errtmp : bResTmp.getAllErrors()) {
+					bRes.addError(errtmp);
+				}
+			}
+		} else {
+			error = true;
+		}
+		return error;
 	}
 
 }

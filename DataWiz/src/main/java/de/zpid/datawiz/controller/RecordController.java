@@ -47,10 +47,32 @@ import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.UserUtil;
+import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSVarTypes;
 
+/**
+ * Controller for mapping "/project/{pid}/study/{studyId}/record" <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ * 
+ *
+ */
 @Controller
 @RequestMapping(value = { "/project/{pid}/study/{studyId}/record" })
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList" })
@@ -74,6 +96,8 @@ public class RecordController {
 	private ExceptionService exceptionService;
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private SPSSIO spss;
 
 	public RecordController() {
 		super();
@@ -141,6 +165,7 @@ public class RecordController {
 				}
 				ret = "datamatrix";
 			} else {
+				model.put("isSPSSLibLoaded", spss.isLibLoaded());
 				String errormsg = recordService.validateCodeBook(sForm);
 				if (errormsg != null && !errormsg.trim().isEmpty()) {
 					model.put("errorMSG", messageSource.getMessage("record.spss.export.disabled", null, LocaleContextHolder.getLocale()));
@@ -420,11 +445,16 @@ public class RecordController {
 	}
 
 	/**
+	 * This function sets the value entries from the value modal into the StudyForm. It uses two StudyForms because the modal isn't included into the
+	 * HTML form of the codebook.jsp. Therefore, the values of the StudyForm from the value modal (varval) have to be set into the original StudyForm.
 	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param varVal
+	 *          {@link StudyForm}
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @return Mapping to codebook.jsp
 	 */
 	@RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setValues")
 	public String setValuesToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal,
@@ -449,11 +479,17 @@ public class RecordController {
 	}
 
 	/**
+	 * This function sets the missing entries from the missing modal into the StudyForm. It uses two StudyForms because the modal isn't included into
+	 * the HTML form of the codebook.jsp. Therefore, the values of the StudyForm from the missing modal (varval) have to be set into the original
+	 * StudyForm.
 	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param varVal
+	 *          {@link StudyForm}
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @return Mapping to codebook.jsp
 	 */
 	@RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setMissings")
 	public String setMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal,
@@ -479,15 +515,30 @@ public class RecordController {
 
 	/**
 	 * 
+	 * This function is called from the record.jsp (exportModal). The user can select different export formats and this function handles this request.
+	 * At first, it checks by using projectService.checkUserAccess(...), if the user has the permission to export the record, than it loads the record
+	 * data by using recordService.loadRecordExportData(...) and finally it uses exportService.getRecordExportContentAsByteArray(...) to create a bytes
+	 * array from the record data, which is written into the response. Because of the fact, that this function is called with target="_blank" and that
+	 * exceptions are handled with the ExceptionController, it was decided that this function can throw exceptions.
+	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param response
+	 *          {@link HttpServletResponse}
 	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
 	 * @param versionId
+	 *          Version Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param exportType
+	 *          {@link String}
 	 * @param attachments
+	 *          {@link Boolean}
 	 * @throws Exception
 	 */
 	@RequestMapping(value = { "{recordId}/version/{versionId}/export/{exportType}" })
@@ -563,10 +614,22 @@ public class RecordController {
 	}
 
 	/**
+	 * To avoid long loading times in case of a huge amount of variables or cases, this function limits the amount of variables and cases which are
+	 * shown in the view. It is called when the user change and submit the Amount of shown vars or cases int the codebook.jsp or matrix.jsp.
 	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
+	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
+	 * @param recordId
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
+	 * @param pagestate
+	 *          {@link String}
+	 * @return Depends on pagestate, mapping to datamatrix.jsp or codebook.jsp.
 	 */
 	@RequestMapping(value = { "/{recordId}/version/{versionId}/{pagestate}" }, method = RequestMethod.POST, params = "setNumofVars")
 	public String setNumofVars(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Optional<Long> pid,
@@ -603,10 +666,14 @@ public class RecordController {
 	}
 
 	/**
+	 * To prevent loss of data, this function is asynchronous called if a user opens a modal (missing, value, global missing/value), because the HTML
+	 * form which is included in the codebook.jsp would not be submitted, and all by the user entered information would be lost.
 	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @return HTTP Status as @ResponseBody ResponseEntity&lt;String&gt; - HttpStatus.OK on success, otherwise HttpStatus.BAD_REQUEST
 	 */
 	@RequestMapping(value = { "{recordId}/version/{versionId}/asyncSubmit" })
 	public @ResponseBody ResponseEntity<String> setFormAsync(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm) {
@@ -620,11 +687,17 @@ public class RecordController {
 	}
 
 	/**
+	 * This function sets the global missing entries from the missing modal into the StudyForm. It uses two StudyForms because the modal isn't included
+	 * into the HTML form of the codebook.jsp. Therefore, the values of the StudyForm from the missing modal (varval) have to be set into the original
+	 * StudyForm.
 	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param varVal
+	 *          {@link StudyForm}
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @return Mapping to codebook.jsp
 	 */
 	@RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, params = "setGlobalMissings")
 	public String setGlobalMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") StudyForm varVal,
@@ -652,14 +725,27 @@ public class RecordController {
 	}
 
 	/**
+	 * This function is called if a user wants to save the codebook. It uses recordService.validateAndPrepareCodebookForm(...) for validation. For
+	 * comparing the new codebook with the codebook which is saved in the database, and for finally saving the codebook to the database if no errors
+	 * occur, recordService.compareAndSaveCodebook(...) is called. If the new codebook and the codebook which is stored in the database do not differ,
+	 * nothing is saved.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param versionId
+	 *          Version Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param sForm
+	 *          {@link StudyForm}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @param model
+	 *          {@link ModelMap}
+	 * @return If validation has errors or other errors occurred, returning to record.jsp with error messages, otherwise mapping to redirect/codebook
+	 *         with success/info message
 	 */
 	@RequestMapping(value = { "/{recordId}/version/{versionId}/codebook" }, method = RequestMethod.POST, params = "saveCodebook")
 	public String saveCodebook(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable long versionId,
@@ -716,8 +802,7 @@ public class RecordController {
 				ret = "codebook";
 			}
 		}
-		if (log.isTraceEnabled())
-			log.trace("Method saveCodebook completed - mapping to {}", ret);
+		log.trace("Method saveCodebook completed - mapping to {}", ret);
 		return ret;
 	}
 

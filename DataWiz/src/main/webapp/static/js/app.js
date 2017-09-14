@@ -56,8 +56,13 @@ $tag_box = null;
 		    else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
 			    $("#studyFormDis :input:not([name=pageLoadMin],[name=pageLoadMax],[name=setNumofVars])").attr("disabled",
 			        $("#disStudyContent").val() === 'disabled');
-			    $("#spssSelected").show();
-			    $("#csvSelected").hide();
+			    if ($("#selectedFileType").val() === 'SPSS') {
+				    $("#spssSelected").show();
+				    $("#csvSelected").hide();
+			    } else {
+				    $("#spssSelected").hide();
+				    $("#csvSelected").show();
+			    }
 			    $("#selectedFileType").change(function() {
 				    if ($("#selectedFileType").val() === 'SPSS') {
 					    $("#spssSelected").show();
@@ -774,5 +779,5 @@ function checkDeletePhrase(phrase) {
 		$("#deleteAlert").show();
 		return false;
 	}
-	
+
 }
