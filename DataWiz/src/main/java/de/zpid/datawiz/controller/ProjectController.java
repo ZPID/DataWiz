@@ -43,9 +43,11 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
+ * Controller for mapping "/project" <br />
+ * <br />
  * This file is part of Datawiz.<br />
  * 
- * <b>Copyright 2016, Leibniz Institute for Psychology Information (ZPID),
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
  * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
  * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
@@ -387,13 +389,17 @@ public class ProjectController {
 	/**
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param docId
-	 * @param response
+	 *          Document Identifier as {@link Long}
+	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
 	 * @return
 	 */
 	@RequestMapping(value = { "/{pid}/delDoc/{docId}", "/{pid}/study/{studyId}/delDoc/{docId}" }, method = RequestMethod.GET)
-	public String deleteDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response, @PathVariable Optional<Long> studyId,
+	public String deleteDocument(@PathVariable Optional<Long> pid, @PathVariable long docId, @PathVariable Optional<Long> studyId,
 	    RedirectAttributes redirectAttributes) {
 		log.trace("Entering deleteDocument [id: {}]", () -> docId);
 		UserDTO user = UserUtil.getCurrentUser();
@@ -414,15 +420,20 @@ public class ProjectController {
 		}
 		redirectAttributes.addFlashAttribute("jQueryMap", "material");
 		if (studyId.isPresent())
-			return "redirect:/project/" + pid + "/study/" + studyId.get() + "/material";
-		return "redirect:/project/" + pid + "/material";
+			return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/material";
+		return "redirect:/project/" + pid.get() + "/material";
 	}
 
 	/**
+	 * This function builds the thumb-nail images and put them into the response via projectService.scaleAndSetThumbnail(...). It is called from the
+	 * material pages (project and study).
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Long}
 	 * @param imgId
+	 *          Image/File Identifier as {@link Long}
 	 * @param response
+	 *          {@link HttpServletResponse}
 	 */
 	@RequestMapping(value = { "/{pid}/img/{imgId}", "/{pid}/study/{studyId}/img/{imgId}" }, method = RequestMethod.GET)
 	private void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
@@ -436,15 +447,22 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function is called if a user wants to delete a whole project with all of its dependencies. It checks if the user has the rights to delete
+	 * the project. If the rights to delete are given projectService.deleteProject(...) is called to delete the project finally from Database and Minio
+	 * (material and records).
 	 * 
 	 * @param pid
-	 * @param model
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @param model
+	 *          {@link ModelMap}
+	 * @return Mapping to "redirect:/panel" n success, otherwise to "project.jsp on error, or error.jsp on database error"
 	 */
 	@RequestMapping(value = { "", "/{pid}/deleteProject" })
-	public String deleteStudy(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
+	public String deleteProject(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
 		UserDTO user = UserUtil.getCurrentUser();
+		log.trace("Entering  deleteProject for [projectId: {}] user[id: {}; email: {}]", () -> pid.get(), () -> user.getId(), () -> user.getEmail());
 		String ret = "redirect:/panel";
 		try {
 			projectService.deleteProject(pid, user);
@@ -469,6 +487,8 @@ public class ProjectController {
 				ret = "project";
 			}
 		}
+		if (log.isTraceEnabled())
+			log.trace("Method deleteProject completed - mapping to {}", ret);
 		return ret;
 	}
 

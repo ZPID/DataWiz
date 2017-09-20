@@ -69,9 +69,6 @@ import de.zpid.spss.util.SPSSVarTypes;
  * 
  * @author Ronny Boelter
  * @version 1.0
- *
- * 
- *
  */
 @Controller
 @RequestMapping(value = { "/project/{pid}/study/{studyId}/record" })
@@ -99,27 +96,40 @@ public class RecordController {
 	@Autowired
 	private SPSSIO spss;
 
+	/**
+	 * Instantiates a new record controller.
+	 */
 	public RecordController() {
 		super();
 		log.info("Loading RecordController for mapping /project/{pid}/study/{sid}/record");
 	}
 
 	/**
+	 * This function is called if a user selects the record meta-data, codebook, or matrix. The mapping depends on the passed "subpage" string.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param versionId
-	 * @param model
+	 *          Version Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
+	 * @param model
+	 *          {@link ModelMap}
 	 * @param subpage
-	 * @return
+	 *          Mapping variable as {@link String}: "codebook" for mapping to codebook.jsp, "data" for mapping to datamatrix.jsp, or empty for mapping
+	 *          to record.jsp
+	 * @return Mapping to recordjsp, codebook.jsp, or datamatrix.jsp (depends on subpage) on success, otherwise exception handling via
+	 *         exceptionService.setErrorMessagesAndRedirects(...)
 	 */
 	@RequestMapping(value = { "", "/{recordId}", "/{recordId}/{subpage}", "/{recordId}/version/{versionId}",
 	    "/{recordId}/version/{versionId}/{subpage}" }, method = RequestMethod.GET)
 	public String showRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-	    @PathVariable final Optional<Long> recordId, @PathVariable final Optional<Long> versionId, final ModelMap model,
-	    final RedirectAttributes redirectAttributes, @PathVariable final Optional<String> subpage) {
+	    @PathVariable final Optional<Long> recordId, @PathVariable final Optional<Long> versionId, final RedirectAttributes redirectAttributes,
+	    final ModelMap model, @PathVariable final Optional<String> subpage) {
 		final UserDTO user = UserUtil.getCurrentUser();
 		String ret;
 		if (recordId.isPresent()) {
@@ -183,19 +193,27 @@ public class RecordController {
 	}
 
 	/**
+	 * This function is called after a user submits the upload form from the report.jsp. Before starting the upload process, it checks if the change-log
+	 * is set. If it is missing it redirects to record.jsp with missing change-log message.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
-	 * @param model
-	 * @param redirectAttributes
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
+	 * @param model
+	 *          {@link ModelMap}
+	 * @return Mapping to redirect:/importReport on success, otherwise error and mapping handling via exceptionService.setErrorMessagesAndRedirects(...)
 	 */
 	@RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST, params = { "upload" })
 	public String uploadFile(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-	    @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
-	    @ModelAttribute("StudyForm") StudyForm sForm) {
+	    @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes,
+	    final ModelMap model) {
 		final UserDTO user = UserUtil.getCurrentUser();
 		log.trace("Entering  uploadFile for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
 		    () -> pid.get(), () -> user.getId(), () -> user.getEmail());
@@ -222,19 +240,27 @@ public class RecordController {
 	}
 
 	/**
+	 * This function is called if a user wants to delete a record. It checks if the user has the rights to delete the record. If the rights to delete
+	 * are given recordService.deleteRecord(...) is called to delete the record finally from Database and Minio.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
-	 * @param model
-	 * @param redirectAttributes
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
+	 * @param model
+	 *          {@link ModelMap}
+	 * @return Mapping to redirect/records on success, otherwise to record.jsp or error.jsp (Database Errors) with error messages
 	 */
 	@RequestMapping(value = { "/{recordId}/deleteRecord" }, method = RequestMethod.GET)
 	public String deleteRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-	    @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
-	    @ModelAttribute("StudyForm") StudyForm sForm) {
+	    @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes,
+	    final ModelMap model) {
 		final UserDTO user = UserUtil.getCurrentUser();
 		log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(),
 		    () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
@@ -255,23 +281,29 @@ public class RecordController {
 				ret = "record";
 			}
 		}
+		if (log.isTraceEnabled())
+			log.trace("Method deleteRecord completed - mapping to {}", ret);
 		return ret;
 	}
 
 	/**
+	 * This function is redirect called from uploadFile(...). It validates the imported Record and compares it to the last saved version.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
-	 * @param model
-	 * @param redirectAttributes
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to "importReport.jsp" on success, otherwise redirect to /record with error messages.
 	 */
 	@RequestMapping(value = { "/{recordId}/importReport" }, method = RequestMethod.GET)
 	public String showImportReport(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-	    @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
-	    @ModelAttribute("StudyForm") StudyForm sForm) {
+	    @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes) {
 		final UserDTO user = UserUtil.getCurrentUser();
 		log.trace("Entering  showImportReport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(),
 		    () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
@@ -297,6 +329,13 @@ public class RecordController {
 		return ret;
 	}
 
+	/**
+	 * This function is used by DataTables.js to load the DataMatrix asynchronously to improve the page load speed.
+	 * 
+	 * @param sForm
+	 *          {@link StudyForm}
+	 * @return
+	 */
 	@RequestMapping(value = { "/{recordId}/getMatrixAsync" }, method = RequestMethod.GET)
 	public @ResponseBody String getMatrixAsync(@ModelAttribute("StudyForm") StudyForm sForm) {
 		log.trace("Entering getMatrixAsync for importReport");
@@ -304,19 +343,25 @@ public class RecordController {
 	}
 
 	/**
+	 * This function saves the import if the user selects "save import" on importReport.jsp. Therefore, recordService.sortVariablesAndSetMetaData(sForm)
+	 * is called to set the selected meta data (keep or dismiss saved meta data) and after that the record is saved to DB and Minio via
+	 * recordService.saveRecordToDBAndMinio(sForm).
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
-	 * @param model
-	 * @param redirectAttributes
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param sForm
-	 * @return
+	 *          {@link StudyForm}
+	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
+	 * @return Redirect mapping to /record on success and on error, but with error messages if errors occurred.
 	 */
 	@RequestMapping(value = { "/{recordId}" }, method = RequestMethod.POST)
 	public String saveImport(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-	    @PathVariable final Optional<Long> recordId, final ModelMap model, final RedirectAttributes redirectAttributes,
-	    @ModelAttribute("StudyForm") StudyForm sForm) {
+	    @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes) {
 		final UserDTO user = UserUtil.getCurrentUser();
 		log.trace("Entering  saveImport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
 		    () -> pid.get(), () -> user.getId(), () -> user.getEmail());
@@ -349,13 +394,21 @@ public class RecordController {
 
 	/**
 	 * 
+	 * This function is called if a user saves the record meta data on record.jsp
+	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param recordId
+	 *          Record Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param sForm
+	 *          {@link StudyForm}
 	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
 	 * @param model
-	 * @return
+	 *          {@link ModelMap}
+	 * @return "record.jsp" on error with error messages, or redirect to /record on success.
 	 */
 	@RequestMapping(value = { "", "/{recordId}", "/{recordId}/version/{versionId}" }, params = "saveMetaData")
 	public String saveRecordMetaData(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
@@ -397,15 +450,26 @@ public class RecordController {
 	}
 
 	/**
+	 * This function is called asynchronously if a user opens a modal in the codebook. It load the content for global or single missing, or value-label
+	 * fields, depending on the given recordID.
 	 * 
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param sForm
+	 *          {@link StudyForm}
+	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Long};
 	 * @param studyId
+	 *          Study Identifier {@link Long};
 	 * @param recordId
+	 *          Record Identifier as {@link Long};
 	 * @param varId
+	 *          Variable Identifier as {@link Long};
 	 * @param modal
-	 * @return
+	 *          "missing" for missing modal, "values" for value-label modal - type: {@link String};
+	 * @return "forms/codebookModalGlobalValues.jsp" if global value-label is selected, "forms/codebookModalGlobalMissings.jsp" if global missing is
+	 *         selected, or "forms/codebookModalContent.jsp" if single missing or value-label is selected
 	 */
 	@RequestMapping(value = { "{recordId}/version/{versionId}/codebook/modal" })
 	public String loadAjaxModal(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Long pid,
@@ -473,8 +537,7 @@ public class RecordController {
 		model.remove("VarValues");
 		model.put("recordSubMenu", true);
 		model.put("subnaviActive", PageState.RECORDVAR.name());
-		if (log.isTraceEnabled())
-			log.trace("Method setValuesToStudyForm completed - mapping to codebook");
+		log.trace("Method setValuesToStudyForm completed - mapping to codebook");
 		return "codebook";
 	}
 
@@ -508,8 +571,7 @@ public class RecordController {
 		model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
 		model.put("recordSubMenu", true);
 		model.put("subnaviActive", PageState.RECORDVAR.name());
-		if (log.isTraceEnabled())
-			log.trace("Method setMissingsToStudyForm completed - mapping to codebook");
+		log.trace("Method setMissingsToStudyForm completed - mapping to codebook");
 		return "codebook";
 	}
 
@@ -604,8 +666,7 @@ public class RecordController {
 				response.setContentLength(content.length);
 				response.getOutputStream().write(content);
 				response.flushBuffer();
-				if (log.isTraceEnabled())
-					log.trace("Method exportRecord completed successfully");
+				log.trace("Method exportRecord completed successfully");
 			} else {
 				log.warn("Method exportRecord completed with an error - DWDownloadException thrown: ", res.toString());
 				throw new DWDownloadException(res.toString());
@@ -662,6 +723,8 @@ public class RecordController {
 		            (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
 		                : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
 		        new long[] { pid.get(), studyId.get() }, messageSource));
+		if (log.isTraceEnabled())
+			log.trace("Method setNumofVars completed - mapping to {}", ret);
 		return ret;
 	}
 
@@ -679,10 +742,11 @@ public class RecordController {
 	public @ResponseBody ResponseEntity<String> setFormAsync(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm) {
 		log.trace("Entering setFormAsync");
 		if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
-			log.warn("Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
+			log.warn("Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) returned status: {}",
+			    () -> HttpStatus.BAD_REQUEST.toString());
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
-		System.err.println(sForm.getRecord().getVariables().get(0));
+		log.trace("Method setFormAsync completed with satus: {}", () -> HttpStatus.OK.toString());
 		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 
@@ -719,8 +783,7 @@ public class RecordController {
 		model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
 		model.put("recordSubMenu", true);
 		model.put("subnaviActive", PageState.RECORDVAR.name());
-		if (log.isTraceEnabled())
-			log.trace("Method setGlobalMissingsToStudyForm completed - mapping to codebook");
+		log.trace("Method setGlobalMissingsToStudyForm completed - mapping to codebook");
 		return "codebook";
 	}
 
