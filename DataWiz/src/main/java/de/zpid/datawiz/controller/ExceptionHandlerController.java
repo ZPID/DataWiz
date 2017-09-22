@@ -18,9 +18,9 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
 public class ExceptionHandlerController {
 
 	@Autowired
-	protected MessageSource messageSource;
+	private MessageSource messageSource;
 	@Autowired
-	protected Environment env;
+	private Environment env;
 
 	public static final String DEFAULT_ERROR_VIEW = "error";
 	private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);

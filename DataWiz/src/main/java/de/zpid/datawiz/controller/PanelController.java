@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,11 +43,9 @@ public class PanelController {
 	@Autowired
 	private MessageSource messageSource;
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
-	protected HttpServletRequest request;
-	@Autowired
-	protected Environment env;
+	private Environment env;
 
 	// TODO SERVICE CLASS
 	@Autowired
@@ -57,7 +53,7 @@ public class PanelController {
 	@Autowired
 	private RoleDAO roleDAO;
 	@Autowired
-	protected UserDAO userDAO;
+	private UserDAO userDAO;
 	@Autowired
 	private ContributorDAO contributorDAO;
 	@Autowired

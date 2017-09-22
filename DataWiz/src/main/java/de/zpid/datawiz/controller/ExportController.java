@@ -40,7 +40,7 @@ public class ExportController {
 	private static Logger log = LogManager.getLogger(ExportController.class);
 
 	@Autowired
-	protected MessageSource messageSource;
+	private MessageSource messageSource;
 	@Autowired
 	ExportService exportService;
 	@Autowired

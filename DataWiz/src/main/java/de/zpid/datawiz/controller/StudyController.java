@@ -69,7 +69,7 @@ public class StudyController {
 	 * {@link MessageSource}
 	 */
 	@Autowired
-	protected MessageSource messageSource;
+	private MessageSource messageSource;
 
 	/**
 	 * {@link StudyService}
@@ -87,7 +87,7 @@ public class StudyController {
 	 * {@link ClassPathXmlApplicationContext}
 	 */
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 
 	/**
 	 * {@link RecordService}
@@ -126,7 +126,7 @@ public class StudyController {
 	 * @return the study form
 	 */
 	@ModelAttribute("StudyForm")
-	protected StudyForm createStudyForm() {
+	private StudyForm createStudyForm() {
 		return (StudyForm) applicationContext.getBean("StudyForm");
 	}
 

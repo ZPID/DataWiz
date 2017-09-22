@@ -70,13 +70,13 @@ public class AccessController {
 	@Autowired
 	private MessageSource messageSource;
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
 	private ProjectService projectService;
 	@Autowired
-	protected HttpServletRequest request;
+	private HttpServletRequest request;
 	@Autowired
-	protected Environment env;
+	private Environment env;
 
 	// TODO SERVICE CLASS
 	@Autowired
@@ -84,7 +84,7 @@ public class AccessController {
 	@Autowired
 	private RoleDAO roleDAO;
 	@Autowired
-	protected UserDAO userDAO;
+	private UserDAO userDAO;
 
 	public AccessController() {
 		super();
@@ -92,7 +92,7 @@ public class AccessController {
 	}
 
 	@ModelAttribute("ProjectForm")
-	protected ProjectForm createProjectForm() {
+	private ProjectForm createProjectForm() {
 		return (ProjectForm) applicationContext.getBean("ProjectForm");
 	}
 

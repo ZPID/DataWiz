@@ -35,8 +35,7 @@
             <label class="control-label col-sm-2 required" for="password"><s:message code="gen.password" /></label>
             <div class="col-sm-10">
               <s:message code="gen.password.ph" var="reg_password" />
-              <sf:input path="password" class="form-control" placeholder="${reg_password}" type="password"
-                required="required" />
+              <sf:input path="password" class="form-control" placeholder="${reg_password}" type="password" required="required" />
               <sf:errors path="password" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
@@ -44,8 +43,7 @@
             <div class="control-label col-sm-2"></div>
             <div class="col-sm-10">
               <s:message code="gen.password.retype.ph" var="reg_password_retype" />
-              <sf:input path="password_retyped" class="form-control" placeholder="${reg_password_retype}"
-                type="password" required="required" />
+              <sf:input path="password_retyped" class="form-control" placeholder="${reg_password_retype}" type="password" required="required" />
               <sf:errors path="password" cssClass="alert alert-danger" element="div" htmlEscape="false" />
             </div>
           </div>
@@ -73,4 +71,5 @@
     </div>
   </div>
 </div>
+
 <%@ include file="templates/footer.jsp"%>

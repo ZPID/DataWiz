@@ -32,7 +32,6 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -62,15 +61,15 @@ public class LoginController {
 	@Autowired
 	private LoginService loginService;
 	@Autowired
-	protected MessageSource messageSource;
+	private MessageSource messageSource;
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
-	@Autowired
-	protected SmartValidator validator;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
 	private Environment env;
 	@Autowired
-	protected HttpServletRequest request;
+	private HttpServletRequest request;
+	@Autowired
+	private EmailUtil emailUtil;
 
 	// TODO SERVICE CLASS
 	@Autowired
@@ -78,7 +77,7 @@ public class LoginController {
 	@Autowired
 	private RoleDAO roleDAO;
 	@Autowired
-	protected UserDAO userDAO;
+	private UserDAO userDAO;
 
 	private static Logger log = LogManager.getLogger(LoginController.class);
 
@@ -193,6 +192,8 @@ public class LoginController {
 				if (log.isDebugEnabled())
 					log.debug("Email is already used for an account email:" + person.getEmail());
 			}
+			if (emailUtil.isFakeMail(person.getEmail()))
+				bindingResult.rejectValue("email", "error.email.fake");
 			// return to registerform if errors
 			if (bindingResult.hasErrors()) {
 				log.trace("UserDTO has Errors - return to register form");

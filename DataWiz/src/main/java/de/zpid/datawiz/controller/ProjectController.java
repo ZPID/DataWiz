@@ -67,11 +67,11 @@ import de.zpid.datawiz.util.UserUtil;
 public class ProjectController {
 
 	@Autowired
-	protected MessageSource messageSource;
+	private MessageSource messageSource;
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
-	protected SmartValidator validator;
+	private SmartValidator validator;
 	@Autowired
 	private ProjectService projectService;
 	@Autowired
@@ -80,7 +80,7 @@ public class ProjectController {
 	private Environment env;
 
 	@ModelAttribute("ProjectForm")
-	protected ProjectForm createProjectForm() {
+	private ProjectForm createProjectForm() {
 		return (ProjectForm) applicationContext.getBean("ProjectForm");
 	}
 

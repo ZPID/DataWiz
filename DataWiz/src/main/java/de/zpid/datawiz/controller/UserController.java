@@ -3,7 +3,6 @@ package de.zpid.datawiz.controller;
 import java.sql.SQLException;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,12 +10,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +26,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
@@ -57,17 +55,13 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "UserDTO" })
 public class UserController {
 
-	protected PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 	@Autowired
-	protected MessageSource messageSource;
+	private MessageSource messageSource;
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private UserDAO userDAO;
 	@Autowired
-	protected SmartValidator validator;;
-	@Autowired
-	protected HttpServletRequest request;
-	@Autowired
-	protected UserDAO userDAO;
+	private EmailUtil emailUtil;
 
 	private static Logger log = LogManager.getLogger(UserController.class);
 
@@ -91,6 +85,7 @@ public class UserController {
 	 *          RedirectAttributes
 	 * @return usersetting.jsp on sucess, otherwise redirect:/panel on DB error or redirect:/login on Auth error
 	 */
+
 	@RequestMapping(value = { "", "/{userId}", }, method = RequestMethod.GET)
 	public String showUserSettingPage(@PathVariable final Optional<Long> userId, final ModelMap model, final RedirectAttributes reAtt) {
 		final UserDTO auth = UserUtil.getCurrentUser();
@@ -159,24 +154,26 @@ public class UserController {
 					bRes.rejectValue("password_retyped", "passwords.not.equal");
 				} else if (!passwordEncoder.matches(user.getPassword_old(), userDAO.findPasswordbyId(user.getId()))) {
 					bRes.rejectValue("password_old", "passwords.old.not.match");
+				} else {
+					user.setPassword(passwordEncoder.encode(user.getPassword()));
+					changePWD = true;
 				}
-				changePWD = true;
 			}
-			boolean emailSet = false;
+			if (emailUtil.isFakeMail(user.getEmail()))
+				bRes.rejectValue("email", "error.email.fake");
+			if (emailUtil.isFakeMail(user.getSecEmail()))
+				bRes.rejectValue("secEmail", "error.email.fake");
 			UserDTO userdb = userDAO.findByMail(user.getEmail(), false);
 			if (userdb != null && userdb.getId() != user.getId()) {
-				emailSet = true;
+				bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error.email", null, LocaleContextHolder.getLocale()));
 			}
-			if (bRes.hasErrors() || emailSet) {
-				if (emailSet) {
-					bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error.email", null, LocaleContextHolder.getLocale()));
-				} else
-					bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
+
+			if (bRes.hasErrors()) {
+				bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
 				return "usersettings";
 			}
-			user.setPassword(passwordEncoder.encode(user.getPassword()));
+
 			userDAO.saveOrUpdate(user, changePWD);
-			// load new UserData into Security
 			if (UserUtil.getCurrentUser().getId() == user.getId())
 				UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));
 			reAtt.addFlashAttribute("infoMSG",
@@ -189,4 +186,5 @@ public class UserController {
 		log.trace("Method saveUserSettings successfully completed");
 		return "redirect:/usersettings";
 	}
+
 }
