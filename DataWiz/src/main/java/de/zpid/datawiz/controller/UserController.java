@@ -47,7 +47,7 @@ import de.zpid.datawiz.util.UserUtil;
  * @author Ronny Boelter
  * @version 1.0
  *
- * 
+ *          TODO Missing service layer: to separate the DBS logic from the web logic!
  *
  */
 @Controller

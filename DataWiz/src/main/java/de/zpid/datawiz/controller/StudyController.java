@@ -65,51 +65,20 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList", "disStudyContent" })
 public class StudyController {
 
-	/**
-	 * {@link MessageSource}
-	 */
 	@Autowired
 	private MessageSource messageSource;
-
-	/**
-	 * {@link StudyService}
-	 */
 	@Autowired
 	private StudyService studyService;
-
-	/**
-	 * {@link ExceptionService}
-	 */
 	@Autowired
 	private ExceptionService exceptionService;
-
-	/**
-	 * {@link ClassPathXmlApplicationContext}
-	 */
 	@Autowired
 	private ClassPathXmlApplicationContext applicationContext;
-
-	/**
-	 * {@link RecordService}
-	 */
 	@Autowired
 	private RecordService recordService;
-
-	/**
-	 * {@link ProjectService}
-	 */
 	@Autowired
 	private ProjectService projectService;
-
-	/**
-	 * {@link Environment}
-	 */
 	@Autowired
 	private Environment env;
-
-	/**
-	 * {@link Logger}
-	 */
 	private static Logger log = LogManager.getLogger(StudyController.class);
 
 	/**
@@ -131,7 +100,8 @@ public class StudyController {
 	}
 
 	/**
-	 * Show study page.
+	 * This function load the study data and passes it to study.jsp. It distinguishes between two cases: First: study identifier is present - edit study
+	 * data; second study identifier is not present - create new study.
 	 *
 	 * @param sForm
 	 *          {@link StudyForm}

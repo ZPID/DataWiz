@@ -629,7 +629,7 @@ public class RecordController {
 			}
 			if (record != null) {
 				try {
-					content = exportService.getRecordExportContentAsByteArray(exportType, attachments, record, res);
+					content = exportService.getRecordExportContentAsByteArray(pid.get(), exportType, attachments, record, res);
 				} catch (Exception e) {
 					record = null;
 					res.insert(0, "export.error.exception.thown");
@@ -640,27 +640,29 @@ public class RecordController {
 				switch (exportType) {
 				case "CSVMatrix":
 					response.setContentType("text/csv");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + "_Matrix.csv\"");
+					response.setHeader("Content-Disposition",
+					    "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Matrix.csv\"");
 					break;
 				case "CSVCodebook":
 					response.setContentType("text/csv");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + "_Codebook.csv\"");
+					response.setHeader("Content-Disposition",
+					    "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Codebook.csv\"");
 					break;
 				case "JSON":
 					response.setContentType("application/json");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".json\"");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".json\"");
 					break;
 				case "SPSS":
 					response.setContentType("application/sav");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".sav\"");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".sav\"");
 					break;
 				case "PDF":
 					response.setContentType("application/pdf");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".pdf\"");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".pdf\"");
 					break;
 				case "CSVZIP":
 					response.setContentType("application/zip");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + record.getRecordName() + ".zip\"");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".zip\"");
 					break;
 				}
 				response.setContentLength(content.length);

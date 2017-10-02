@@ -79,6 +79,11 @@ public class ProjectController {
 	@Autowired
 	private Environment env;
 
+	/**
+	 * Creates the project form.
+	 *
+	 * @return {@link ProjectForm}
+	 */
 	@ModelAttribute("ProjectForm")
 	private ProjectForm createProjectForm() {
 		return (ProjectForm) applicationContext.getBean("ProjectForm");
@@ -86,17 +91,26 @@ public class ProjectController {
 
 	private static Logger log = LogManager.getLogger(ProjectController.class);
 
+	/**
+	 * Instantiates a new project controller.
+	 */
 	public ProjectController() {
 		super();
 		log.info("Loading ProjectController for mapping /project");
 	}
 
 	/**
+	 * This function handles the calls to the project.jsp (/project/{pid}). It distinguishes between the different user roles. If a user has no access
+	 * to the project and dmp meta data, but has access to a study, it automatically redirects to the study overview.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to project.jsp on success, otherwise redirect mapping to login on authentication errors, or to panel on access denied, or
+	 *         internal errors.
 	 */
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
 	public String showProjectPage(@PathVariable Optional<Long> pid, ModelMap model, RedirectAttributes redirectAttributes) {
@@ -134,11 +148,16 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function handles the mapping to a project's study overview (studies.jsp).
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to studies.jsp on success, otherwise redirect mapping to login on authentication errors, or to panel on access denied, or
+	 *         internal errors
 	 */
 	@RequestMapping(value = { "/{pid}/studies" }, method = RequestMethod.GET)
 	public String showStudiesPage(@PathVariable Optional<Long> pid, ModelMap model, RedirectAttributes redirectAttributes) {
@@ -172,12 +191,19 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function handles the mapping to the project/study additional materials page (material.jsp). It loads the additional materials depending on
+	 * the call. If the study identifier is present, it loads the study additional materials, otherwise the project additional materials.
 	 * 
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to material.jsp on success, otherwise redirect mapping to login on authentication errors, or to panel on access denied, or
+	 *         internal errors
 	 */
 	@RequestMapping(value = { "/{pid}/material", "/{pid}/study/{studyId}/material" }, method = RequestMethod.GET)
 	public String showMaterialPage(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model,
@@ -211,12 +237,18 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function is called when a user saves the project meta data. Before saving via projectService.saveOrUpdateProject, the project meta data are
+	 * validated. If validation has errors, it returns to project.jsp and puts error messages to the view.
 	 * 
 	 * @param pForm
+	 *          {@link ProjectForm}
 	 * @param bindingResult
+	 *          {@link BindingResult}
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return On success redirect mapping to /project, on error mapping to project.jsp with error messages
 	 */
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST)
 	public String saveProject(@ModelAttribute("ProjectForm") ProjectForm pForm, BindingResult bindingResult, ModelMap model,
@@ -246,9 +278,13 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function adds an empty ContributorDTO to the contributor list
+	 * 
 	 * @param pForm
+	 *          {@link ProjectForm}
 	 * @param model
-	 * @return
+	 *          {@link ModelMap}
+	 * @return Mapping to project.jsp
 	 */
 	@RequestMapping(value = { "", "/{pid}" }, params = { "addContributor" }, method = RequestMethod.POST)
 	public String addContributor(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model) {
@@ -261,10 +297,13 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function is called if a user deletes a contributor from the contributor list.
 	 * 
 	 * @param pForm
+	 *          {@link ProjectForm}
 	 * @param model
-	 * @return
+	 *          {@link ModelMap}
+	 * @return Mapping to project.jsp with error or success message
 	 */
 	@RequestMapping(value = { "", "/{pid}" }, params = { "deleteContributor" }, method = RequestMethod.POST)
 	public String deleteContributor(@ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model) {
@@ -284,13 +323,22 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function is used by the dropzone in the material.jsp of the study and project material pages. It saves an uploaded file by using
+	 * projectService.saveMaterialToMinoAndDB and returns a HttpStatus.
 	 * 
 	 * @param request
+	 *          {@link MultipartHttpServletRequest}
 	 * @param pForm
+	 *          {@link ProjectForm}
 	 * @param redirectAttributes
+	 *          {@link RedirectAttributes}
 	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param studyId
-	 * @return
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
+	 * @return Success: HttpStatus.OK <br />
+	 *         Database Error: HttpStatus.CONFLICT <br />
+	 *         Minio or Auth error: HttpStatus.INTERNAL_SERVER_ERROR
 	 */
 	@RequestMapping(value = { "/{pid}/upload", "/{pid}/study/{studyId}/upload" }, method = RequestMethod.POST)
 	public @ResponseBody ResponseEntity<String> uploadFile(MultipartHttpServletRequest request, @ModelAttribute("ProjectForm") ProjectForm pForm,
@@ -330,15 +378,21 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function is called after the upload of one or multiple files has finished to reload the file list and show the recently uploaded files.
 	 * 
 	 * @param pForm
-	 * @param model
+	 *          {@link ProjectForm}
+	 * @param pid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
+	 * @param studyId
+	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to material.jsp for project files or study files - depending on the state of the study identifier (set = )
 	 */
 	@RequestMapping(value = { "/{pid}/multisaved", "/{pid}/study/{studyId}/multisaved" })
 	public String multiSaved(@ModelAttribute("ProjectForm") ProjectForm pForm, @PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId,
-	    RedirectAttributes redirectAttributes, ModelMap model) {
+	    RedirectAttributes redirectAttributes) {
 		if (log.isDebugEnabled()) {
 			log.debug("Entering multiSaved for [pid: {}, studyid: {}]", () -> pid, () -> studyId);
 		}
@@ -354,11 +408,15 @@ public class ProjectController {
 	}
 
 	/**
+	 * This function is called if a user wants to download a file from the material pages.
 	 * 
 	 * @param docId
+	 *          Document Identifier as {@link Long}
 	 * @param response
+	 *          {@link HttpServletResponse}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Return the file as download, or an error message in case of an error.
 	 */
 	@RequestMapping(value = { "/{pid}/download/{docId}", "/{pid}/study/{studyId}/download/{docId}" }, method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<String> downloadDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response,
@@ -387,6 +445,7 @@ public class ProjectController {
 	}
 
 	/**
+	 * This functions deletes a saved document from database and minio. It is called from the material pages (project and study).
 	 * 
 	 * @param pid
 	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
@@ -396,7 +455,7 @@ public class ProjectController {
 	 *          Study Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param redirectAttributes
 	 *          {@link RedirectAttributes}
-	 * @return
+	 * @return Redirect to material.jsp. In case of an error, with error message
 	 */
 	@RequestMapping(value = { "/{pid}/delDoc/{docId}", "/{pid}/study/{studyId}/delDoc/{docId}" }, method = RequestMethod.GET)
 	public String deleteDocument(@PathVariable Optional<Long> pid, @PathVariable long docId, @PathVariable Optional<Long> studyId,

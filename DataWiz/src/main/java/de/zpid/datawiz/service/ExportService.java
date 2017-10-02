@@ -7,10 +7,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
@@ -32,6 +34,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.itextpdf.io.source.ByteArrayOutputStream;
 
+import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DmpDAO;
 import de.zpid.datawiz.dao.FileDAO;
 import de.zpid.datawiz.dao.FormTypesDAO;
@@ -39,6 +42,7 @@ import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RecordDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ExportRecordDTO;
 import de.zpid.datawiz.dto.ExportStudyDTO;
@@ -102,6 +106,8 @@ public class ExportService {
 	private DDIUtil ddi;
 	@Autowired
 	private StudyDAO studyDAO;
+	@Autowired
+	private ContributorDAO contributorDAO;
 	@Autowired
 	private RecordDAO recordDAO;
 	@Autowired
@@ -231,6 +237,8 @@ public class ExportService {
 			}
 			// Create Studies
 			if (exportForm.getStudies() != null) {
+				Set<String> studyNames = new HashSet<>();
+				int studyNameDoublette = 0;
 				for (ExportStudyDTO studyEx : exportForm.getStudies()) {
 					StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
 					List<FileDTO> sFiles = null;
@@ -238,6 +246,9 @@ public class ExportService {
 					StudyDTO studyDB = studyDAO.findById(studyEx.getStudyId(), exportForm.getProjectId(), false, false);
 					List<UserDTO> sUploader = new ArrayList<>();
 					if (studyDB != null) {
+						if (!studyNames.add(studyDB.getTitle())) {
+							studyDB.setTitle(studyDB.getTitle() + "_" + ++studyNameDoublette);
+						}
 						String studyFolder = STUDY_FOLDER + formatFilename(studyDB.getTitle()) + "/";
 						studyService.setStudyDTOExport(studyDB);
 						if (studyEx.isExportMetaData() || studyEx.isExportStudyMaterial()) {
@@ -271,10 +282,15 @@ public class ExportService {
 						}
 						// Create Records
 						if (studyEx.getRecords() != null) {
+							Set<String> recordNames = new HashSet<>();
+							int recNameDoublette = 0;
 							for (ExportRecordDTO recordEx : studyEx.getRecords()) {
 								if (recordEx.isExportMetaData() || recordEx.isExportCodebook() || recordEx.isExportMatrix()) {
 									RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
 									if (recordDB != null) {
+										if (!recordNames.add(recordDB.getRecordName())) {
+											recordDB.setRecordName(recordDB.getRecordName() + "_" + ++recNameDoublette);
+										}
 										String recordFolder = studyFolder + RECORD_FOLDER + formatFilename(recordDB.getRecordName()) + "/";
 										RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
 										List<String> parsingErrors = new LinkedList<>();
@@ -369,9 +385,10 @@ public class ExportService {
 	 * @param res
 	 * @param content
 	 * @return
-	 * @throws IOException
+	 * @throws Exception
 	 */
-	public byte[] getRecordExportContentAsByteArray(String exportType, Boolean attachments, RecordDTO record, StringBuilder res) throws IOException {
+	public byte[] getRecordExportContentAsByteArray(final Long pid, final String exportType, final Boolean attachments, final RecordDTO record,
+	    final StringBuilder res) throws Exception {
 		byte[] content = null;
 		if (exportType.equals("CSVMatrix")) {
 			content = exportCSV(record, res, true);
@@ -382,7 +399,14 @@ public class ExportService {
 		} else if (exportType.equals("SPSS")) {
 			content = exportSPSSFile(record, res);
 		} else if (exportType.equals("PDF")) {
-			content = itextUtil.createPdf(record, false, attachments);
+			ProjectDTO project = projectDAO.findById(pid);
+			ContributorDTO primaryContri = null;
+			if (project != null)
+				primaryContri = contributorDAO.findPrimaryContributorByProject(project);
+			StudyDTO study = studyDAO.findById(record.getStudyId(), pid.longValue(), true, false);
+			if (study != null)
+				study.setContributors(contributorDAO.findByStudy(study.getId()));
+			content = itextUtil.createPdf(record, study, project, primaryContri, false, attachments);
 		} else if (exportType.equals("CSVZIP")) {
 			List<Entry<String, byte[]>> files = new ArrayList<>();
 			files.add(new SimpleEntry<String, byte[]>(record.getRecordName() + "_Matrix.csv", exportCSV(record, res, true)));
@@ -773,8 +797,8 @@ public class ExportService {
 
 	public String formatFilename(String s) {
 		if (s != null) {
-			if (s.length() > 100) {
-				s = s.substring(0, 99);
+			if (s.length() > 50) {
+				s = s.substring(0, 49);
 			}
 			s = s.toLowerCase().trim();
 			return s.replaceAll("[^a-zA-Z0-9]", "_");
@@ -784,7 +808,15 @@ public class ExportService {
 
 	private void setAdditionalFilestoExportList(final List<Entry<String, byte[]>> exportList, final List<FileDTO> files, final String folderName)
 	    throws DataWizSystemException {
+		Set<String> filenames = new HashSet<>();
+		int doublettCount = 0;
 		for (FileDTO file : files) {
+			if (!filenames.add(file.getFileName())) {
+				if (file.getFileName().split("\\.").length > 1) {
+					file.setFileName(file.getFileName().replaceFirst("\\.", " (" + ++doublettCount + ")\\."));
+				} else
+					file.setFileName(file.getFileName() + "(" + ++doublettCount + ")");
+			}
 			MinioResult result = minioUtil.getFile(file);
 			if (result.equals(MinioResult.OK) && file.getContent().length > 0) {
 				// only files < 20 MB

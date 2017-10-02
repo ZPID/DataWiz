@@ -35,6 +35,28 @@ import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
+/**
+ * Controller for mapping "/panel" <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2016, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ *          TODO Missing service layer: to separate the DBS logic from the web logic! And Error Handling!
+ *
+ */
+
 @Controller
 @RequestMapping(value = "/panel")
 @SessionAttributes({ "breadcrumpList" })
@@ -46,8 +68,6 @@ public class PanelController {
 	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
 	private Environment env;
-
-	// TODO SERVICE CLASS
 	@Autowired
 	private ProjectDAO projectDAO;
 	@Autowired
@@ -61,17 +81,33 @@ public class PanelController {
 
 	private static Logger log = LogManager.getLogger(PanelController.class);
 
+	/**
+	 * Instantiates a new panel controller.
+	 */
 	public PanelController() {
 		super();
 		if (log.isInfoEnabled())
 			log.info("Loading PanelController for mapping /panel");
 	}
 
+	/**
+	 * Creates the project form.
+	 *
+	 * @return {@link ProjectForm}
+	 */
 	@ModelAttribute("ProjectForm")
 	public ProjectForm createProjectForm() {
 		return (ProjectForm) applicationContext.getBean("ProjectForm");
 	}
 
+	/**
+	 * This function handles the calls to /panel. Depending on the access rights for the user who has called the panel, it loads only the content which
+	 * the user has the appropriate rights for.
+	 * 
+	 * @param model
+	 *          {@link ModelMap}
+	 * @return
+	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public String dashboardPage(ModelMap model) {
 		if (log.isTraceEnabled()) {
