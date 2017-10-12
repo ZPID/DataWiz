@@ -1,7 +1,6 @@
 package de.zpid.datawiz.util;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -68,12 +67,34 @@ import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.service.ExportService;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSVarTypes;
 
+/**
+ * In this class all functions for creating a PDF document with the iText7 library are available <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ *          TODO Descriptive statistics for date and string variables
+ */
 @Component
 public class ITextUtil {
 
@@ -90,11 +111,12 @@ public class ITextUtil {
 	@Autowired
 	private Environment env;
 
-	/** A path to a color profile. */
+	/** path to a color profile. */
 	private final String ICC = "sRGB2014.icc";
-	/** A font that will be embedded. */
+	/** fonts that will be embedded. */
 	private final String FONT = "asap_regular.ttf";
 	private final String FONT_BOLD = "asap_bold.ttf";
+
 	private final Border BORDER = Border.NO_BORDER;
 	private final float FONTSIZENORMAL = 10.0f;
 	private final Color DW_COLOR = new DeviceRgb(91, 155, 213);
@@ -102,24 +124,33 @@ public class ITextUtil {
 	private final Color DW_COLOR_FONT = Color.BLACK;
 
 	/**
+	 * This function handles the creation of the entire record codebook as a PDF-A document and returns it as byte array.
 	 * 
 	 * @param record
+	 *          Contains the record meta data
 	 * @param study
+	 *          Contains the study meta data
 	 * @param project
+	 *          Contains the project meta data
 	 * @param primaryContri
+	 *          Contains the primary contributor
 	 * @param encrypt
+	 *          True if the PDF-A should be encrypted, otherwise false.
 	 * @param withAttachments
-	 * @return
-	 * @throws IOException
+	 *          True, if the codebook and the matrix should be attached to the PDF-A file, otherwise false
+	 * @return The PDF-A document as byte array
+	 * @throws Exception
 	 */
-	public byte[] createPdf(final RecordDTO record, final StudyDTO study, final ProjectDTO project, final ContributorDTO primaryContri,
-	    final boolean encrypt, final boolean withAttachments) throws IOException {
+	public byte[] createRecordCodeBookPDFA(final RecordDTO record, final StudyDTO study, final ProjectDTO project, final ContributorDTO primaryContri,
+	    final boolean encrypt, final boolean withAttachments) throws Exception {
+		log.trace("Entering createRecordCodeBookPDFA for record[id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
 		StringBuilder res = new StringBuilder();
 		byte[] content = null;
 		String dir = fileUtil.setFolderPath("temp");
 		Files.createDirectories(Paths.get(dir));
 		String filename = UUID.randomUUID().toString() + ".pdf";
-		PdfADocument pdf = openPDFADocument(record, dir + filename, encrypt, res);
+		// open PDF-A document
+		PdfADocument pdf = openPDFADocument(record, dir + filename, encrypt);
 		if (pdf != null) {
 			Document document = new Document(pdf, PageSize.A4);
 			// add datamatrix as csv
@@ -139,39 +170,55 @@ public class ITextUtil {
 					array.add(codebook.getPdfObject().getIndirectReference());
 				pdf.getCatalog().put(new PdfName("Attachments"), array);
 			}
-			// report meta page
-			createRecordMetaDesc(record, study, project, primaryContri, document, font_bold);
-			// variables
+			// cover sheet
+			createRecordCoverSheet(record, study, project, primaryContri, document);
+			// record descrition
+			createRecordDescription(record, document, font_bold);
+			// variables codebook & statistic
 			for (SPSSVarDTO var : record.getVariables()) {
 				document.add(new Paragraph().setFontSize(14).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
 				    .add(messageSource.getMessage("export.pdf.line.variable", null, Locale.ENGLISH) + var.getName()));
-				document.add(createVarTable(var));
+				document.add(createVariableCodeBookTable(var));
 				if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F)) {
 					document.add(new Paragraph().setFontSize(14).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
 					    .add(messageSource.getMessage("export.pdf.line.num.stats", null, Locale.ENGLISH)));
-					document.add(createStatsTable(record.getDataMatrix(), var));
+					document.add(createVariableDescriptiveStatistikTable(record.getDataMatrix(), var));
 				}
 				document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 			}
-			// Close document
-			setPagenumber(pdf, document);
+			// set footer
+			setPagefooter(pdf, document);
+			// close document
 			document.close();
+			// create content as byte [] and delete temporary PDF file
 			if (Files.exists(Paths.get(dir + filename))) {
 				content = Files.readAllBytes(Paths.get(dir + filename));
 				fileUtil.deleteFile(Paths.get(dir + filename));
 			}
+		} else {
+			throw new DataWizSystemException("PDF-A was not created", DataWizErrorCodes.NO_DATA_ERROR);
 		}
-		log.trace("Leaving createPdf");
+		log.trace("Leaving createRecordCodeBookPDFA for record[id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
 		return content;
 	}
 
 	/**
+	 * This function creates the PDF cover sheet
+	 * 
 	 * @param record
+	 *          Contains the record meta data
+	 * @param study
+	 *          Contains the study meta data
+	 * @param project
+	 *          Contains the project meta data
+	 * @param primaryContri
+	 *          Contains the primary contributor
 	 * @param document
+	 *          The document in which the cover sheet is inserted
 	 */
-	private void createRecordMetaDesc(final RecordDTO record, final StudyDTO study, final ProjectDTO project, final ContributorDTO primaryContri,
-	    final Document document, final PdfFont font_bold) {
-		// title page
+	private void createRecordCoverSheet(final RecordDTO record, final StudyDTO study, final ProjectDTO project, final ContributorDTO primaryContri,
+	    final Document document) {
+		log.trace("Entering createRecordCoverSheet for record[id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
 		try {
 			document.add(new Paragraph().setMarginTop(20).setHeight(50)
 			    .add(new Image(ImageDataFactory.create(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath())
@@ -182,19 +229,15 @@ public class ITextUtil {
 			        + env.getRequiredProperty("application.logo.zpid"))).setAutoScale(true))
 			    .setTextAlignment(TextAlignment.RIGHT).setRelativePosition(0, 0, 0, 60));
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.warn("WARN: createRecordCoverSheet error during loading cover sheet images - PDF was created without images! Exception: ", () -> e);
 		}
-		// record title
 		document.add(new Paragraph().setMarginTop(20).setTextAlignment(TextAlignment.RIGHT).setRelativePosition(0, 0, 0, 0)
 		    .setFontColor(new DeviceRgb(91, 155, 213)).setFontSize(28).setFixedLeading(32).add(record.getRecordName()));
-		// study & project title
 		document.add(new Paragraph().setTextAlignment(TextAlignment.RIGHT).setFontSize(14)
 		    .add((project != null && project.getTitle() != null && !project.getTitle().isEmpty() ? project.getTitle()
 		        : messageSource.getMessage("export.pdf.empty.project.name", null, Locale.ENGLISH)) + " | "
 		        + (study != null && study.getTitle() != null && !study.getTitle().isEmpty() ? study.getTitle()
 		            : messageSource.getMessage("export.pdf.empty.study.name", null, Locale.ENGLISH))));
-		// primary contributor
 		StringBuilder primName = setContributorNameString(primaryContri);
 		if (primName.toString().isEmpty()) {
 			primName.append(messageSource.getMessage("export.pdf.empty.prim.name", null, Locale.ENGLISH));
@@ -202,7 +245,6 @@ public class ITextUtil {
 		document.add(new Paragraph().setTextAlignment(TextAlignment.RIGHT).setMarginTop(20).setFontColor(DW_COLOR)
 		    .add(messageSource.getMessage("project.edit.primaryContributors", null, Locale.ENGLISH)));
 		document.add(new Paragraph().setTextAlignment(TextAlignment.RIGHT).add(primName.toString()));
-		// contributors
 		document.add(new Paragraph().setTextAlignment(TextAlignment.RIGHT).setMarginTop(20).setFontColor(DW_COLOR)
 		    .add(messageSource.getMessage("project.edit.contributors", null, Locale.ENGLISH)));
 		if (study != null && study.getContributors() != null) {
@@ -216,10 +258,23 @@ public class ITextUtil {
 			});
 		}
 		document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-		// about page
+		log.trace("Leaving createRecordCoverSheet for record[id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
+	}
+
+	/**
+	 * The function creates the record description based on the metadata passed to it.
+	 * 
+	 * @param record
+	 *          Contains the record meta data
+	 * @param document
+	 *          The document in which the description is inserted
+	 * @param font_bold
+	 *          Bold font for creating headlines.
+	 */
+	private void createRecordDescription(final RecordDTO record, final Document document, final PdfFont font_bold) {
+		log.trace("Entering createRecordDescription for record[id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
 		document.add(new Paragraph().setFontSize(14).setMarginTop(35).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
 		    .add(messageSource.getMessage("export.pdf.line.record.content", null, Locale.ENGLISH)));
-		// Sort used constructs, instruments and occasions
 		Set<String> sConst = new HashSet<>();
 		Set<String> sInstr = new HashSet<>();
 		Set<String> sOcc = new HashSet<>();
@@ -242,63 +297,66 @@ public class ITextUtil {
 					});
 			});
 		}
-		// content table
-		Table table = new Table(new float[] { 150.0f, 450.0f });
-		table.setBorder(Border.NO_BORDER);
-		table.setWidthPercent(100);
-		table
+		final Table desTable = new Table(new float[] { 150.0f, 450.0f });
+		desTable.setBorder(Border.NO_BORDER);
+		desTable.setWidthPercent(100);
+		desTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.desc", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.JUSTIFIED).setBorder(Border.NO_BORDER).add(record.getDescription()));
-		table
+		desTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.constructs", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER).add(attributeListToStringBuilder(sConst).toString()));
-		table
+		desTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.instruments", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER).add(attributeListToStringBuilder(sInstr).toString()));
-		table
+		desTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.occasions", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER).add(attributeListToStringBuilder(sOcc).toString()));
-		document.add(table);
+		document.add(desTable);
 		document.add(new Paragraph().setFontSize(14).setMarginTop(35).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
 		    .add(messageSource.getMessage("export.pdf.line.record.history", null, Locale.ENGLISH)));
-		// history table
-		table = new Table(new float[] { 150.0f, 450.0f });
-		table
+		final Table historyTable = new Table(new float[] { 150.0f, 450.0f });
+		historyTable.setBorder(Border.NO_BORDER);
+		historyTable.setWidthPercent(100);
+		historyTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.version", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER).add(String.valueOf(record.getVersionId())));
-		table
+		historyTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.created", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(record.getCreated() != null ? record.getCreated().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy, HH:mm")) : ""));
-		table
+		historyTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.record.last.update", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(record.getChanged() != null ? record.getChanged().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy, HH:mm")) : ""));
-		table
+		historyTable
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(messageSource.getMessage("export.pdf.line.last.changes", null, Locale.ENGLISH)))
 		    .addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER)
 		        .add(record.getChangeLog() != null ? record.getChangeLog() : ""));
-		document.add(table);
+		document.add(historyTable);
 		document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-
+		log.trace("Leaving createRecordDescription for record[id: {}; version: {}] with Number of Rows[Description-Table: {}; HistoryTable: {}]",
+		    () -> record.getId(), () -> record.getVersionId(), () -> desTable.getNumberOfRows(), () -> historyTable.getNumberOfRows());
 	}
 
 	/**
+	 * This function creates the codebook table for the numerical variable passed.
 	 * 
 	 * @param var
-	 * @return
+	 *          Variable for which the table has to be created
+	 * @return Table with the provided codebook content
 	 */
-	private Table createVarTable(SPSSVarDTO var) {
+	private Table createVariableCodeBookTable(final SPSSVarDTO var) {
+		log.trace("Entering createVariableCodeBookTable for variable[id:{}]", () -> var.getId());
 		Table table = new Table(new float[] { 200.0f, 400.0f });
-
 		table.setWidthPercent(100);
 		String construct = "", measocc = "", instrument = "", itemtext = "", filtervar = "";
 		if (var.getDw_attributes() != null) {
@@ -369,16 +427,24 @@ public class ITextUtil {
 			break;
 		}
 		table.addCell(new Cell().setTextAlignment(TextAlignment.LEFT).setBorder(this.BORDER).add(miss.toString()));
+		log.trace("Leaving createVariableCodeBookTable for variable[id:{}] with Number of Rows[numOfRows: {}]", () -> var.getId(),
+		    () -> table.getNumberOfRows());
 		return table;
 	}
 
 	/**
+	 * This function creates a table with descriptive statistics and frequency distribution for the numerical variable passed.
 	 * 
 	 * @param matrix
+	 *          Entire data matrix of the record.
 	 * @param var
-	 * @return
+	 *          Variable for which the table has to be created
+	 * @return If no error occurs during data extraction and statistics calculation, the table with the calculated content is returned. Otherwise an
+	 *         empty table.
+	 * 
 	 */
-	private Table createStatsTable(final List<List<Object>> matrix, final SPSSVarDTO var) {
+	private Table createVariableDescriptiveStatistikTable(final List<List<Object>> matrix, final SPSSVarDTO var) {
+		log.trace("Entering createVariableDescriptiveStatistikTable for variable[id:{}]", () -> var.getId());
 		Table table = new Table(new float[] { 200.0f, 400.0f });
 		SynchronizedSummaryStatistics stats = new SynchronizedSummaryStatistics();
 		Frequency freq = new Frequency();
@@ -478,15 +544,21 @@ public class ITextUtil {
 				freq.clear();
 			}
 		}
+		log.trace("Leaving createVariableDescriptiveStatistikTable for variable[id:{}] with Number of Rows[numOfRows: {}]", () -> var.getId(),
+		    () -> table.getNumberOfRows());
 		return table;
 	}
 
 	/**
+	 * This function adds a new row with a variable number of columns to the table. The amount of columns in a row depends on the amount of varargs.
 	 * 
 	 * @param table
-	 * @param border
+	 *          Table object to which the row has to be appended
 	 * @param hasBackground
+	 *          Boolean, to create striped Tables
 	 * @param content
+	 *          Varargs for the cell content.
+	 * 
 	 */
 	private void createAndAddRow(final Table table, final boolean hasBackground, final String... content) {
 		for (String s : content)
@@ -499,13 +571,20 @@ public class ITextUtil {
 	}
 
 	/**
+	 * This function set the CSV attachments to a PdfFileSpec object, if the user selected PDF-A with attachments.
+	 * 
 	 * @param record
+	 *          Record object which includes the record data.
 	 * @param pdf
+	 *          Current PDF-document
 	 * @param res
-	 * @return
+	 *          StringBuilder object to save errors that may occur, and return them to the calling function for exception handling.
+	 * @param matrix
+	 *          True if the data matrix, false if the codebook should be saved into the PDF-A.
+	 * @return A PdfFileSpec which includes the attachment
 	 */
-	private PdfFileSpec getRecordCSVAttachment(final RecordDTO record, PdfADocument pdf, StringBuilder res, boolean matrix) {
-		log.trace("Entering getDatamatrix for record[id:{}, version:{}]", () -> record.getId(), () -> record.getVersionId());
+	private PdfFileSpec getRecordCSVAttachment(final RecordDTO record, final PdfADocument pdf, final StringBuilder res, final boolean matrix) {
+		log.trace("Entering getRecordCSVAttachment for record[id:{}, version:{}]", () -> record.getId(), () -> record.getVersionId());
 		PdfFileSpec fileSpec = null;
 		String name = record.getRecordName() + "_" + record.getVersionId() + (matrix ? "(matrix).csv" : "(codebook).csv");
 		byte[] datamatrix = exportUtil.exportCSV(record, res, matrix);
@@ -517,17 +596,28 @@ public class ITextUtil {
 		} else {
 			res.insert(0, "export.csv.string.empty");
 		}
-		log.debug("Leaving getDatamatrix with result: {}", fileSpec == null ? "NULL" : "SUCCESS");
+		log.trace("Leaving getRecordCSVAttachment with result: {}", fileSpec == null ? "NULL" : "SUCCESS");
 		return fileSpec;
 	}
 
 	/**
+	 * This function opens a new PDF document and it returns it. It uses a destination path for temporary saving the file to the file system and an
+	 * boolean to turn on or off the PDF encryption. CompressionConstants.BEST_COMPRESSION is selected as compression level and the PDF version is set
+	 * to 1.7, which is the latest version at the time of development. For the creation of a PDF-A document it is necessary that all used contents, such
+	 * as images, fonts and the used color profile, are embedded in the PDF-A, because otherwise it is not possible to create a valid PDF-A file.
+	 * Therefore, this function saves the ICC profile into the PDF-A document.
+	 * 
+	 * @param record
+	 *          Record object which includes the record data.
 	 * @param dest
+	 *          Path to (temporary) file storage
 	 * @param encrypt
-	 * @return
-	 * @throws FileNotFoundException
+	 *          True if the PDF-A should be encrypted, otherwise false.
+	 * @param res
+	 *          StringBuilder object to save errors that may occur, and return them to the calling function for exception handling.
+	 * @return The created PdfADocument
 	 */
-	private PdfADocument openPDFADocument(final RecordDTO record, final String dest, final boolean encrypt, final StringBuilder res) {
+	private PdfADocument openPDFADocument(final RecordDTO record, final String dest, final boolean encrypt) {
 		log.trace("Entering openPDFADocument for record[id:{}, version:{}], destination[{}], encrytion[{}]", () -> record.getId(),
 		    () -> record.getVersionId(), () -> dest, () -> encrypt);
 		WriterProperties prop;
@@ -544,7 +634,7 @@ public class ITextUtil {
 			pdf = new PdfADocument(new PdfWriter(dest, prop), PdfAConformanceLevel.PDF_A_3U,
 			    new PdfOutputIntent("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", this.getClass().getClassLoader().getResourceAsStream(ICC)));
 		} catch (FileNotFoundException e) {
-			res.insert(0, "export.error.exception.thown");
+			pdf = null;
 			log.error("IOException during reading PDF/A Color: {}", () -> e);
 		}
 		if (pdf != null) {
@@ -553,15 +643,21 @@ public class ITextUtil {
 			pdf.getCatalog().setViewerPreferences(new PdfViewerPreferences().setDisplayDocTitle(true));
 			setMetaInformation(record, pdf);
 		}
-		log.debug("Leaving openPDFADocument with result: {}", pdf == null ? "NULL" : "SUCCESS");
+		log.trace("Leaving openPDFADocument with result: {}", pdf == null ? "NULL" : "SUCCESS");
 		return pdf;
 	}
 
 	/**
+	 * This function writes meta informations into the PDF Document, including record name, record description, record author, DataWiz as record creator
+	 * and the identifier of the record, study and version
+	 * 
 	 * @param record
+	 *          Record object which includes the meta informations.
 	 * @param pdf
+	 *          Current PDF-document
 	 */
-	private void setMetaInformation(final RecordDTO record, PdfADocument pdf) {
+	private void setMetaInformation(final RecordDTO record, final PdfADocument pdf) {
+		log.trace("Entering setMetaInformation for record [id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
 		PdfDocumentInfo info = pdf.getDocumentInfo();
 		info.setTitle(record.getRecordName());
 		info.setCreator("Datawiz (www.datawiz.de)");
@@ -570,36 +666,62 @@ public class ITextUtil {
 		info.setMoreInfo("DataWiz StudyId", String.valueOf(record.getStudyId()));
 		info.setMoreInfo("DataWiz RecordId", String.valueOf(record.getId()));
 		info.setMoreInfo("DataWiz VersionId", String.valueOf(record.getVersionId()));
+		log.trace("Leaving setMetaInformation");
 	}
 
-	private StringBuilder attributeListToStringBuilder(Set<String> attributes) {
+	/**
+	 * This function composes all attributes, which are included in the passed List, to a StringBuilder object.
+	 * 
+	 * @param attributes
+	 *          List of attributes
+	 * @return StingBuilder object with attributes
+	 */
+	private StringBuilder attributeListToStringBuilder(final Set<String> attributes) {
+		log.trace("Entering attributeListToStringBuilder");
 		StringBuilder attrStr = new StringBuilder();
 		if (attributes != null) {
 			attributes.forEach(s -> attrStr.append(s).append("\n"));
 		}
+		log.trace("Leaving attributeListToStringBuilder");
 		return attrStr;
 	}
 
-	private StringBuilder setContributorNameString(final ContributorDTO primaryContri) {
+	/**
+	 * This function composes the full contributor name, consisting of title, first and last name.
+	 * 
+	 * @param contributor
+	 *          The Contributor Object
+	 * @return The Contributor name as StringBuilder object
+	 */
+	private StringBuilder setContributorNameString(final ContributorDTO contributor) {
+		log.trace("Entering setContributorNameString for Contributor [title: {}; firstName: {}; lastName: {}]", () -> contributor.getTitle(),
+		    () -> contributor.getFirstName(), () -> contributor.getLastName());
 		StringBuilder primName = new StringBuilder();
-		if (primaryContri != null) {
-			if (primaryContri.getTitle() != null && !primaryContri.getTitle().isEmpty())
-				primName.append(primaryContri.getTitle()).append(" ");
-			if (primaryContri.getFirstName() != null && !primaryContri.getFirstName().isEmpty())
-				primName.append(primaryContri.getFirstName()).append(" ");
-			if (primaryContri.getLastName() != null && !primaryContri.getLastName().isEmpty())
-				primName.append(primaryContri.getLastName());
-			if (primaryContri.getInstitution() != null && !primaryContri.getInstitution().isEmpty())
-				primName.append(" (").append(primaryContri.getInstitution()).append(")");
+		if (contributor != null) {
+			if (contributor.getTitle() != null && !contributor.getTitle().isEmpty())
+				primName.append(contributor.getTitle()).append(" ");
+			if (contributor.getFirstName() != null && !contributor.getFirstName().isEmpty())
+				primName.append(contributor.getFirstName()).append(" ");
+			if (contributor.getLastName() != null && !contributor.getLastName().isEmpty())
+				primName.append(contributor.getLastName());
+			if (contributor.getInstitution() != null && !contributor.getInstitution().isEmpty())
+				primName.append(" (").append(contributor.getInstitution()).append(")");
 		}
+		log.trace("Leaving setContributorNameString with result: [name: {}]", () -> primName.toString());
 		return primName;
 	}
 
 	/**
+	 * This function sets the PDF footer. It includes a current time-stamp and the mail address of the person who exported the document on the left
+	 * side. And on the right side the current and maximum number of pages.
+	 * 
 	 * @param pdf
+	 *          The current PDF-A document
 	 * @param document
+	 *          The current PDF-A document
 	 */
-	private void setPagenumber(PdfADocument pdf, Document document) {
+	private void setPagefooter(final PdfADocument pdf, final Document document) {
+		log.trace("Entering setPagefooter");
 		UserDTO user = UserUtil.getCurrentUser();
 		String currTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd, yyyy, HH:mm"));
 		int n = pdf.getNumberOfPages();
@@ -613,32 +735,50 @@ public class ITextUtil {
 			p.add(messageSource.getMessage("export.pdf.line.doc.create", new Object[] { currTime, user.getEmail() }, Locale.ENGLISH));
 			document.showTextAligned(p, 30, 30, i, TextAlignment.LEFT, VerticalAlignment.TOP, 0);
 		}
+		log.trace("Leaving setPagefooter");
 	}
 
-	private boolean checkIfValIsMissing(final String entry, final SPSSMissing misstype, final String miss1, final String miss2, final String miss3) {
+	/**
+	 * This functions checks if the passed value is a discrete missing value, or whether the value is in the range of the missing values.
+	 * 
+	 * @param value
+	 *          The value which has to be checked.
+	 * @param misstype
+	 *          The type of the missing format.
+	 * @param miss1
+	 *          Missing value one.
+	 * @param miss2
+	 *          Missing value two.
+	 * @param miss3
+	 *          Missing value three.
+	 * @return True, if the value is a missing value, otherwise false
+	 */
+	private boolean checkIfValIsMissing(final String value, final SPSSMissing misstype, final String miss1, final String miss2, final String miss3) {
 		boolean isMissing = false;
+		log.trace("Entering checkIfValIsMissing for [value: {}; misstype: {}; miss1: {}; miss2: {}; miss3: {}]", () -> value, () -> misstype, () -> miss1,
+		    () -> miss2, () -> miss3);
 		try {
 			Double val, min, max;
 			switch (misstype) {
 			case SPSS_ONE_MISSVAL:
-				isMissing = miss1.trim().equals(entry.trim());
+				isMissing = miss1.trim().equals(value.trim());
 				break;
 			case SPSS_TWO_MISSVAL:
-				isMissing = (miss1.trim().equals(entry.trim()) || miss2.trim().equals(entry.trim()));
+				isMissing = (miss1.trim().equals(value.trim()) || miss2.trim().equals(value.trim()));
 				break;
 			case SPSS_THREE_MISSVAL:
-				isMissing = (miss1.trim().equals(entry.trim()) || miss2.trim().equals(entry.trim()) || miss3.trim().equals(entry.trim()));
+				isMissing = (miss1.trim().equals(value.trim()) || miss2.trim().equals(value.trim()) || miss3.trim().equals(value.trim()));
 				break;
 			case SPSS_MISS_RANGE:
-				val = Double.parseDouble(entry.trim());
+				val = Double.parseDouble(value.trim());
 				min = Double.parseDouble(miss1.trim());
 				max = Double.parseDouble(miss2.trim());
 				if (val >= min && val <= max)
 					isMissing = true;
 				break;
 			case SPSS_MISS_RANGEANDVAL:
-				isMissing = miss3.trim().equals(entry.trim());
-				val = Double.parseDouble(entry.trim());
+				isMissing = miss3.trim().equals(value.trim());
+				val = Double.parseDouble(value.trim());
 				min = Double.parseDouble(miss1.trim());
 				max = Double.parseDouble(miss2.trim());
 				if (val >= min && val <= max)
@@ -650,6 +790,7 @@ public class ITextUtil {
 		} catch (Exception e) {
 
 		}
+		log.trace("Leaving checkIfValIsMissing with result: [ismissing: {}]", isMissing);
 		return isMissing;
 	}
 }

@@ -26,7 +26,7 @@
               <div class="col-xs-4 col-sm-3 text-align-right">
                 <c:if
                   test="${principal.user.hasRole('ADMIN') or (principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) and (ProjectForm.project.ownerId == principal.user.id))}">
-                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" id="deleteProjectBTN">
                     <s:message code="project.button.delete" />
                   </button>
                 </c:if>

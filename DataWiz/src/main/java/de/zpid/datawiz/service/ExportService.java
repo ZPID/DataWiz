@@ -406,7 +406,7 @@ public class ExportService {
 			StudyDTO study = studyDAO.findById(record.getStudyId(), pid.longValue(), true, false);
 			if (study != null)
 				study.setContributors(contributorDAO.findByStudy(study.getId()));
-			content = itextUtil.createPdf(record, study, project, primaryContri, false, attachments);
+			content = itextUtil.createRecordCodeBookPDFA(record, study, project, primaryContri, false, attachments);
 		} else if (exportType.equals("CSVZIP")) {
 			List<Entry<String, byte[]>> files = new ArrayList<>();
 			files.add(new SimpleEntry<String, byte[]>(record.getRecordName() + "_Matrix.csv", exportCSV(record, res, true)));

@@ -55,6 +55,7 @@ import de.zpid.datawiz.util.UserUtil;
 @SessionAttributes({ "UserDTO" })
 public class UserController {
 
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private MessageSource messageSource;
@@ -172,7 +173,6 @@ public class UserController {
 				bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
 				return "usersettings";
 			}
-
 			userDAO.saveOrUpdate(user, changePWD);
 			if (UserUtil.getCurrentUser().getId() == user.getId())
 				UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));

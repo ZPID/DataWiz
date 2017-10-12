@@ -3,10 +3,10 @@ package de.zpid.datawiz.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.NotBlank;
 
 public class ProjectDTO implements Serializable {
 

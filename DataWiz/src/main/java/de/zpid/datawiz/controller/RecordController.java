@@ -633,7 +633,7 @@ public class RecordController {
 				} catch (Exception e) {
 					record = null;
 					res.insert(0, "export.error.exception.thown");
-					log.error("ERROR: Exception thrown at exportService.getRecordExportContentAsByteArray", () -> recordId, () -> versionId, () -> e);
+					log.error("ERROR: Exception thrown at exportService.getRecordExportContentAsByteArray", () -> e);
 				}
 			}
 			if (record != null && content != null) {
