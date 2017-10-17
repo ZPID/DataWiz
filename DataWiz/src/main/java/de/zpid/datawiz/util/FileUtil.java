@@ -32,11 +32,33 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import de.zpid.datawiz.dto.FileDTO;
 
+/**
+ * This class contains all the functions used for storing files locally. In all cases it is temporary storage, because Minio is used as data storage.
+ * This class also contains the functions for creating checksum values and image processing (scaling, thumbnails). <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ * 
+ */
 @Component
 @Scope("singleton")
 public class FileUtil {
@@ -45,36 +67,49 @@ public class FileUtil {
 	final static String OS = System.getProperty("os.name").toLowerCase();
 	@Autowired
 	protected ClassPathXmlApplicationContext applicationContext;
+	@Autowired
+	private Environment env;
 
 	/**
+	 * This function creates a checksum by the passed MessageDigest and the file from which the Checksum has to be created.
 	 * 
 	 * @param digest
+	 *          MessageDigest (MD5/SHA1/SHA256)
 	 * @param hash
-	 * @return
+	 *          The file as byte array
+	 * @return The checksum as String
 	 */
-	public String getFileChecksum(MessageDigest digest, final byte[] hash) {
+	public String getFileChecksum(final MessageDigest digest, final byte[] hash) {
 		return (new HexBinaryAdapter()).marshal(digest.digest(hash)).toLowerCase();
 	}
 
 	/**
+	 * This function creates a checksum by the passed String and the file from which the Checksum has to be created.
 	 * 
 	 * @param digest
+	 *          MessageDigest String (MD5/SHA1/SHA256)
 	 * @param hash
-	 * @return
+	 *          The file as byte array
+	 * @return The checksum as String
 	 * @throws NoSuchAlgorithmException
 	 */
-	public String getFileChecksum(String digest, final byte[] hash) throws NoSuchAlgorithmException {
+	public String getFileChecksum(final String digest, final byte[] hash) throws NoSuchAlgorithmException {
 		return (new HexBinaryAdapter()).marshal(MessageDigest.getInstance(digest).digest(hash)).toLowerCase();
 	}
 
 	/**
+	 * This function scales the passed image to the passed width and height.
 	 * 
 	 * @param src
+	 *          The image (as BufferedImage), which has to be scaled
 	 * @param w
+	 *          the new width
 	 * @param h
-	 * @return
+	 *          the new height
+	 * @return the scaled images (as BufferedImage)
 	 */
-	public BufferedImage scaleImage(BufferedImage src, int w, int h) {
+	public BufferedImage scaleImage(final BufferedImage src, final int w, final int h) {
+		log.trace("Entering scaleImage from [X: {}; Y: {}] to [X: {};Y: {}]", () -> src.getWidth(), () -> src.getHeight(), () -> w, () -> h);
 		BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 		int x, y;
 		int ww = src.getWidth();
@@ -85,24 +120,34 @@ public class FileUtil {
 				img.setRGB(x, y, col);
 			}
 		}
+		log.trace("Leaving scaleImage with result: [X: {};Y: {}]", () -> img.getWidth(), () -> img.getHeight());
 		return img;
 	}
 
 	/**
+	 * If the transferred file is an image, this function creates a thumbnail of it. Before the image is resized to its new size, the correct scale is
+	 * calculated using the maximum height and width. After scaling, the image is transferred to the response.
+	 * 
 	 * @param response
+	 *          The response, for transferring the scaled image to the view.
 	 * @param file
-	 * @param thumbHeight
+	 *          The file object, which includes the original image
+	 * @param maxHeight
+	 *          The maximum height of the thumbnail
 	 * @param maxWidth
+	 *          The maximum width of the thumbnail
 	 * @throws IOException
 	 */
-	public void buildThumbNailAndSetToResponse(HttpServletResponse response, FileDTO file, final int thumbHeight, final int maxWidth)
+	public void buildThumbNailAndSetToResponse(final HttpServletResponse response, final FileDTO file, final int maxHeight, final int maxWidth)
 	    throws IOException {
 		if (file.getContentType().toLowerCase().contains("image") && file.getContent() != null && !file.getContentType().toLowerCase().contains("icon")) {
+			log.trace("Entering buildThumbNailAndSetToResponse for file[name: {}; type: {}] to [X: {};Y: {}]", () -> file.getFileName(),
+			    () -> file.getContentType(), () -> maxWidth, () -> maxHeight);
 			OutputStream sos = response.getOutputStream();
 			BufferedImage bImage = ImageIO.read(new ByteArrayInputStream(file.getContent()));
 			int scale = 1;
-			if (bImage.getHeight() > thumbHeight)
-				scale = bImage.getHeight() / thumbHeight;
+			if (bImage.getHeight() > maxHeight)
+				scale = bImage.getHeight() / maxHeight;
 			if (bImage.getWidth() / scale > maxWidth)
 				scale = bImage.getWidth() / maxWidth;
 			if (scale > 0) {
@@ -111,10 +156,31 @@ public class FileUtil {
 				ImageIO.write(bf, "jpg", sos);
 				sos.flush();
 			}
+			log.trace("Leaving buildThumbNailAndSetToResponse");
 			sos.close();
 		}
 	}
 
+	/**
+	 * This function creates a new FileDTO form an uploaded MultiPartFile. All checksums are generated by the passed MultiPartFile and the upload date
+	 * is set to LocalDateTime.now().
+	 * 
+	 * @param projectID
+	 *          Project identifier
+	 * @param studyID
+	 *          Study identifier
+	 * @param recordID
+	 *          Record identifier
+	 * @param version
+	 *          Version identifier
+	 * @param userID
+	 *          User identifier (file creator)
+	 * @param mpf
+	 *          Uploaded file
+	 * @return The created FileDTO
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 */
 	public FileDTO buildFileDTO(final long projectID, final long studyID, final long recordID, final long version, final long userID,
 	    final MultipartFile mpf) throws IOException, NoSuchAlgorithmException {
 		FileDTO file = (FileDTO) applicationContext.getBean("FileDTO");
@@ -131,8 +197,20 @@ public class FileUtil {
 		return file;
 	}
 
+	/**
+	 * This function saves a file to the file system. At the moment, it is only be used from validateSPSSFile function of the ImportService, because the
+	 * SPSS files which are created by this function have to be saved temporary onto the file system.
+	 * 
+	 * @param file
+	 *          The file, which has to be saved
+	 * @param tmpDir
+	 *          True, if the file should have saved into the temporary directory, otherwise the directory and sub-directory name is created from the
+	 *          given identifier
+	 * @return A string, including the storage path and the file name
+	 */
 	public String saveFile(final FileDTO file, final boolean tmpDir) {
 		log.trace("Entering saveFile(on FileSystem) for file [name: {}] and Project [id: {}]", () -> file.getFileName(), () -> file.getProjectId());
+		String ret = null;
 		List<String> subfolders = new ArrayList<String>();
 		if (!tmpDir) {
 			if (file.getProjectId() > 0) {
@@ -148,42 +226,40 @@ public class FileUtil {
 				}
 			}
 		} else {
-			subfolders.add("tempDir");
+			subfolders.add(env.getProperty("folder.temp.dir"));
 		}
 		String dir = setFolderPath(subfolders.stream().toArray(String[]::new));
 		String randomizedFileName = UUID.randomUUID().toString();
-		if (dir == null || dir.isEmpty())
-			return null;
-		try {
-			Files.createDirectories(Paths.get(dir));
-			BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new File(dir + randomizedFileName)));
-			buffStream.write(file.getContent());
-			buffStream.close();
-		} catch (IOException e) {
-			log.error("ERROR: Saving file on local filesystem aborted and null returned! Exception: {}", () -> e);
-			return null;
-		}
-		return dir + randomizedFileName;
+		if (dir != null && !dir.isEmpty())
+			try {
+				Files.createDirectories(Paths.get(dir));
+				BufferedOutputStream buffStream = new BufferedOutputStream(new FileOutputStream(new File(dir + randomizedFileName)));
+				buffStream.write(file.getContent());
+				buffStream.close();
+				ret = dir + randomizedFileName;
+			} catch (IOException e) {
+				log.error("ERROR: Saving file on local filesystem aborted and null returned! Exception: {}", () -> e);
+			}
+		log.trace("Leaving saveFile(on FileSystem) for file [name: {}] and Project [id: {}]", () -> file.getFileName(), () -> file.getProjectId());
+		return ret;
 	}
 
-	public void setFileBytes(final FileDTO file) {
-		try {
-			file.setContent(Files.readAllBytes(Paths.get(file.getFilePath())));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block NoSuchFileException abfangen!!!
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * This function set the entire directory path for the passed varargs, including root directory and sub-directories.
+	 * 
+	 * @param args
+	 *          folder names as varargs
+	 * @return Complete directory path
+	 */
 	public String setFolderPath(final String... args) {
 		StringBuffer ret = new StringBuffer();
 		if (OS.contains("win")) {
-			ret.append("C:\\DataWiz\\");
+			ret.append(env.getProperty("folder.root.windows"));
 			for (String s : args) {
 				ret.append(s + "\\");
 			}
 		} else if (OS.contains("mac") || OS.contains("nix") || OS.contains("nux") || OS.contains("aix") || OS.contains("sunos")) {
-			ret.append("/DataWiz/");
+			ret.append(env.getProperty("folder.root.unix"));
 			for (String s : args) {
 				ret.append(s + "/");
 			}
@@ -193,16 +269,24 @@ public class FileUtil {
 		return ret.toString();
 	}
 
+	/**
+	 * This function tries to delete a file and the parent folder (if empty).
+	 * 
+	 * @param path
+	 *          Path to the file
+	 * @return true is file was deleted, otherwise false
+	 */
 	public boolean deleteFile(final Path path) {
+		boolean ret = false;
 		try {
 			Files.delete(path);
+			ret = true;
 		} catch (NoSuchFileException x) {
 			log.warn("NoSuchFileException: no such file or directory path: {}", () -> path);
 		} catch (DirectoryNotEmptyException x) {
 			log.warn("DirectoryNotEmptyException path: {}", () -> path, () -> x);
 		} catch (IOException x) {
-			// File permission problems are caught here.
-			log.warn("IOException during file delete Exception: {}", () -> x);
+			log.warn("IOException during deleteFile; Exception: {}", () -> x);
 		}
 		try {
 			DirectoryStream<Path> ds = Files.newDirectoryStream(path.getParent());
@@ -210,12 +294,19 @@ public class FileUtil {
 				Files.deleteIfExists(path.getParent());
 			ds.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			log.warn("IOException during deleteFile; Exception: {}", () -> e);
 			e.printStackTrace();
 		}
-		return true;
+		return ret;
 	}
 
+	/**
+	 * This function deletes files and folders recursively.
+	 * 
+	 * @param path
+	 *          Path to the file
+	 * @return true is folder was deleted, otherwise false
+	 */
 	public boolean deleteFolderRecursive(String path) {
 		try {
 			Files.walkFileTree(Paths.get(path), new SimpleFileVisitor<Path>() {
@@ -230,11 +321,9 @@ public class FileUtil {
 					Files.delete(dir);
 					return FileVisitResult.CONTINUE;
 				}
-
 			});
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.warn("IOException during deleteFolderRecursive; Exception: {}", () -> e);
 			return false;
 		}
 		return true;

@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -96,6 +97,7 @@ import de.zpid.spss.util.SPSSVarTypes;
  *          TODO Descriptive statistics for date and string variables
  */
 @Component
+@Scope("singleton")
 public class ITextUtil {
 
 	private static Logger log = LogManager.getLogger(ITextUtil.class);
