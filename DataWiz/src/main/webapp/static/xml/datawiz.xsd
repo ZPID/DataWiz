@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" targetNamespace="dw" vc:minVersion="1.1" version="1.0" xmlns="dw"
+    xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:annotation>
+        <xs:appinfo>DataWiz</xs:appinfo>
+        <xs:documentation xml:lang="en"> This Schema defines the Project and DMP metadata schema of DataWiz (datawiz.de)</xs:documentation>
+    </xs:annotation>
+    <xs:element name="codebook">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="1" minOccurs="0" name="projectDoc" type="projectMeta_template"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="dmp" type="dmp_template"/>
+                <xs:element maxOccurs="1" minOccurs="0" name="otherMat">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element maxOccurs="unbounded" minOccurs="0" name="file" type="file_template"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="created" type="xs:dateTime" use="required"/>
+            <xs:attribute name="createdBy" type="xs:string" use="required"/>
+            <xs:attribute name="creator" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <!-- template for project meta data -->
+    <xs:complexType name="projectMeta_template">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="1" name="title" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="identifier" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="scope" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="projectAims" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="funding">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="funder" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="grantNumber" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="principalInvestigator" type="researcher_template"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="researchers">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="researcher" type="researcher_template"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for dmp meta data -->
+    <xs:complexType name="dmp_template">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="administration" type="dmp_administration"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="researchData" type="dmp_researchdata"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="metaData" type="dmp_metadata"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="sharing" type="dmp_sharing"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="infrastructure" type="dmp_infrastructure"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="organization" type="dmp_organization"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="ethical" type="dmp_ethical"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="costs" type="dmp_costs"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for dmp administration data -->
+    <xs:complexType name="dmp_administration">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="duration" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="partner" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="dmpAims" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for dmp researchdata -->
+    <xs:complexType name="dmp_researchdata">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="existingData">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="dataReuse" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="dataCitation" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="relevance" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="integration" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="researchMethods">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="method" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="reproducibility" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="dataColl">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="collModes">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="unbounded" minOccurs="0" name="collMode" type="xs:string"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element maxOccurs="1" minOccurs="0" name="timeMeth" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="quality">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="collectorTraining" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="multipleMeasures" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="other" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="fileFormat" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="storageReasons">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="workingCopy" type="yesNo_enum"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="goodScientific" type="yesNo_enum"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="reproducibility" type="yesNo_enum"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="obligations" type="yesNo_enum"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="bestPractice" type="yesNo_enum"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="dataSelection">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="dataSelectionPresent" type="yesNo_enum"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="selectionTime" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="selectionProcedures" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="storageDuration" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="deletion" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for dmp metadata-->
+    <xs:complexType name="dmp_metadata">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="purposes">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="purpose" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="description" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="framework" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="generation" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="monitor" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="format" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute name="label" type="xs:string"/>
+    </xs:complexType>
+    <!-- template for dmp sharing data -->
+    <xs:complexType name="dmp_sharing">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="obligation" type="yesNo_enum"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="expectedUsage" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="publStrategy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="strategy" type="xs:string"/>
+                        <xs:choice>
+                            <xs:element maxOccurs="1" minOccurs="0" name="noAccessReason"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="onDemand">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="accessReasonAuthor" type="xs:string"/>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="searchableData" type="xs:string"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element maxOccurs="1" minOccurs="0" name="deposit">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="depositName" type="xs:string"/>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="searchableData" type="xs:string"/>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="usedPID" type="xs:string"/>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="transferTime" type="xs:string"/>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="sensitiveData" type="xs:string"/>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="access">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element maxOccurs="1" minOccurs="0" name="embargo" type="xs:string"/>
+                                                    <xs:element maxOccurs="1" minOccurs="0" name="restriction" type="xs:string"/>
+                                                    <xs:element maxOccurs="1" minOccurs="0" name="accessCosts" type="yesNo_enum"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element maxOccurs="1" minOccurs="0" name="responsibilities">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element maxOccurs="1" minOccurs="0" name="clarifiedRights" type="yesNo_enum"/>
+                                                    <xs:element maxOccurs="1" minOccurs="0" name="acquisitionAgreement" type="yesNo_enum"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:choice>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for dmp infrastructure data -->
+    <xs:complexType name="dmp_infrastructure">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="responsible" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="storageLocation" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="backups" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="transfer" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="expectedSize" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="technicalRequirements" type="present_desc"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="successionPlan" type="present_desc"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for dmp organization data -->
+    <xs:complexType name="dmp_organization">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="nationalFramework">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="present" type="xs:string"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="desc" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="responsible" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="contributor" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="workPlan">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="contributions">
+                            <xs:complexType>
+                                <xs:sequence>
+                                    <xs:element maxOccurs="1" minOccurs="0" name="informed" type="yesNo_enum"/>
+                                    <xs:element maxOccurs="1" minOccurs="0" name="defined" type="yesNo_enum"/>
+                                    <xs:element maxOccurs="1" minOccurs="0" name="desc" type="xs:string"/>
+                                    <xs:element maxOccurs="1" minOccurs="0" name="givenConsent" type="yesNo_enum"/>
+                                </xs:sequence>
+                            </xs:complexType>
+                        </xs:element>
+                        <xs:element maxOccurs="1" minOccurs="0" name="workflow" type="described_desc"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="staff" type="described_desc"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="adherence" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="policies" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for ethical data -->
+    <xs:complexType name="dmp_ethical">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="persData">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="persDataColl" type="yesNo_enum"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="persDataRequ" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="consentObtained">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="present" type="yesNo_enum"/>
+                        <xs:choice>
+                            <xs:element maxOccurs="1" minOccurs="0" name="desc" type="xs:string"/>
+                            <xs:element maxOccurs="1" minOccurs="0" name="sharingConsidered" type="yesNo_enum"/>
+                        </xs:choice>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element maxOccurs="1" minOccurs="0" name="irb" type="present_desc"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="otherSensitiveData" type="present_desc"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="copyright">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="1" minOccurs="0" name="ownCopyrights" type="present_desc"/>
+                        <xs:element maxOccurs="1" minOccurs="0" name="thirdPartyRights" type="present_desc"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for costs data -->
+    <xs:complexType name="dmp_costs">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="costing" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="costingDescr" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="costAssumption" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for researcher data -->
+    <xs:complexType name="researcher_template">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="title" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="orcid" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="firstName" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="lastName" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="institute" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="department" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- enum template for type yes/no select fields -->
+    <xs:simpleType name="yesNo_enum">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="yes"/>
+            <xs:enumeration value="no"/>
+            <xs:enumeration value="ja"/>
+            <xs:enumeration value="nein"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- template for complex fields which need a description (present tag)-->
+    <xs:complexType name="present_desc">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="present" type="yesNo_enum"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="desc" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for complex fields which need a description (descriped tag)-->
+    <xs:complexType name="described_desc">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="described" type="yesNo_enum"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="desc" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- template for file meta data -->
+    <xs:complexType name="file_template">
+        <xs:sequence>
+            <xs:element maxOccurs="1" minOccurs="0" name="fileName" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="fileSize" type="xs:long"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="fileContentType" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="fileDescription" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="md5" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="sha1" type="xs:string"/>
+            <xs:element maxOccurs="1" minOccurs="0" name="sha256" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
