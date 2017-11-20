@@ -1,7 +1,6 @@
 package de.zpid.datawiz.service;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -11,9 +10,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -21,6 +20,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
+import org.dom4j.DocumentException;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +57,7 @@ import de.zpid.datawiz.enumeration.MinioResult;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ExportProjectForm;
+import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.ConsistencyCheckUtil;
 import de.zpid.datawiz.util.DDIUtil;
@@ -199,34 +200,45 @@ public class ExportService {
 		List<Entry<String, byte[]>> files = new ArrayList<>();
 		ProjectDTO projectDB = projectDAO.findById(pid.get());
 		if (projectDB != null) {
-			ProjectDTO project;
-			DmpDTO dmpDB = null;
 			List<FileDTO> pFiles = null;
 			List<UserDTO> pUploader = new ArrayList<>();
-			dmpDB = dmpDAO.findByID(projectDB);
-			if (dmpDB != null && dmpDB.getId() > 0) {
-				dmpDB.setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.DATATYPE, false));
-				dmpDB.setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.COLLECTIONMODE, false));
-				dmpDB.setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.METAPORPOSE, false));
-			}
+			ProjectForm pForm = (ProjectForm) applicationContext.getBean("ProjectForm");
 			if (exportForm.isExportMetaData() || exportForm.isExportDMP() || exportForm.isExportProjectMaterial()) {
 				if (exportForm.isExportMetaData()) {
-					project = projectDB;
+					pForm.setProject(projectDB);
+					pForm.setContributors(contributorDAO.findByProject(projectDB, false, false));
 				} else {
-					project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
+					ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
 					project.setId(projectDB.getId());
 					project.setTitle(projectDB.getTitle());
+					project.setDescription(projectDB.getDescription());
+					project.setFunding(projectDB.getFunding());
+					pForm.setProject(project);
 				}
 				if (exportForm.isExportProjectMaterial()) {
-					pFiles = fileDAO.findProjectMaterialFiles(project);
+					pFiles = fileDAO.findProjectMaterialFiles(projectDB);
 					if (pFiles != null && pFiles.size() > 0) {
 						setAdditionalFilestoExportList(files, pFiles, FILES_PROJECT_FOLDER);
+						pForm.setFiles(pFiles);
 						for (FileDTO file : pFiles) {
 							pUploader.add(userDAO.findById(file.getUserId()));
 						}
 					}
 				}
-				Document pdoc = ddi.createProjectDocument(project, exportForm.isExportDMP() ? dmpDB : null, pFiles, pUploader);
+				pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(projectDB));
+				if (exportForm.isExportDMP()) {
+					DmpDTO dmpDB = dmpDAO.findByID(projectDB);
+					if (dmpDB != null && dmpDB.getId() > 0) {
+						dmpDB.setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.DATATYPE, false));
+						dmpDB.setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.COLLECTIONMODE, false));
+						dmpDB.setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.METAPORPOSE, false));
+						pForm.setDataTypes(formTypeDAO.findAllByType(false, DWFieldTypes.DATATYPE));
+						pForm.setCollectionModes(formTypeDAO.findAllByType(false, DWFieldTypes.COLLECTIONMODE));
+						pForm.setMetaPurposes(formTypeDAO.findAllByType(false, DWFieldTypes.METAPORPOSE));
+					}
+					pForm.setDmp(dmpDB);
+				}
+				Document pdoc = ddi.createProjectDocument(pForm, pFiles, pUploader);
 				if (pdoc != null)
 					files.add(new SimpleEntry<String, byte[]>(PROJECT_FILE_NAME, createByteArrayFromXML(pdoc)));
 				else {
@@ -781,13 +793,16 @@ public class ExportService {
 
 	/**
 	 * @param doc
+	 * @throws DocumentException
+	 * @throws IOException
+	 *           TODO
 	 */
 	private byte[] createByteArrayFromXML(Document doc) {
 		try {
-			StringWriter sw = new StringWriter();
-			XMLWriter writer = new XMLWriter(sw, OutputFormat.createPrettyPrint());
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			XMLWriter writer = new XMLWriter(baos, OutputFormat.createPrettyPrint());
 			writer.write(doc);
-			return sw.toString().getBytes();
+			return baos.toString().getBytes();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

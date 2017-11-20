@@ -1,7 +1,7 @@
 package de.zpid.datawiz.util;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.time.LocalDateTime;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -28,6 +28,7 @@ import de.zpid.datawiz.dto.StudyConstructDTO;
 import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
@@ -39,14 +40,14 @@ public class DDIUtil {
 
 	@Autowired
 	protected MessageSource messageSource;
-
 	private static Logger log = LogManager.getLogger(DDIUtil.class);
-	private final Namespace ddi = new Namespace("ddi", "ddi:codebook:2_5");
-	private final Namespace dwz = new Namespace("dw", null);
-	private final Namespace xmlns = new Namespace("", "ddi:codebook:2_5");
+	private final Namespace xmlns_ddi = new Namespace("", "ddi:codebook:2_5");
+	private final Namespace xmlns_dw = new Namespace("", "dw:codebook:1_0");
 	private final Namespace xsi = new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	private final String xsi_schemaLocation = "ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd";
-	private final String version = "2.5";
+	private final String xsi_schemaLocation_ddi = "ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd";
+	// TODO FIXE URL!!!
+	private final String xsi_schemaLocation_dw = "dw:codebook:1_0 http://localhost:8080/DataWiz/static/xml/datawiz.xsd";
+	private final String version_ddi = "2.5";
 
 	/**
 	 * Create document for project, dmp and additional project material
@@ -56,21 +57,18 @@ public class DDIUtil {
 	 * @param pFiles
 	 * @return
 	 */
-	public Document createProjectDocument(final ProjectDTO project, final DmpDTO dmp, final List<FileDTO> pFiles, final List<UserDTO> cUploader) {
-		log.trace("Entering createProjectDocument for project [id: {}]", () -> project.getId());
+	public Document createProjectDocument(final ProjectForm pForm, final List<FileDTO> pFiles, final List<UserDTO> cUploader) {
+		log.trace("Entering createProjectDocument for project [id: {}]", () -> pForm.getProject().getId());
 		Document doc = createDoc();
-		Element root = addAndReturnRoot(doc, false);
+		Element root = addAndReturnRoot(doc, false, true);
 		try {
-			if (dmp != null)
-				exportDmp(project, dmp, root.addElement(new QName("dmp", this.dwz)));
-			if (pFiles != null)
-				createOtherMatDDI(pFiles, cUploader, root.addElement(new QName("otherMat", ddi)), "study", Locale.ENGLISH);
+			createProjectAndDMPDocument(pForm, root, Locale.ENGLISH);
 		} catch (Exception e) {
 			// TODO
 			log.error("ExportError: ", () -> e);
 			return null;
 		}
-		log.trace("Leaving createProjectDocument for project [id: {}] without Errors", () -> project.getId());
+		log.trace("Leaving createProjectDocument for project [id: {}] without Errors", () -> pForm.getProject().getId());
 		return doc;
 	}
 
@@ -85,7 +83,7 @@ public class DDIUtil {
 	public Document createStudyDocument(final StudyForm sForm, final List<FileDTO> sFiles, final List<UserDTO> cUploader, final UserDTO user) {
 		log.trace("Entering createStudyDocument for project [id: {}], study [id: {}]", () -> sForm.getProject().getId(), () -> sForm.getStudy().getId());
 		Document doc = createDoc();
-		Element root = addAndReturnRoot(doc, true);
+		Element root = addAndReturnRoot(doc, true, false);
 		try {
 			createStudyDDI(sForm, user, root, Locale.ENGLISH);
 			if (sFiles != null)
@@ -111,7 +109,7 @@ public class DDIUtil {
 	public Document createRecordDocument(final StudyForm sForm, final FileDTO fileHash, final UserDTO user) {
 		log.trace("Entering createRecordDocument for record [id: {}]", () -> sForm.getRecord().getId());
 		Document doc = createDoc();
-		Element root = addAndReturnRoot(doc, true);
+		Element root = addAndReturnRoot(doc, true, false);
 		try {
 			createCodeBookDDI(sForm, fileHash, root, user, Locale.ENGLISH);
 		} catch (Exception e) {
@@ -124,147 +122,292 @@ public class DDIUtil {
 	}
 
 	/**
-	 * This function inserts the dmp meta data into the referenced dmpElement
+	 * TODO locale listen!!!!
 	 * 
-	 * @param project
-	 * @param dmp
+	 * @param pForm
 	 * @param dmpElement
 	 * @throws Exception
 	 */
-	private void exportDmp(final ProjectDTO project, final DmpDTO dmp, final Element dmpElement) throws Exception {
+	private void createProjectAndDMPDocument(final ProjectForm pForm, final Element dmpElement, final Locale locale) throws Exception {
 		log.trace("Entering exportDmp(ProjectDTO project, DmpDTO dmp, Element dmpElement)");
-		Element admin = dmpElement.addElement(new QName("administration", this.dwz));
-		admin.addElement(new QName("projectname", this.dwz)).addText(project.getTitle());
-		admin.addElement(new QName("IDNo", this.dwz)).addText(String.valueOf(dmp.getId()));
-		Element aims = admin.addElement(new QName("aims", this.dwz));
-		aims.addElement(new QName("proj", this.dwz)).addText(project.getDescription());
-		aims.addElement(new QName("plan", this.dwz)).addText(dmp.getPlanAims());
-		admin.addElement(new QName("sponsors", this.dwz)).addText(project.getFunding());
-		admin.addElement(new QName("duration", this.dwz)).addText(dmp.getDuration());
-		admin.addElement(new QName("partners", this.dwz)).addText(dmp.getOrganizations());
-		admin.addElement(new QName("leader", this.dwz));
-		Element rsrch = dmpElement.addElement(new QName("research", this.dwz));
-		Element exdat = rsrch.addElement(new QName("existingData", this.dwz));
-		exdat.addElement(new QName("select", this.dwz)).addText(dmp.getExistingData());
-		exdat.addElement(new QName("optional", this.dwz)).addText(dmp.getExistingDataRelevance());
-		exdat.addElement(new QName("optional", this.dwz)).addText(dmp.getExistingDataIntegration());
-		exdat.addElement(new QName("optional", this.dwz)).addText(dmp.getDataCitation());
-		Element usdat = rsrch.addElement(new QName("usedData", this.dwz));
-		usdat.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.getUsedDataTypes()));
-		usdat.addElement(new QName("optional", this.dwz)).addText(dmp.getOtherDataTypes());
-		rsrch.addElement(new QName("reprod", this.dwz)).addText(dmp.getDataReproducibility());
-		Element collm = rsrch.addElement(new QName("collectionMode", this.dwz));
-		Element cmipr = collm.addElement(new QName("present", this.dwz));
-		cmipr.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.getUsedCollectionModes())); // filter
-		cmipr.addElement(new QName("optional", this.dwz)).addText(dmp.getOtherCMIP());
-		Element cminp = collm.addElement(new QName("notPresent", this.dwz));
-		cminp.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.getUsedCollectionModes())); // filter
-		cminp.addElement(new QName("optional", this.dwz)).addText(dmp.getOtherCMINP());
-		rsrch.addElement(new QName("design", this.dwz)).addElement(new QName("select", this.dwz)).addText(dmp.getMeasOccasions());
-		Element quali = rsrch.addElement(new QName("quality", this.dwz));
-		quali.addElement(new QName("assurance", this.dwz));
-		quali.addElement(new QName("reliability", this.dwz)).addText(dmp.getReliabilityTraining());
-		quali.addElement(new QName("multiple", this.dwz)).addText(dmp.getMultipleMeasurements());
-		quali.addElement(new QName("other", this.dwz)).addText(dmp.getQualitityOther());
-		rsrch.addElement(new QName("fileFormat", this.dwz)).addText(dmp.getFileFormat());
-		Element storg = rsrch.addElement(new QName("storage", this.dwz));
-		storg.addElement(new QName("workingCopy", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isWorkingCopy()));
-		storg.addElement(new QName("goodScientific", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isGoodScientific()));
-		storg.addElement(new QName("subsequentUse", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isSubsequentUse()));
-		storg.addElement(new QName("requirements", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isRequirements()));
-		storg.addElement(new QName("documentation", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isDocumentation()));
-		Element slctn = rsrch.addElement(new QName("selection", this.dwz));
-		slctn.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isDataSelection()));
-		slctn.addElement(new QName("optional", this.dwz)).addText(dmp.getSelectionTime());
-		slctn.addElement(new QName("optional", this.dwz)).addText(dmp.getSelectionResp());
-		rsrch.addElement(new QName("duration", this.dwz)).addText(dmp.getDuration());
-		rsrch.addElement(new QName("delete", this.dwz)).addText(dmp.getDeleteProcedure());
-		Element medat = dmpElement.addElement(new QName("metadata", this.dwz));
-		medat.addElement(new QName("purpose", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.getSelectedMetaPurposes()));
-		medat.addElement(new QName("description", this.dwz)).addText(dmp.getMetaDescription());
-		medat.addElement(new QName("framework", this.dwz)).addText(dmp.getMetaFramework());
-		medat.addElement(new QName("generation", this.dwz)).addText(dmp.getMetaGeneration());
-		medat.addElement(new QName("monitor", this.dwz)).addText(dmp.getMetaMonitor());
-		medat.addElement(new QName("format", this.dwz)).addText(dmp.getMetaFormat());
-		Element shrng = dmpElement.addElement(new QName("sharing", this.dwz));
-		shrng.addElement(new QName("obligation", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isReleaseObligation()));
-		shrng.addElement(new QName("expectedUsage", this.dwz)).addText(dmp.getExpectedUsage());
-		Element pubst = shrng.addElement(new QName("publicStrategy", this.dwz));
-		pubst.addElement(new QName("select", this.dwz)).addText(dmp.getPublStrategy());
-		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getDepositName());
-		pubst.addElement(new QName("searchableData", this.dwz)).addElement(new QName("select", this.dwz)).addText(dmp.getSearchableData());
-		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getTransferTime());
-		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getSensitiveData());
-		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getInitialUsage());
-		pubst.addElement(new QName("optional", this.dwz)).addText(dmp.getUsageRestriction());
-		Element accos = pubst.addElement(new QName("accessCosts", this.dwz));
-		accos.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isAccessCosts()));
-		// accos.addElement(new QName("optional", this.dwz)).addText(dmp.getAccessCostsTxt());
-		pubst.addElement(new QName("clarifiedRights", this.dwz)).addElement(new QName("select", this.dwz))
-		    .addText(String.valueOf(dmp.isClarifiedRights()));
-		pubst.addElement(new QName("acquisitionAgreement", this.dwz)).addElement(new QName("select", this.dwz))
-		    .addText(String.valueOf(dmp.isAcquisitionAgreement()));
-		Element uspid = pubst.addElement(new QName("usedPID", this.dwz));
-		uspid.addElement(new QName("select", this.dwz)).addText(dmp.getUsedPID());
-		uspid.addElement(new QName("optional", this.dwz)).addText(dmp.getUsedPIDTxt());
-		Element strct = dmpElement.addElement(new QName("structure", this.dwz));
-		strct.addElement(new QName("responsible", this.dwz)).addText(dmp.getStorageResponsible());
-		strct.addElement(new QName("places", this.dwz)).addText(dmp.getStoragePlaces());
-		strct.addElement(new QName("backups", this.dwz)).addText(dmp.getStorageBackups());
-		strct.addElement(new QName("transfer", this.dwz)).addText(dmp.getStorageTransfer());
-		strct.addElement(new QName("expectedSize", this.dwz)).addText(dmp.getStorageExpectedSize());
-		Element requi = strct.addElement(new QName("requirements", this.dwz));
-		requi.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isStorageRequirements()));
-		requi.addElement(new QName("optional", this.dwz)).addText(dmp.getStorageRequirementsTxt());
-		Element sccss = strct.addElement(new QName("succession", this.dwz));
-		sccss.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isStorageSuccession()));
-		sccss.addElement(new QName("optional", this.dwz)).addText(dmp.getStorageSuccessionTxt());
-		Element mngmt = dmpElement.addElement(new QName("management", this.dwz));
-		Element ntnly = mngmt.addElement(new QName("nationality", this.dwz));
-		ntnly.addElement(new QName("select", this.dwz)).addText(dmp.getFrameworkNationality());
-		ntnly.addElement(new QName("optional", this.dwz)).addText(dmp.getFrameworkNationalityTxt());
-		mngmt.addElement(new QName("responsible", this.dwz)).addText(dmp.getResponsibleUnit());
-		mngmt.addElement(new QName("institution", this.dwz)).addText(dmp.getInvolvedInstitutions());
-		Element invld = mngmt.addElement(new QName("involved", this.dwz));
-		invld.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isInvolvedInformed()));
-		Element inopt = invld.addElement(new QName("optional", this.dwz));
-		inopt.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isContributionsDefined()));
-		inopt.addElement(new QName("optional", this.dwz)).addText(dmp.getContributionsDefinedTxt());
-		invld.addElement(new QName("optional", this.dwz)).addText(String.valueOf(dmp.isGivenConsent()));
-		Element wrkfl = mngmt.addElement(new QName("workflow", this.dwz));
-		wrkfl.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isManagementWorkflow()));
-		wrkfl.addElement(new QName("optional", this.dwz)).addText(dmp.getManagementWorkflowTxt());
-		Element staff = mngmt.addElement(new QName("staff", this.dwz));
-		staff.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isStaffDescription()));
-		staff.addElement(new QName("optional", this.dwz)).addText(dmp.getStaffDescriptionTxt());
-		mngmt.addElement(new QName("funderReq", this.dwz)).addText(dmp.getFunderRequirements());
-		mngmt.addElement(new QName("adherence", this.dwz)).addText(dmp.getPlanningAdherence());
-		Element ethic = dmpElement.addElement(new QName("ethical", this.dwz));
-		Element prtct = ethic.addElement(new QName("protection", this.dwz));
-		prtct.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isDataProtection()));
-		prtct.addElement(new QName("optinal", this.dwz)).addText(dmp.getProtectionRequirements());
-		Element cnsnt = prtct.addElement(new QName("consent", this.dwz));
-		cnsnt.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isConsentObtained()));
-		cnsnt.addElement(new QName("optional", this.dwz)).addText(dmp.getConsentObtainedTxt());
-		cnsnt.addElement(new QName("optinal", this.dwz)).addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isSharingConsidered()));
-		Element irbel = ethic.addElement(new QName("irb", this.dwz));
-		irbel.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isIrbApproval()));
-		irbel.addElement(new QName("optional", this.dwz)).addText(dmp.getIrbApprovalTxt());
-		Element sensi = ethic.addElement(new QName("sensitive", this.dwz));
-		sensi.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isSensitiveDataIncluded()));
-		sensi.addElement(new QName("optional", this.dwz)).addText(dmp.getSensitiveDataIncludedTxt());
-		Element cprit = ethic.addElement(new QName("copyrights", this.dwz));
-		Element intnl = cprit.addElement(new QName("internal", this.dwz));
-		intnl.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isInternalCopyright()));
-		intnl.addElement(new QName("optional", this.dwz)).addText(dmp.getInternalCopyrightTxt());
-		Element extnl = cprit.addElement(new QName("external", this.dwz));
-		extnl.addElement(new QName("select", this.dwz)).addText(String.valueOf(dmp.isExternalCopyright()));
-		extnl.addElement(new QName("optional", this.dwz)).addText(dmp.getExternalCopyrightTxt());
-		Element costs = dmpElement.addElement(new QName("costs", this.dwz));
-		Element spcos = costs.addElement(new QName("specified", this.dwz));
-		spcos.addElement(new QName("select", this.dwz)).addText(dmp.getSpecificCosts());
-		spcos.addElement(new QName("optional", this.dwz)).addText(dmp.getSpecificCostsTxt());
-		costs.addElement(new QName("bearCost", this.dwz)).addText(dmp.getBearCost());
+		ProjectDTO project = pForm.getProject();
+		if (project != null) {
+			Element e1 = addAndReturnElement(dmpElement, "projectDoc", this.xmlns_dw);
+			addTextElement(e1, "title", null, project.getTitle());
+			addTextElement(e1, "identifier", null, project.getProjectIdent());
+			addTextElement(e1, "scope", null, project.getDescription());
+			Element e2;
+			if ((project.getFunding() != null && !project.getFunding().isEmpty())
+			    || (project.getGrantNumber() != null && !project.getGrantNumber().isEmpty())) {
+				e2 = addAndReturnElement(e1, "funding", null);
+				addTextElement(e2, "funder", null, project.getFunding());
+				addTextElement(e2, "grantNumber", null, project.getGrantNumber());
+			}
+			if (pForm.getPrimaryContributor() != null) {
+				e2 = addAndReturnElement(e1, "principalInvestigator", null);
+				addTextElement(e2, "title", null, pForm.getPrimaryContributor().getTitle());
+				addTextElement(e2, "orcid", null, pForm.getPrimaryContributor().getOrcid());
+				addTextElement(e2, "firstName", null, pForm.getPrimaryContributor().getFirstName());
+				addTextElement(e2, "lastName", null, pForm.getPrimaryContributor().getLastName());
+				addTextElement(e2, "institute", null, pForm.getPrimaryContributor().getInstitution());
+				addTextElement(e2, "department", null, pForm.getPrimaryContributor().getDepartment());
+			}
+			if (pForm.getContributors() != null && !pForm.getContributors().isEmpty()) {
+				Element e2_t = addAndReturnElement(e1, "researchers", null);
+				pForm.getContributors().forEach(contri -> {
+					Element e3 = addAndReturnElement(e2_t, "researcher", null);
+					addTextElement(e3, "title", null, contri.getTitle());
+					addTextElement(e3, "orcid", null, contri.getOrcid());
+					addTextElement(e3, "firstName", null, contri.getFirstName());
+					addTextElement(e3, "lastName", null, contri.getLastName());
+					addTextElement(e3, "institute", null, contri.getInstitution());
+					addTextElement(e3, "department", null, contri.getDepartment());
+				});
+			}
+		}
+		DmpDTO dmp = pForm.getDmp();
+		if (dmp != null) {
+			Element e1 = addAndReturnElement(dmpElement, "dmp", this.xmlns_dw);
+			Element e2 = addAndReturnElement(e1, "administration", null);
+			addTextElement(e2, "duration", null, dmp.getDuration());
+			addTextElement(e2, "partner", null, dmp.getOrganizations());
+			addTextElement(e2, "dmpAims", null, dmp.getPlanAims());
+			removeElementIfEmpty(e2);
+			e2 = addAndReturnElement(e1, "researchData", null);
+			Element e3 = addAndReturnElement(e2, "existingData", null);
+			if (dmp.getExistingData() != null && !dmp.getExistingData().isEmpty())
+				addTextElement(e3, "dataReuse", null, messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale));
+			addTextElement(e3, "dataCitation", null, dmp.getDataCitation());
+			addTextElement(e3, "relevance", null, dmp.getExistingDataRelevance());
+			addTextElement(e3, "integration", null, dmp.getExistingDataIntegration());
+			removeElementIfEmpty(e3);
+			if (dmp.getUsedDataTypes() != null && !dmp.getUsedDataTypes().isEmpty() && pForm.getDataTypes() != null) {
+				Element et = addAndReturnElement(e2, "researchMethods", null);
+				dmp.getUsedDataTypes().forEach(method -> {
+					if (method == 20) {
+						addTextElement(et, "method", null, dmp.getOtherDataTypes());
+					} else {
+						FormTypesDTO type = pForm.getDataTypes().parallelStream().filter(dt -> (dt.getId() == method)).findFirst().orElse(null);
+						if (type != null)
+							addTextElement(et, "method", null, type.getNameEN());
+					}
+				});
+			}
+			addTextElement(e2, "reproducibility", null, dmp.getDataReproducibility());
+			e3 = addAndReturnElement(e2, "dataColl", null);
+			if (dmp.getUsedCollectionModes() != null && !dmp.getUsedCollectionModes().isEmpty() && pForm.getCollectionModes() != null) {
+				Element et = addAndReturnElement(e3, "collModes", null);
+				dmp.getUsedCollectionModes().forEach(mode -> {
+					if (mode == 1) {
+						addTextElement(et, "collMode", null, dmp.getOtherCMIP());
+					} else if (mode == 2) {
+						addTextElement(et, "collMode", null, dmp.getOtherCMINP());
+					} else {
+						FormTypesDTO type = pForm.getCollectionModes().parallelStream().filter(dt -> (dt.getId() == mode)).findFirst().orElse(null);
+						if (type != null)
+							addTextElement(et, "collMode", null, type.getNameEN());
+					}
+				});
+			}
+			if (dmp.getMeasOccasions() != null && !dmp.getMeasOccasions().isEmpty())
+				addTextElement(e3, "timeMeth", null, messageSource.getMessage("dmp.edit.measOccasions." + dmp.getMeasOccasions(), null, locale));
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "quality", null);
+			addTextElement(e3, "collectorTraining", null, dmp.getReliabilityTraining());
+			addTextElement(e3, "multipleMeasures", null, dmp.getMultipleMeasurements());
+			addTextElement(e3, "other", null, dmp.getQualitityOther());
+			removeElementIfEmpty(e3);
+			addTextElement(e2, "fileFormat", null, dmp.getFileFormat());
+			e3 = addAndReturnElement(e2, "storageReasons", null);
+			addTextElement(e3, "workingCopy", null, dmp.isWorkingCopy());
+			addTextElement(e3, "goodScientific", null, dmp.isGoodScientific());
+			addTextElement(e3, "reproducibility", null, dmp.isSubsequentUse());
+			addTextElement(e3, "obligations", null, dmp.isRequirements());
+			addTextElement(e3, "bestPractice", null, dmp.isDocumentation());
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "dataSelection", null);
+			addTextElement(e3, "dataSelectionPresent", null, dmp.isDataSelection());
+			addTextElement(e3, "selectionTime", null, dmp.getSelectionTime());
+			addTextElement(e3, "selectionProcedures", null, dmp.getSelectionResp());
+			removeElementIfEmpty(e3);
+			addTextElement(e2, "storageDuration", null, dmp.getStorageDuration());
+			addTextElement(e2, "deletion", null, dmp.getDeleteProcedure());
+			removeElementIfEmpty(e2);
+			e2 = addAndReturnElement(e1, "metaData", null);
+			if (dmp.getSelectedMetaPurposes() != null && !dmp.getSelectedMetaPurposes().isEmpty() && pForm.getMetaPurposes() != null) {
+				Element et = addAndReturnElement(e2, "purposes", null);
+				dmp.getSelectedMetaPurposes().forEach(purpose -> {
+					FormTypesDTO type = pForm.getMetaPurposes().parallelStream().filter(dt -> (dt.getId() == purpose)).findFirst().orElse(null);
+					if (type != null)
+						addTextElement(et, "purpose", null, type.getNameEN());
+				});
+			}
+			addTextElement(e2, "description", null, dmp.getMetaDescription());
+			addTextElement(e2, "framework", null, dmp.getMetaFramework());
+			addTextElement(e2, "generation", null, dmp.getMetaGeneration());
+			addTextElement(e2, "monitor", null, dmp.getMetaMonitor());
+			addTextElement(e2, "format", null, dmp.getMetaFormat());
+			removeElementIfEmpty(e2);
+			e2 = addAndReturnElement(e1, "sharing", null);
+			addTextElement(e2, "obligation", null, dmp.isReleaseObligation());
+			addTextElement(e2, "expectedUsage", null, dmp.getExpectedUsage());
+			e3 = addAndReturnElement(e2, "publStrategy", null);
+			if (dmp.getPublStrategy() != null && !dmp.getPublStrategy().isEmpty()) {
+				addTextElement(e3, "strategy", null, messageSource.getMessage("dmp.edit.publStrategy." + dmp.getPublStrategy(), null, locale));
+				if (dmp.getPublStrategy() != null)
+					if (dmp.getPublStrategy().trim().equals("nopubl") && dmp.getNoAccessReason() != null && !dmp.getNoAccessReason().isEmpty()) {
+						addTextElement(e3, "noAccessReason", null, dmp.getNoAccessReason().equals("other") ? dmp.getNoAccessReasonOther()
+						    : messageSource.getMessage("dmp.edit.noAccessReason." + dmp.getNoAccessReason(), null, locale));
+					} else if (dmp.getPublStrategy().trim().equals("author")) {
+						Element e4 = addAndReturnElement(e3, "onDemand", null);
+						addTextElement(e4, "accessReasonAuthor", null, dmp.getAccessReasonAuthor());
+						addTextElement(e4, "searchableData", null, dmp.getSearchableData());
+						removeElementIfEmpty(e4);
+					} else if (dmp.getPublStrategy().trim().equals("repository")) {
+						Element e4 = addAndReturnElement(e3, "deposit", null);
+						addTextElement(e4, "depositName", null, dmp.getDepositName());
+						addTextElement(e4, "searchableData", null, dmp.getSearchableData());
+						if (dmp.getUsedPID() != null && !dmp.getUsedPID().isEmpty())
+							addTextElement(e4, "usedPID", null, dmp.getUsedPID().equals("other") ? dmp.getUsedPIDTxt()
+							    : messageSource.getMessage("dmp.edit.usedPID." + dmp.getUsedPID(), null, locale));
+						addTextElement(e4, "transferTime", null, dmp.getTransferTime());
+						addTextElement(e4, "sensitiveData", null, dmp.getSensitiveData());
+						Element e5 = addAndReturnElement(e4, "access", null);
+						addTextElement(e5, "embargo", null, dmp.getInitialUsage());
+						addTextElement(e5, "restriction", null, dmp.getUsageRestriction());
+						addTextElement(e5, "accessCosts", null, dmp.isAccessCosts());
+						removeElementIfEmpty(e5);
+						e5 = addAndReturnElement(e4, "responsibilities", null);
+						addTextElement(e5, "clarifiedRights", null, dmp.isClarifiedRights());
+						addTextElement(e5, "acquisitionAgreement", null, dmp.isAcquisitionAgreement());
+						removeElementIfEmpty(e4);
+					}
+				removeElementIfEmpty(e3);
+			}
+			removeElementIfEmpty(e2);
+			e2 = addAndReturnElement(e1, "infrastructure", null);
+			addTextElement(e2, "responsible", null, dmp.getStorageResponsible());
+			addTextElement(e2, "storageLocation", null, dmp.getStoragePlaces());
+			addTextElement(e2, "backups", null, dmp.getStorageBackups());
+			addTextElement(e2, "transfer", null, dmp.getStorageTransfer());
+			addTextElement(e2, "expectedSize", null, dmp.getStorageExpectedSize());
+			e3 = addAndReturnElement(e2, "technicalRequirements", null);
+			addTextElement(e3, "present", null, dmp.isStorageRequirements());
+			if (dmp.isStorageRequirements())
+				addTextElement(e3, "desc", null, dmp.getStorageRequirementsTxt());
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "successionPlan", null);
+			addTextElement(e3, "present", null, dmp.isStorageSuccession());
+			if (dmp.isStorageSuccession())
+				addTextElement(e3, "desc", null, dmp.getStorageSuccessionTxt());
+			removeElementIfEmpty(e3);
+			removeElementIfEmpty(e2);
+			e2 = addAndReturnElement(e1, "organization", null);
+			if (dmp.getFrameworkNationality() != null && !dmp.getFrameworkNationality().isEmpty()) {
+				e3 = addAndReturnElement(e2, "nationalFramework", null);
+				addTextElement(e3, "present", null, dmp.isStorageSuccession());
+				if (dmp.getFrameworkNationality().equals("international"))
+					addTextElement(e3, "desc", null, dmp.getFrameworkNationalityTxt());
+				removeElementIfEmpty(e3);
+			}
+			addTextElement(e2, "responsible", null, dmp.getResponsibleUnit());
+			addTextElement(e2, "contributor", null, dmp.getInvolvedInstitutions());
+			e3 = addAndReturnElement(e2, "workPlan", null);
+			Element e4 = addAndReturnElement(e3, "contributions", null);
+			addTextElement(e4, "informed", null, dmp.isInvolvedInformed());
+			if (dmp.isInvolvedInformed()) {
+				addTextElement(e4, "defined", null, dmp.isContributionsDefined());
+				if (dmp.isContributionsDefined()) {
+					addTextElement(e4, "desc", null, dmp.getContributionsDefinedTxt());
+					addTextElement(e4, "givenConsent", null, dmp.isGivenConsent());
+				}
+			}
+			removeElementIfEmpty(e4);
+			e4 = addAndReturnElement(e3, "workflow", null);
+			addTextElement(e4, "described", null, dmp.isManagementWorkflow());
+			if (dmp.isManagementWorkflow())
+				addTextElement(e4, "desc", null, dmp.getManagementWorkflowTxt());
+			removeElementIfEmpty(e4);
+			e4 = addAndReturnElement(e3, "staff", null);
+			addTextElement(e4, "described", null, dmp.isStaffDescription());
+			if (dmp.isStaffDescription())
+				addTextElement(e4, "desc", null, dmp.getStaffDescriptionTxt());
+			removeElementIfEmpty(e4);
+			addTextElement(e3, "adherence", null, dmp.getPlanningAdherence());
+			removeElementIfEmpty(e3);
+			addTextElement(e2, "policies", null, dmp.getFunderRequirements());
+			removeElementIfEmpty(e2);
+			e2 = addAndReturnElement(e1, "ethical", null);
+			e3 = addAndReturnElement(e2, "persData", null);
+			addTextElement(e3, "persDataColl", null, dmp.isDataProtection());
+			if (dmp.isDataProtection())
+				addTextElement(e3, "persDataRequ", null, dmp.getProtectionRequirements());
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "consentObtained", null);
+			addTextElement(e3, "present", null, dmp.isConsentObtained());
+			if (dmp.isConsentObtained()) {
+				addTextElement(e3, "sharingConsidered", null, dmp.isSharingConsidered());
+			} else {
+				addTextElement(e3, "desc", null, dmp.getConsentObtainedTxt());
+			}
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "irb", null);
+			addTextElement(e3, "present", null, dmp.isIrbApproval());
+			if (dmp.isIrbApproval())
+				addTextElement(e3, "desc", null, dmp.getIrbApprovalTxt());
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "otherSensitiveData", null);
+			addTextElement(e3, "present", null, dmp.isSensitiveDataIncluded());
+			if (dmp.isSensitiveDataIncluded())
+				addTextElement(e3, "desc", null, dmp.getSensitiveDataIncludedTxt());
+			removeElementIfEmpty(e3);
+			e3 = addAndReturnElement(e2, "copyright", null);
+			e4 = addAndReturnElement(e3, "ownCopyrights", null);
+			addTextElement(e4, "present", null, dmp.isInternalCopyright());
+			if (dmp.isInternalCopyright())
+				addTextElement(e4, "desc", null, dmp.getInternalCopyrightTxt());
+			removeElementIfEmpty(e4);
+			e4 = addAndReturnElement(e3, "thirdPartyRights", null);
+			addTextElement(e4, "present", null, dmp.isExternalCopyright());
+			if (dmp.isExternalCopyright())
+				addTextElement(e4, "desc", null, dmp.getExternalCopyrightTxt());
+			removeElementIfEmpty(e4);
+			removeElementIfEmpty(e3);
+			removeElementIfEmpty(e2);
+			if (dmp.getSpecificCosts() != null && !dmp.getSpecificCosts().isEmpty()) {
+				e2 = addAndReturnElement(e1, "costs", null);
+				addTextElement(e2, "costing", null, messageSource.getMessage("dmp.edit.specificCosts." + dmp.getSpecificCosts(), null, locale));
+				if (!dmp.getSpecificCosts().equals("no")) {
+					addTextElement(e2, "costingDescr", null, dmp.getSpecificCostsTxt());
+					addTextElement(e2, "costAssumption", null, dmp.getBearCost());
+				}
+				removeElementIfEmpty(e2);
+
+			}
+			removeElementIfEmpty(e1);
+		}
+		if (pForm.getFiles() != null && !pForm.getFiles().isEmpty()) {
+			Element e1 = addAndReturnElement(dmpElement, "otherMat", this.xmlns_dw);
+			pForm.getFiles().forEach(file -> {
+				Element e2 = addAndReturnElement(e1, "file", null);
+				addTextElement(e2, "name", null, file.getFileName());
+				addTextElement(e2, "size", null, file.getFileSize());
+				addTextElement(e2, "contentType", null, file.getContentType());
+				// TODO addTextElement(e2, "description", null, file.getDe); No Description at the moment!!!
+				addTextElement(e2, "uploadDate", null, file.getUploadDate());
+				addTextElement(e2, "md5", null, file.getMd5checksum());
+				addTextElement(e2, "sha1", null, file.getSha1Checksum());
+				addTextElement(e2, "sha256", null, file.getSha256Checksum());
+				removeElementIfEmpty(e2);
+			});
+			removeElementIfEmpty(e1);
+		}
+	}
+
+	private void removeElementIfEmpty(Element e) {
+		if (!e.hasContent()) {
+			e.detach();
+		}
 	}
 
 	/**
@@ -282,9 +425,9 @@ public class DDIUtil {
 			RecordDTO record = sForm.getRecord();
 			createDocDscr(messageSource.getMessage("export.ddi.rec.title", new Object[] { record.getRecordName() }, locale), null, null, user, root,
 			    locale);
-			createSharedStudyMeta(locale, sForm.getStudy(), addAndReturnElement(addAndReturnElement(root, "stdyDscr", this.xmlns), "citation", null));
+			createSharedStudyMeta(locale, sForm.getStudy(), addAndReturnElement(addAndReturnElement(root, "stdyDscr", this.xmlns_ddi), "citation", null));
 			if (record.getVersionId() > 0) {
-				Element fileDscr = addAndReturnElement(root, "fileDscr", this.xmlns);
+				Element fileDscr = addAndReturnElement(root, "fileDscr", this.xmlns_ddi);
 				Element fileTxt = addAndReturnElement(fileDscr, "fileTxt", null);
 				addTextElement(fileTxt, "fileName", null, record.getFileName());
 				Element fileCitation = addAndReturnElement(fileTxt, "fileCitation", null);
@@ -319,11 +462,11 @@ public class DDIUtil {
 				addAndReturnElement(fileTxt, "fileStrc", null).addAttribute("type", "rectangular");
 				addTextElement(fileTxt, "format", null, "comma-delimited");
 			} else {
-				addTextElement(addAndReturnElement(root, "fileDscr", this.xmlns), "notes", null,
+				addTextElement(addAndReturnElement(root, "fileDscr", this.xmlns_ddi), "notes", null,
 				    messageSource.getMessage("export.ddi.rec.noVers", null, locale));
 			}
 			if (record.getVariables() != null && !record.getVariables().isEmpty()) {
-				Element dataDscr = addAndReturnElement(root, "dataDscr", this.xmlns);
+				Element dataDscr = addAndReturnElement(root, "dataDscr", this.xmlns_ddi);
 				for (SPSSVarDTO variable : record.getVariables()) {
 					Element var = addAndReturnElement(dataDscr, "var", null);
 					var.addAttribute("name", variable.getName());
@@ -428,15 +571,15 @@ public class DDIUtil {
 	 */
 	private void createOtherMatDDI(final List<FileDTO> files, final List<UserDTO> cUploader, final Element root, final String lvl, final Locale locale)
 	    throws Exception {
-		Element otherMat_root = addAndReturnElement(root, "otherMat", this.xmlns);
+		Element otherMat_root = addAndReturnElement(root, "otherMat", this.xmlns_ddi);
 		otherMat_root.addAttribute("level", lvl);
 		for (FileDTO file : files) {
-			Element otherMat = addAndReturnElement(otherMat_root, "otherMat", this.xmlns);
+			Element otherMat = addAndReturnElement(otherMat_root, "otherMat", this.xmlns_ddi);
 			otherMat.addAttribute("level", "unknown");
 			if (file.getContentType() != null && !file.getContentType().isEmpty())
 				otherMat.addAttribute("type", file.getContentType());
 			addTextElement(otherMat, "labl", null, file.getFileName());
-			Element list = addAndReturnElement(addAndReturnElement(otherMat, "notes", this.xmlns), "list", null);
+			Element list = addAndReturnElement(addAndReturnElement(otherMat, "notes", this.xmlns_ddi), "list", null);
 			setListItems(list, messageSource.getMessage("export.ddi.otherMat.fileSize", null, locale), file.getFileSize());
 			setListItems(list, messageSource.getMessage("export.ddi.otherMat.uploadDate", null, locale), file.getUploadDate());
 			Element itm = addAndReturnElement(list, "itm", null);
@@ -473,7 +616,7 @@ public class DDIUtil {
 		// docDscr start
 		createDocDscr(study.getTitle(), study.getTransTitle(), study.getInternalID(), user, root, locale);
 		// stdyDscr start
-		Element stdyDscr = addAndReturnElement(root, "stdyDscr", this.xmlns);
+		Element stdyDscr = addAndReturnElement(root, "stdyDscr", this.xmlns_ddi);
 		Element citation = addAndReturnElement(stdyDscr, "citation", null);
 		createSharedStudyMeta(locale, study, citation);
 		Element prodStmt = addAndReturnElement(citation, "prodStmt", null);
@@ -886,7 +1029,7 @@ public class DDIUtil {
 	 */
 	private void createDocDscr(final String titl, final String parTitl, final String idno, final UserDTO user, final Element root,
 	    final Locale locale) {
-		Element docDscr = addAndReturnElement(root, "docDscr", this.xmlns);
+		Element docDscr = addAndReturnElement(root, "docDscr", this.xmlns_ddi);
 		Element citation = addAndReturnElement(docDscr, "citation", null);
 		Element titlStmt = addAndReturnElement(citation, "titlStmt", null);
 		addTextElement(titlStmt, "titl", null, titl);
@@ -907,6 +1050,7 @@ public class DDIUtil {
 	}
 
 	/**
+	 * TODO locale
 	 * 
 	 * @param parent
 	 * @param name
@@ -1000,14 +1144,21 @@ public class DDIUtil {
 	 * @param doc
 	 * @return
 	 */
-	private Element addAndReturnRoot(final Document doc, final Boolean isDDI) {
+	private Element addAndReturnRoot(final Document doc, final Boolean isDDI, final boolean isDW) {
 		log.trace("Entering addAndReturnRoot(Document doc)");
 		Element root = doc.addElement("codeBook");
 		if (isDDI) {
-			root.add(this.xmlns);
+			root.add(this.xmlns_ddi);
 			root.add(this.xsi);
-			root.addAttribute("xsi:schemaLocation", this.xsi_schemaLocation);
-			root.addAttribute("version", this.version);
+			root.addAttribute("xsi:schemaLocation", this.xsi_schemaLocation_ddi);
+			root.addAttribute("version", this.version_ddi);
+		} else if (isDW) {
+			root.add(this.xmlns_dw);
+			root.add(this.xsi);
+			root.addAttribute("xsi:schemaLocation", this.xsi_schemaLocation_dw);
+			root.addAttribute("created", LocalDateTime.now().toString());
+			root.addAttribute("createdBy", "test@test.de");
+			root.addAttribute("creator", "DataWiz");
 		}
 		return root;
 	}

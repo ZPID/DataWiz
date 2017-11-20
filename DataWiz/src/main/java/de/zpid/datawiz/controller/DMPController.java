@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -59,11 +60,23 @@ public class DMPController {
 	private FormTypesDAO formTypeDAO;
 	@Autowired
 	private DmpDAO dmpDAO;
+	@Autowired
+	private ClassPathXmlApplicationContext applicationContext;
 
 	public DMPController() {
 		super();
 		if (log.isEnabled(Level.INFO))
 			log.info("Loading DMPController for mapping /dmp");
+	}
+	
+	/**
+	 * Creates the project form.
+	 *
+	 * @return {@link ProjectForm}
+	 */
+	@ModelAttribute("ProjectForm")
+	private ProjectForm createProjectForm() {
+		return (ProjectForm) applicationContext.getBean("ProjectForm");
 	}
 
 	/**

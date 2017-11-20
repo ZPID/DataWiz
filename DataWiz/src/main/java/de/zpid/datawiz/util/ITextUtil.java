@@ -223,12 +223,14 @@ public class ITextUtil {
 		log.trace("Entering createRecordCoverSheet for record[id: {}; version: {}]", () -> record.getId(), () -> record.getVersionId());
 		try {
 			document.add(new Paragraph().setMarginTop(20).setHeight(50)
-			    .add(new Image(ImageDataFactory.create(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath())
-			        + env.getRequiredProperty("application.logo.url"))).setAutoScale(true))
+			    .add(new Image(ImageDataFactory
+			        .create(env.getRequiredProperty("application.url") + request.getContextPath() + env.getRequiredProperty("application.logo.url")))
+			            .setAutoScale(true))
 			    .setRelativePosition(0, 0, 0, 0));
 			document.add(new Paragraph().setHeight(50)
-			    .add(new Image(ImageDataFactory.create(request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath())
-			        + env.getRequiredProperty("application.logo.zpid"))).setAutoScale(true))
+			    .add(new Image(ImageDataFactory
+			        .create(env.getRequiredProperty("application.url") + request.getContextPath() + env.getRequiredProperty("application.logo.zpid")))
+			            .setAutoScale(true))
 			    .setTextAlignment(TextAlignment.RIGHT).setRelativePosition(0, 0, 0, 60));
 		} catch (MalformedURLException e) {
 			log.warn("WARN: createRecordCoverSheet error during loading cover sheet images - PDF was created without images! Exception: ", () -> e);
@@ -757,8 +759,9 @@ public class ITextUtil {
 	 */
 	private boolean checkIfValIsMissing(final String value, final SPSSMissing misstype, final String miss1, final String miss2, final String miss3) {
 		boolean isMissing = false;
-		log.trace("Entering checkIfValIsMissing for [value: {}; misstype: {}; miss1: {}; miss2: {}; miss3: {}]", () -> value, () -> misstype, () -> miss1,
-		    () -> miss2, () -> miss3);
+		// log.trace("Entering checkIfValIsMissing for [value: {}; misstype: {}; miss1: {}; miss2: {}; miss3: {}]", () -> value, () -> misstype, () ->
+		// miss1,
+		// () -> miss2, () -> miss3);
 		try {
 			Double val, min, max;
 			switch (misstype) {
@@ -792,7 +795,7 @@ public class ITextUtil {
 		} catch (Exception e) {
 
 		}
-		log.trace("Leaving checkIfValIsMissing with result: [ismissing: {}]", isMissing);
+		// log.trace("Leaving checkIfValIsMissing with result: [ismissing: {}]", isMissing);
 		return isMissing;
 	}
 }

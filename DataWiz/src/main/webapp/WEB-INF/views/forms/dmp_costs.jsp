@@ -22,16 +22,16 @@
       <sf:select class="form-control" path="dmp.specificCosts" id="selectspecificCosts"
         onchange="switchViewIfSelectedMulti('selectspecificCosts', 'reference,lifecycle,other');">
         <sf:option value="no">
-          <s:message code="dmp.edit.specificCosts.option0" />
+          <s:message code="dmp.edit.specificCosts.no" />
         </sf:option>
         <sf:option value="reference">
-          <s:message code="dmp.edit.specificCosts.option1" />
+          <s:message code="dmp.edit.specificCosts.reference" />
         </sf:option>
         <sf:option value="lifecycle">
-          <s:message code="dmp.edit.specificCosts.option2" />
+          <s:message code="dmp.edit.specificCosts.lifecycle" />
         </sf:option>
         <sf:option value="other">
-          <s:message code="dmp.edit.specificCosts.option3" />
+          <s:message code="dmp.edit.specificCosts.other" />
         </sf:option>
       </sf:select>
       <s:message code="dmp.edit.specificCosts.help" var="appresmess" />

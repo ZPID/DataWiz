@@ -11,6 +11,7 @@
       <div class="page-header">
         <c:choose>
           <c:when test="${empty ProjectForm.project.id}">
+            <c:set var="allowEdit" value="true" />
             <h4>
               <s:message code="dmp.create.headline" />
             </h4>
@@ -19,6 +20,18 @@
             </div>
           </c:when>
           <c:otherwise>
+            <c:set var="allowEdit" value="false" />
+            <c:choose>
+              <c:when
+                test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
+                        principal.user.hasRole('PROJECT_WRITER', ProjectForm.project.id, false) or 
+                        principal.user.hasRole('ADMIN')}">
+                <c:set var="allowEdit" value="true" />
+              </c:when>
+              <c:otherwise>
+                <input type="hidden" value="disabled" id="disProjectContent" />
+              </c:otherwise>
+            </c:choose>
             <h4>
               <s:message code="dmp.edit.headline" />
             </h4>
@@ -68,9 +81,11 @@
             <a href="<c:url value="/panel" />" class="btn btn-default btn-sm"><s:message code="back.to.panel" /></a>
           </div>
           <div class="col-xs-6 text-align-right">
-            <sf:button type="submit" class="btn btn-success btn-sm">
-              <s:message code="gen.submit" />
-            </sf:button>
+            <c:if test="${allowEdit}">
+              <sf:button type="submit" class="btn btn-success btn-sm">
+                <s:message code="gen.submit" />
+              </sf:button>
+            </c:if>
           </div>
         </div>
       </sf:form>

@@ -241,7 +241,7 @@
             <sf:option value="noPI">
               <s:message code="dmp.edit.usedPID.noPI" />
             </sf:option>
-            <sf:option value="DOI">
+            <sf:option value="doi">
               <s:message code="dmp.edit.usedPID.doi" />
             </sf:option>
             <sf:option value="other">

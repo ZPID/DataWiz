@@ -28,7 +28,8 @@ $tag_box = null;
 
 		    // loading DMP Content
 		    if (window.location.pathname.search("/dmp") > 0) {
-			    $("#dmpForm :input").prop("disabled", false);
+		    	$("#dmpForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
+			    //$("#dmpForm :input").prop("disabled", false);
 			    setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
 			    showorHideDMPContent();
 			    $("#dmpForm").trackChanges();
@@ -41,6 +42,7 @@ $tag_box = null;
 			    });
 		    } // loading Project Content without study!
 		    else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
+		    	$("#ProjectForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
 			    // startTagging();
 		    } // loading Study Content
 		    else if (window.location.pathname.search("/study") > 0
