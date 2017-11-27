@@ -32,17 +32,36 @@
                 <input type="hidden" value="disabled" id="disProjectContent" />
               </c:otherwise>
             </c:choose>
-            <h4>
-              <s:message code="dmp.edit.headline" />
-            </h4>            
-            <div><a href="<c:url value="/dmp/exportDMP/${ProjectForm.project.id}" />">Export</a></div>
+            <div class="row">
+              <div class="col-xs-4 col-sm-6">
+                <h4>
+                  <s:message code="dmp.edit.headline" />
+                </h4>
+              </div>
+              <div class="col-xs-8 col-sm-6 text-align-right">
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/BMBF/${ProjectForm.project.id}" />" target="_blank">BMBF</a>
+                </div>
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/H2020/${ProjectForm.project.id}" />" target="_blank">H2020</a>
+                </div>
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/DFG/${ProjectForm.project.id}" />" target="_blank">DFG</a>
+                </div>
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/PsychData/${ProjectForm.project.id}" />" target="_blank">PsychData</a>
+                </div>
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/PreReg/${ProjectForm.project.id}" />" target="_blank">Präregistrierung</a>
+                </div>
+              </div>
+            </div>
             <div>
               <s:message code="dmp.edit.info" />
             </div>
           </c:otherwise>
         </c:choose>
       </div>
-      
       <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
         <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.administrative" /></a></li>
         <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message code="dmp.submenu.research" /></a></li>

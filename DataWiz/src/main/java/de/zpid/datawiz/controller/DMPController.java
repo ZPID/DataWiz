@@ -66,7 +66,6 @@ public class DMPController {
 	@Autowired
 	private ClassPathXmlApplicationContext applicationContext;
 
-
 	public DMPController() {
 		super();
 		if (log.isEnabled(Level.INFO))
@@ -246,16 +245,14 @@ public class DMPController {
 	}
 
 	/**
-	 * 
+	 * TODO
 	 * @param pid
 	 * @param response
 	 */
-	@RequestMapping(value = { "", "/exportDMP/{pid}" }, method = RequestMethod.GET)
-	public void exportDMPODF(@PathVariable final Optional<Long> pid, final HttpServletResponse response) {
-
+	@RequestMapping(value = { "", "/exportDMP/{type}/{pid}" }, method = RequestMethod.GET)
+	public void exportDMPODF(@PathVariable final Optional<Long> pid, @PathVariable final Optional<String> type, final HttpServletResponse response) {
 		try {
-
-			byte[] content = projectService.createDMPExport(pid, Locale.GERMAN);
+			byte[] content = projectService.createDMPExport(pid, type, Locale.GERMAN);
 			response.setContentType("application/vnd.oasis.opendocument.text");
 			response.setHeader("Content-Disposition", "attachment; filename=\"testodf.odt\"");
 			response.setContentLength(content.length);

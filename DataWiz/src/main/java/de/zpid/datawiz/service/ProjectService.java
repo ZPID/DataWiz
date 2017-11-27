@@ -615,7 +615,18 @@ public class ProjectService {
 		}
 	}
 
-	public byte[] createDMPExport(final Optional<Long> pid, final Locale locale) throws Exception {
+	/**
+	 * TODO
+	 * @param pid
+	 * @param type
+	 * @param locale
+	 * @return
+	 * @throws Exception
+	 */
+	public byte[] createDMPExport(final Optional<Long> pid, final Optional<String> type, final Locale locale) throws Exception {
+		
+		
+		
 
 		ProjectForm pForm = createProjectForm();
 		pForm.setProject(projectDAO.findById(pid.get()));
@@ -624,7 +635,26 @@ public class ProjectService {
 		pForm.getDmp().setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.COLLECTIONMODE, false));
 		pForm.getDmp().setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.METAPORPOSE, false));
 		
-		byte[] content = odfUtil.createBMBFDoc(pForm, locale);
+		byte[] content = null;
+		switch (type.get()) {
+		case "BMBF":
+			content = odfUtil.createBMBFDoc(pForm, locale);
+			break;
+		case "DFG":
+			content = odfUtil.createDFGDoc(pForm, locale);
+			break;
+		case "H2020":
+			content = odfUtil.createH2020Doc(pForm, locale);
+			break;
+		case "PreReg":
+			content = odfUtil.createPreRegistrationDoc(pForm, locale);
+			break;
+		case "PsychData":
+			content = odfUtil.createPsychdataDoc(pForm, locale);
+			break;
+		default:
+			break;
+		}
 
 		return content;
 	}
