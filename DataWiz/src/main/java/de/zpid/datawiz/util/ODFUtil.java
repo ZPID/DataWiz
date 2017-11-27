@@ -55,10 +55,15 @@ public class ODFUtil {
 	private final static List<FormTypesDTO> FORMTYPES = new ArrayList<>();
 
 	/**
+	 * This function creates the BMBF OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte
+	 * array!
 	 * 
-	 * @param pForm
-	 * @param locale
-	 * @return
+	 * @param ProjectForm,
+	 *          which contains all necessary data for the export
+	 * @param Locale
+	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
+	 *          implemented in German.
+	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
 	public byte[] createBMBFDoc(final ProjectForm pForm, final Locale locale) throws Exception {
@@ -239,14 +244,9 @@ public class ODFUtil {
 			createCell(table, 1, 3, messageSource.getMessage("export.odt.BMBF.bifo.td3", null, locale), regular, null, locale);
 			createCell(table, 2, 3, messageSource.getMessage("project.edit.grantNumber", null, locale), regular, null, locale);
 			createCell(table, 3, 3, project.getGrantNumber(), regular, null, locale);
-			
-			
-			
 
 			// TODO Zeile 4 und weiter!
 
-			
-			
 			// write doc to outputstream
 			doc.save(baos);
 			log.trace("Leaving createBMBFDoc");
@@ -254,19 +254,24 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createBMBFDoc - DMP is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createBMBFDoc - Project is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			}
 		}
 	}
 
 	/**
+	 * This function creates the H2020 OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte
+	 * array!
 	 * 
-	 * @param pForm
-	 * @param locale
-	 * @return
+	 * @param ProjectForm,
+	 *          which contains all necessary data for the export
+	 * @param Locale
+	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
+	 *          implemented in German.
+	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
 	public byte[] createH2020Doc(final ProjectForm pForm, final Locale locale) throws Exception {
@@ -287,19 +292,23 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createH2020Doc - DMP is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createH2020Doc - Project is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			}
 		}
 	}
 
 	/**
+	 * This function creates the DFG OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte array!
 	 * 
-	 * @param pForm
-	 * @param locale
-	 * @return
+	 * @param ProjectForm,
+	 *          which contains all necessary data for the export
+	 * @param Locale
+	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
+	 *          implemented in German.
+	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
 	public byte[] createDFGDoc(final ProjectForm pForm, final Locale locale) throws Exception {
@@ -320,19 +329,24 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createDFGDoc - DMP is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createDFGDoc - Project is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			}
 		}
 	}
 
 	/**
+	 * This function creates the PsychData OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte
+	 * array!
 	 * 
-	 * @param pForm
-	 * @param locale
-	 * @return
+	 * @param ProjectForm,
+	 *          which contains all necessary data for the export
+	 * @param Locale
+	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
+	 *          implemented in German.
+	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
 	public byte[] createPsychdataDoc(final ProjectForm pForm, final Locale locale) throws Exception {
@@ -353,19 +367,24 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createPsychdataDoc - DMP is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createPsychdataDoc - Project is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			}
 		}
 	}
 
 	/**
+	 * This function creates the PreRegistration OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty
+	 * byte array!
 	 * 
-	 * @param pForm
-	 * @param locale
-	 * @return
+	 * @param ProjectForm,
+	 *          which contains all necessary data for the export
+	 * @param Locale
+	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
+	 *          implemented in German.
+	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
 	public byte[] createPreRegistrationDoc(final ProjectForm pForm, final Locale locale) throws Exception {
@@ -386,22 +405,32 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createPreRegistrationDoc - DMP is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createPreRegistrationDoc - Project is null");
-				throw new DataWizSystemException("", DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			}
 		}
 	}
 
 	/**
+	 * This function writes content into a Cell. There it needs the current table and position (colnum, rownum). As content, the function expects an
+	 * object of type object and interprets the correct content independently. This currently works with numbers, strings, booleans and lists.
 	 * 
 	 * @param table
+	 *          Table, which is including the cell
 	 * @param col
+	 *          Column number (starting with 0)
 	 * @param row
+	 *          Row number (starting with 0)
 	 * @param content
+	 *          Content, which will be written into the cell
 	 * @param font
+	 *          Font-type of the cell
 	 * @param color
+	 *          Background color of the Cell - null for white
+	 * @param locale
+	 *          Actual locale for the export
 	 */
 	private void createCell(final Table table, final int col, final int row, final Object content, final Font font, final Color color,
 	    final Locale locale) {
@@ -446,17 +475,16 @@ public class ODFUtil {
 		}
 	}
 
-	// TODO
+	/**
+	 * 
+	 */
 	private void initFormTpes() {
-		System.err.println("INIT");
 		try {
 			FORMTYPES.addAll(formTypeDAO.findAllByType(false, DWFieldTypes.DATATYPE));
 			FORMTYPES.addAll(formTypeDAO.findAllByType(false, DWFieldTypes.COLLECTIONMODE));
 			FORMTYPES.addAll(formTypeDAO.findAllByType(false, DWFieldTypes.METAPORPOSE));
-			System.err.println(FORMTYPES.size());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.warn("Error during loading formTypes from Database: ", () -> e);
 		}
 	}
 
