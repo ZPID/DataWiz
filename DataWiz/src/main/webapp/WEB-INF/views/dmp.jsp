@@ -34,13 +34,15 @@
             </c:choose>
             <h4>
               <s:message code="dmp.edit.headline" />
-            </h4>
+            </h4>            
+            <div><a href="<c:url value="/dmp/exportDMP/${ProjectForm.project.id}" />">Export</a></div>
             <div>
               <s:message code="dmp.edit.info" />
             </div>
           </c:otherwise>
         </c:choose>
       </div>
+      
       <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
         <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.administrative" /></a></li>
         <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message code="dmp.submenu.research" /></a></li>

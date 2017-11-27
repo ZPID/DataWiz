@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Properties;
 
 import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
@@ -126,10 +127,14 @@ public class DataWizConfiguration extends WebMvcConfigurerAdapter {
 		    "classpath:locale/StudyResources", "classpath:locale/RecordResources", "classpath:locale/LoggingResources",
 		    "classpath:locale/ExportResources");
 		resolver.setDefaultEncoding("UTF-8");
+		Properties fileCharsets = new Properties();
+		fileCharsets.setProperty("org/springframework/context/support/messages_de", "unicode");
+		resolver.setFileEncodings(fileCharsets);
 		log.info("messageSource succesfully loaded");
 		return resolver;
 
 	}
+	
 
 	private ClassPathXmlApplicationContext context;
 

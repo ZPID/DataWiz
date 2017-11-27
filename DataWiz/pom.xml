@@ -52,6 +52,12 @@
     <dom4j.version>1.6.1</dom4j.version>
   </properties>
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.apache.odftoolkit/simple-odf -->
+    <dependency>
+      <groupId>org.apache.odftoolkit</groupId>
+      <artifactId>simple-odf</artifactId>
+      <version>0.8.2-incubating</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>

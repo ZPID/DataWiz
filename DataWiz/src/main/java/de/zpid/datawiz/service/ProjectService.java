@@ -54,6 +54,7 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.MinioUtil;
+import de.zpid.datawiz.util.ODFUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Service
@@ -91,6 +92,8 @@ public class ProjectService {
 	protected MinioUtil minioUtil;
 	@Autowired
 	private ExceptionService exceptionService;
+	@Autowired
+	private ODFUtil odfUtil;
 
 	private static Logger log = LogManager.getLogger(ProjectService.class);
 
@@ -610,6 +613,20 @@ public class ProjectService {
 			throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
 			    DataWizErrorCodes.DATABASE_ERROR, e);
 		}
+	}
+
+	public byte[] createDMPExport(final Optional<Long> pid, final Locale locale) throws Exception {
+
+		ProjectForm pForm = createProjectForm();
+		pForm.setProject(projectDAO.findById(pid.get()));
+		pForm.setDmp(dmpDAO.findByID(pForm.getProject()));
+		pForm.getDmp().setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.DATATYPE, false));
+		pForm.getDmp().setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.COLLECTIONMODE, false));
+		pForm.getDmp().setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.METAPORPOSE, false));
+		
+		byte[] content = odfUtil.createBMBFDoc(pForm, locale);
+
+		return content;
 	}
 
 }

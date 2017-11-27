@@ -2,7 +2,10 @@ package de.zpid.datawiz.controller;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -63,12 +66,13 @@ public class DMPController {
 	@Autowired
 	private ClassPathXmlApplicationContext applicationContext;
 
+
 	public DMPController() {
 		super();
 		if (log.isEnabled(Level.INFO))
 			log.info("Loading DMPController for mapping /dmp");
 	}
-	
+
 	/**
 	 * Creates the project form.
 	 *
@@ -239,6 +243,29 @@ public class DMPController {
 		}
 		redirectAttributes.addFlashAttribute("successMSG", messageSource.getMessage("dmp.save.success.msg", null, LocaleContextHolder.getLocale()));
 		return "redirect:/dmp/" + pForm.getDmp().getId();
+	}
+
+	/**
+	 * 
+	 * @param pid
+	 * @param response
+	 */
+	@RequestMapping(value = { "", "/exportDMP/{pid}" }, method = RequestMethod.GET)
+	public void exportDMPODF(@PathVariable final Optional<Long> pid, final HttpServletResponse response) {
+
+		try {
+
+			byte[] content = projectService.createDMPExport(pid, Locale.GERMAN);
+			response.setContentType("application/vnd.oasis.opendocument.text");
+			response.setHeader("Content-Disposition", "attachment; filename=\"testodf.odt\"");
+			response.setContentLength(content.length);
+			response.getOutputStream().write(content);
+			response.flushBuffer();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private boolean saveDMPDataPart(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
