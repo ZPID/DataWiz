@@ -449,7 +449,7 @@ public class ODFUtil {
 				AtomicInteger count = new AtomicInteger(1);
 				usedTypes.forEach(usedType -> {
 					if (FORMTYPES == null || FORMTYPES.isEmpty()) {
-						log.debug("FORMTYPES INIT");
+
 						initFormTpes();
 					}
 					if (usedType instanceof Integer) {
@@ -476,13 +476,17 @@ public class ODFUtil {
 	}
 
 	/**
-	 * 
+	 * This function inits the formtypes. The formtypes are static, because the can be used for all instances. At the moment there are no functions to
+	 * change the formtypes, therefore it is not necessary to check for updates. If the formtypes are changed directly in the database, the DataWiz
+	 * application has to be reloaded, or the tomcat has to be restarted.
 	 */
 	private void initFormTpes() {
 		try {
+			log.debug("Entering initFormTpes");
 			FORMTYPES.addAll(formTypeDAO.findAllByType(false, DWFieldTypes.DATATYPE));
 			FORMTYPES.addAll(formTypeDAO.findAllByType(false, DWFieldTypes.COLLECTIONMODE));
 			FORMTYPES.addAll(formTypeDAO.findAllByType(false, DWFieldTypes.METAPORPOSE));
+			log.debug("Leaving initFormTpes");
 		} catch (Exception e) {
 			log.warn("Error during loading formTypes from Database: ", () -> e);
 		}
