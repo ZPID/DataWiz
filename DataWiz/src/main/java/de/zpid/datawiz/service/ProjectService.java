@@ -54,7 +54,6 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.MinioUtil;
-import de.zpid.datawiz.util.ODFUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 @Service
@@ -79,21 +78,19 @@ public class ProjectService {
 	@Autowired
 	private DmpDAO dmpDAO;
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
-	protected UserDAO userDAO;
+	private UserDAO userDAO;
 	@Autowired
 	private PlatformTransactionManager txManager;
 	@Autowired
 	private StudyService studyService;
 	@Autowired
-	protected FileUtil fileUtil;
+	private FileUtil fileUtil;
 	@Autowired
-	protected MinioUtil minioUtil;
+	private MinioUtil minioUtil;
 	@Autowired
 	private ExceptionService exceptionService;
-	@Autowired
-	private ODFUtil odfUtil;
 
 	private static Logger log = LogManager.getLogger(ProjectService.class);
 
@@ -450,7 +447,7 @@ public class ProjectService {
 	    throws Exception, IOException {
 		FileDTO file = fileDAO.findById(imgId);
 		// fileUtil.setFileBytes(file);
-		if (minioUtil.getFile(file).equals(MinioResult.OK)) {
+		if (minioUtil.getFile(file, false).equals(MinioResult.OK)) {
 			fileUtil.buildThumbNailAndSetToResponse(response, file, thumbHeight, maxWidth);
 		}
 	}
@@ -486,7 +483,7 @@ public class ProjectService {
 				if (mpf != null) {
 					file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(), mpf);
 					// String filePath = fileUtil.saveFile(file);
-					MinioResult res = minioUtil.putFile(file);
+					MinioResult res = minioUtil.putFile(file, false);
 					if (res.equals(MinioResult.OK)) {
 						fileDAO.saveFile(file);
 					} else {
@@ -496,7 +493,7 @@ public class ProjectService {
 				}
 			}
 		} catch (Exception e) {
-			if (file != null && minioUtil.getFile(file).equals(MinioResult.OK)) {
+			if (file != null && minioUtil.getFile(file, false).equals(MinioResult.OK)) {
 				minioUtil.deleteFile(file);
 			}
 			log.warn("Exception during file saveToMinoAndDB: ", () -> e);
@@ -517,7 +514,7 @@ public class ProjectService {
 		try {
 			file = fileDAO.findById(docId);
 			// fileUtil.setFileBytes(file);
-			MinioResult res = minioUtil.getFile(file);
+			MinioResult res = minioUtil.getFile(file, false);
 			if (res.equals(MinioResult.OK)) {
 				response.setContentType(file.getContentType());
 				response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
@@ -614,49 +611,4 @@ public class ProjectService {
 			    DataWizErrorCodes.DATABASE_ERROR, e);
 		}
 	}
-
-	/**
-	 * TODO
-	 * @param pid
-	 * @param type
-	 * @param locale
-	 * @return
-	 * @throws Exception
-	 */
-	public byte[] createDMPExport(final Optional<Long> pid, final Optional<String> type, final Locale locale) throws Exception {
-		
-		
-		
-
-		ProjectForm pForm = createProjectForm();
-		pForm.setProject(projectDAO.findById(pid.get()));
-		pForm.setDmp(dmpDAO.findByID(pForm.getProject()));
-		pForm.getDmp().setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.DATATYPE, false));
-		pForm.getDmp().setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.COLLECTIONMODE, false));
-		pForm.getDmp().setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.METAPORPOSE, false));
-		
-		byte[] content = null;
-		switch (type.get()) {
-		case "BMBF":
-			content = odfUtil.createBMBFDoc(pForm, locale);
-			break;
-		case "DFG":
-			content = odfUtil.createDFGDoc(pForm, locale);
-			break;
-		case "H2020":
-			content = odfUtil.createH2020Doc(pForm, locale);
-			break;
-		case "PreReg":
-			content = odfUtil.createPreRegistrationDoc(pForm, locale);
-			break;
-		case "PsychData":
-			content = odfUtil.createPsychdataDoc(pForm, locale);
-			break;
-		default:
-			break;
-		}
-
-		return content;
-	}
-
 }

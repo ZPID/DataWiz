@@ -132,7 +132,7 @@ public class RecordService {
 					setCodebook(parsingErrors, rec, false);
 				} else {
 					rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
-					setDataMatrix(parsingErrors, rec, false);
+					setDataMatrix(parsingErrors, rec, false, pid.get());
 				}
 			} else {
 				throw new DataWizSystemException(messageSource.getMessage("logging.record.not.found", new Object[] { recordId.get() }, Locale.ENGLISH),
@@ -175,8 +175,11 @@ public class RecordService {
 		}
 	}
 
-	public void setDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) throws Exception {
-		rec.setDataMatrixJson(recordDAO.findMatrixByVersionId(rec.getVersionId()));
+	public void setDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws Exception {
+		String dataMatrix = recordDAO.findMatrixByVersionId(rec.getVersionId());
+		if (dataMatrix == null || dataMatrix.isEmpty())
+			dataMatrix = loadDataMatrix(rec, pid);
+		rec.setDataMatrixJson(dataMatrix);
 		if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty()) {
 			if (rec.getDataMatrixJson() != null && !rec.getDataMatrixJson().isEmpty())
 				rec.setDataMatrix(new Gson().fromJson(rec.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
@@ -354,16 +357,32 @@ public class RecordService {
 	 * @param currentVersion
 	 * @throws DataWizSystemException
 	 */
-	public String compareAndSaveCodebook(final RecordDTO currentVersion, final Set<String> parsingErrors, final String changelog)
+	public String compareAndSaveCodebook(final RecordDTO currentVersion, final Set<String> parsingErrors, final String changelog, final long pid)
 	    throws DataWizSystemException {
 		RecordDTO lastVersion;
 		String msg = null;
 		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 		try {
+			String dataMatrix = recordDAO.findMatrixByVersionId(currentVersion.getVersionId());
+			if (dataMatrix != null && !dataMatrix.isEmpty() && (currentVersion.getMinioName() == null || currentVersion.getMinioName().isEmpty())) {
+				FileDTO matrix = new FileDTO();
+				matrix.setFileName("tempName");
+				matrix.setContent(dataMatrix.getBytes());
+				matrix.setProjectId(pid);
+				matrix.setStudyId(currentVersion.getStudyId());
+				matrix.setRecordID(currentVersion.getId());
+				matrix.setContentType("application/json; charset=UTF-8");
+				MinioResult res = minioUtil.putFile(matrix, true);
+				if (!res.equals(MinioResult.OK)) {
+					log.error("FATAL: No Connection to Minio Server - please check Settings or Server");
+					throw new DataWizSystemException("Minio returns an error MinioResult: " + res.name(), DataWizErrorCodes.MINIO_SAVE_ERROR);
+				}
+				currentVersion.setOriginalName("tempName");
+				currentVersion.setMinioName(matrix.getFilePath());
+			}
 			lastVersion = recordDAO.findRecordWithID(currentVersion.getId(), 0);
 			lastVersion.setVariables(recordDAO.findVariablesByVersionID(lastVersion.getVersionId()));
 			lastVersion.setAttributes(recordDAO.findRecordAttributes(lastVersion.getVersionId(), false));
-			currentVersion.setDataMatrixJson(recordDAO.findMatrixByVersionId(currentVersion.getVersionId()));
 			if (lastVersion.getVariables() != null && lastVersion.getVariables().size() > 0) {
 				for (SPSSVarDTO var : lastVersion.getVariables()) {
 					var.setAttributes(recordDAO.findVariableAttributes(var.getId(), false));
@@ -401,7 +420,6 @@ public class RecordService {
 							recordDAO.insertVarLabels(var.getValues(), varId);
 					}
 				}
-				recordDAO.insertMatrix(currentVersion);
 				txManager.commit(status);
 				msg = "record.codebook.saved";
 			} else if (currentVersion == null || lastVersion == null || currentVersion.getVariables() == null || lastVersion.getVariables() == null) {
@@ -455,7 +473,9 @@ public class RecordService {
 						}
 					}
 				}
-				MinioResult res = minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get());
+				MinioResult res = minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get(), false);
+				if (res.equals(MinioResult.OK))
+					res = minioUtil.cleanAndRemoveBucket(pid.get(), studyId.get(), recordId.get(), true);
 				if (res.equals(MinioResult.OK)) {
 					if (singleCommit)
 						txManager.commit(status);
@@ -758,7 +778,7 @@ public class RecordService {
 	 * @return
 	 * @throws Exception
 	 */
-	public RecordDTO loadRecordExportData(long versionId, long recordId, String exportType, StringBuilder res) throws Exception {
+	public RecordDTO loadRecordExportData(long versionId, long recordId, String exportType, StringBuilder res, final long pid) throws Exception {
 		RecordDTO record;
 		List<String> parsingErrors = new ArrayList<>();
 		record = recordDAO.findRecordWithID(recordId, versionId);
@@ -766,13 +786,16 @@ public class RecordService {
 		record.setErrors(null);
 		record.setAttributes(recordDAO.findRecordAttributes(versionId, true));
 		setCodebook(parsingErrors, record, exportType.equals("SPSS") ? true : false);
-		record.setDataMatrixJson(recordDAO.findMatrixByVersionId(versionId));
+		String dataMatrix = recordDAO.findMatrixByVersionId(record.getVersionId());
+		if (dataMatrix == null || dataMatrix.isEmpty())
+			dataMatrix = loadDataMatrix(record, pid);
+		record.setDataMatrixJson(dataMatrix);
 		if (record.getDataMatrixJson() != null && !record.getDataMatrixJson().isEmpty()) {
 			record.setDataMatrix(new Gson().fromJson(record.getDataMatrixJson(), new TypeToken<List<List<Object>>>() {
 			}.getType()));
 			record.setDataMatrixJson(null);
 		}
-		setDataMatrix(parsingErrors, record, exportType.equals("SPSS") ? true : false);
+		setDataMatrix(parsingErrors, record, exportType.equals("SPSS") ? true : false, pid);
 		if (!parsingErrors.isEmpty()) {
 			parsingErrors.forEach(s -> res.append(s + "<br />"));
 		}
@@ -789,19 +812,33 @@ public class RecordService {
 	 * 
 	 */
 	public void saveRecordToDBAndMinio(StudyForm sForm) throws Exception {
-		RecordDTO spssFile = sForm.getRecord();
+		RecordDTO record = sForm.getRecord();
 		FileDTO file = sForm.getFile();
+		FileDTO matrix = new FileDTO();
 		MinioResult res;
-		if (spssFile != null && file != null) {
+		if (record != null && file != null) {
 			TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 			try {
-				recordDAO.insertCodeBookMetaData(spssFile);
-				removeUselessFileAttributes(spssFile.getAttributes());
-				recordDAO.insertAttributes(spssFile.getAttributes(), spssFile.getVersionId(), 0);
-				if (spssFile.getVersionId() > 0) {
-					recordDAO.insertMatrix(spssFile);
+				matrix.setFileName(file.getFileName());
+				matrix.setContent(record.getDataMatrixJson().getBytes());
+				matrix.setProjectId(file.getProjectId());
+				matrix.setStudyId(file.getStudyId());
+				matrix.setRecordID(file.getRecordID());
+				matrix.setContentType("application/json; charset=UTF-8");
+				res = minioUtil.putFile(matrix, true);
+				if (!res.equals(MinioResult.OK)) {
+					log.error("FATAL: No Connection to Minio Server - please check Settings or Server");
+					throw new DataWizSystemException("Minio returns an error MinioResult: " + res.name(), DataWizErrorCodes.MINIO_SAVE_ERROR);
+				}
+				record.setOriginalName(file.getFileName());
+				record.setMinioName(matrix.getFilePath());
+				recordDAO.insertCodeBookMetaData(record);
+				removeUselessFileAttributes(record.getAttributes());
+				recordDAO.insertAttributes(record.getAttributes(), record.getVersionId(), 0);
+				if (record.getVersionId() > 0) {
+					// recordDAO.insertMatrix(record);
 					int position = 0;
-					for (SPSSVarDTO var : spssFile.getVariables()) {
+					for (SPSSVarDTO var : record.getVariables()) {
 						if (var.getColumns() == 0)
 							var.setColumns(var.getColumns() < 8 ? 8 : var.getColumns());
 						if (!sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.EQUAL)
@@ -809,21 +846,21 @@ public class RecordService {
 						    && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.MOVED)
 						    && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.MOVED_CSV)) {
 							long varId = recordDAO.insertVariable(var);
-							recordDAO.insertVariableVersionRelation(varId, spssFile.getVersionId(), var.getPosition(),
+							recordDAO.insertVariableVersionRelation(varId, record.getVersionId(), var.getPosition(),
 							    sForm.getCompList().get(position).getMessage());
 							if (var.getAttributes() != null) {
-								recordDAO.insertAttributes(var.getAttributes(), spssFile.getVersionId(), varId);
+								recordDAO.insertAttributes(var.getAttributes(), record.getVersionId(), varId);
 							}
 							if (var.getValues() != null)
 								recordDAO.insertVarLabels(var.getValues(), varId);
 						} else {
-							recordDAO.insertVariableVersionRelation(var.getId(), spssFile.getVersionId(), var.getPosition(),
+							recordDAO.insertVariableVersionRelation(var.getId(), record.getVersionId(), var.getPosition(),
 							    sForm.getCompList().get(position).getMessage());
 						}
 						position++;
 					}
-					file.setVersion(spssFile.getVersionId());
-					res = minioUtil.putFile(file);
+					file.setVersion(record.getVersionId());
+					res = minioUtil.putFile(file, false);
 					if (res.equals(MinioResult.OK)) {
 						fileDAO.saveFile(file);
 					} else if (res.equals(MinioResult.CONNECTION_ERROR)) {
@@ -836,6 +873,8 @@ public class RecordService {
 				txManager.rollback(status);
 				if (file.getFilePath() != null && !file.getFilePath().isEmpty())
 					minioUtil.deleteFile(file);
+				if (matrix.getFilePath() != null && !matrix.getFilePath().isEmpty())
+					minioUtil.deleteFile(matrix);
 				throw (e);
 			}
 		} else {
@@ -1008,6 +1047,34 @@ public class RecordService {
 			return setMessageString(messages.parallelStream().collect(Collectors.toList()));
 		else
 			return null;
+	}
+
+	private String loadDataMatrix(final RecordDTO record, final long pid) throws DataWizSystemException {
+		log.trace("Entering loadDataMatrix for Record [pid: {}; studtyid:{}; recordid: {}; path: {}]", () -> pid, () -> record.getStudyId(),
+		    () -> record.getId(), () -> record.getMinioName());
+		if (record != null) {
+			FileDTO file = new FileDTO();
+			file.setFilePath(record.getMinioName());
+			file.setFileName(record.getOriginalName());
+			file.setProjectId(pid);
+			file.setStudyId(record.getStudyId());
+			file.setRecordID(record.getId());
+			file.setContentType("application/json; charset=UTF-8");
+			MinioResult res = minioUtil.getFile(file, true);
+			if (res.equals(MinioResult.OK)) {
+				log.trace("Leaving loadDataMatrix for Record [pid: {}; studtyid:{}; recordid: {}; path: {}]", () -> pid, () -> record.getStudyId(),
+				    () -> record.getId(), () -> record.getMinioName());
+				String matrix = new String(file.getContent());
+				return matrix;
+			} else {
+				log.error("FATAL: No Connection to Minio Server - please check Settings or Server");
+				throw new DataWizSystemException("Minio returns an error MinioResult: " + res.name(), DataWizErrorCodes.MINIO_SAVE_ERROR);
+			}
+		} else {
+			log.error("Unexpected Error - RecordDTO is null");
+			throw new DataWizSystemException("Record Object is empty", DataWizErrorCodes.RECORD_NOT_AVAILABLE);
+		}
+
 	}
 
 }

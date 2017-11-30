@@ -17,7 +17,7 @@
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/font-awesome.css' />" rel="stylesheet" type="text/css" />
 <link href="<c:url value='/static/css/app.css' />" rel="stylesheet" />
-<link href="<c:url value='/static/css/dataTables.css' />" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs/dt-1.10.16/datatables.min.css"/>
 <link href="<c:url value='/static/js/datepicker/css/bootstrap-datepicker.min.css' />" rel="stylesheet" />
 <s:eval expression="@environment.getProperty('application.favicon.url')" var="faviconUri" />
 <link rel="icon" href="<c:url value="${faviconUri}" />" type="image/x-icon">

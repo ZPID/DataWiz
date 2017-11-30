@@ -5,31 +5,35 @@ var CODEBOOK_ACT_PAGE;
 var CODEBOOK_ELEMENTS = $("#lazyLoadCodebook");
 
 $(document).ready(function() {
-	if (window.location.pathname.includes("/importReport")) {
-		if (GLOBAL_LOG)
-			console.log("Starting importReport Script");
-		$(".loader").fadeIn("slow");
-		// CODEBOOK
-		setTimeout(function() {
-			initializeCodebook(5);
-		}, 0);
-		setTimeout(function() {
-			$.getJSON("getMatrixAsync", function() {
-			}).done(function(data) {
-				$('#lazyLoadFinalMatrix').DataTable({
-				  "processing" : true,
-				  "ordering" : false,
-				  "scrollX" : true,
-				  "data" : data
-				});
-				$('#lazyLoadFinalMatrix').show();
-			}).fail(function() {
-			}).always(function() {
-				$(".loader").fadeOut("slow");
-			});
-		}, 0);
+	if (window.location.pathname.includes("/importReport") || window.location.pathname.includes("/data")) {
+		$('#lazyLoadImportMatrix').DataTable({
+		  processing : true,
+		  ordering : false,
+		  scrollX : true,
+		  serverSide : true,
+		  ajax : {
+		    url : 'getMatrixAsync/import',
+		    type : 'POST'
+		  }
+		});
+		initializeCodebook(5);
+		$('#lazyLoadFinalMatrix').DataTable({
+		  processing : true,
+		  ordering : false,
+		  scrollX : true,
+		  serverSide : true,
+		  ajax : {
+		    url : 'getMatrixAsync/final',
+		    type : 'POST'
+		  }
+		});
+
 	}
 });
+
+function loadDataTable(tColumns) {
+
+}
 
 $('#pagerCodebookNext1').click(function(e) {
 	e.preventDefault();

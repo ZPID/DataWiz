@@ -54,24 +54,20 @@
             </c:if>
             <c:if test="${not empty StudyForm.importMatrix}">
               <div class="form-group">
-                <div class="col-sm-12">
+                <div class="col-sm-12" style="background-color: #eeeeee;">
                   <h5>
                     <strong><s:message code="dataset.import.report.raw.table" /></strong>
                   </h5>
-                  <div class="pre-xy-scrollable">
-                    <table class="table table-striped table-bordered table-condensed matrixtable">
-                      <tbody>
-                        <c:forEach items="${StudyForm.importMatrix}" var="row" varStatus="rowNum">
-                          <tr>
-                            <td><s:message text="${rowNum.index+1}" /></td>
-                            <c:forEach items="${row}" var="value">
-                              <td><s:message text="${value}" /></td>
-                            </c:forEach>
-                          </tr>
+                  <table class="display table table-striped table-bordered table table-condensed matrixtable margin-bottom-0"
+                    id="lazyLoadImportMatrix">
+                    <thead>
+                      <tr>
+                        <c:forEach items="${StudyForm.importMatrix[0]}" var="row" varStatus="rowNum">
+                          <th><s:message text="${rowNum.index+1}" /></th>
                         </c:forEach>
-                      </tbody>
-                    </table>
-                  </div>
+                      </tr>
+                    </thead>
+                  </table>
                   <s:message code="dataset.import.report.raw.table.help" var="appresmess" />
                   <%@ include file="templates/helpblock.jsp"%>
                 </div>
@@ -250,13 +246,13 @@
             <!-- Final data Matrix -->
             <c:if test="${not empty StudyForm.record.variables && not empty StudyForm.record.dataMatrix}">
               <div class="form-group">
-                <div class="col-sm-12">
+                <div class="col-sm-12" style="background-color: #eeeeee;">
                   <h5>
                     <strong><s:message code="dataset.import.report.result.table" /></strong>
                   </h5>
                   <div class="margin-bottom-0">
-                    <table class="table table-striped table-bordered table table-condensed matrixtable margin-bottom-0" id="lazyLoadFinalMatrix"
-                      style="display: none;">
+                    <table class="display table table-striped table-bordered table table-condensed matrixtable margin-bottom-0"
+                      id="lazyLoadFinalMatrix">
                       <thead>
                         <tr>
                           <c:forEach items="${StudyForm.record.variables}" var="var">

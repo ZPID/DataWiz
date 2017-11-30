@@ -1,7 +1,5 @@
 package de.zpid.datawiz.controller;
 
-import java.math.BigInteger;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -18,9 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.validation.SmartValidator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,15 +25,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.enumeration.DWFieldTypes;
 import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.service.DMPService;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
@@ -58,11 +52,8 @@ public class DMPController {
 	private ProjectService projectService;
 	@Autowired
 	private ExceptionService exceptionService;
-	// TODO SERVICE CLASS
 	@Autowired
-	private FormTypesDAO formTypeDAO;
-	@Autowired
-	private DmpDAO dmpDAO;
+	private DMPService dmpService;
 	@Autowired
 	private ClassPathXmlApplicationContext applicationContext;
 
@@ -126,9 +117,7 @@ public class DMPController {
 	@RequestMapping(value = "/{pid}", method = RequestMethod.GET)
 	public String editDMP(@PathVariable Optional<Long> pid, @ModelAttribute("ProjectForm") ProjectForm pForm, ModelMap model,
 	    RedirectAttributes redirectAttributes) {
-		if (log.isEnabled(Level.DEBUG)) {
-			log.debug("execute editDMP for projectID=" + pid);
-		}
+		log.trace("Entering editDMP for DMP [pid: {}]", () -> pid);
 		UserDTO user = UserUtil.getCurrentUser();
 		if (user == null) {
 			log.warn("Auth User Object == null - redirect to login");
@@ -146,6 +135,7 @@ public class DMPController {
 		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pName }, null, messageSource));
 		model.put("subnaviActive", PageState.DMP.name());
 		model.put("ProjectForm", pForm);
+		log.trace("Leaving editDMP for DMP [pid: {}]", () -> pid);
 		return "dmp";
 	}
 
@@ -165,7 +155,7 @@ public class DMPController {
 			log.debug("execute saveDMP - POST");
 		}
 		UserDTO user = UserUtil.getCurrentUser();
-		Boolean hasErrors = false;
+		boolean hasErrors = false;
 		if (!pid.isPresent() || projectService.checkProjectRoles(user, pid.get(), 0, true, false) == null) {
 			bRes.reject("globalErrors", messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
 			hasErrors = true;
@@ -178,57 +168,40 @@ public class DMPController {
 			}
 			hasErrors = true;
 		}
-		// if (hasErrors || !projectService.saveOrUpdateProject(pForm).equals(DataWizErrorCodes.OK)) {
-		// bRes.reject("globalErrors",
-		// messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
-		// hasErrors = true;
-		// }
-		if (!hasErrors && pForm.getDmp() != null && (pForm.getDmp().getId() <= 0)) {
-			try {
-				int chk = dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
-				if (chk <= 0)
-					hasErrors = true;
-				else
-					pForm.getDmp().setId(pForm.getProject().getId());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+		hasErrors = dmpService.saveNewDMPSetID(pForm, hasErrors);
 		// TODO testen ob nur berechtiger nutzer speichert + semaphore falls ein nutzer schon daran arbeitet!!!
 		// TODO Projektdaten speichern bzw. neues anlegen wenn noch nicht vorhanden!!!
 		if (!hasErrors) {
 			if (pForm.getDmp().isAdminChanged()) {
-				hasErrors = saveDMPDataPart(pForm, bRes, DmpCategory.ADMIN, DmpDTO.AdminVal.class);
+				hasErrors = dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.ADMIN, DmpDTO.AdminVal.class);
 				unChanged = false;
 			}
 			if (pForm.getDmp().isResearchChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.RESEARCH, DmpDTO.ResearchVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.RESEARCH, DmpDTO.ResearchVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 			if (pForm.getDmp().isMetaChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.META, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.META, DmpDTO.MetaVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 			if (pForm.getDmp().isSharingChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.SHARING, DmpDTO.SharingVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.SHARING, DmpDTO.SharingVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 			if (pForm.getDmp().isStorageChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.STORAGE, DmpDTO.StorageVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.STORAGE, DmpDTO.StorageVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 			if (pForm.getDmp().isOrganizationChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ORGANIZATION, DmpDTO.OrganizationVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.ORGANIZATION, DmpDTO.OrganizationVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 			if (pForm.getDmp().isEthicalChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.ETHICAL, DmpDTO.EthicalVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.ETHICAL, DmpDTO.EthicalVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 			if (pForm.getDmp().isCostsChanged()) {
-				hasErrors = (saveDMPDataPart(pForm, bRes, DmpCategory.COSTS, DmpDTO.CostsVal.class) || hasErrors) ? true : false;
+				hasErrors = (dmpService.saveDMPDataPart(pForm, bRes, DmpCategory.COSTS, DmpDTO.CostsVal.class) || hasErrors) ? true : false;
 				unChanged = false;
 			}
 		}
@@ -246,13 +219,14 @@ public class DMPController {
 
 	/**
 	 * TODO
+	 * 
 	 * @param pid
 	 * @param response
 	 */
 	@RequestMapping(value = { "", "/exportDMP/{type}/{pid}" }, method = RequestMethod.GET)
 	public void exportDMPODF(@PathVariable final Optional<Long> pid, @PathVariable final Optional<String> type, final HttpServletResponse response) {
 		try {
-			byte[] content = projectService.createDMPExport(pid, type, Locale.GERMAN);
+			byte[] content = dmpService.createDMPExport(pid, type, Locale.GERMAN);
 			response.setContentType("application/vnd.oasis.opendocument.text");
 			response.setHeader("Content-Disposition", "attachment; filename=\"testodf.odt\"");
 			response.setContentLength(content.length);
@@ -263,119 +237,6 @@ public class DMPController {
 			e.printStackTrace();
 		}
 
-	}
-
-	private boolean saveDMPDataPart(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
-		BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
-		int changed = 0;
-		if (log.isEnabled(Level.DEBUG)) {
-			log.debug("saving DMP Data for cat= " + cat);
-		}
-		validator.validate(pForm, bResTmp, cls);
-		if (!bResTmp.hasErrors()) {
-			try {
-				switch (cat) {
-				case ADMIN:
-					changed = dmpDAO.updateAdminData(pForm.getDmp());
-					if (changed > 0)
-						pForm.getDmp().setAdminChanged(false);
-					break;
-				case RESEARCH:
-					changed = dmpDAO.updateResearchData(pForm.getDmp());
-					updateFormTypes(pForm, changed, cat);
-					if (changed > 0)
-						pForm.getDmp().setResearchChanged(false);
-					break;
-				case META:
-					changed = dmpDAO.updateMetaData(pForm.getDmp());
-					updateFormTypes(pForm, changed, cat);
-					if (changed > 0)
-						pForm.getDmp().setMetaChanged(false);
-					break;
-				case SHARING:
-					changed = (dmpDAO.updateSharingData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setSharingChanged(false);
-					break;
-				case STORAGE:
-					changed = (dmpDAO.updateStorageData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setStorageChanged(false);
-					break;
-				case ORGANIZATION:
-					changed = (dmpDAO.updateOrganizationData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setOrganizationChanged(false);
-					break;
-				case ETHICAL:
-					changed = (dmpDAO.updateEthicalData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setEthicalChanged(false);
-					break;
-				case COSTS:
-					changed = (dmpDAO.updateCostsData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setCostsChanged(false);
-					break;
-				default:
-					break;
-				}
-			} catch (Exception e) {
-				if (log.isEnabled(Level.ERROR))
-					log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
-				return true;
-			}
-		} else {
-			for (ObjectError error : bResTmp.getAllErrors()) {
-				bRes.addError(error);
-			}
-			if (log.isEnabled(Level.INFO)) {
-				log.info("Validation Errors for cat: " + cat.toString());
-				bRes.reject("globalErrors",
-				    messageSource.getMessage("dmp.edit." + cat.name().toLowerCase() + ".globalerror.valid", null, LocaleContextHolder.getLocale()));
-			}
-			return true;
-		}
-		if (changed <= 0) {
-			bRes.reject("globalErrors",
-			    messageSource.getMessage("dmp.edit." + cat.name().toLowerCase() + ".globalerror.save", null, LocaleContextHolder.getLocale()));
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @param pForm
-	 * @param changed
-	 * @throws Exception
-	 */
-	private void updateFormTypes(ProjectForm pForm, int changed, DmpCategory cat) throws Exception {
-		if (changed > 0) {
-			if (cat.equals(DmpCategory.RESEARCH)) {
-				List<Integer> datatypes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.DATATYPE, false);
-				if (datatypes != null && datatypes.size() > 0) {
-					formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), datatypes, false);
-				}
-				if (pForm.getDmp().getUsedDataTypes() != null && pForm.getDmp().getUsedDataTypes().size() > 0) {
-					formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedDataTypes(), false);
-				}
-				List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.COLLECTIONMODE, false);
-				if (collectionModes != null && collectionModes.size() > 0) {
-					formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), collectionModes, false);
-				}
-				if (pForm.getDmp().getUsedCollectionModes() != null && pForm.getDmp().getUsedCollectionModes().size() > 0) {
-					formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedCollectionModes(), false);
-				}
-			} else if (cat.equals(DmpCategory.META)) {
-				List<Integer> metaporpose = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.METAPORPOSE, false);
-				if (metaporpose != null && metaporpose.size() > 0) {
-					formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), metaporpose, false);
-				}
-				if (pForm.getDmp().getSelectedMetaPurposes() != null && pForm.getDmp().getSelectedMetaPurposes().size() > 0) {
-					formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getSelectedMetaPurposes(), false);
-				}
-			}
-		}
 	}
 
 	/**

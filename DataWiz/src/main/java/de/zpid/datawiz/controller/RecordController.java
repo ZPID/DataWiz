@@ -2,12 +2,15 @@ package de.zpid.datawiz.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +35,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
 
+import de.zpid.datawiz.dto.DataTableDTO;
 import de.zpid.datawiz.dto.RecordDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
@@ -102,6 +106,11 @@ public class RecordController {
 	public RecordController() {
 		super();
 		log.info("Loading RecordController for mapping /project/{pid}/study/{sid}/record");
+	}
+
+	@ModelAttribute("StudyForm")
+	private StudyForm createProjectForm() {
+		return (StudyForm) applicationContext.getBean("StudyForm");
 	}
 
 	/**
@@ -308,6 +317,12 @@ public class RecordController {
 		log.trace("Entering  showImportReport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(),
 		    () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
 		String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
+		if (sForm == null || sForm.getRecord() == null) {
+			log.debug("Record Object is empty - Session timeout");
+			redirectAttributes.addFlashAttribute("errorMSG",
+			    "Ihre Anfrage an den Server enthielt keine Daten, wahrscheinlich waren Sie zu lange inaktiv und die Session ist abgelaufen.");
+			ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+		}
 		if (ret == null) {
 			try {
 				importService.loadImportReport(recordId, sForm);
@@ -336,10 +351,77 @@ public class RecordController {
 	 *          {@link StudyForm}
 	 * @return
 	 */
-	@RequestMapping(value = { "/{recordId}/getMatrixAsync" }, method = RequestMethod.GET)
-	public @ResponseBody String getMatrixAsync(@ModelAttribute("StudyForm") StudyForm sForm) {
-		log.trace("Entering getMatrixAsync for importReport");
-		return new Gson().toJson(sForm.getRecord().getDataMatrix());
+	@RequestMapping(value = { "/{recordId}/getMatrixAsync/{state}",
+	    "/{recordId}/version/{versionId}/getMatrixAsync/{state}" }, method = RequestMethod.POST)
+	public @ResponseBody String getMatrixAsync(@ModelAttribute("StudyForm") StudyForm sForm, HttpServletRequest request,
+	    @PathVariable final String state) {
+		String search = request.getParameter("search[value]");
+		String start = request.getParameter("start");
+		String length = request.getParameter("length");
+		String draw = request.getParameter("draw");
+		log.trace("Entering getMatrixAsync for importReport with Parameter [state: {}; draw: {}; start: {}; length: {}; search: {}]", () -> state,
+		    () -> draw, () -> start, () -> length, () -> search);
+		StringBuilder err = new StringBuilder();
+		DataTableDTO datatable = new DataTableDTO();
+		int startI = 0, lengthI = 0;
+		try {
+			if (draw != null && !draw.isEmpty())
+				datatable.setDraw(Integer.parseInt(draw));
+			else
+				err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parameter 'draw' is not set!" },
+				    LocaleContextHolder.getLocale()));
+			if (start != null && !start.isEmpty())
+				startI = Integer.parseInt(start);
+			else
+				err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parameter 'start' is not set!" },
+				    LocaleContextHolder.getLocale()));
+			if (length != null && !length.isEmpty())
+				lengthI = Integer.parseInt(length);
+			else
+				err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parameter 'length' is not given!" },
+				    LocaleContextHolder.getLocale()));
+		} catch (Exception e) {
+			log.warn("Error during parsing String paramater" + e);
+			err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parsing Error: " + e.getMessage() },
+			    LocaleContextHolder.getLocale()));
+		}
+		if (err.length() == 0) {
+			List<List<Object>> list = null;
+			if (state.equals("import") && sForm.getImportMatrix() != null) {
+				List<List<Object>> list_t = new ArrayList<>();				
+				sForm.getImportMatrix().forEach(row -> {
+					list_t.add(new ArrayList<Object>(Arrays.asList(row)));
+				});
+				list = list_t;
+			} else if (state.equals("final")) {
+				if (sForm != null && sForm.getRecord() != null && sForm.getRecord().getDataMatrix() != null && !sForm.getRecord().getDataMatrix().isEmpty())
+					list = sForm.getRecord().getDataMatrix();
+			}
+			if (list != null) {
+				datatable.setRecordsTotal(list.size());
+				if (search != null && !search.isEmpty()) {
+					List<List<Object>> searchList = new ArrayList<>();
+					list.forEach(row -> {
+						AtomicBoolean found = new AtomicBoolean(false);
+						row.parallelStream().forEach(itm -> {
+							if (!found.get() && itm != null && String.valueOf(itm).trim().contains(search))
+								found.set(true);
+						});
+						if (found.get())
+							searchList.add(row);
+					});
+					datatable.setRecordsFiltered(searchList.size());
+					datatable.setData(searchList.subList(startI, (((startI + lengthI) >= searchList.size()) ? searchList.size() : (startI + lengthI))));
+				} else {
+					datatable.setRecordsFiltered(list.size());
+					datatable.setData(list.subList(startI, (((startI + lengthI) >= list.size()) ? list.size() : (startI + lengthI))));
+				}
+			}
+		}
+		datatable.setError(err.toString());
+		log.trace("Leaving getMatrixAsync for importReport with Parameter [draw: {}; start: {}; length: {}; search: {}] with result [listSize: {}]",
+		    () -> draw, () -> start, () -> length, () -> search, () -> (datatable.getData() == null ? "null" : datatable.getData().size()));
+		return new Gson().toJson(datatable);
 	}
 
 	/**
@@ -617,7 +699,7 @@ public class RecordController {
 			throw new DWDownloadException("export.access.denied");
 		} else {
 			try {
-				record = recordService.loadRecordExportData(versionId, recordId, exportType, res);
+				record = recordService.loadRecordExportData(versionId, recordId, exportType, res, pid.get());
 				if (!res.toString().trim().isEmpty()) {
 					record = null;
 				}
@@ -832,7 +914,7 @@ public class RecordController {
 				RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(currentVersion);
 				recordService.validateAndPrepareCodebookForm(copy, parsingErrors, parsingWarings, sForm.getNewChangeLog(), false);
 				currentVersion = copy;
-				infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors, sForm.getNewChangeLog());
+				infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors, sForm.getNewChangeLog(), pid.get());
 				if (infoMSG.equals("record.codebook.saved"))
 					redirectAttributes.addFlashAttribute("successMSG", messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
 				else {

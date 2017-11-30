@@ -336,7 +336,7 @@ public class ExportService {
 										if (recordEx.isExportMatrix()) {
 											RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(recordDB);
 											copy.setVariables(recordDAO.findVariablesByVersionID(copy.getVersionId()));
-											recordService.setDataMatrix(parsingErrors, copy, false);
+											recordService.setDataMatrix(parsingErrors, copy, false, pid.get());
 											if (!parsingErrors.isEmpty()) {
 												StringBuilder s = new StringBuilder();
 												parsingErrors.forEach(pe -> {
@@ -832,7 +832,7 @@ public class ExportService {
 				} else
 					file.setFileName(file.getFileName() + "(" + ++doublettCount + ")");
 			}
-			MinioResult result = minioUtil.getFile(file);
+			MinioResult result = minioUtil.getFile(file, false);
 			if (result.equals(MinioResult.OK) && file.getContent().length > 0) {
 				// only files < 20 MB
 				if (file.getFileSize() < 20000000)
