@@ -39,6 +39,7 @@
                 </h4>
               </div>
               <div class="col-xs-8 col-sm-6 text-align-right">
+                (Export currently in work)
                 <div style="display: inline-block;">
                   <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/BMBF/${ProjectForm.project.id}" />" target="_blank">BMBF</a>
                 </div>

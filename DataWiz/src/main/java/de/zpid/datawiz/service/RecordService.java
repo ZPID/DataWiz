@@ -1053,6 +1053,8 @@ public class RecordService {
 		log.trace("Entering loadDataMatrix for Record [pid: {}; studtyid:{}; recordid: {}; path: {}]", () -> pid, () -> record.getStudyId(),
 		    () -> record.getId(), () -> record.getMinioName());
 		if (record != null) {
+			if (record.getMinioName() == null)
+				return new String();
 			FileDTO file = new FileDTO();
 			file.setFilePath(record.getMinioName());
 			file.setFileName(record.getOriginalName());

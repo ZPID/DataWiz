@@ -367,19 +367,22 @@ public class RecordController {
 		try {
 			if (draw != null && !draw.isEmpty())
 				datatable.setDraw(Integer.parseInt(draw));
-			else
+			else {
 				err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parameter 'draw' is not set!" },
 				    LocaleContextHolder.getLocale()));
+			}
 			if (start != null && !start.isEmpty())
 				startI = Integer.parseInt(start);
-			else
+			else {
 				err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parameter 'start' is not set!" },
 				    LocaleContextHolder.getLocale()));
+			}
 			if (length != null && !length.isEmpty())
 				lengthI = Integer.parseInt(length);
-			else
+			else {
 				err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parameter 'length' is not given!" },
 				    LocaleContextHolder.getLocale()));
+			}
 		} catch (Exception e) {
 			log.warn("Error during parsing String paramater" + e);
 			err.append("\n " + messageSource.getMessage("record.matrix.async.error", new Object[] { "Parsing Error: " + e.getMessage() },
@@ -388,7 +391,7 @@ public class RecordController {
 		if (err.length() == 0) {
 			List<List<Object>> list = null;
 			if (state.equals("import") && sForm.getImportMatrix() != null) {
-				List<List<Object>> list_t = new ArrayList<>();				
+				List<List<Object>> list_t = new ArrayList<>();
 				sForm.getImportMatrix().forEach(row -> {
 					list_t.add(new ArrayList<Object>(Arrays.asList(row)));
 				});
@@ -423,6 +426,13 @@ public class RecordController {
 		    () -> draw, () -> start, () -> length, () -> search, () -> (datatable.getData() == null ? "null" : datatable.getData().size()));
 		return new Gson().toJson(datatable);
 	}
+
+	/*
+	 * @RequestMapping(value = { "/{recordId}/getLabelAsync", "/{recordId}/version/{versionId}/getLabelAsync" }, method = RequestMethod.GET)
+	 * public @ResponseBody String getLabelAsync(@ModelAttribute("StudyForm") StudyForm sForm) { log.trace("Entering getLabelAsync");
+	 * List<DataTableColumnDTO> label = new ArrayList<>(); sForm.getRecord().getVariables().forEach(var -> { DataTableColumnDTO dtc = new
+	 * DataTableColumnDTO(); dtc.setId(var.getName()); dtc.setTitle(var.getName()); label.add(dtc); }); return new Gson().toJson(label); }
+	 */
 
 	/**
 	 * This function saves the import if the user selects "save import" on importReport.jsp. Therefore, recordService.sortVariablesAndSetMetaData(sForm)

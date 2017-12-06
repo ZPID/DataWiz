@@ -36,7 +36,7 @@
           <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
             <table class="display table table-striped table-bordered table table-condensed matrixtable margin-bottom-0" id="lazyLoadFinalMatrix">
               <thead>
-                <tr>
+                <tr>                 
                   <c:forEach items="${StudyForm.record.variables}" var="var">
                     <th><s:message text="${var.name}" /></th>
                   </c:forEach>

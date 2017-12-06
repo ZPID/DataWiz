@@ -72,6 +72,9 @@ public class ExceptionService {
 			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.MISSING_UID_ERROR)) {
 				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
 				ret = "redirect:/login";
+			} else if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.MINIO_SAVE_ERROR) && recordId.isPresent()) {
+				redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
+				ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + (recordId.isPresent() ? "/record/" + recordId.get() : "");
 			} else if (dwe.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
 				model.put("errormsg",
 				    messageSource.getMessage("dbs.sql.exception",

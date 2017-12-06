@@ -5,34 +5,29 @@ var CODEBOOK_ACT_PAGE;
 var CODEBOOK_ELEMENTS = $("#lazyLoadCodebook");
 
 $(document).ready(function() {
-	if (window.location.pathname.includes("/importReport") || window.location.pathname.includes("/data")) {
-		$('#lazyLoadImportMatrix').DataTable({
-		  processing : true,
-		  ordering : false,
-		  scrollX : true,
-		  serverSide : true,
-		  ajax : {
-		    url : 'getMatrixAsync/import',
-		    type : 'POST'
-		  }
-		});
+	if (window.location.pathname.includes("/importReport")) {
+		loadDatamatrix('#lazyLoadImportMatrix', 'getMatrixAsync/import');
 		initializeCodebook(5);
-		$('#lazyLoadFinalMatrix').DataTable({
-		  processing : true,
-		  ordering : false,
-		  scrollX : true,
-		  serverSide : true,
-		  ajax : {
-		    url : 'getMatrixAsync/final',
-		    type : 'POST'
-		  }
-		});
-
+		loadDatamatrix('#lazyLoadFinalMatrix', 'getMatrixAsync/final');
+	} else if (window.location.pathname.includes("/data")) {
+		loadDatamatrix('#lazyLoadFinalMatrix', 'getMatrixAsync/final');
 	}
 });
 
-function loadDataTable(tColumns) {
-
+function loadDatamatrix(selector, url) {
+	var t = $(selector).DataTable({
+	  processing : true,
+	  ordering : false,
+	  scrollX : true,
+	  serverSide : true,
+	  ajax : {
+	    url : url,
+	    type : 'POST',
+	    data : function(d) {
+		    delete d.columns;
+	    }
+	  }
+	});
 }
 
 $('#pagerCodebookNext1').click(function(e) {
