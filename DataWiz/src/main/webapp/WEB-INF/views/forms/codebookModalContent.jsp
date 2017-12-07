@@ -1,7 +1,7 @@
 <%@ include file="../templates/includes.jsp"%>
 <c:url var="accessUrl"
   value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}/codebook" />
-<sf:form action="${accessUrl}" commandName="VarValues" class="form-horizontal" role="form"
+<sf:form action="${accessUrl}" modelAttribute="VarValues" class="form-horizontal" role="form"
   onsubmit="return checkValueMissingForm('${modalView}')">
   <sf:hidden path="id" />
   <input type="hidden" id="spssType" value="${VarValues.type}" />

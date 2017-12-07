@@ -6,7 +6,7 @@
     <div class="login-card content-padding">
       <div class="login-form">
         <c:url var="loginUrl" value="/register" />
-        <sf:form action="${loginUrl}" commandName="UserDTO" class="form-horizontal" method="post">
+        <sf:form action="${loginUrl}" modelAttribute="UserDTO" class="form-horizontal" method="post">
           <div class="form-group">
             <label class="control-label col-sm-2" for="firstName"><s:message code="gen.firstName" /></label>
             <div class="col-sm-10">

@@ -14,7 +14,7 @@
         </div>
       </div>
       <c:url var="accessUrl" value="/access/${ProjectForm.project.id}" />
-      <sf:form action="${accessUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
+      <sf:form action="${accessUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form">
         <div class="form-group form-group-clean">
           <div class="col-md-12">
             <%@ include file="templates/message.jsp"%>

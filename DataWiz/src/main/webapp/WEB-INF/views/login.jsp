@@ -5,7 +5,7 @@
     <%@ include file="templates/breadcrump.jsp"%>
     <div class="login-card content-padding">
       <c:url var="loginUrl" value="/login" />
-      <sf:form action="${loginUrl}" commandName="UserDTO" StyleClass="form-horizontal">
+      <sf:form action="${loginUrl}" modelAttribute="UserDTO" StyleClass="form-horizontal">
         <c:if test="${isBetaVersion}">
           <div class="alert alert-danger">
             <strong><s:message code="datawiz.is.beta.info" /> </strong>

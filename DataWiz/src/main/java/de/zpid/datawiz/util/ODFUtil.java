@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.odftoolkit.odfdom.type.Color;
@@ -257,7 +257,7 @@ public class ODFUtil {
 				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createBMBFDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
@@ -295,7 +295,7 @@ public class ODFUtil {
 				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createH2020Doc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
@@ -332,7 +332,7 @@ public class ODFUtil {
 				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createDFGDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
@@ -370,7 +370,7 @@ public class ODFUtil {
 				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createPsychdataDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
@@ -408,7 +408,7 @@ public class ODFUtil {
 				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createPreRegistrationDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}

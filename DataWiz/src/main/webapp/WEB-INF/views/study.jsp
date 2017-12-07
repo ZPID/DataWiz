@@ -71,7 +71,7 @@
         </ul>
       </c:if>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
+      <sf:form action="${accessUrl}" modelAttribute="StudyForm" class="form-horizontal" id="studyFormDis">
         <c:choose>
           <c:when test="${allowEdit}">
             <input type="hidden" id="disStudyContent" value="${disStudyContent}" />

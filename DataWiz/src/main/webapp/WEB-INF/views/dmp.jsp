@@ -41,19 +41,19 @@
               <div class="col-xs-8 col-sm-6 text-align-right">
                 (Export currently in work)
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/BMBF/${ProjectForm.project.id}" />" target="_blank">BMBF</a>
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank">BMBF</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/H2020/${ProjectForm.project.id}" />" target="_blank">H2020</a>
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank">H2020</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/DFG/${ProjectForm.project.id}" />" target="_blank">DFG</a>
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG}" />" target="_blank">DFG</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/PsychData/${ProjectForm.project.id}" />" target="_blank">PsychData</a>
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/PsychData" />" target="_blank">PsychData</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/exportDMP/PreReg/${ProjectForm.project.id}" />" target="_blank">Präregistrierung</a>
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/PreReg" />" target="_blank">Präregistrierung</a>
                 </div>
               </div>
             </div>
@@ -74,7 +74,7 @@
         <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.costs" /></a></li>
       </ul>
       <c:url var="dmpUrl" value="/dmp/${ProjectForm.project.id}" />
-      <sf:form action="${dmpUrl}" commandName="ProjectForm" class="form-horizontal" role="form" id="dmpForm" onsubmit="checkOnSubmit();">
+      <sf:form action="${dmpUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form" id="dmpForm" onsubmit="checkOnSubmit();">
         <sf:hidden path="pagePosi" id="pagePosi" />
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <!-- Messages -->

@@ -10,7 +10,7 @@
         </h4>
       </div>
       <c:url var="loginUrl" value="/login/passwordrequest" />
-      <sf:form action="${loginUrl}" commandName="UserDTO" class="form-horizontal" method="post">
+      <sf:form action="${loginUrl}" modelAttribute="UserDTO" class="form-horizontal" method="post">
         <%@ include file="templates/message.jsp"%>
         <c:choose>
           <c:when test="${setemailview}">

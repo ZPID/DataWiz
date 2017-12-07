@@ -33,7 +33,7 @@
           <%@ include file="templates/message.jsp"%>
           <c:url var="accessUrl"
             value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}/data" />
-          <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
+          <sf:form action="${accessUrl}" modelAttribute="StudyForm" class="form-horizontal" id="studyFormDis">
             <table class="display table table-striped table-bordered table table-condensed matrixtable margin-bottom-0" id="lazyLoadFinalMatrix">
               <thead>
                 <tr>                 

@@ -62,7 +62,7 @@ public class UserController {
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
-	private EmailUtil emailUtil;
+	private EmailUtil emailUtil;	
 
 	private static Logger log = LogManager.getLogger(UserController.class);
 

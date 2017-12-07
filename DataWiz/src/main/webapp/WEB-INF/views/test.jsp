@@ -5,7 +5,7 @@
     <div class="login-card">
       <div class="login-form">
         <c:url var="loginUrl" value="/panel" />
-        <sf:form action="${loginUrl}" commandName="UserDTO" StyleClass="form-horizontal">
+        <sf:form action="${loginUrl}" modelAttribute="UserDTO" StyleClass="form-horizontal">
           <sf:input path="firstName" />
           <div class="has-error">
             <sf:errors path="firstName" class="help-inline" />

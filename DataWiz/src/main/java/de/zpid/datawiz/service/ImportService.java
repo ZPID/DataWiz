@@ -33,7 +33,10 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 import de.zpid.datawiz.dao.RecordDAO;
 import de.zpid.datawiz.dto.FileDTO;
@@ -189,9 +192,12 @@ public class ImportService {
 				log.warn("Detecting Charset for CSV File not successful - set Charset to UTF-8");
 				warnings.add(messageSource.getMessage("warning.charset.detection", null, LocaleContextHolder.getLocale()));
 			}
-			try (CSVReader reader = new CSVReader(
-			    new BufferedReader(new InputStreamReader(sForm.getCsvFile().getInputStream(), ch != null ? ch : Charset.forName("UTF-8"))),
-			    (sForm.getCsvSeperator() == 't' ? '\t' : sForm.getCsvSeperator()), (sForm.getCsvQuoteChar() == 'q' ? '\"' : '\''))) {
+			try {
+				CSVParser parser = new CSVParserBuilder().withSeparator((sForm.getCsvSeperator() == 't' ? '\t' : sForm.getCsvSeperator()))
+				    .withQuoteChar(sForm.getCsvQuoteChar() == 'q' ? '\"' : '\'').build();
+				CSVReader reader = new CSVReaderBuilder(
+				    new BufferedReader(new InputStreamReader(sForm.getCsvFile().getInputStream(), ch != null ? ch : Charset.forName("UTF-8"))))
+				        .withCSVParser(parser).build();
 				String[] nextLine;
 				int numOfCol = 0, lineNumber = 1;
 				List<List<Object>> matrix = new ArrayList<>();

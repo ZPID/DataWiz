@@ -52,7 +52,7 @@
         </c:choose>
       </div>
       <c:url var="projectUrl" value="/project/${ProjectForm.project.id}" />
-      <sf:form action="${projectUrl}" commandName="ProjectForm" class="form-horizontal" role="form">
+      <sf:form action="${projectUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form">
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <sf:hidden path="delPos" />
         <!-- Messages -->

@@ -22,7 +22,7 @@
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
-      <sf:form action="${projectUrl}" commandName="CProjectForm" class="form-inline">
+      <sf:form action="${projectUrl}" modelAttribute="CProjectForm" class="form-inline">
         <input type="hidden" value="<s:message code="project.panel.no.description" />" id="unsetDescription">
         <input type="hidden" value="<s:message code="study.panel.no.description" />" id="unsetStudyDescription">
         <input type="hidden" value="<s:message code="project.panel.no.researcher" />" id="unsetResearcher">

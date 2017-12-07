@@ -707,64 +707,62 @@ public class RecordController {
 		if (user == null || projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user) != null) {
 			log.warn("Auth User Object empty or User is permitted to download this file");
 			throw new DWDownloadException("export.access.denied");
-		} else {
+		}
+		try {
+			record = recordService.loadRecordExportData(versionId, recordId, exportType, res, pid.get());
+			if (!res.toString().trim().isEmpty()) {
+				record = null;
+			}
+		} catch (Exception e) {
+			record = null;
+			res.insert(0, "dbs.sql.exception");
+			log.error("ERROR: Getting record from DB wasn't sucessful! Record[recordId:{}; VersionId:{}] Exception:", () -> recordId, () -> versionId,
+			    () -> e);
+		}
+		if (record != null) {
 			try {
-				record = recordService.loadRecordExportData(versionId, recordId, exportType, res, pid.get());
-				if (!res.toString().trim().isEmpty()) {
-					record = null;
-				}
+				content = exportService.getRecordExportContentAsByteArray(pid.get(), exportType, attachments, record, res);
 			} catch (Exception e) {
 				record = null;
-				res.insert(0, "dbs.sql.exception");
-				log.error("ERROR: Getting record from DB wasn't sucessful! Record[recordId:{}; VersionId:{}] Exception:", () -> recordId, () -> versionId,
-				    () -> e);
+				res.insert(0, "export.error.exception.thown");
+				log.error("ERROR: Exception thrown at exportService.getRecordExportContentAsByteArray", () -> e);
 			}
-			if (record != null) {
-				try {
-					content = exportService.getRecordExportContentAsByteArray(pid.get(), exportType, attachments, record, res);
-				} catch (Exception e) {
-					record = null;
-					res.insert(0, "export.error.exception.thown");
-					log.error("ERROR: Exception thrown at exportService.getRecordExportContentAsByteArray", () -> e);
-				}
+		}
+		if (record != null && content != null) {
+			switch (exportType) {
+			case "CSVMatrix":
+				response.setContentType("text/csv");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Matrix.csv\"");
+				break;
+			case "CSVCodebook":
+				response.setContentType("text/csv");
+				response.setHeader("Content-Disposition",
+				    "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Codebook.csv\"");
+				break;
+			case "JSON":
+				response.setContentType("application/json");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".json\"");
+				break;
+			case "SPSS":
+				response.setContentType("application/sav");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".sav\"");
+				break;
+			case "PDF":
+				response.setContentType("application/pdf");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".pdf\"");
+				break;
+			case "CSVZIP":
+				response.setContentType("application/zip");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".zip\"");
+				break;
 			}
-			if (record != null && content != null) {
-				switch (exportType) {
-				case "CSVMatrix":
-					response.setContentType("text/csv");
-					response.setHeader("Content-Disposition",
-					    "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Matrix.csv\"");
-					break;
-				case "CSVCodebook":
-					response.setContentType("text/csv");
-					response.setHeader("Content-Disposition",
-					    "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Codebook.csv\"");
-					break;
-				case "JSON":
-					response.setContentType("application/json");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".json\"");
-					break;
-				case "SPSS":
-					response.setContentType("application/sav");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".sav\"");
-					break;
-				case "PDF":
-					response.setContentType("application/pdf");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".pdf\"");
-					break;
-				case "CSVZIP":
-					response.setContentType("application/zip");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".zip\"");
-					break;
-				}
-				response.setContentLength(content.length);
-				response.getOutputStream().write(content);
-				response.flushBuffer();
-				log.trace("Method exportRecord completed successfully");
-			} else {
-				log.warn("Method exportRecord completed with an error - DWDownloadException thrown: ", res.toString());
-				throw new DWDownloadException(res.toString());
-			}
+			response.setContentLength(content.length);
+			response.getOutputStream().write(content);
+			response.flushBuffer();
+			log.trace("Method exportRecord completed successfully");
+		} else {
+			log.warn("Method exportRecord completed with an error - DWDownloadException thrown: ", res.toString());
+			throw new DWDownloadException(res.toString());
 		}
 	}
 

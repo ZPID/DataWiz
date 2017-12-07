@@ -12,7 +12,7 @@
         </div>
       </div>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.previousRecordVersion.id}" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" role="form">
+      <sf:form action="${accessUrl}" modelAttribute="StudyForm" class="form-horizontal" role="form">
         <c:set var="selectedType" value="${StudyForm.selectedFileType}" scope="request" />
         <c:choose>
           <c:when test="${not empty StudyForm.errors}">

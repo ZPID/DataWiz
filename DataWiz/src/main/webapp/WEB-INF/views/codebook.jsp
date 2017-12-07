@@ -35,7 +35,7 @@
           </div>
           <c:url var="accessUrl"
             value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}/version/${StudyForm.record.versionId}/codebook" />
-          <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" id="studyFormDis">
+          <sf:form action="${accessUrl}" modelAttribute="StudyForm" class="form-horizontal" id="studyFormDis">
             <c:set var="allowEdit" value="true" />
             <c:if
               test="${!principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) and

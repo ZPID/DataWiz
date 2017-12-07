@@ -50,7 +50,7 @@
             </c:otherwise>
           </c:choose>
           <div class="form-group">
-            <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" commandName="ProjectForm"
+            <sf:form action="${uploadUrl}" class="dropzone form-horizontal" method="POST" modelAttribute="ProjectForm"
               role="form" enctype="multipart/form-data" id="my-dropzone"></sf:form>
           </div>
           <div class="row">

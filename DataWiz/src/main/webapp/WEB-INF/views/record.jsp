@@ -60,7 +60,7 @@
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
       <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/record/${StudyForm.record.id}" />
-      <sf:form action="${accessUrl}" commandName="StudyForm" class="form-horizontal" method="POST" enctype="multipart/form-data" id="studyFormDis">
+      <sf:form action="${accessUrl}" modelAttribute="StudyForm" class="form-horizontal" method="POST" enctype="multipart/form-data" id="studyFormDis">
         <c:if
           test="${!principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) and
                   !principal.user.hasRole('PROJECT_WRITER', StudyForm.project.id, false) and

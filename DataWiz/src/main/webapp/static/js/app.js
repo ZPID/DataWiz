@@ -28,9 +28,10 @@ $tag_box = null;
 
 		    // loading DMP Content
 		    if (window.location.pathname.search("/dmp") > 0) {
-		    	$("#dmpForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
-			    //$("#dmpForm :input").prop("disabled", false);
-			    setProjectSubmenu(($("#pagePosi").val().trim() != "" ? $("#pagePosi").val() : null));
+			    $("#dmpForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
+			    // $("#dmpForm :input").prop("disabled", false);
+			    setProjectSubmenu((($("#pagePosi").val() != undefined && $("#pagePosi").val().trim() != "") ? $("#pagePosi")
+			        .val() : null));
 			    showorHideDMPContent();
 			    $("#dmpForm").trackChanges();
 			    $(window).on('beforeunload', function(e) {
@@ -42,7 +43,7 @@ $tag_box = null;
 			    });
 		    } // loading Project Content without study!
 		    else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
-		    	$("#ProjectForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
+			    $("#ProjectForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
 			    // startTagging();
 		    } // loading Study Content
 		    else if (window.location.pathname.search("/study") > 0
@@ -426,21 +427,22 @@ function switchViewIfSelected(name, show) {
  * @param show
  */
 function switchViewIfSelectedMulti(name, show) {
-	var selected = $("#" + name).val().trim();
-	name = name.replace('select', 'content');
-	var showA = show.split(',');
-	var hideContainer = true;
-	for (var i = 0; i < showA.length; i++)
-		$("." + name + i).toggle(false);
-	for (var i = 0; i < showA.length; i++) {
-		$("." + name + i).toggle(showA[i].trim() == selected);
-		if (showA[i] == selected) {
-			hideContainer = false;
-			break;
+	if ($("#" + name).val() != undefined) {
+		var selected = $("#" + name).val().trim();
+		name = name.replace('select', 'content');
+		var showA = show.split(',');
+		var hideContainer = true;
+		for (var i = 0; i < showA.length; i++)
+			$("." + name + i).toggle(false);
+		for (var i = 0; i < showA.length; i++) {
+			$("." + name + i).toggle(showA[i].trim() == selected);
+			if (showA[i] == selected) {
+				hideContainer = false;
+				break;
+			}
 		}
+		$("#" + name + "").toggle(!hideContainer);
 	}
-	$("#" + name + "").toggle(!hideContainer);
-
 }
 
 /**

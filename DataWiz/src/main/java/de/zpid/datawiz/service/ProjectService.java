@@ -110,11 +110,12 @@ public class ProjectService {
 			log.warn("Auth User Object == null - redirect to login");
 			ret = "redirect:/login";
 		}
-		if (!pid.isPresent() || checkProjectRoles(user, pid.get(), studyId.isPresent() ? studyId.get() : -1, onlyWrite, true) == null) {
+		if (!pid.isPresent()
+		    || checkProjectRoles(user, pid.get(), (studyId != null && studyId.isPresent()) ? studyId.get() : -1, onlyWrite, true) == null) {
 			log.warn(
 			    "WARN: access denied because of: "
 			        + (!pid.isPresent() ? "missing project identifier" : "user [id: {}] has no rights to read/write study [id: {}]"),
-			    () -> user.getId(), () -> studyId.isPresent() ? studyId.get() : 0);
+			    () -> user.getId(), () -> (studyId != null && studyId.isPresent() ? studyId.get() : 0));
 			redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
 			ret = !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
 		}

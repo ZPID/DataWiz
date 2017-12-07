@@ -28,8 +28,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import de.zpid.datawiz.dto.DmpDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.DmpCategory;
 import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.exceptions.DWDownloadException;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.service.DMPService;
 import de.zpid.datawiz.service.ExceptionService;
@@ -222,17 +226,40 @@ public class DMPController {
 	 * 
 	 * @param pid
 	 * @param response
+	 * @throws DWDownloadException
 	 */
-	@RequestMapping(value = { "", "/exportDMP/{type}/{pid}" }, method = RequestMethod.GET)
-	public void exportDMPODF(@PathVariable final Optional<Long> pid, @PathVariable final Optional<String> type, final HttpServletResponse response) {
+	@RequestMapping(value = { "/{pid}/exportDMP/{type}" }, method = RequestMethod.GET)
+	public void exportDMPODF(@PathVariable final Optional<Long> pid, @PathVariable final Optional<String> type,
+	    final RedirectAttributes redirectAttributes, final HttpServletResponse response) throws DWDownloadException {
+		log.trace("Entering exportDMPODF for DMP [pid: {}] and exportType [{}]", () -> pid, () -> type);
+		UserDTO user = UserUtil.getCurrentUser();
+		if (user == null || (!user.hasRole(Roles.PROJECT_READER, pid, false) && !user.hasRole(Roles.PROJECT_ADMIN, pid, false)
+		    && !user.hasRole(Roles.PROJECT_WRITER, pid, false) && !user.hasRole(Roles.ADMIN))) {
+			log.warn("Auth User Object empty or User is permitted to download this file");
+			throw new DWDownloadException("export.access.denied");
+		}
+		byte[] content = null;
 		try {
-			byte[] content = dmpService.createDMPExport(pid, type, Locale.GERMAN);
+			content = dmpService.createDMPExport(pid, type, Locale.GERMAN);
+		} catch (Exception e) {
+			log.warn("Exception during dmpService.createDMPExport Message: ", () -> e);
+			if (e instanceof DataWizSystemException) {
+				if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.NO_DATA_ERROR))
+					throw new DWDownloadException("export.odt.error.dmp");
+				else
+					throw new DWDownloadException("export.odt.error.project");
+			} else {
+				throw new DWDownloadException("dbs.sql.exception");
+			}
+		}
+		try {
 			response.setContentType("application/vnd.oasis.opendocument.text");
 			response.setHeader("Content-Disposition", "attachment; filename=\"testodf.odt\"");
 			response.setContentLength(content.length);
 			response.getOutputStream().write(content);
 			response.flushBuffer();
 		} catch (Exception e) {
+
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
