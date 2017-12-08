@@ -222,7 +222,7 @@ public class DMPController {
 	}
 
 	/**
-	 * TODO
+	 * 
 	 * 
 	 * @param pid
 	 * @param response
@@ -240,6 +240,7 @@ public class DMPController {
 		}
 		byte[] content = null;
 		try {
+			// TODO? locale is set to German - should be changed if the form inputs are available in English
 			content = dmpService.createDMPExport(pid, type, Locale.GERMAN);
 		} catch (Exception e) {
 			log.warn("Exception during dmpService.createDMPExport Message: ", () -> e);
@@ -258,10 +259,10 @@ public class DMPController {
 			response.setContentLength(content.length);
 			response.getOutputStream().write(content);
 			response.flushBuffer();
+			log.trace("Leaving exportDMPODF for DMP [pid: {}] and exportType [{}]", () -> pid, () -> type);
 		} catch (Exception e) {
-
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.warn("Exception during creating response ", () -> e);
+			throw new DWDownloadException("export.error.response");
 		}
 
 	}
