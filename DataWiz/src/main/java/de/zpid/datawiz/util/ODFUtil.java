@@ -204,6 +204,8 @@ public class ODFUtil {
 			table.getCellRangeByPosition(0, 0, 1, 0).merge();
 			table.getCellRangeByPosition(2, 0, 3, 0).merge();
 			table.getCellRangeByPosition(0, 2, 3, 2).merge();
+			table.getCellRangeByPosition(0, 6, 0, 7).merge();
+			table.getCellRangeByPosition(1, 6, 1, 7).merge();
 			createCell(table, 0, 0, messageSource.getMessage("export.odt.BMBF.bifo.th1", null, locale), regular_bold, new Color(190, 190, 190), locale);
 			createCell(table, 2, 0, messageSource.getMessage("export.odt.BMBF.datawiz", null, locale), regular_bold, new Color(190, 190, 190), locale);
 			createCell(table, 0, 1, messageSource.getMessage("export.odt.BMBF.bifo.th2", null, locale), regular_bold, new Color(210, 210, 210), locale);
@@ -248,8 +250,18 @@ public class ODFUtil {
 			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale), regular, null, locale);
 			createCell(table, 2, 4, messageSource.getMessage("project.edit.funding", null, locale), regular, null, locale);
 			createCell(table, 3, 4, project.getFunding(), regular, null, locale);
+			createCell(table, 0, 5, messageSource.getMessage("export.odt.BMBF.bifo.td6", null, locale), regular, null, locale);
+			createCell(table, 1, 5, messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale), regular, null, locale);
+			createCell(table, 2, 5, messageSource.getMessage("project.edit.title", null, locale), regular, null, locale);
+			createCell(table, 3, 5, project.getTitle(), regular, null, locale);
+			createCell(table, 0, 6, messageSource.getMessage("export.odt.BMBF.bifo.td8", null, locale), regular, null, locale);
+			createCell(table, 1, 6, messageSource.getMessage("export.odt.BMBF.bifo.td9", null, locale), regular, null, locale);
+			createCell(table, 2, 6, messageSource.getMessage("project.edit.description", null, locale), regular, null, locale);
+			createCell(table, 3, 6, project.getDescription(), regular, null, locale);
+			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular, null, locale);
+			createCell(table, 3, 7, dmp.getExistingDataRelevance(), regular, null, locale);
 			
-
+			
 			// write doc to outputstream
 			doc.save(baos);
 			log.trace("Leaving createBMBFDoc");
