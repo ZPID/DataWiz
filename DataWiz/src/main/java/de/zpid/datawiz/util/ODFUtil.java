@@ -244,8 +244,11 @@ public class ODFUtil {
 			createCell(table, 1, 3, messageSource.getMessage("export.odt.BMBF.bifo.td3", null, locale), regular, null, locale);
 			createCell(table, 2, 3, messageSource.getMessage("project.edit.grantNumber", null, locale), regular, null, locale);
 			createCell(table, 3, 3, project.getGrantNumber(), regular, null, locale);
-
-			// TODO Zeile 4 und weiter!
+			createCell(table, 0, 4, messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale), regular, null, locale);
+			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF,bifo.td5", null, locale), regular, null, locale);
+			createCell(table, 2, 4, messageSource.getMessage("project.edit.funding", null, locale), regular, null, locale);
+			createCell(table, 3, 4, project.getFunding(), regular, null, locale);
+			
 
 			// write doc to outputstream
 			doc.save(baos);
