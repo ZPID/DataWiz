@@ -55,14 +55,15 @@ public class ODFUtil {
 	private final static List<FormTypesDTO> FORMTYPES = new ArrayList<>();
 
 	/**
-	 * This function creates the BMBF OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte
-	 * array!
+	 * This function creates the BMBF OTF document for the DPM export On success it
+	 * returns an byte array, otherwise an exception or an empty byte array!
 	 * 
 	 * @param ProjectForm,
-	 *          which contains all necessary data for the export
+	 *            which contains all necessary data for the export
 	 * @param Locale
-	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
-	 *          implemented in German.
+	 *            to distinguish whether the export is in English or German. At the
+	 *            moment only as a construct, because the export is currently only
+	 *            implemented in German.
 	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
@@ -80,7 +81,8 @@ public class ODFUtil {
 			doc.addColumnBreak();
 			Paragraph par = doc.addParagraph(messageSource.getMessage("export.odt.BMBF.subline", null, locale));
 			par.setFont(blue_reg);
-			// Masterpage: Damit die Tabellen etwas mehr Platz haben werden nach der 1 Seite die Ränder (margin) von 20 (Standard) auf 15 gesetzt.
+			// Masterpage: Damit die Tabellen etwas mehr Platz haben werden nach der 1 Seite
+			// die Ränder (margin) von 20 (Standard) auf 15 gesetzt.
 			MasterPage master = MasterPage.getOrCreateMasterPage(doc, "BMBF");
 			master.setNumberFormat(NumberFormat.HINDU_ARABIC_NUMBER.toString());
 			master.setMargins(15, 15, 15, 15);
@@ -93,7 +95,7 @@ public class ODFUtil {
 			par = doc.addParagraph(messageSource.getMessage("export.odt.BMBF.zu1it", null, locale));
 			par.setFont(regular_it);
 			par.appendHyperlink(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale),
-			    new URI(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale)));
+					new URI(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale)));
 			doc.addColumnBreak();
 			// Seite mit Tabelle
 			Table table = doc.addTable(31, 4);
@@ -116,78 +118,122 @@ public class ODFUtil {
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
 			// Tabelleninhalt
-			createCell(table, 0, 0, messageSource.getMessage("export.odt.BMBF.aza", null, locale), regular_bold, new Color(190, 190, 190), locale);
-			createCell(table, 2, 0, messageSource.getMessage("export.odt.BMBF.datawiz", null, locale), regular_bold, new Color(190, 190, 190), locale);
-			createCell(table, 0, 1, messageSource.getMessage("export.odt.BMBF.aza.th1", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 2, 1, messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 3, 1, messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.BMBF.aza.td1", null, locale), regular, null, locale);
-			createCell(table, 1, 3, messageSource.getMessage("export.odt.BMBF.aza.td2", null, locale), regular, null, locale);
-			createCell(table, 2, 3, messageSource.getMessage("dmp.edit.projectAims", null, locale), regular, null, locale);
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.BMBF.aza", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 2, 0, messageSource.getMessage("export.odt.BMBF.datawiz", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 0, 1, messageSource.getMessage("export.odt.BMBF.aza.th1", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 3, 1, messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.BMBF.aza.td1", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 3, messageSource.getMessage("export.odt.BMBF.aza.td2", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 3, messageSource.getMessage("dmp.edit.projectAims", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 3, project.getDescription(), regular, null, locale);
-			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF.aza.td3", null, locale), regular, null, locale);
-			createCell(table, 2, 4, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null, locale);
+			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF.aza.td3", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 4, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 4,
-			    (dmp.getExistingData() != null && !dmp.getExistingData().isEmpty()
-			        ? messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale)
-			        : ""),
-			    regular, null, locale);
-			createCell(table, 2, 5, messageSource.getMessage("dmp.edit.dataCitation", null, locale), regular, null, locale);
+					(dmp.getExistingData() != null && !dmp.getExistingData().isEmpty()
+							? messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale)
+							: ""),
+					regular, null, locale);
+			createCell(table, 2, 5, messageSource.getMessage("dmp.edit.dataCitation", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 5, dmp.getDataCitation(), regular, null, locale);
-			createCell(table, 2, 6, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular, null, locale);
+			createCell(table, 2, 6, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 6, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale), regular, null, locale);
+			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 7, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 2, 8, messageSource.getMessage("dmp.edit.externalCopyright", null, locale), regular, null, locale);
+			createCell(table, 2, 8, messageSource.getMessage("dmp.edit.externalCopyright", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 8, dmp.isExternalCopyright(), regular, null, locale);
-			createCell(table, 2, 9, messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale), regular, null, locale);
-			createCell(table, 3, 9, dmp.isExternalCopyright() ? dmp.getExternalCopyrightTxt() : null, regular, null, locale);
-			createCell(table, 1, 10, messageSource.getMessage("export.odt.BMBF.aza.td4", null, locale), regular, null, locale);
-			createCell(table, 2, 10, messageSource.getMessage("dmp.edit.duration", null, locale), regular, null, locale);
+			createCell(table, 2, 9, messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 9, dmp.isExternalCopyright() ? dmp.getExternalCopyrightTxt() : null, regular, null,
+					locale);
+			createCell(table, 1, 10, messageSource.getMessage("export.odt.BMBF.aza.td4", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 10, messageSource.getMessage("dmp.edit.duration", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 10, dmp.getDuration(), regular, null, locale);
-			createCell(table, 2, 11, messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale), regular, null, locale);
+			createCell(table, 2, 11, messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 11, dmp.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.measOccasions", null, locale), regular, null, locale);
+			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.measOccasions", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 12, dmp.getMeasOccasions(), regular, null, locale);
-			createCell(table, 2, 13, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null, locale);
+			createCell(table, 2, 13, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 13, dmp.getSpecificCosts(), regular, null, locale);
-			createCell(table, 2, 14, messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 14, messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 14, dmp.getSpecificCostsTxt(), regular, null, locale);
-			createCell(table, 2, 15, messageSource.getMessage("dmp.edit.bearCost", null, locale), regular, null, locale);
+			createCell(table, 2, 15, messageSource.getMessage("dmp.edit.bearCost", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 15, dmp.getBearCost(), regular, null, locale);
-			createCell(table, 2, 16, messageSource.getMessage("dmp.edit.staffDescription", null, locale), regular, null, locale);
+			createCell(table, 2, 16, messageSource.getMessage("dmp.edit.staffDescription", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 16, dmp.isStaffDescription(), regular, null, locale);
-			createCell(table, 2, 17, messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale), regular, null, locale);
-			createCell(table, 3, 17, dmp.isStaffDescription() ? dmp.getStaffDescriptionTxt() : null, regular, null, locale);
-			createCell(table, 1, 18, messageSource.getMessage("export.odt.BMBF.aza.td5", null, locale), regular, null, locale);
-			createCell(table, 2, 18, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null, locale);
+			createCell(table, 2, 17, messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 17, dmp.isStaffDescription() ? dmp.getStaffDescriptionTxt() : null, regular, null,
+					locale);
+			createCell(table, 1, 18, messageSource.getMessage("export.odt.BMBF.aza.td5", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 18, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 18, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 1, 19, messageSource.getMessage("export.odt.BMBF.aza.td6", null, locale), regular, null, locale);
-			createCell(table, 2, 19, messageSource.getMessage("dmp.edit.organizations", null, locale), regular, null, locale);
+			createCell(table, 1, 19, messageSource.getMessage("export.odt.BMBF.aza.td6", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 19, messageSource.getMessage("dmp.edit.organizations", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 19, dmp.getOrganizations(), regular, null, locale);
-			createCell(table, 2, 20, messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale), regular, null, locale);
+			createCell(table, 2, 20, messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 20, dmp.getInvolvedInstitutions(), regular, null, locale);
-			createCell(table, 2, 21, messageSource.getMessage("dmp.edit.involvedInformed", null, locale), regular, null, locale);
+			createCell(table, 2, 21, messageSource.getMessage("dmp.edit.involvedInformed", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 21, dmp.isInvolvedInformed(), regular, null, locale);
-			createCell(table, 2, 22, messageSource.getMessage("dmp.edit.contributionsDefined", null, locale), regular, null, locale);
+			createCell(table, 2, 22, messageSource.getMessage("dmp.edit.contributionsDefined", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 22, dmp.isContributionsDefined(), regular, null, locale);
-			createCell(table, 2, 23, messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 23, messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale),
+					regular, null, locale);
 			createCell(table, 3, 23, dmp.getContributionsDefinedTxt(), regular, null, locale);
-			createCell(table, 2, 24, messageSource.getMessage("dmp.edit.givenConsent", null, locale), regular, null, locale);
+			createCell(table, 2, 24, messageSource.getMessage("dmp.edit.givenConsent", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 24, dmp.isGivenConsent(), regular, null, locale);
-			createCell(table, 2, 25, messageSource.getMessage("dmp.edit.depositName", null, locale), regular, null, locale);
+			createCell(table, 2, 25, messageSource.getMessage("dmp.edit.depositName", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 25, dmp.getDepositName(), regular, null, locale);
-			createCell(table, 2, 26, messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale), regular, null, locale);
+			createCell(table, 2, 26, messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 26, dmp.isAcquisitionAgreement(), regular, null, locale);
-			createCell(table, 0, 27, messageSource.getMessage("export.odt.BMBF.aza.td7", null, locale), regular, null, locale);
-			createCell(table, 2, 27, messageSource.getMessage("dmp.edit.managementWorkflow", null, locale), regular, null, locale);
+			createCell(table, 0, 27, messageSource.getMessage("export.odt.BMBF.aza.td7", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 27, messageSource.getMessage("dmp.edit.managementWorkflow", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 27, dmp.isManagementWorkflow(), regular, null, locale);
-			createCell(table, 2, 28, messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 28, messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 28, dmp.getManagementWorkflowTxt(), regular, null, locale);
-			createCell(table, 0, 29, messageSource.getMessage("export.odt.BMBF.aza.td8", null, locale), regular, null, locale);
-			createCell(table, 2, 29, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
-			createCell(table, 0, 30, messageSource.getMessage("export.odt.BMBF.aza.td9", null, locale), regular, null, locale);
-			createCell(table, 2, 30, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
+			createCell(table, 0, 29, messageSource.getMessage("export.odt.BMBF.aza.td8", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 29, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 30, messageSource.getMessage("export.odt.BMBF.aza.td9", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 30, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
 			doc.addPageBreak();
 			// Neue Seite bildungsforschung
 			doc.addParagraph(messageSource.getMessage("export.odt.BMBF.zu2h", null, locale)).setFont(blue_large);
@@ -197,7 +243,7 @@ public class ODFUtil {
 			par = doc.addParagraph(messageSource.getMessage("export.odt.BMBF.zu2it", null, locale));
 			par.setFont(regular_it);
 			par.appendHyperlink(messageSource.getMessage("export.odt.BMBF.zu2l", null, locale),
-			    new URI(messageSource.getMessage("export.odt.BMBF.zu2l", null, locale)));
+					new URI(messageSource.getMessage("export.odt.BMBF.zu2l", null, locale)));
 			doc.addColumnBreak();
 			table = doc.addTable(31, 4);
 			// Zusammenführen der Zellen
@@ -206,13 +252,23 @@ public class ODFUtil {
 			table.getCellRangeByPosition(0, 2, 3, 2).merge();
 			table.getCellRangeByPosition(0, 6, 0, 7).merge();
 			table.getCellRangeByPosition(1, 6, 1, 7).merge();
-			createCell(table, 0, 0, messageSource.getMessage("export.odt.BMBF.bifo.th1", null, locale), regular_bold, new Color(190, 190, 190), locale);
-			createCell(table, 2, 0, messageSource.getMessage("export.odt.BMBF.datawiz", null, locale), regular_bold, new Color(190, 190, 190), locale);
-			createCell(table, 0, 1, messageSource.getMessage("export.odt.BMBF.bifo.th2", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 1, 1, messageSource.getMessage("export.odt.BMBF.bifo.th3", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 2, 1, messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 3, 1, messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.BMBF.bifo.td1", null, locale), regular_bold, null, locale);
+			table.getCellRangeByPosition(2, 9, 3, 9).merge();
+			table.getCellRangeByPosition(2, 10, 3, 10).merge();
+			table.getCellRangeByPosition(2, 11, 3, 11).merge();
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.BMBF.bifo.th1", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 2, 0, messageSource.getMessage("export.odt.BMBF.datawiz", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 0, 1, messageSource.getMessage("export.odt.BMBF.bifo.th2", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 1, 1, messageSource.getMessage("export.odt.BMBF.bifo.th3", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 3, 1, messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.BMBF.bifo.td1", null, locale), regular_bold,
+					null, locale);
 
 			/**
 			 * Zur erklärung: <br>
@@ -221,47 +277,105 @@ public class ODFUtil {
 			 * 2. spaltennummer, beginnend bei 0 für die erste spalte <br>
 			 * 3. zeilennummer, beginnend bei 0 für die erste Zeite <br>
 			 * 4. der inhalt, der in die Zelle kommt <br>
-			 * 5. die schriftart, welche oben in der Klasse definiert werden 6. hintergrundfarbe der Zelle, normal = null, bei überschriften new Color(190,
-			 * 190, 190) für dunkles grau und new Color(210, 210, 210) für etwas helleres <br>
+			 * 5. die schriftart, welche oben in der Klasse definiert werden 6.
+			 * hintergrundfarbe der Zelle, normal = null, bei überschriften new Color(190,
+			 * 190, 190) für dunkles grau und new Color(210, 210, 210) für etwas helleres
+			 * <br>
 			 * 6. die locale (die ist immer dabei)<br>
 			 * <br>
-			 * wenn der Wert an der 4. Postion aus den Sprachdateien kommt, dann nutzt du den messageSource. Falls der Text noch nicht in der Datei ist, was
-			 * bei allen Texten in der 1. und 2. Spalte, sowie den anderen Texten ausserhalb der Tabllen der fall ist, in der ExportResource_de.properties
-			 * anlegen
+			 * wenn der Wert an der 4. Postion aus den Sprachdateien kommt, dann nutzt du
+			 * den messageSource. Falls der Text noch nicht in der Datei ist, was bei allen
+			 * Texten in der 1. und 2. Spalte, sowie den anderen Texten ausserhalb der
+			 * Tabllen der fall ist, in der ExportResource_de.properties anlegen
 			 * 
-			 * das schema ist immer "export.odt.<name des Förderes>.<name der tabelle>.<variablenname>=" bsp: export.odt.BMBF.bifo.th1 wenn die Datei nur
-			 * eine tabelle hat, dann kannst du <name der tabelle> weglassen, ABER die bezeichner VOR den = müssen eindeutig sein! doppelte vergabe für zu
-			 * fehlern! Die Datei findes du unter src/main/resources/locale - die Bearbeitung _en Datei ist nicht notwengig, da der export vorerst nur auf
-			 * deutsch ist.
+			 * das schema ist immer "export.odt.<name des Förderes>.<name der
+			 * tabelle>.<variablenname>=" bsp: export.odt.BMBF.bifo.th1 wenn die Datei nur
+			 * eine tabelle hat, dann kannst du <name der tabelle> weglassen, ABER die
+			 * bezeichner VOR den = müssen eindeutig sein! doppelte vergabe für zu fehlern!
+			 * Die Datei findes du unter src/main/resources/locale - die Bearbeitung _en
+			 * Datei ist nicht notwengig, da der export vorerst nur auf deutsch ist.
 			 * 
-			 * Spalte 3 und 4 sollte dir ja aus dem PDF kram bekannt sein. 3 ist immer der vorhande Text aus der Sprachdateien und 4 die Werte aus dmp, oder
-			 * project Objekt
+			 * Spalte 3 und 4 sollte dir ja aus dem PDF kram bekannt sein. 3 ist immer der
+			 * vorhande Text aus der Sprachdateien und 4 die Werte aus dmp, oder project
+			 * Objekt
 			 * 
-			 * Du kannst createCell einfach immer untereinander schreiben und musst nicht auf irgendwelche typen achten, da ich die funktion so geschrieben
-			 * habe, das Sie erkennt ob der übergebene wert ein text, zahl, boolean oder eine liste ist.
+			 * Du kannst createCell einfach immer untereinander schreiben und musst nicht
+			 * auf irgendwelche typen achten, da ich die funktion so geschrieben habe, das
+			 * Sie erkennt ob der übergebene wert ein text, zahl, boolean oder eine liste
+			 * ist.
 			 * 
 			 */
 
-			createCell(table, 0, 3, messageSource.getMessage("export.odt.BMBF.bifo.td2", null, locale), regular, null, locale);
-			createCell(table, 1, 3, messageSource.getMessage("export.odt.BMBF.bifo.td3", null, locale), regular, null, locale);
-			createCell(table, 2, 3, messageSource.getMessage("project.edit.grantNumber", null, locale), regular, null, locale);
+			createCell(table, 0, 3, messageSource.getMessage("export.odt.BMBF.bifo.td2", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 3, messageSource.getMessage("export.odt.BMBF.bifo.td3", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 3, messageSource.getMessage("project.edit.grantNumber", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 3, project.getGrantNumber(), regular, null, locale);
-			createCell(table, 0, 4, messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale), regular, null, locale);
-			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale), regular, null, locale);
-			createCell(table, 2, 4, messageSource.getMessage("project.edit.funding", null, locale), regular, null, locale);
+			createCell(table, 0, 4, messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 4, messageSource.getMessage("project.edit.funding", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 4, project.getFunding(), regular, null, locale);
-			createCell(table, 0, 5, messageSource.getMessage("export.odt.BMBF.bifo.td6", null, locale), regular, null, locale);
-			createCell(table, 1, 5, messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale), regular, null, locale);
-			createCell(table, 2, 5, messageSource.getMessage("project.edit.title", null, locale), regular, null, locale);
+			createCell(table, 0, 5, messageSource.getMessage("export.odt.BMBF.bifo.td6", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 5, messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 5, messageSource.getMessage("project.edit.title", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 5, project.getTitle(), regular, null, locale);
-			createCell(table, 0, 6, messageSource.getMessage("export.odt.BMBF.bifo.td8", null, locale), regular, null, locale);
-			createCell(table, 1, 6, messageSource.getMessage("export.odt.BMBF.bifo.td9", null, locale), regular, null, locale);
-			createCell(table, 2, 6, messageSource.getMessage("project.edit.description", null, locale), regular, null, locale);
+			createCell(table, 0, 6, messageSource.getMessage("export.odt.BMBF.bifo.td8", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 6, messageSource.getMessage("export.odt.BMBF.bifo.td9", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 6, messageSource.getMessage("project.edit.description", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 6, project.getDescription(), regular, null, locale);
-			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular, null, locale);
+			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 7, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 0, 8, messageSource.getMessage("export.odt.BMBF.bifo.td10", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 8, messageSource.getMessage("export.odt.BMBF.bifo.td11", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 8, messageSource.getMessage("dmp.edit.leader", null, locale), regular, null, locale);
+			StringBuilder primName = new StringBuilder();
+			if (pForm.getPrimaryContributor() != null) {
+				if (pForm.getPrimaryContributor().getTitle() != null
+						&& !pForm.getPrimaryContributor().getTitle().isEmpty())
+					primName.append(pForm.getPrimaryContributor().getTitle()).append(" ");
+				if (pForm.getPrimaryContributor().getFirstName() != null
+						&& !pForm.getPrimaryContributor().getFirstName().isEmpty())
+					primName.append(pForm.getPrimaryContributor().getFirstName()).append(" ");
+				if (pForm.getPrimaryContributor().getLastName() != null
+						&& !pForm.getPrimaryContributor().getLastName().isEmpty())
+					primName.append(pForm.getPrimaryContributor().getLastName());
+				if (pForm.getPrimaryContributor().getInstitution() != null
+						&& !pForm.getPrimaryContributor().getInstitution().isEmpty())
+					primName.append(" (").append(pForm.getPrimaryContributor().getInstitution()).append(")");
+				createCell(table, 4, 8, primName.toString(), regular, null, locale);
+			}
+			createCell(table, 0, 9, messageSource.getMessage("export.odt.BMBF.bifo.td12", null, locale), regular, null, locale);
+			createCell(table, 1, 9, messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale), regular, null, locale);
+			createCell(table, 2, 9, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 10, messageSource.getMessage("export.odt.BMBF.bifo.td14", null, locale), regular, null, locale);
+			createCell(table, 1, 10, messageSource.getMessage("export.odt.BMBF.bifo.td15", null, locale), regular, null, locale);
+			createCell(table, 2, 10, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 11, messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale), regular, null, locale);
+			createCell(table, 1, 11, messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale), regular, null, locale);
+			createCell(table, 2, 11, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 12, messageSource.getMessage("export.odt.BMBF.bifo.td18", null, locale), regular, null, locale);
+			createCell(table, 1, 12, messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale), regular, null, locale);
+			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular, null, locale);
+			createCell(table, 3, 12, dmp.getFunderRequirements(), regular, null, locale);
 			
-			
+
 			// write doc to outputstream
 			doc.save(baos);
 			log.trace("Leaving createBMBFDoc");
@@ -269,23 +383,26 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createBMBFDoc - DMP is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale),
+						DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createBMBFDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
+						DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
 
 	/**
-	 * This function creates the H2020 OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte
-	 * array!
+	 * This function creates the H2020 OTF document for the DPM export On success it
+	 * returns an byte array, otherwise an exception or an empty byte array!
 	 * 
 	 * @param ProjectForm,
-	 *          which contains all necessary data for the export
+	 *            which contains all necessary data for the export
 	 * @param Locale
-	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
-	 *          implemented in German.
+	 *            to distinguish whether the export is in English or German. At the
+	 *            moment only as a construct, because the export is currently only
+	 *            implemented in German.
 	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
@@ -307,22 +424,26 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createH2020Doc - DMP is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale),
+						DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createH2020Doc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
+						DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
 
 	/**
-	 * This function creates the DFG OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte array!
+	 * This function creates the DFG OTF document for the DPM export On success it
+	 * returns an byte array, otherwise an exception or an empty byte array!
 	 * 
 	 * @param ProjectForm,
-	 *          which contains all necessary data for the export
+	 *            which contains all necessary data for the export
 	 * @param Locale
-	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
-	 *          implemented in German.
+	 *            to distinguish whether the export is in English or German. At the
+	 *            moment only as a construct, because the export is currently only
+	 *            implemented in German.
 	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
@@ -344,23 +465,27 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createDFGDoc - DMP is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale),
+						DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createDFGDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
+						DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
 
 	/**
-	 * This function creates the PsychData OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty byte
+	 * This function creates the PsychData OTF document for the DPM export On
+	 * success it returns an byte array, otherwise an exception or an empty byte
 	 * array!
 	 * 
 	 * @param ProjectForm,
-	 *          which contains all necessary data for the export
+	 *            which contains all necessary data for the export
 	 * @param Locale
-	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
-	 *          implemented in German.
+	 *            to distinguish whether the export is in English or German. At the
+	 *            moment only as a construct, because the export is currently only
+	 *            implemented in German.
 	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
@@ -382,23 +507,27 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createPsychdataDoc - DMP is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale),
+						DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createPsychdataDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
+						DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
 
 	/**
-	 * This function creates the PreRegistration OTF document for the DPM export On success it returns an byte array, otherwise an exception or an empty
-	 * byte array!
+	 * This function creates the PreRegistration OTF document for the DPM export On
+	 * success it returns an byte array, otherwise an exception or an empty byte
+	 * array!
 	 * 
 	 * @param ProjectForm,
-	 *          which contains all necessary data for the export
+	 *            which contains all necessary data for the export
 	 * @param Locale
-	 *          to distinguish whether the export is in English or German. At the moment only as a construct, because the export is currently only
-	 *          implemented in German.
+	 *            to distinguish whether the export is in English or German. At the
+	 *            moment only as a construct, because the export is currently only
+	 *            implemented in German.
 	 * @return The Open Text document as a byte array
 	 * @throws Exception
 	 */
@@ -420,42 +549,46 @@ public class ODFUtil {
 		} else {
 			if (dmp == null) {
 				log.warn("Error during createPreRegistrationDoc - DMP is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale), DataWizErrorCodes.NO_DATA_ERROR);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale),
+						DataWizErrorCodes.NO_DATA_ERROR);
 			} else {
 				log.warn("Error during createPreRegistrationDoc - Project is null");
-				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale), DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
+						DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 		}
 	}
 
 	/**
-	 * This function writes content into a Cell. There it needs the current table and position (colnum, rownum). As content, the function expects an
-	 * object of type object and interprets the correct content independently. This currently works with numbers, strings, booleans and lists.
+	 * This function writes content into a Cell. There it needs the current table
+	 * and position (colnum, rownum). As content, the function expects an object of
+	 * type object and interprets the correct content independently. This currently
+	 * works with numbers, strings, booleans and lists.
 	 * 
 	 * @param table
-	 *          Table, which is including the cell
+	 *            Table, which is including the cell
 	 * @param col
-	 *          Column number (starting with 0)
+	 *            Column number (starting with 0)
 	 * @param row
-	 *          Row number (starting with 0)
+	 *            Row number (starting with 0)
 	 * @param content
-	 *          Content, which will be written into the cell
+	 *            Content, which will be written into the cell
 	 * @param font
-	 *          Font-type of the cell
+	 *            Font-type of the cell
 	 * @param color
-	 *          Background color of the Cell - null for white
+	 *            Background color of the Cell - null for white
 	 * @param locale
-	 *          Actual locale for the export
+	 *            Actual locale for the export
 	 */
-	private void createCell(final Table table, final int col, final int row, final Object content, final Font font, final Color color,
-	    final Locale locale) {
+	private void createCell(final Table table, final int col, final int row, final Object content, final Font font,
+			final Color color, final Locale locale) {
 		if (content != null) {
 			Cell cell = table.getCellByPosition(col, row);
 			if (content instanceof Number) {
 				cell.setDoubleValue((Double) content);
 			} else if (content instanceof Boolean) {
-				cell.setStringValue(
-				    ((boolean) content) ? messageSource.getMessage("gen.yes", null, locale) : messageSource.getMessage("gen.no", null, locale));
+				cell.setStringValue(((boolean) content) ? messageSource.getMessage("gen.yes", null, locale)
+						: messageSource.getMessage("gen.no", null, locale));
 			} else if (content instanceof String) {
 				cell.setStringValue(StringEscapeUtils.UNESCAPE_HTML4.translate(String.valueOf(content)));
 			} else if (content instanceof List<?>) {
@@ -468,7 +601,8 @@ public class ODFUtil {
 						initFormTpes();
 					}
 					if (usedType instanceof Integer) {
-						FormTypesDTO type = FORMTYPES.parallelStream().filter(dt -> (dt.getId() == (int) usedType)).findFirst().orElse(null);
+						FormTypesDTO type = FORMTYPES.parallelStream().filter(dt -> (dt.getId() == (int) usedType))
+								.findFirst().orElse(null);
 						// TODO OTHER
 						if (type != null) {
 							if (locale.equals(Locale.ENGLISH))
@@ -491,9 +625,11 @@ public class ODFUtil {
 	}
 
 	/**
-	 * This function inits the formtypes. The formtypes are static, because the can be used for all instances. At the moment there are no functions to
-	 * change the formtypes, therefore it is not necessary to check for updates. If the formtypes are changed directly in the database, the DataWiz
-	 * application has to be reloaded, or the tomcat has to be restarted.
+	 * This function inits the formtypes. The formtypes are static, because the can
+	 * be used for all instances. At the moment there are no functions to change the
+	 * formtypes, therefore it is not necessary to check for updates. If the
+	 * formtypes are changed directly in the database, the DataWiz application has
+	 * to be reloaded, or the tomcat has to be restarted.
 	 */
 	private void initFormTpes() {
 		try {
