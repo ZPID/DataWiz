@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.SmartValidator;
 
+import de.zpid.datawiz.dao.ContributorDAO;
 import de.zpid.datawiz.dao.DmpDAO;
 import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
@@ -44,6 +45,8 @@ public class DMPService {
 	private ProjectService projectService;
 	@Autowired
 	private ProjectDAO projectDAO;
+	@Autowired
+	private ContributorDAO contributorDAO;
 
 	/**
 	 * 
@@ -207,6 +210,8 @@ public class DMPService {
 		pForm.getDmp().setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.DATATYPE, false));
 		pForm.getDmp().setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.COLLECTIONMODE, false));
 		pForm.getDmp().setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(pid.get(), DWFieldTypes.METAPORPOSE, false));
+		pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pForm.getProject()));
+		pForm.setContributors(contributorDAO.findByProject(pForm.getProject(), false, false));
 		byte[] content = null;
 		switch (type.get()) {
 		case "BMBF":
