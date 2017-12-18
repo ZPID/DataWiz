@@ -60,6 +60,8 @@ public class MinioUtil {
 		try {
 			this.minioClient = new MinioClient(env.getRequiredProperty("minio.url"), env.getRequiredProperty("minio.access.key"),
 			    env.getRequiredProperty("minio.secret.key"));
+			if (env.getRequiredProperty("minio.cert.selfsigned").equals("true"))
+				this.minioClient.ignoreCertCheck();
 			if (cleanIncomplete) {
 				log.info("Minio: cleaning incomplete Uploads");
 				List<Bucket> bucketList = minioClient.listBuckets();

@@ -14,7 +14,7 @@
         </div>
       </div>
       <c:url var="accessUrl" value="/export/${ExportProjectForm.projectId}" />
-      <sf:form action="${accessUrl}" modelAttribute="ExportProjectForm" class="form-horizontal" role="form">
+      <sf:form action="${accessUrl}" modelAttribute="ExportProjectForm" class="form-horizontal" role="form" target="_blank">
         <ul class="list-group exportlist">
           <li class="list-group-item">
             <div class="row">

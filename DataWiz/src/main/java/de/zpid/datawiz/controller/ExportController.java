@@ -1,7 +1,6 @@
 package de.zpid.datawiz.controller;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Optional;
 
@@ -11,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,9 +27,28 @@ import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ExportProjectForm;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ExportService;
+import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.UserUtil;
 
+/**
+ * Controller for mapping "/export" <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
+ * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ */
 @Controller
 @RequestMapping(value = "/export")
 @SessionAttributes({ "breadcrumpList", "ExportProjectForm" })
@@ -45,40 +62,41 @@ public class ExportController {
 	ExportService exportService;
 	@Autowired
 	private ExceptionService exceptionService;
+	@Autowired
+	private ProjectService projectService;
 
+	/**
+	 * 
+	 * @param pid
+	 * @param model
+	 * @param redirectAttributes
+	 * @return
+	 */
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
-	public String showExportPage(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes reAtt,
-	    final RedirectAttributes redirectAttributes) {
-		log.trace("Entering showExportPage for project [id: {}]", () -> pid.isPresent() ? pid.get() : "null");
-		if (!pid.isPresent()) {
-			reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("roles.error.empty.form", null, LocaleContextHolder.getLocale()));
-			return "redirect:/panel";
-		}
+	public String showExportPage(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
+		log.trace("Entering showExportPage for project [id: {}]", () -> pid);
+		String ret = null;
 		final UserDTO user = UserUtil.getCurrentUser();
-		if (user == null) {
-			log.warn("Auth User Object == null - redirect to login");
-			return "redirect:/login";
-		}
-		ExportProjectForm exportForm = null;
-		try {
-			if (pid.isPresent())
+		ret = projectService.checkUserAccess(pid, null, redirectAttributes, false, user);
+		if (ret == null) {
+			ExportProjectForm exportForm = null;
+			try {
 				exportForm = exportService.getExportForm(pid.get(), user);
-			else
-				throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-				    DataWizErrorCodes.MISSING_PID_ERROR);
-		} catch (Exception e) {
-			exceptionService.setErrorMessagesAndRedirects(pid, null, null, model, redirectAttributes, e, "ExportController->showExportPage");
+			} catch (Exception e) {
+				ret = exceptionService.setErrorMessagesAndRedirects(pid, null, null, model, redirectAttributes, e, "ExportController->showExportPage");
+			}
+			model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { exportForm.getProjectTitle() }, null, messageSource));
+			model.put("subnaviActive", PageState.EXPORT.name());
+			model.put("ExportProjectForm", exportForm);
+			ret = "export";
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { exportForm.getProjectTitle() }, null, messageSource));
-		model.put("subnaviActive", PageState.EXPORT.name());
-		model.put("ExportProjectForm", exportForm);
-		log.trace("Method showExportPage successfully completed");
-		return "export";
+		log.trace("Leaving showExportPage for project [id: {}]", () -> pid);
+		return ret;
 	}
 
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST, produces = "application/zip")
 	public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid,
-	    final ModelMap model, final RedirectAttributes reAtt, HttpServletResponse response) throws Exception {
+	    final ModelMap model, HttpServletResponse response, final RedirectAttributes redirectAttributes) throws Exception {
 
 		final UserDTO user = UserUtil.getCurrentUser();
 
@@ -89,18 +107,30 @@ public class ExportController {
 			try {
 				files = exportService.createExportFileList(exportForm, pid, user);
 			} catch (Exception e) {
-				log.warn("Method exportProject->createExportFileList completed with an error - DWDownloadException thrown: ", () -> e);
+
 				files = null;
+				if (e instanceof DataWizSystemException) {
+					log.warn("Method exportProject->createExportFileList completed with an error [{}] - DWDownloadException thrown: ",
+					    () -> ((DataWizSystemException) e).getErrorCode(), () -> e);
+					throw (e);
+				} else {
+					throw new DWDownloadException("export.error.exception.thown");
+				}
 			}
 		}
 		if (files != null) {
 			StringBuilder res = new StringBuilder();
 			byte[] export = exportService.exportZip(files, res);
 			if (export != null) {
-				response.setContentType("application/zip");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
-				response.getOutputStream().write(export);
-				response.flushBuffer();
+				try {
+					response.setContentType("application/zip");
+					response.setHeader("Content-Disposition",
+					    "attachment; filename=\"" + exportService.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
+					response.getOutputStream().write(export);
+					response.flushBuffer();
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { exportForm.getProjectTitle() }, null, messageSource));
 				model.put("subnaviActive", PageState.EXPORT.name());
 			} else {
@@ -108,8 +138,7 @@ public class ExportController {
 				throw new DWDownloadException(res.toString());
 			}
 		} else {
-			// TODO
-			throw new DWDownloadException("logging.selected.file.empty");
+			throw new DWDownloadException("export.error.exception.thown");
 		}
 
 	}

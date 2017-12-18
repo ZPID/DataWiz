@@ -166,7 +166,7 @@ public class ContributorDAO {
 	public int deleteContributor(ContributorDTO contri) throws Exception {
 		log.trace("execute deleteContributor [contributorId: {}]", () -> contri.getId());
 		int chk = this.jdbcTemplate.update("DELETE FROM dw_contributors WHERE id= ?", contri.getId());
-		log.debug("leaving deleteContributor with result: [success: {}]", () -> chk);
+		log.trace("leaving deleteContributor with result: [success: {}]", () -> chk);
 		return chk;
 	}
 
@@ -193,7 +193,7 @@ public class ContributorDAO {
 				    return contri.size();
 			    }
 		    });
-		log.debug("leaving deleteFromStudy with result: [size: {}]", () -> ret.length);
+		log.trace("leaving deleteFromStudy with result: [size: {}]", () -> ret.length);
 		return ret;
 	}
 
@@ -222,7 +222,7 @@ public class ContributorDAO {
 				    return contri.size();
 			    }
 		    });
-		log.debug("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
+		log.trace("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
 		return ret;
 	}
 
@@ -255,7 +255,7 @@ public class ContributorDAO {
 			}
 		}, holder);
 		contri.setId((holder.getKey().longValue() > 0) ? holder.getKey().longValue() : -1);
-		log.debug("leaving insertContributor with result: [success: {}]", () -> chk);
+		log.trace("leaving insertContributor with result: [success: {}]", () -> chk);
 		return chk;
 	}
 
@@ -271,7 +271,7 @@ public class ContributorDAO {
 		log.trace("execute insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
 		int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)", contri.getProjectId(),
 		    contri.getId());
-		log.debug("leaving insertIntoProject with result: [success: {}]", () -> ret);
+		log.trace("leaving insertIntoProject with result: [success: {}]", () -> ret);
 		return ret;
 	}
 
@@ -289,7 +289,7 @@ public class ContributorDAO {
 		    "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ? WHERE dw_contributors.id = ?",
 		    contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(), contri.getOrcid(),
 		    contri.getId());
-		log.debug("leaving updateContributor with result: [success: {}]", () -> ret);
+		log.trace("leaving updateContributor with result: [success: {}]", () -> ret);
 		return ret;
 	}
 

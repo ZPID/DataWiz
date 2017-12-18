@@ -457,7 +457,7 @@ public class ITextUtil {
 		Set<String> uniqueSet = new HashSet<>();
 		if (matrix != null) {
 			AtomicBoolean statsExp = new AtomicBoolean(true);
-			matrix.parallelStream().forEach(col -> {
+			matrix.forEach(col -> {
 				if (col != null && statsExp.get()) {
 					try {
 						String ent = String.valueOf(col.get(var.getPosition() - 1));
@@ -497,6 +497,9 @@ public class ITextUtil {
 				    String.valueOf(countWithoutMissings.get()));
 				createAndAddRow(table, bg.getAndSet(!bg.get()), "\n", "");
 				createAndAddRow(table, bg.getAndSet(!bg.get()), messageSource.getMessage("export.pdf.line.invalid", null, Locale.ENGLISH), "");
+				DoubleRange dr;
+				Iterator<Comparable<?>> vIter;
+				long missCount;
 				switch (var.getMissingFormat()) {
 				case SPSS_ONE_MISSVAL:
 					createAndAddRow(table, bg.getAndSet(!bg.get()), var.getMissingVal1(), String.valueOf(freq.getCount(var.getMissingVal1().trim())));
@@ -511,13 +514,22 @@ public class ITextUtil {
 					createAndAddRow(table, bg.getAndSet(!bg.get()), var.getMissingVal3(), String.valueOf(freq.getCount(var.getMissingVal3().trim())));
 					break;
 				case SPSS_MISS_RANGE:
+					dr = new DoubleRange(Double.valueOf(var.getMissingVal1().trim()), Double.valueOf(var.getMissingVal2().trim()));
+					vIter = freq.valuesIterator();
+					missCount = 0;
+					while (vIter.hasNext()) {
+						Comparable<?> value = vIter.next();
+						if (dr.containsDouble(Double.valueOf(value.toString().trim()))) {
+							missCount += freq.getCount(value);
+						}
+					}
 					createAndAddRow(table, bg.getAndSet(!bg.get()), messageSource.getMessage("export.pdf.line.missing.range", null, Locale.ENGLISH) + " "
-					    + var.getMissingVal1() + " - " + var.getMissingVal2(), String.valueOf(freq.getCount(var.getMissingVal2().trim())));
+					    + var.getMissingVal1() + " - " + var.getMissingVal2(), String.valueOf(String.valueOf(missCount)));
 					break;
 				case SPSS_MISS_RANGEANDVAL:
-					DoubleRange dr = new DoubleRange(Double.valueOf(var.getMissingVal1().trim()), Double.valueOf(var.getMissingVal2().trim()));
-					Iterator<Comparable<?>> vIter = freq.valuesIterator();
-					long missCount = 0;
+					dr = new DoubleRange(Double.valueOf(var.getMissingVal1().trim()), Double.valueOf(var.getMissingVal2().trim()));
+					vIter = freq.valuesIterator();
+					missCount = 0;
 					while (vIter.hasNext()) {
 						Comparable<?> value = vIter.next();
 						if (dr.containsDouble(Double.valueOf(value.toString().trim()))) {

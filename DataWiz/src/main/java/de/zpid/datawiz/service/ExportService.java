@@ -28,6 +28,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -119,6 +120,8 @@ public class ExportService {
 	private StudyService studyService;
 	@Autowired
 	private ConsistencyCheckUtil ccUtil;
+	@Autowired
+	private Environment env;
 
 	/**
 	 * 
@@ -839,7 +842,10 @@ public class ExportService {
 					exportList.add(new SimpleEntry<String, byte[]>(folderName + file.getFileName(), file.getContent()));
 			} else {
 				throw new DataWizSystemException(
-				    messageSource.getMessage("logging.minio.read.error", new Object[] { result.name() }, LocaleContextHolder.getLocale()),
+				    messageSource.getMessage("logging.minio.read.error",
+				        new Object[] { result.name(), file.getFileName(), file.getProjectId(), file.getStudyId(), file.getRecordID(), file.getVersion(),
+				            file.getFilePath(), env.getRequiredProperty("organisation.admin.email") },
+				        LocaleContextHolder.getLocale()),
 				    DataWizErrorCodes.MINIO_READ_ERROR);
 			}
 		}

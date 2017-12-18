@@ -287,6 +287,7 @@ public class DDIUtil {
 			removeElementIfEmpty(e2);
 			e2 = addAndReturnElement(e1, "infrastructure", null);
 			addTextElement(e2, "responsible", null, dmp.getStorageResponsible());
+			addTextElement(e2, "namingCon", null, dmp.getNamingCon());
 			addTextElement(e2, "storageLocation", null, dmp.getStoragePlaces());
 			addTextElement(e2, "backups", null, dmp.getStorageBackups());
 			addTextElement(e2, "transfer", null, dmp.getStorageTransfer());
