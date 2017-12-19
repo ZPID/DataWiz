@@ -245,7 +245,7 @@ public class ODFUtil {
 			par.appendHyperlink(messageSource.getMessage("export.odt.BMBF.zu2l", null, locale),
 					new URI(messageSource.getMessage("export.odt.BMBF.zu2l", null, locale)));
 			doc.addColumnBreak();
-			table = doc.addTable(31, 4);
+			table = doc.addTable(85, 4);
 			// Zusammenführen der Zellen
 			table.getCellRangeByPosition(0, 0, 1, 0).merge();
 			table.getCellRangeByPosition(2, 0, 3, 0).merge();
@@ -255,6 +255,49 @@ public class ODFUtil {
 			table.getCellRangeByPosition(2, 9, 3, 9).merge();
 			table.getCellRangeByPosition(2, 10, 3, 10).merge();
 			table.getCellRangeByPosition(2, 11, 3, 11).merge();
+			table.getCellRangeByPosition(0, 13, 3, 13).merge();
+			table.getCellRangeByPosition(0, 15, 0, 18).merge();
+			table.getCellRangeByPosition(1, 15, 1, 18).merge();
+			table.getCellRangeByPosition(0, 19, 0, 21).merge();
+			table.getCellRangeByPosition(1, 19, 1, 21).merge();
+			table.getCellRangeByPosition(2, 22, 3, 22).merge();
+			table.getCellRangeByPosition(2, 23, 3, 23).merge();
+			table.getCellRangeByPosition(0, 24, 3, 24).merge();
+			table.getCellRangeByPosition(0, 25, 0, 28).merge();
+			table.getCellRangeByPosition(1, 25, 1, 28).merge();
+			table.getCellRangeByPosition(0, 29, 0, 30).merge();
+			table.getCellRangeByPosition(1, 29, 1, 30).merge();
+			table.getCellRangeByPosition(0, 31, 0, 33).merge();
+			table.getCellRangeByPosition(1, 31, 1, 33).merge();
+			table.getCellRangeByPosition(0, 34, 0, 35).merge();
+			table.getCellRangeByPosition(1, 34, 1, 35).merge();
+			table.getCellRangeByPosition(0, 36, 3, 36).merge();
+			table.getCellRangeByPosition(0, 38, 0, 39).merge();
+			table.getCellRangeByPosition(1, 38, 1, 39).merge();
+			table.getCellRangeByPosition(0, 40, 3, 40).merge();
+			table.getCellRangeByPosition(0, 41, 0, 46).merge();
+			table.getCellRangeByPosition(1, 41, 1, 46).merge();
+			table.getCellRangeByPosition(0, 47, 0, 54).merge();
+			table.getCellRangeByPosition(1, 47, 1, 54).merge();
+			table.getCellRangeByPosition(2, 55, 3, 55).merge();
+			table.getCellRangeByPosition(0, 56, 3, 56).merge();
+			table.getCellRangeByPosition(0, 57, 0, 66).merge();
+			table.getCellRangeByPosition(1, 57, 1, 66).merge();
+			table.getCellRangeByPosition(0, 68, 3, 68).merge();
+			table.getCellRangeByPosition(0, 69, 0, 71).merge();
+			table.getCellRangeByPosition(1, 69, 1, 71).merge();
+			table.getCellRangeByPosition(0, 72, 0, 74).merge();
+			table.getCellRangeByPosition(1, 72, 1, 74).merge();
+			table.getCellRangeByPosition(0, 75, 3, 75).merge();
+			table.getCellRangeByPosition(0, 76, 0, 80).merge();
+			table.getCellRangeByPosition(1, 76, 1, 80).merge();
+			table.getCellRangeByPosition(0, 81, 0, 85).merge();
+			table.getCellRangeByPosition(1, 81, 1, 85).merge();
+
+			table.getColumnByIndex(0).setWidth(30);
+			table.getColumnByIndex(1).setWidth(30);
+			table.getColumnByIndex(2).setWidth(50);
+
 			createCell(table, 0, 0, messageSource.getMessage("export.odt.BMBF.bifo.th1", null, locale), regular_bold,
 					new Color(190, 190, 190), locale);
 			createCell(table, 2, 0, messageSource.getMessage("export.odt.BMBF.datawiz", null, locale), regular_bold,
@@ -341,7 +384,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 1, 8, messageSource.getMessage("export.odt.BMBF.bifo.td11", null, locale), regular, null,
 					locale);
-			createCell(table, 3, 8, messageSource.getMessage("dmp.edit.leader", null, locale), regular, null, locale);
+			createCell(table, 2, 8, messageSource.getMessage("dmp.edit.leader", null, locale), regular, null, locale);
 			StringBuilder primName = new StringBuilder();
 			if (pForm.getPrimaryContributor() != null) {
 				if (pForm.getPrimaryContributor().getTitle() != null
@@ -356,25 +399,321 @@ public class ODFUtil {
 				if (pForm.getPrimaryContributor().getInstitution() != null
 						&& !pForm.getPrimaryContributor().getInstitution().isEmpty())
 					primName.append(" (").append(pForm.getPrimaryContributor().getInstitution()).append(")");
-				createCell(table, 4, 8, primName.toString(), regular, null, locale);
+				createCell(table, 3, 8, primName.toString(), regular, null, locale);
 			}
-			createCell(table, 0, 9, messageSource.getMessage("export.odt.BMBF.bifo.td12", null, locale), regular, null, locale);
-			createCell(table, 1, 9, messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale), regular, null, locale);
+			createCell(table, 0, 9, messageSource.getMessage("export.odt.BMBF.bifo.td12", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 9, messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 9, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 10, messageSource.getMessage("export.odt.BMBF.bifo.td14", null, locale), regular, null, locale);
-			createCell(table, 1, 10, messageSource.getMessage("export.odt.BMBF.bifo.td15", null, locale), regular, null, locale);
+			createCell(table, 0, 10, messageSource.getMessage("export.odt.BMBF.bifo.td14", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 10, messageSource.getMessage("export.odt.BMBF.bifo.td15", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 10, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 11, messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale), regular, null, locale);
-			createCell(table, 1, 11, messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale), regular, null, locale);
+			createCell(table, 0, 11, messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 11, messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 11, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 12, messageSource.getMessage("export.odt.BMBF.bifo.td18", null, locale), regular, null, locale);
-			createCell(table, 1, 12, messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale), regular, null, locale);
-			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular, null, locale);
+			createCell(table, 0, 12, messageSource.getMessage("export.odt.BMBF.bifo.td18", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 12, messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 12, dmp.getFunderRequirements(), regular, null, locale);
-			
+			createCell(table, 0, 13, messageSource.getMessage("export.odt.BMBF.bifo.td20", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 14, messageSource.getMessage("export.odt.BMBF.bifo.td21", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 14, messageSource.getMessage("export.odt.BMBF.bifo.td22", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 14, messageSource.getMessage("dmp.edit.usedDataTypes", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 14, dmp.getUsedDataTypes(), regular, null, locale);
+			createCell(table, 0, 15, messageSource.getMessage("export.odt.BMBF.bifo.td23", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 15, messageSource.getMessage("export.odt.BMBF.bifo.td24", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 15, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 15, dmp.getExistingData(), regular, null, locale);
+			createCell(table, 2, 16, messageSource.getMessage("dmp.edit.dataCitation", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 16, dmp.getDataCitation(), regular, null, locale);
+			createCell(table, 2, 17, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 17, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 2, 18, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale),
+					regular, null, locale);
+			createCell(table, 3, 18, dmp.getExistingDataIntegration(), regular, null, locale);
+			createCell(table, 0, 19, messageSource.getMessage("export.odt.BMBF.bifo.td25", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 19, messageSource.getMessage("export.odt.BMBF.bifo.td26", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 19, messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 19, dmp.getReliabilityTraining(), regular, null, locale);
+			createCell(table, 2, 20, messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 20, dmp.getMultipleMeasurements(), regular, null, locale);
+			createCell(table, 2, 21, messageSource.getMessage("dmp.edit.qualitityOther", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 21, dmp.getQualitityOther(), regular, null, locale);
+			createCell(table, 0, 22, messageSource.getMessage("export.odt.BMBF.bifo.td27", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 22, messageSource.getMessage("export.odt.BMBF.bifo.td28", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 22, messageSource.getMessage("export.odt.no.equivalent1", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 23, messageSource.getMessage("export.odt.BMBF.bifo.td29", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 23, messageSource.getMessage("export.odt.BMBF.bifo.td30", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 23, messageSource.getMessage("export.odt.no.equivalent2", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 24, messageSource.getMessage("export.odt.BMBF.bifo.td31", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 25, messageSource.getMessage("export.odt.BMBF.bifo.td32", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 25, messageSource.getMessage("export.odt.BMBF.bifo.td33", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 25, messageSource.getMessage("dmp.edit.storageResponsible", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 25, dmp.getStorageResponsible(), regular, null, locale);
+			createCell(table, 2, 26, messageSource.getMessage("dmp.edit.storagePlaces", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 26, dmp.getStoragePlaces(), regular, null, locale);
+			createCell(table, 2, 27, messageSource.getMessage("dmp.edit.storageBackups", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 27, dmp.getStorageBackups(), regular, null, locale);
+			createCell(table, 2, 28, messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 28, dmp.getStorageExpectedSize(), regular, null, locale);
+			createCell(table, 0, 29, messageSource.getMessage("export.odt.BMBF.bifo.td34", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 29, messageSource.getMessage("export.odt.BMBF.bifo.td35", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 29, messageSource.getMessage("dmp.edit.managementWorkflow", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 29, dmp.isManagementWorkflow(), regular, null, locale);
+			createCell(table, 2, 30, messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 30, dmp.getManagementWorkflowTxt(), regular, null, locale);
+			createCell(table, 0, 31, messageSource.getMessage("export.odt.BMBF.bifo.td36", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 31, messageSource.getMessage("export.odt.BMBF.bifo.td37", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 31, messageSource.getMessage("dmp.edit.fileFormat", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 31, dmp.getFileFormat(), regular, null, locale);
+			createCell(table, 2, 32, messageSource.getMessage("dmp.edit.storageRequirements", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 32, dmp.isStorageRequirements(), regular, null, locale);
+			createCell(table, 2, 33, messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 33, dmp.getStorageRequirementsTxt(), regular, null, locale);
+			createCell(table, 0, 34, messageSource.getMessage("export.odt.BMBF.bifo.td38", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 34, messageSource.getMessage("export.odt.BMBF.bifo.td39", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 34, messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 34, dmp.isSensitiveDataIncluded(), regular, null, locale);
+			createCell(table, 2, 35, messageSource.getMessage("dmp.edit.sensitiveDataIncludedTxt", null, locale),
+					regular, null, locale);
+			createCell(table, 3, 35, dmp.getSensitiveDataIncludedTxt(), regular, null, locale);
+			createCell(table, 0, 36, messageSource.getMessage("export.odt.BMBF.bifo.td40", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 37, messageSource.getMessage("export.odt.BMBF.bifo.td41", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 37, messageSource.getMessage("export.odt.BMBF.bifo.td42", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 37, messageSource.getMessage("dmp.edit.metaDescription", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 37, dmp.getMetaDescription(), regular, null, locale);
+			createCell(table, 0, 38, messageSource.getMessage("export.odt.BMBF.bifo.td43", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 38, messageSource.getMessage("export.odt.BMBF.bifo.td44", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 38, messageSource.getMessage("dmp.edit.metaFramework", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 38, dmp.getMetaFramework(), regular, null, locale);
+			createCell(table, 2, 39, messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 39, dmp.getSelectedMetaPurposes(), regular, null, locale);
+			createCell(table, 0, 40, messageSource.getMessage("export.odt.BMBF.bifo.td45", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 41, messageSource.getMessage("export.odt.BMBF.bifo.td46", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 41, messageSource.getMessage("export.odt.BMBF.bifo.td47", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 41, messageSource.getMessage("dmp.edit.frameworkNationality", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 41, dmp.getFrameworkNationality(), regular, null, locale);
+			createCell(table, 2, 42, messageSource.getMessage("dmp.edit.frameworkNationalityTxt", null, locale),
+					regular, null, locale);
+			createCell(table, 3, 42, dmp.getFrameworkNationalityTxt(), regular, null, locale);
+			createCell(table, 2, 43, messageSource.getMessage("dmp.edit.externalCopyright", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 43, dmp.isExternalCopyright(), regular, null, locale);
+			createCell(table, 2, 44, messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 44, dmp.getExternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 2, 45, messageSource.getMessage("dmp.edit.internalCopyright", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 45, dmp.isInternalCopyright(), regular, null, locale);
+			createCell(table, 2, 46, messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 46, dmp.getInternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 0, 47, messageSource.getMessage("export.odt.BMBF.bifo.td48", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 47, messageSource.getMessage("export.odt.BMBF.bifo.td49", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 47, messageSource.getMessage("dmp.edit.sensitiveData", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 47, dmp.getSensitiveData(), regular, null, locale);
+			createCell(table, 2, 48, messageSource.getMessage("dmp.edit.dataProtection", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 48, dmp.isDataProtection(), regular, null, locale);
+			createCell(table, 2, 49, messageSource.getMessage("dmp.edit.protectionRequirements", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 49, dmp.getProtectionRequirements(), regular, null, locale);
+			createCell(table, 2, 50, messageSource.getMessage("dmp.edit.consentObtained", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 50, dmp.isConsentObtained(), regular, null, locale);
+			createCell(table, 2, 51, messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 51, dmp.getConsentObtainedTxt(), regular, null, locale);
+			createCell(table, 2, 52, messageSource.getMessage("dmp.edit.sharingConsidered", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 52, dmp.isSharingConsidered(), regular, null, locale);
+			createCell(table, 2, 53, messageSource.getMessage("dmp.edit.irbApproval", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 53, dmp.isIrbApproval(), regular, null, locale);
+			createCell(table, 2, 54, messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 54, dmp.getIrbApprovalTxt(), regular, null, locale);
+			createCell(table, 0, 55, messageSource.getMessage("export.odt.BMBF.bifo.td50", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 55, messageSource.getMessage("export.odt.BMBF.bifo.td51", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 55, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 56, messageSource.getMessage("export.odt.BMBF.bifo.td52", null, locale), regular, null,
+					locale);
+			createCell(table, 0, 57, messageSource.getMessage("export.odt.BMBF.bifo.td53", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 57, messageSource.getMessage("export.odt.BMBF.bifo.td54", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 57, messageSource.getMessage("dmp.edit.publStrategy", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 57, dmp.getPublStrategy(), regular, null, locale);
+			createCell(table, 2, 58, messageSource.getMessage("dmp.edit.depositName", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 58, dmp.getDepositName(), regular, null, locale);
+			createCell(table, 2, 59, messageSource.getMessage("dmp.edit.searchableData", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 59, dmp.getSearchableData(), regular, null, locale);
+			createCell(table, 2, 60, messageSource.getMessage("dmp.edit.transferTime", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 60, dmp.getTransferTime(), regular, null, locale);
+			createCell(table, 2, 61, messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 61, dmp.getAccessReasonAuthor(), regular, null, locale);
+			createCell(table, 2, 62, messageSource.getMessage("dmp.edit.noAccessReason", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 62, dmp.getNoAccessReason(), regular, null, locale);
+			createCell(table, 2, 63, messageSource.getMessage("dmp.edit.initialUsage", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 63, dmp.getInitialUsage(), regular, null, locale);
+			createCell(table, 2, 64, messageSource.getMessage("dmp.edit.usageRestriction", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 64, dmp.getUsageRestriction(), regular, null, locale);
+			createCell(table, 2, 65, messageSource.getMessage("dmp.edit.accessCosts", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 65, dmp.isAccessCosts(), regular, null, locale);
+			createCell(table, 2, 66, messageSource.getMessage("dmp.edit.usedPID", null, locale), regular, null, locale);
+			createCell(table, 3, 66, dmp.getUsedPID(), regular, null, locale);
+			createCell(table, 0, 67, messageSource.getMessage("export.odt.BMBF.bifo.td55", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 67, messageSource.getMessage("export.odt.BMBF.bifo.td56", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 67, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 67, dmp.getExpectedUsage(), regular, null, locale);
+			createCell(table, 0, 68, messageSource.getMessage("export.odt.BMBF.bifo.td57", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 69, messageSource.getMessage("export.odt.BMBF.bifo.td58", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 69, messageSource.getMessage("export.odt.BMBF.bifo.td59", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 69, messageSource.getMessage("dmp.edit.dataSelection", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 69, dmp.isDataSelection(), regular, null, locale);
+			createCell(table, 2, 70, messageSource.getMessage("dmp.edit.selectionTime", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 70, dmp.getSelectionTime(), regular, null, locale);
+			createCell(table, 2, 71, messageSource.getMessage("dmp.edit.selectionResp", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 71, dmp.getSelectionResp(), regular, null, locale);
+			createCell(table, 0, 72, messageSource.getMessage("export.odt.BMBF.bifo.td60", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 72, messageSource.getMessage("export.odt.BMBF.bifo.td61", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 72, messageSource.getMessage("dmp.edit.storageDuration", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 72, dmp.getStorageDuration(), regular, null, locale);
+			createCell(table, 2, 73, messageSource.getMessage("dmp.edit.storageSuccession", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 73, dmp.isStorageSuccession(), regular, null, locale);
+			createCell(table, 2, 74, messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 74, dmp.getStorageSuccessionTxt(), regular, null, locale);
+			createCell(table, 0, 75, messageSource.getMessage("export.odt.BMBF.bifo.td62", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 76, messageSource.getMessage("export.odt.BMBF.bifo.td63", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 76, messageSource.getMessage("export.odt.BMBF.bifo.td64", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 76, messageSource.getMessage("dmp.edit.responsibleUnit", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 76, dmp.getResponsibleUnit(), regular, null, locale);
+			createCell(table, 2, 77, messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 77, dmp.getInvolvedInstitutions(), regular, null, locale);
+			createCell(table, 2, 78, messageSource.getMessage("dmp.edit.involvedInformed", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 78, dmp.isInvolvedInformed(), regular, null, locale);
+			createCell(table, 2, 79, messageSource.getMessage("dmp.edit.contributionsDefined", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 79, dmp.isContributionsDefined(), regular, null, locale);
+			createCell(table, 2, 80, messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale),
+					regular, null, locale);
+			createCell(table, 3, 80, dmp.getContributionsDefinedTxt(), regular, null, locale);
+			createCell(table, 0, 81, messageSource.getMessage("export.odt.BMBF.bifo.td65", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 81, messageSource.getMessage("export.odt.BMBF.bifo.td66", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 81, messageSource.getMessage("dmp.edit.staffDescription", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 81, dmp.isStaffDescription(), regular, null, locale);
+			createCell(table, 2, 82, messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale), regular,
+					null, locale);
+			createCell(table, 3, 82, dmp.getStaffDescriptionTxt(), regular, null, locale);
+			createCell(table, 2, 83, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 83, dmp.getSpecificCosts(), regular, null, locale);
+			createCell(table, 2, 84, messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 84, dmp.getSpecificCostsTxt(), regular, null, locale);
+			createCell(table, 2, 85, messageSource.getMessage("dmp.edit.bearCost", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 85, dmp.getBearCost(), regular, null, locale);
 
 			// write doc to outputstream
 			doc.save(baos);
