@@ -366,11 +366,12 @@ public class ProjectController {
 		switch (projectService.saveMaterialToMinoAndDB(request, pid, studyId, user)) {
 		case MINIO_SAVE_ERROR:
 			return new ResponseEntity<String>(
-			    "{\"error\" : \"" + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale()) + "\"}",
+			    "{\"error\" : \"" + messageSource.getMessage("minio.connection.exception.upload",
+			        new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()) + "\"}",
 			    HttpStatus.INTERNAL_SERVER_ERROR);
 		case DATABASE_ERROR:
-			return new ResponseEntity<String>(
-			    "{\"error\" : \"" + messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()) + "\"}", HttpStatus.CONFLICT);
+			return new ResponseEntity<String>("{\"error\" : \"" + messageSource.getMessage("dbs.sql.exception",
+			    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()) + "\"}", HttpStatus.CONFLICT);
 		default:
 			log.trace("Method uploadFile successfully completed");
 			return new ResponseEntity<String>("", HttpStatus.OK);
@@ -417,10 +418,11 @@ public class ProjectController {
 	 * @param redirectAttributes
 	 *          {@link RedirectAttributes}
 	 * @return Return the file as download, or an error message in case of an error.
+	 * @throws DataWizSystemException
 	 */
 	@RequestMapping(value = { "/{pid}/download/{docId}", "/{pid}/study/{studyId}/download/{docId}" }, method = RequestMethod.GET)
 	public @ResponseBody ResponseEntity<String> downloadDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response,
-	    RedirectAttributes redirectAttributes) {
+	    RedirectAttributes redirectAttributes) throws DataWizSystemException {
 		log.trace("Entering downloadDocument [id: {}]", () -> docId);
 		UserDTO user = UserUtil.getCurrentUser();
 		ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
@@ -429,13 +431,13 @@ public class ProjectController {
 			resp = new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
 		} else {
 			switch (projectService.prepareMaterialDownload(docId, response)) {
-			case MINIO_SAVE_ERROR:
-				resp = new ResponseEntity<String>(
-				    "{\"error\" : \"" + messageSource.getMessage("minio.connection.exception.upload", null, LocaleContextHolder.getLocale()) + "\"}",
-				    HttpStatus.INTERNAL_SERVER_ERROR);
+			case MINIO_READ_ERROR:
+				throw new DataWizSystemException(messageSource.getMessage("minio.connection.exception.upload",
+				    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()),
+				    DataWizErrorCodes.MINIO_READ_ERROR);
 			case DATABASE_ERROR:
-				resp = new ResponseEntity<String>(
-				    "{\"error\" : \"" + messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()) + "\"}", HttpStatus.CONFLICT);
+				throw new DataWizSystemException(messageSource.getMessage("dbs.sql.exception",
+				    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()), DataWizErrorCodes.DATABASE_ERROR);
 			default:
 				log.debug("Leaving downloadDocument with result: {}", resp.getStatusCode());
 				break;

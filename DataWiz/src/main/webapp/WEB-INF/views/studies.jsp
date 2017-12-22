@@ -8,7 +8,7 @@
       <div class="page-header">
         <c:url var="projectUrl" value="study" />
         <div class="row">
-          
+
           <div class="col-sm-10">
             <h4>
               <s:message code="project.studies.headline" />
@@ -58,9 +58,8 @@
               </c:when>
             </c:choose>
           </c:if>
-          <div class="panel <c:out value="${pRole_set}"/>" onclick="location.href='<c:url value="study/${cstud.id}"/>';"
-            style="cursor: pointer;">
-            <div class="panel-heading">
+          <div class="panel <c:out value="${pRole_set}"/>">
+            <div class="panel-heading" onclick="location.href='<c:url value="study/${cstud.id}"/>';" style="cursor: pointer;">
               <div class="row">
                 <div class="col-sm-12">
                   <s:message text="${cstud.title}" />
@@ -108,22 +107,24 @@
             </div>
             <div class="panel-footer">
               <div class="row">
-                <div class="col-sm-12 text-align-right">
+                <div class="col-sm-4 text-align-left" style="margin-top: 3px">
                   <c:forEach items="${ProjectForm.sharedUser}" var="user">
                     <c:if test="${user.id eq cstud.lastUserId}">
                       <javatime:format value="${cstud.timestamp}" style="MS" var="strDate" />
                       <c:choose>
                         <c:when test="${not empty user.lastName && not empty user.firstName}">
-                          <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"
-                            htmlEscape="false" argumentSeparator=";" />
+                          <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
+                            argumentSeparator=";" />
                         </c:when>
                         <c:otherwise>
-                          <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false"
-                            argumentSeparator=";" />
+                          <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false" argumentSeparator=";" />
                         </c:otherwise>
                       </c:choose>
                     </c:if>
                   </c:forEach>
+                </div>
+                <div class="col-sm-8 text-align-right">
+                  <button class="btn btn-success btn-xs" onclick="location.href='<c:url value="study/${cstud.id}"/>';">Ansehen/Bearbeiten</button>
                 </div>
               </div>
             </div>

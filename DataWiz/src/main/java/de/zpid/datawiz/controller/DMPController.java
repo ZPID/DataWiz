@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -78,6 +79,8 @@ public class DMPController {
 	private DMPService dmpService;
 	@Autowired
 	private ClassPathXmlApplicationContext applicationContext;
+	@Autowired
+	private Environment env;
 
 	public DMPController() {
 		super();
@@ -188,7 +191,7 @@ public class DMPController {
 		UserDTO user = UserUtil.getCurrentUser();
 		boolean hasErrors = false;
 		if (!pid.isPresent() || projectService.checkProjectRoles(user, pid.get(), 0, true, false) == null) {
-			bRes.reject("globalErrors", messageSource.getMessage("project.save.globalerror.not.successful", null, LocaleContextHolder.getLocale()));
+			bRes.reject("globalErrors", messageSource.getMessage("project.save.globalerror.not.successful", new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
 			hasErrors = true;
 		}
 		Boolean unChanged = true;

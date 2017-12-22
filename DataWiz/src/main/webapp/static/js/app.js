@@ -783,5 +783,4 @@ function checkDeletePhrase(phrase) {
 		$("#deleteAlert").show();
 		return false;
 	}
-
 }

@@ -236,9 +236,11 @@ public class StudyService {
 	 * @param pid
 	 * @param user
 	 * @return
+	 * @throws DataWizSystemException
 	 */
 	// TODO EXCEPTION OR MESSAGES
-	public StudyDTO saveStudyForm(StudyForm sForm, final Optional<Long> studyId, final Optional<Long> pid, final UserDTO user) {
+	public StudyDTO saveStudyForm(StudyForm sForm, final Optional<Long> studyId, final Optional<Long> pid, final UserDTO user, final boolean createCopy)
+	    throws DataWizSystemException {
 		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 		StudyDTO study = null;
 		if (sForm != null)
@@ -254,33 +256,35 @@ public class StudyService {
 					studyDAO.insert(study, false);
 				}
 				// update Contibutors
-				List<ContributorDTO> dbList = contributorDAO.findByStudy(study.getId());
-				if (!ListUtil.equalsWithoutOrder(dbList, study.getContributors())) {
-					if (dbList != null)
-						contributorDAO.deleteFromStudy(dbList);
-					if (study.getContributors() != null)
-						contributorDAO.insertStudyRelation(study.getContributors(), study.getId());
+				if (!createCopy) {
+					List<ContributorDTO> dbList = contributorDAO.findByStudy(study.getId());
+					if (!ListUtil.equalsWithoutOrder(dbList, study.getContributors())) {
+						if (dbList != null)
+							contributorDAO.deleteFromStudy(dbList);
+						if (study.getContributors() != null)
+							contributorDAO.insertStudyRelation(study.getContributors(), study.getId());
+					}
 				}
 				// update SOFTWARE
-				updateStudyListItems(study.getId(), study.getSoftware(), DWFieldTypes.SOFTWARE);
+				updateStudyListItems(study.getId(), study.getSoftware(), DWFieldTypes.SOFTWARE, createCopy);
 				// update PUBONDATA
-				updateStudyListItems(study.getId(), study.getPubOnData(), DWFieldTypes.PUBONDATA);
+				updateStudyListItems(study.getId(), study.getPubOnData(), DWFieldTypes.PUBONDATA, createCopy);
 				// update CONFLINTEREST
-				updateStudyListItems(study.getId(), study.getConflInterests(), DWFieldTypes.CONFLINTEREST);
+				updateStudyListItems(study.getId(), study.getConflInterests(), DWFieldTypes.CONFLINTEREST, createCopy);
 				// update OBJECTIVES
-				updateStudyListItems(study.getId(), study.getObjectives(), DWFieldTypes.OBJECTIVES);
+				updateStudyListItems(study.getId(), study.getObjectives(), DWFieldTypes.OBJECTIVES, createCopy);
 				// update RELTHEORY
-				updateStudyListItems(study.getId(), study.getRelTheorys(), DWFieldTypes.RELTHEORY);
+				updateStudyListItems(study.getId(), study.getRelTheorys(), DWFieldTypes.RELTHEORY, createCopy);
 				// update INTERARMS
-				updateStudyListItems(study.getId(), study.getInterArms(), DWFieldTypes.INTERARMS);
+				updateStudyListItems(study.getId(), study.getInterArms(), DWFieldTypes.INTERARMS, createCopy);
 				// update MEASOCCNAME
-				updateStudyListItems(study.getId(), study.getMeasOcc(), DWFieldTypes.MEASOCCNAME);
+				updateStudyListItems(study.getId(), study.getMeasOcc(), DWFieldTypes.MEASOCCNAME, createCopy);
 				// update CONSTRUCTS
-				updateConstructsItems(study.getId(), study.getConstructs());
+				updateConstructsItems(study.getId(), study.getConstructs(), createCopy);
 				// update INSTRUMENTS
-				updateInstrumentItems(study.getId(), study.getInstruments());
+				updateInstrumentItems(study.getId(), study.getInstruments(), createCopy);
 				// update MEASOCCNAME
-				updateStudyListItems(study.getId(), study.getEligibilities(), DWFieldTypes.ELIGIBILITY);
+				updateStudyListItems(study.getId(), study.getEligibilities(), DWFieldTypes.ELIGIBILITY, createCopy);
 				// update usedCollectionModes
 				List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.COLLECTIONMODE, true);
 				if (!ListUtil.equalsWithoutOrder(collectionModes, study.getUsedCollectionModes())) {
@@ -303,12 +307,15 @@ public class StudyService {
 				}
 				txManager.commit(status);
 			} catch (Exception e) {
-				log.error("ERROR", e);
+				log.warn("Database Error: ", () -> e);
 				txManager.rollback(status);
-				return null;
+				throw new DataWizSystemException(
+				    messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, LocaleContextHolder.getLocale()),
+				    DataWizErrorCodes.DATABASE_ERROR, e);
 			}
 		} else {
-			// TODO study null
+			throw new DataWizSystemException(messageSource.getMessage("logging.study.not.found", new Object[] { studyId }, LocaleContextHolder.getLocale()),
+			    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 		}
 		return study;
 	}
@@ -319,7 +326,8 @@ public class StudyService {
 	 * @param type
 	 * @throws Exception
 	 */
-	private void updateStudyListItems(final Long studyId, List<StudyListTypesDTO> list, DWFieldTypes type) throws Exception {
+	private void updateStudyListItems(final Long studyId, List<StudyListTypesDTO> list, final DWFieldTypes type, final boolean createCopy)
+	    throws Exception {
 		List<StudyListTypesDTO> dbtmp = studyListTypesDAO.findAllByStudyAndType(studyId, type);
 		if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
 			List<StudyListTypesDTO> insert = new ArrayList<>();
@@ -327,7 +335,7 @@ public class StudyService {
 			List<StudyListTypesDTO> update = new ArrayList<>();
 			if (list != null && list.size() > 0)
 				for (StudyListTypesDTO tmp : list) {
-					if (tmp.getId() <= 0 && !tmp.getText().trim().isEmpty()) {
+					if (createCopy || (tmp.getId() <= 0 && !tmp.getText().trim().isEmpty())) {
 						tmp.setStudyid(studyId);
 						tmp.setType(type);
 						tmp.setSort(0);
@@ -358,7 +366,7 @@ public class StudyService {
 		}
 	}
 
-	private void updateConstructsItems(final Long studyId, List<StudyConstructDTO> list) throws Exception {
+	private void updateConstructsItems(final Long studyId, List<StudyConstructDTO> list, final boolean createCopy) throws Exception {
 		List<StudyConstructDTO> dbtmp = studyConstructDAO.findAllByStudy(studyId);
 		if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
 			List<StudyConstructDTO> insert = new ArrayList<>();
@@ -366,7 +374,7 @@ public class StudyService {
 			List<StudyConstructDTO> update = new ArrayList<>();
 			if (list != null && list.size() > 0)
 				for (StudyConstructDTO tmp : list) {
-					if (tmp.getId() <= 0 && !tmp.getName().trim().isEmpty()) {
+					if (createCopy || (tmp.getId() <= 0 && !tmp.getName().trim().isEmpty())) {
 						tmp.setStudyId(studyId);
 						insert.add(tmp);
 					} else if (tmp.getId() > 0 && tmp.getName().trim().isEmpty()) {
@@ -392,7 +400,7 @@ public class StudyService {
 		}
 	}
 
-	private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list) throws Exception {
+	private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list, final boolean createCopy) throws Exception {
 		List<StudyInstrumentDTO> dbtmp = studyInstrumentDAO.findAllByStudy(studyId, false);
 		if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
 			List<StudyInstrumentDTO> insert = new ArrayList<>();
@@ -400,7 +408,7 @@ public class StudyService {
 			List<StudyInstrumentDTO> update = new ArrayList<>();
 			if (list != null && list.size() > 0)
 				for (StudyInstrumentDTO tmp : list) {
-					if (tmp.getId() <= 0 && !tmp.getTitle().trim().isEmpty()) {
+					if (createCopy || (tmp.getId() <= 0 && !tmp.getTitle().trim().isEmpty())) {
 						tmp.setStudyId(studyId);
 						insert.add(tmp);
 					} else if (tmp.getId() > 0 && tmp.getTitle().trim().isEmpty()) {
@@ -564,7 +572,7 @@ public class StudyService {
 			    DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
 		}
 	}
-	
+
 	/**
 	 * Validate study form.
 	 *
@@ -635,6 +643,45 @@ public class StudyService {
 			error = true;
 		}
 		return error;
+	}
+
+	/**
+	 * 
+	 * @param pid
+	 * @param studyId
+	 * @param selected
+	 * @param user
+	 * @return
+	 * @throws Exception
+	 * @throws DataWizSystemException
+	 */
+	public StudyDTO copyStudy(Optional<Long> pid, Optional<Long> studyId, Optional<Long> selected, final UserDTO user)
+	    throws Exception, DataWizSystemException {
+		if (pid == null || !pid.isPresent())
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, LocaleContextHolder.getLocale()),
+			    DataWizErrorCodes.MISSING_PID_ERROR);
+		if (studyId == null || !studyId.isPresent())
+			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, LocaleContextHolder.getLocale()),
+			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
+		if (selected == null || !selected.isPresent())
+			throw new DataWizSystemException(
+			    messageSource.getMessage("logging.param.not.present", new Object[] { "selected" }, LocaleContextHolder.getLocale()),
+			    DataWizErrorCodes.NO_DATA_ERROR);
+		if (user == null || (!user.hasRole(Roles.ADMIN) && !user.hasRole(Roles.PROJECT_ADMIN, studyId.get(), true))) {
+			throw new DataWizSystemException(messageSource.getMessage("logging.user.permitted",
+			    new Object[] { user != null ? user.getId() : null, "study", studyId }, LocaleContextHolder.getLocale()),
+			    DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
+		}
+		StudyDTO study;
+		study = studyDAO.findById(studyId.get(), pid.get(), false, false);
+		setStudyDTOExport(study);
+		study.setTitle(messageSource.getMessage("study.duplicate.prefix", null, LocaleContextHolder.getLocale()) + study.getTitle());
+		StudyForm sForm = new StudyForm();
+		study.setId(0);
+		study.setProjectId(selected.get());
+		sForm.setStudy(study);
+		study = saveStudyForm(sForm, Optional.empty(), selected, user, true);
+		return study;
 	}
 
 }

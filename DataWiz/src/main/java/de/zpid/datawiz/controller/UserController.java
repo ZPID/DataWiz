@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -62,7 +63,9 @@ public class UserController {
 	@Autowired
 	private UserDAO userDAO;
 	@Autowired
-	private EmailUtil emailUtil;	
+	private EmailUtil emailUtil;
+	@Autowired
+	private Environment env;
 
 	private static Logger log = LogManager.getLogger(UserController.class);
 
@@ -131,7 +134,8 @@ public class UserController {
 		log.trace("Entering saveUserSettings for user [id: {}]", () -> user != null ? user.getEmail() : null);
 		if (user == null || user.getId() <= 0) {
 			log.warn("UserDTO Object == null or UserID is not present");
-			reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("no.data.exception", null, LocaleContextHolder.getLocale()));
+			reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("no.data.exception",
+			    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
 			return "redirect:/usersettings";
 		}
 		final UserDTO auth = UserUtil.getCurrentUser();

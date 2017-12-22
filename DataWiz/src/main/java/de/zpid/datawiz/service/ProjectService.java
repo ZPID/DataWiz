@@ -514,7 +514,6 @@ public class ProjectService {
 		DataWizErrorCodes code = DataWizErrorCodes.OK;
 		try {
 			file = fileDAO.findById(docId);
-			// fileUtil.setFileBytes(file);
 			MinioResult res = minioUtil.getFile(file, false);
 			if (res.equals(MinioResult.OK)) {
 				response.setContentType(file.getContentType());
@@ -523,7 +522,7 @@ public class ProjectService {
 				FileCopyUtils.copy(file.getContent(), response.getOutputStream());
 			} else {
 				log.warn("ERROR: During prepareMaterialDownload - MinioResult: {}", () -> res.name());
-				code = DataWizErrorCodes.MINIO_SAVE_ERROR;
+				code = DataWizErrorCodes.MINIO_READ_ERROR;
 			}
 		} catch (Exception e) {
 			log.warn("Exception during file prepareMaterialDownload: ", () -> e);
@@ -611,5 +610,9 @@ public class ProjectService {
 			throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
 			    DataWizErrorCodes.DATABASE_ERROR, e);
 		}
+	}
+
+	public List<ProjectDTO> getAdminProjectList(final UserDTO user) throws Exception {
+		return projectDAO.findAllByAdminRole(user.getId());
 	}
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -62,7 +63,7 @@ import de.zpid.datawiz.util.UserUtil;
  */
 @Controller
 @RequestMapping(value = { "/study", "/project/{pid}/study" })
-@SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList", "disStudyContent" })
+@SessionAttributes({ "StudyForm", "subnaviActive", "breadcrumpList", "disStudyContent", "ProjectList" })
 public class StudyController {
 
 	@Autowired
@@ -143,6 +144,7 @@ public class StudyController {
 				model.put("StudyForm", sForm);
 				model.put("studySubMenu", true);
 				model.put("subnaviActive", PageState.STUDY.name());
+				model.put("ProjectList", projectService.getAdminProjectList(user));
 				ret = "study";
 			} catch (Exception e) {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.setStudyForm");
@@ -238,11 +240,21 @@ public class StudyController {
 				model.put("errorMSG", recordService.setMessageString(validateErrors));
 				ret = "study";
 			} else {
-				StudyDTO study = studyService.saveStudyForm(sForm, studyId, pid, user);
-				if (study != null)
+				StudyDTO study;
+				try {
+					study = studyService.saveStudyForm(sForm, studyId, pid, user, false);
 					ret = "redirect:/project/" + pid.get() + "/study/" + study.getId();
-				else {
-					log.warn("Unexpected event: StudyForm is emtpy - Database Error During studyService.saveStudyForm - Transaction was rolled back");
+				} catch (DataWizSystemException e) {
+					if (e.getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)) {
+						log.warn("Unexpected event: Internal Error saveStudyForm - Transaction was rolled back [Message: {}; Code: {}]", () -> e.getMessage(),
+						    () -> e.getErrorCode());
+						model.put("errorMSG", messageSource.getMessage("error.study.save.unavailable", null, LocaleContextHolder.getLocale()));
+					} else {
+						log.warn("Unexpected event: Database Error During saveStudyForm - Transaction was rolled back cause: {}", () -> e.getCause());
+						model.put("errorMSG", messageSource.getMessage("error.study.duplicate.dbs", null, LocaleContextHolder.getLocale()));
+					}
+					model.put("studySubMenu", true);
+					model.put("subnaviActive", PageState.STUDY.name());
 					ret = "study";
 				}
 			}
@@ -596,14 +608,14 @@ public class StudyController {
 				        LocaleContextHolder.getLocale()));
 				ret = "error";
 			} else if (e.getErrorCode().equals(DataWizErrorCodes.RECORD_DELETE_ERROR)) {
-				model.put("subnaviActive", PageState.RECORDMETA.name());
-				model.put("recordSubMenu", true);
+				model.put("studySubMenu", true);
+				model.put("subnaviActive", PageState.STUDY.name());
 				model.put("errorMSG", messageSource.getMessage("study.record.delete.error", new Object[] { e.getMessage(), e.getErrorCode() },
 				    LocaleContextHolder.getLocale()));
 				ret = "study";
 			} else {
-				model.put("subnaviActive", PageState.RECORDMETA.name());
-				model.put("recordSubMenu", true);
+				model.put("studySubMenu", true);
+				model.put("subnaviActive", PageState.STUDY.name());
 				model.put("errorMSG",
 				    messageSource.getMessage("study.not.deleted.error", new Object[] { e.getMessage(), e.getErrorCode() }, LocaleContextHolder.getLocale()));
 				ret = "study";
@@ -612,4 +624,64 @@ public class StudyController {
 		log.trace("Method deleteStudy completed with mapping to \"{}\"", ret);
 		return ret;
 	}
+
+	/**
+	 * 
+	 * @param pid
+	 * @param studyId
+	 * @param model
+	 * @param redirectAttributes
+	 * @param selected
+	 * @return
+	 */
+	@RequestMapping(value = { "/{studyId}/duplicate" }, method = RequestMethod.GET)
+	public String duplicateStudy(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model,
+	    RedirectAttributes redirectAttributes, @RequestParam("selected") Optional<Long> selected) {
+		log.trace("Entering duplicateStudy for study [id:{}] to project [id: {}]", () -> studyId, () -> selected);
+		final UserDTO user = UserUtil.getCurrentUser();
+		String ret = null;
+		try {
+			StudyDTO study = studyService.copyStudy(pid, studyId, selected, user);
+			ret = "redirect:/project/" + study.getProjectId() + "/study/" + study.getId();
+		} catch (Exception e) {
+			model.put("studySubMenu", true);
+			model.put("subnaviActive", PageState.STUDY.name());
+			ret = "study";
+			if (e instanceof DataWizSystemException) {
+				log.warn("DataWizSystemException thrown by function studyService.copyStudy Code: {}", () -> ((DataWizSystemException) e).getErrorCode(),
+				    () -> e);
+				switch (((DataWizSystemException) e).getErrorCode()) {
+				case MISSING_PID_ERROR:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.pid", null, LocaleContextHolder.getLocale()));
+					break;
+				case MISSING_STUDYID_ERROR:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.studyid", null, LocaleContextHolder.getLocale()));
+					break;
+				case NO_DATA_ERROR:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.selected", null, LocaleContextHolder.getLocale()));
+					break;
+				case USER_ACCESS_STUDY_PERMITTED:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.access", null, LocaleContextHolder.getLocale()));
+					break;
+				case DATABASE_ERROR:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.dbs", null, LocaleContextHolder.getLocale()));
+					ret = "error";
+					break;
+				case STUDY_NOT_AVAILABLE:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.studyid", null, LocaleContextHolder.getLocale()));
+					break;
+				default:
+					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.unknown", null, LocaleContextHolder.getLocale()));
+					break;
+				}
+			} else {
+				log.warn("Exception thrown by function studyService.copyStudy: ", () -> e);
+				model.put("errorMSG", messageSource.getMessage("error.study.duplicate.dbs", null, LocaleContextHolder.getLocale()));
+				ret = "error";
+			}
+		}
+		log.trace("Leaving duplicateStudy for study [id:{}] to project [id: {}]", () -> studyId, () -> selected);
+		return ret;
+	}
+
 }

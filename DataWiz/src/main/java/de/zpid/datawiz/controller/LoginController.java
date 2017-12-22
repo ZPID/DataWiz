@@ -429,15 +429,20 @@ public class LoginController {
 		Exception exception = (Exception) request.getSession().getAttribute(key);
 		String error = "";
 		if (exception instanceof BadCredentialsException) {
-			error = messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.failed", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+			    LocaleContextHolder.getLocale());
 		} else if (exception instanceof LockedException) {
-			error = messageSource.getMessage("login.locked", null, LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.locked", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+			    LocaleContextHolder.getLocale());
 		} else if (exception instanceof AccountExpiredException) {
-			error = messageSource.getMessage("login.expired", null, LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.expired", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+			    LocaleContextHolder.getLocale());
 		} else if (exception instanceof InternalAuthenticationServiceException) {
-			error = messageSource.getMessage("login.system.error", null, LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.system.error", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+			    LocaleContextHolder.getLocale());
 		} else {
-			error = messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.failed", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+			    LocaleContextHolder.getLocale());
 		}
 		return error;
 	}

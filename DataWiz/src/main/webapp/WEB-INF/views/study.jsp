@@ -20,7 +20,7 @@
           </c:when>
           <c:otherwise>
             <div class="row">
-              <div class="col-xs-8 col-sm-9">
+              <div class="col-xs-7 col-sm-8">
                 <h4>
                   <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
                 </h4>
@@ -32,7 +32,7 @@
                         principal.user.hasRole('ADMIN') or 
                         principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
-                <div class="col-xs-4 col-sm-3 text-align-right">
+                <div class="col-xs-5 col-sm-4 text-align-right">
                   <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                   <c:choose>
                     <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
@@ -45,6 +45,9 @@
                   <c:if
                     test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
                         principal.user.hasRole('ADMIN')}">
+                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#duplicateModal">
+                      <s:message code="study.duplicate.btn" />
+                    </button>
                     <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
                       <s:message code="study.button.delete.study" />
                     </button>
@@ -156,7 +159,46 @@
             code="study.delete.modal.final.del" /></a>
       </div>
     </div>
-
+  </div>
+</div>
+<!-- duplicateModal -->
+<div id="duplicateModal" class="modal fade" role="dialog">
+  <s:message code="study.delete.phrase" var="deletePhrase" />
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/duplicate" />
+    <form action="${accessUrl}" class="form-horizontal" method="get">
+      <div class="modal-content panel-primary">
+        <div class="modal-header panel-heading">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">
+            <s:message code="study.duplicate.title" arguments="${StudyForm.study.title}" />
+          </h4>
+        </div>
+        <div class="modal-body">
+          <div class="well">
+            <s:message code="study.duplicate.modal.info" />
+          </div>
+          <select name="selected" class="form-control">
+            <c:forEach items="${ProjectList}" var="itm">
+              <c:choose>
+                <c:when test="${itm.id eq StudyForm.project.id}">
+                  <option value="${itm.id}" selected="selected">${itm.title}</option>
+                </c:when>
+                <c:otherwise>
+                  <option value="${itm.id}">${itm.title}</option>
+                </c:otherwise>
+              </c:choose>
+            </c:forEach>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-warning btn-sm">
+            <s:message code="study.duplicate.btn" />
+          </button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 
