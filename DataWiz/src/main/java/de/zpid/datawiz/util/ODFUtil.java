@@ -1021,46 +1021,70 @@ public class ODFUtil {
 			createCell(table, 2, 51, messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale), regular,
 					null, locale);
 			createCell(table, 3, 51, dmp.getStorageSuccessionTxt(), regular, null, locale);
-			createCell(table, 0, 52, messageSource.getMessage("export.odt.H2020.td31", null, locale), regular_bold, null, locale);
-			createCell(table, 1, 52, messageSource.getMessage("export.odt.H2020.td32", null, locale), regular, null, locale);
-			createCell(table, 2, 52, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null, locale);
+			createCell(table, 0, 52, messageSource.getMessage("export.odt.H2020.td31", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 1, 52, messageSource.getMessage("export.odt.H2020.td32", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 52, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 52, dmp.getSpecificCosts(), regular, null, locale);
-			createCell(table, 2, 53, messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 53, messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 53, dmp.getSpecificCostsTxt(), regular, null, locale);
-			createCell(table, 2, 54, messageSource.getMessage("dmp.edit.bearCost", null, locale), regular, null, locale);
+			createCell(table, 2, 54, messageSource.getMessage("dmp.edit.bearCost", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 54, dmp.getBearCost(), regular, null, locale);
-			createCell(table, 1, 55, messageSource.getMessage("export.odt.H2020.td33", null, locale), regular, null, locale);
-			createCell(table, 2, 55, messageSource.getMessage("dmp.edit.responsibleUnit", null, locale), regular, null, locale);
+			createCell(table, 1, 55, messageSource.getMessage("export.odt.H2020.td33", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 55, messageSource.getMessage("dmp.edit.responsibleUnit", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 55, dmp.getResponsibleUnit(), regular, null, locale);
-			createCell(table, 1, 56, messageSource.getMessage("export.odt.H2020.td34", null, locale), regular, null, locale);
-			createCell(table, 2, 56, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
-			createCell(table, 0, 57, messageSource.getMessage("export.odt.H2020.td35", null, locale), regular_bold, null, locale);
-			createCell(table, 1, 57, messageSource.getMessage("export.odt.H2020.td36", null, locale), regular, null, locale);
-			createCell(table, 2, 57, messageSource.getMessage("dmp.edit.storageResponsible", null, locale), regular, null, locale);
+			createCell(table, 1, 56, messageSource.getMessage("export.odt.H2020.td34", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 56, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 57, messageSource.getMessage("export.odt.H2020.td35", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 1, 57, messageSource.getMessage("export.odt.H2020.td36", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 57, messageSource.getMessage("dmp.edit.storageResponsible", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 57, dmp.getStorageResponsible(), regular, null, locale);
-			createCell(table, 2, 58, messageSource.getMessage("dmp.edit.dataProtection", null, locale), regular, null, locale);
+			createCell(table, 2, 58, messageSource.getMessage("dmp.edit.dataProtection", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 58, dmp.isDataProtection(), regular, null, locale);
-			createCell(table, 2, 59, messageSource.getMessage("dmp.edit.protectionRequirements", null, locale), regular, null, locale);
+			createCell(table, 2, 59, messageSource.getMessage("dmp.edit.protectionRequirements", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 59, dmp.getProtectionRequirements(), regular, null, locale);
-			createCell(table, 2, 60, messageSource.getMessage("dmp.edit.storageTransfer", null, locale), regular, null, locale);
+			createCell(table, 2, 60, messageSource.getMessage("dmp.edit.storageTransfer", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 60, dmp.getStorageTransfer(), regular, null, locale);
-			createCell(table, 0, 61, messageSource.getMessage("export.odt.H2020.td37", null, locale), regular_bold, null, locale);
-			createCell(table, 1, 61, messageSource.getMessage("export.odt.H2020.td38", null, locale), regular, null, locale);
-			createCell(table, 2, 61, messageSource.getMessage("dmp.edit.consentObtained", null, locale), regular, null, locale);
+			createCell(table, 0, 61, messageSource.getMessage("export.odt.H2020.td37", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 1, 61, messageSource.getMessage("export.odt.H2020.td38", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 61, messageSource.getMessage("dmp.edit.consentObtained", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 61, dmp.isConsentObtained(), regular, null, locale);
-			createCell(table, 2, 62, messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 62, messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 62, dmp.getConsentObtainedTxt(), regular, null, locale);
-			createCell(table, 2, 63, messageSource.getMessage("dmp.edit.sharingConsidered", null, locale), regular, null, locale);
+			createCell(table, 2, 63, messageSource.getMessage("dmp.edit.sharingConsidered", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 63, dmp.isSharingConsidered(), regular, null, locale);
-			createCell(table, 2, 64, messageSource.getMessage("dmp.edit.irbApproval", null, locale), regular, null, locale);
+			createCell(table, 2, 64, messageSource.getMessage("dmp.edit.irbApproval", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 64, dmp.isIrbApproval(), regular, null, locale);
-			createCell(table, 2, 65, messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 65, messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 65, dmp.getIrbApprovalTxt(), regular, null, locale);
-			createCell(table, 0, 66, messageSource.getMessage("export.odt.H2020.td39", null, locale), regular_bold, null, locale);
-			createCell(table, 1, 66, messageSource.getMessage("export.odt.H2020.td40", null, locale), regular, null, locale);
-			createCell(table, 2, 66, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular, null, locale);
+			createCell(table, 0, 66, messageSource.getMessage("export.odt.H2020.td39", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 1, 66, messageSource.getMessage("export.odt.H2020.td40", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 66, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 66, dmp.getFunderRequirements(), regular, null, locale);
-			
 
 			doc.save(baos);
 			log.trace("Leaving createH2020Doc");
@@ -1099,7 +1123,7 @@ public class ODFUtil {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			TextDocument doc = TextDocument.newTextDocument();
 			// Erste Seite
-			/* doc.addParagraph(messageSource.getMessage("export.odt.DFG.zpid", null, locale)).setFont(blue_reg);
+			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zpid", null, locale)).setFont(blue_reg);
 			doc.addColumnBreak();
 			Paragraph par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.headline", null, locale));
 			par.setFont(headline);
@@ -1117,8 +1141,51 @@ public class ODFUtil {
 			par.appendHyperlink(messageSource.getMessage("export.odt.DFG.zu2l", null, locale),
 					new URI(messageSource.getMessage("export.odt.DFG.zu2l", null, locale)));
 			doc.addColumnBreak();
-			
-			Table table = doc.addTable(56, 4); */
+
+			Table table = doc.addTable(56, 4);
+			// merge
+			table.getColumnByIndex(0).setWidth(30);
+			table.getColumnByIndex(1).setWidth(30);
+			table.getColumnByIndex(2).setWidth(50);
+
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zu3", null, locale)).setFont(regular);
+			doc.addColumnBreak();
+			table = doc.addTable(3, 3);
+
+			// merge
+			table.getCellRangeByPosition(1, 0, 2, 0).merge();
+
+			// content
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.DFG.th1", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 1, 0, messageSource.getMessage("export.odt.DFG.th2", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 1, 1, messageSource.getMessage("export.odt.DFG.th5", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.DFG.th6", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.DFG.td12", null, locale), regular, null,
+					locale);
+
+			doc.addColumnBreak();
+
+			par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.ft1", null, locale));
+			par.setFont(regular);
+			par.appendHyperlink(messageSource.getMessage("export.odt.DFG.ft2", null, locale),
+					new URI(messageSource.getMessage("export.odt.DFG.ft2l", null, locale)));
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.DFG.src", null, locale)).setFont(regular_bold);
+			doc.addColumnBreak();
+			par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.src1", null, locale));
+			par.setFont(regular_it);
+			par.appendHyperlink(messageSource.getMessage("export.odt.DFG.src1l", null, locale),
+					new URI(messageSource.getMessage("export.odt.DFG.src1l", null, locale)));
+			doc.addColumnBreak();
+			par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.src2", null, locale));
+			par.setFont(regular_it);
+			par.appendHyperlink(messageSource.getMessage("export.odt.DFG.src2l", null, locale),
+					new URI(messageSource.getMessage("export.odt.DFG.src2l", null, locale)));
 
 			doc.save(baos);
 			log.trace("Leaving createDFGDoc");
