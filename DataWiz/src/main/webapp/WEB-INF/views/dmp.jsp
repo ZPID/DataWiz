@@ -47,7 +47,7 @@
                   <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank">H2020</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG}" />" target="_blank">DFG</a>
+                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank">DFG</a>
                 </div>
                 <div style="display: inline-block;">
                   <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/PsychData" />" target="_blank">PsychData</a>

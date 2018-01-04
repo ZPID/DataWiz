@@ -802,137 +802,218 @@ public class ODFUtil {
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
 			// Inhalt
-			createCell(table, 0, 0, messageSource.getMessage("export.odt.H2020.FAIR", null, locale), regular_bold, null, locale);
-			createCell(table, 2, 0, messageSource.getMessage("export.odt.H2020.datawiz", null, locale), regular_bold, null, locale);
-			createCell(table, 0, 1, messageSource.getMessage("export.odt.H2020.th1", null, locale), regular_bold, null, locale);
-			createCell(table, 1, 1, messageSource.getMessage("export.odt.H2020.th2", null, locale), regular_bold, null, locale);
-			createCell(table, 2, 1, messageSource.getMessage("export.odt.H2020.th3", null, locale), regular_bold, null, locale);
-			createCell(table, 3, 1, messageSource.getMessage("export.odt.H2020.th3", null, locale), regular_bold, null, locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.H2020.td1", null, locale), regular_bold, null, locale);
-			createCell(table, 1, 2, messageSource.getMessage("export.odt.H2020.td2", null, locale), regular, null, locale);
-			createCell(table, 2, 2, messageSource.getMessage("dmp.edit.projectAims", null, locale), regular, null, locale);
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.H2020.FAIR", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 2, 0, messageSource.getMessage("export.odt.H2020.datawiz", null, locale), regular_bold,
+					null, locale);
+			createCell(table, 0, 1, messageSource.getMessage("export.odt.H2020.th1", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 1, 1, messageSource.getMessage("export.odt.H2020.th2", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.H2020.th3", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 3, 1, messageSource.getMessage("export.odt.H2020.th3", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.H2020.td1", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 1, 2, messageSource.getMessage("export.odt.H2020.td2", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 2, messageSource.getMessage("dmp.edit.projectAims", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 2, project.getDescription(), regular, null, locale);
-			createCell(table, 2, 3, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular, null, locale);
+			createCell(table, 2, 3, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 3, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 1, 4, messageSource.getMessage("export.odt.H2020.td3", null, locale), regular, null, locale);
-			createCell(table, 2, 4, messageSource.getMessage("dmp.edit.usedDataTypes", null, locale), regular, null, locale);
+			createCell(table, 1, 4, messageSource.getMessage("export.odt.H2020.td3", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 4, messageSource.getMessage("dmp.edit.usedDataTypes", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 4, dmp.getUsedDataTypes(), regular, null, locale);
-			createCell(table, 2, 5, messageSource.getMessage("dmp.edit.fileFormat", null, locale), regular, null, locale);
+			createCell(table, 2, 5, messageSource.getMessage("dmp.edit.fileFormat", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 5, dmp.getFileFormat(), regular, null, locale);
-			createCell(table, 1, 6, messageSource.getMessage("export.odt.H2020.td4", null, locale), regular, null, locale);
-			createCell(table, 2, 6, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null, locale);
+			createCell(table, 1, 6, messageSource.getMessage("export.odt.H2020.td4", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 6, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 6, dmp.getExistingData(), regular, null, locale);
-			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.dataCitation", null, locale), regular, null, locale);
+			createCell(table, 2, 7, messageSource.getMessage("dmp.edit.dataCitation", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 7, dmp.getDataCitation(), regular, null, locale);
-			createCell(table, 2, 8, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale), regular, null, locale);
+			createCell(table, 2, 8, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 8, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 1, 9, messageSource.getMessage("export.odt.H2020.td5", null, locale), regular, null, locale);
-			createCell(table, 2, 9, messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale), regular, null, locale);
+			createCell(table, 1, 9, messageSource.getMessage("export.odt.H2020.td5", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 9, messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 9, dmp.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 1, 10, messageSource.getMessage("export.odt.H2020.td6", null, locale), regular, null, locale);
-			createCell(table, 2, 10, messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale), regular, null, locale);
+			createCell(table, 1, 10, messageSource.getMessage("export.odt.H2020.td6", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 10, messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 10, dmp.getStorageExpectedSize(), regular, null, locale);
-			createCell(table, 1, 11, messageSource.getMessage("export.odt.H2020.td7", null, locale), regular, null, locale);
-			createCell(table, 2, 11, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null, locale);
+			createCell(table, 1, 11, messageSource.getMessage("export.odt.H2020.td7", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 11, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 11, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.storage.headline", null, locale), regular, null, locale);
+			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.storage.headline", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 12, "?", regular, null, locale);
-			createCell(table, 0, 13, messageSource.getMessage("export.odt.H2020.td8", null, locale), regular_bold, null, locale);
-			createCell(table, 0, 14, messageSource.getMessage("export.odt.H2020.td9", null, locale), regular, null, locale);
-			createCell(table, 1, 14, messageSource.getMessage("export.odt.H2020.td10", null, locale), regular, null, locale);
-			createCell(table, 2, 14, messageSource.getMessage("dmp.edit.searchableData", null, locale), regular, null, locale);
+			createCell(table, 0, 13, messageSource.getMessage("export.odt.H2020.td8", null, locale), regular_bold, null,
+					locale);
+			createCell(table, 0, 14, messageSource.getMessage("export.odt.H2020.td9", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 14, messageSource.getMessage("export.odt.H2020.td10", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 14, messageSource.getMessage("dmp.edit.searchableData", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 14, dmp.getSearchableData(), regular, null, locale);
-			createCell(table, 1, 15, messageSource.getMessage("export.odt.H2020.td11", null, locale), regular, null, locale);
+			createCell(table, 1, 15, messageSource.getMessage("export.odt.H2020.td11", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 15, messageSource.getMessage("dmp.edit.usedPID", null, locale), regular, null, locale);
 			createCell(table, 3, 15, dmp.getUsedPID(), regular, null, locale);
-			createCell(table, 1, 16, messageSource.getMessage("export.odt.H2020.td12", null, locale), regular, null, locale);
+			createCell(table, 1, 16, messageSource.getMessage("export.odt.H2020.td12", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 16, "dmp.edit.storageTechnologies", regular, null, locale);
 			createCell(table, 3, 16, "?", regular, null, locale);
-			createCell(table, 1, 17, messageSource.getMessage("export.odt.H2020.td13", null, locale), regular, null, locale);
+			createCell(table, 1, 17, messageSource.getMessage("export.odt.H2020.td13", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 17, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 1, 18, messageSource.getMessage("export.odt.H2020.td14", null, locale), regular, null, locale);
-			createCell(table, 2, 18, messageSource.getMessage("dmp.edit.storageBackups", null, locale), regular, null, locale);
+			createCell(table, 1, 18, messageSource.getMessage("export.odt.H2020.td14", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 18, messageSource.getMessage("dmp.edit.storageBackups", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 18, dmp.getStorageBackups(), regular, null, locale);
-			createCell(table, 2, 19, messageSource.getMessage("dmp.edit.metaGeneration", null, locale), regular, null, locale);
+			createCell(table, 2, 19, messageSource.getMessage("dmp.edit.metaGeneration", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 19, dmp.getMetaGeneration(), regular, null, locale);
-			createCell(table, 1, 20, messageSource.getMessage("export.odt.H2020.td15", null, locale), regular, null, locale);
-			createCell(table, 2, 20, messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale), regular, null, locale);
+			createCell(table, 1, 20, messageSource.getMessage("export.odt.H2020.td15", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 20, messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 20, dmp.getSelectedMetaPurposes(), regular, null, locale);
-			createCell(table, 2, 21, messageSource.getMessage("dmp.edit.metaFramework", null, locale), regular, null, locale);
+			createCell(table, 2, 21, messageSource.getMessage("dmp.edit.metaFramework", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 21, dmp.getMetaFramework(), regular, null, locale);
-			createCell(table, 2, 22, messageSource.getMessage("dmp.edit.metaDescription", null, locale), regular, null, locale);
+			createCell(table, 2, 22, messageSource.getMessage("dmp.edit.metaDescription", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 22, dmp.getMetaDescription(), regular, null, locale);
-			createCell(table, 2, 23, messageSource.getMessage("dmp.edit.metaMonitor", null, locale), regular, null, locale);
+			createCell(table, 2, 23, messageSource.getMessage("dmp.edit.metaMonitor", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 23, dmp.getMetaMonitor(), regular, null, locale);
-			createCell(table, 2, 24, messageSource.getMessage("dmp.edit.metaFormat", null, locale), regular, null, locale);
-			createCell(table, 0, 25, messageSource.getMessage("export.odt.H2020.td16", null, locale), regular, null, locale);
-			createCell(table, 1, 25, messageSource.getMessage("export.odt.H2020.td17", null, locale), regular, null, locale);
-			createCell(table, 2, 25, messageSource.getMessage("dmp.edit.sensitiveData", null, locale), regular, null, locale);
+			createCell(table, 2, 24, messageSource.getMessage("dmp.edit.metaFormat", null, locale), regular, null,
+					locale);
+			createCell(table, 0, 25, messageSource.getMessage("export.odt.H2020.td16", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 25, messageSource.getMessage("export.odt.H2020.td17", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 25, messageSource.getMessage("dmp.edit.sensitiveData", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 25, dmp.getSensitiveData(), regular, null, locale);
-			createCell(table, 2, 26, messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale), regular, null, locale);
+			createCell(table, 2, 26, messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 26, dmp.getAccessReasonAuthor(), regular, null, locale);
-			createCell(table, 2, 27, messageSource.getMessage("dmp.edit.noAccessReason", null, locale), regular, null, locale);
+			createCell(table, 2, 27, messageSource.getMessage("dmp.edit.noAccessReason", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 27, dmp.getNoAccessReason(), regular, null, locale);
-			createCell(table, 1, 28, messageSource.getMessage("export.odt.H2020.td18", null, locale), regular, null, locale);
-			createCell(table, 2, 28, messageSource.getMessage("dmp.edit.publStrategy", null, locale), regular, null, locale);
+			createCell(table, 1, 28, messageSource.getMessage("export.odt.H2020.td18", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 28, messageSource.getMessage("dmp.edit.publStrategy", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 28, dmp.getPublStrategy(), regular, null, locale);
-			createCell(table, 2, 29, messageSource.getMessage("dmp.edit.depositName", null, locale), regular, null, locale);
+			createCell(table, 2, 29, messageSource.getMessage("dmp.edit.depositName", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 29, dmp.getDepositName(), regular, null, locale);
-			createCell(table, 2, 30, messageSource.getMessage("dmp.edit.accessCosts", null, locale), regular, null, locale);
+			createCell(table, 2, 30, messageSource.getMessage("dmp.edit.accessCosts", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 30, dmp.isAccessCosts(), regular, null, locale);
-			createCell(table, 2, 31, messageSource.getMessage("dmp.edit.releaseObligation", null, locale), regular, null, locale);
+			createCell(table, 2, 31, messageSource.getMessage("dmp.edit.releaseObligation", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 31, dmp.isReleaseObligation(), regular, null, locale);
-			createCell(table, 2, 32, messageSource.getMessage("dmp.edit.clarifiedRights", null, locale), regular, null, locale);
+			createCell(table, 2, 32, messageSource.getMessage("dmp.edit.clarifiedRights", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 32, dmp.isClarifiedRights(), regular, null, locale);
-			createCell(table, 2, 33, messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale), regular, null, locale);
+			createCell(table, 2, 33, messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 33, dmp.isAcquisitionAgreement(), regular, null, locale);
-			createCell(table, 1, 34, messageSource.getMessage("export.odt.H2020.td19", null, locale), regular, null, locale);
-			createCell(table, 2, 34, messageSource.getMessage("dmp.edit.storageRequirements", null, locale), regular, null, locale);
+			createCell(table, 1, 34, messageSource.getMessage("export.odt.H2020.td19", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 34, messageSource.getMessage("dmp.edit.storageRequirements", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 34, dmp.isStorageRequirements(), regular, null, locale);
-			createCell(table, 2, 35, messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 35, messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 35, dmp.getStorageRequirementsTxt(), regular, null, locale);
-			createCell(table, 1, 36, messageSource.getMessage("export.odt.H2020.td20", null, locale), regular, null, locale);
-			createCell(table, 2, 36, messageSource.getMessage("dmp.edit.storagePlaces", null, locale), regular, null, locale);
+			createCell(table, 1, 36, messageSource.getMessage("export.odt.H2020.td20", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 36, messageSource.getMessage("dmp.edit.storagePlaces", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 36, dmp.getStoragePlaces(), regular, null, locale);
-			createCell(table, 2, 37, messageSource.getMessage("dmp.edit.storageDuration", null, locale), regular, null, locale);
+			createCell(table, 2, 37, messageSource.getMessage("dmp.edit.storageDuration", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 37, dmp.getStorageDuration(), regular, null, locale);
-			createCell(table, 1, 38, messageSource.getMessage("export.odt.H2020.td21", null, locale), regular, null, locale);
-			createCell(table, 2, 38, messageSource.getMessage("dmp.edit.internalCopyright", null, locale), regular, null, locale);
+			createCell(table, 1, 38, messageSource.getMessage("export.odt.H2020.td21", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 38, messageSource.getMessage("dmp.edit.internalCopyright", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 38, dmp.isInternalCopyright(), regular, null, locale);
-			createCell(table, 2, 39, messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 39, messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 39, dmp.getInternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 2, 40, messageSource.getMessage("dmp.edit.externalCopyright", null, locale), regular, null, locale);
+			createCell(table, 2, 40, messageSource.getMessage("dmp.edit.externalCopyright", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 40, dmp.isExternalCopyright(), regular, null, locale);
-			createCell(table, 2, 41, messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 41, messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 41, dmp.getExternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 0, 42, messageSource.getMessage("export.odt.H2020.td22", null, locale), regular, null, locale);
-			createCell(table, 1, 42, messageSource.getMessage("export.odt.H2020.td23", null, locale), regular, null, locale);
-			createCell(table, 2, 42, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
-			createCell(table, 1, 43, messageSource.getMessage("export.odt.H2020.td24", null, locale), regular, null, locale);
-			createCell(table, 2, 43, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
-			createCell(table, 0, 44, messageSource.getMessage("export.odt.H2020.td25", null, locale), regular, null, locale);
-			createCell(table, 1, 44, messageSource.getMessage("export.odt.H2020.td26", null, locale), regular, null, locale);
-			createCell(table, 2, 44, messageSource.getMessage("dmp.edit.usageRestriction", null, locale), regular, null, locale);
+			createCell(table, 0, 42, messageSource.getMessage("export.odt.H2020.td22", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 42, messageSource.getMessage("export.odt.H2020.td23", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 42, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 1, 43, messageSource.getMessage("export.odt.H2020.td24", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 43, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 44, messageSource.getMessage("export.odt.H2020.td25", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 44, messageSource.getMessage("export.odt.H2020.td26", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 44, messageSource.getMessage("dmp.edit.usageRestriction", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 44, dmp.getUsageRestriction(), regular, null, locale);
-			createCell(table, 1, 45, messageSource.getMessage("export.odt.H2020.td27", null, locale), regular, null, locale);
-			createCell(table, 2, 45, messageSource.getMessage("dmp.edit.transferTime", null, locale), regular, null, locale);
+			createCell(table, 1, 45, messageSource.getMessage("export.odt.H2020.td27", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 45, messageSource.getMessage("dmp.edit.transferTime", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 45, dmp.getTransferTime(), regular, null, locale);
-			createCell(table, 2, 46, messageSource.getMessage("dmp.edit.initialUsage", null, locale), regular, null, locale);
+			createCell(table, 2, 46, messageSource.getMessage("dmp.edit.initialUsage", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 46, dmp.getInitialUsage(), regular, null, locale);
-			createCell(table, 1, 47, messageSource.getMessage("export.odt.H2020.td28", null, locale), regular, null, locale);
-			createCell(table, 2, 47, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
-			createCell(table, 1, 48, messageSource.getMessage("export.odt.H2020.td29", null, locale), regular, null, locale);
-			createCell(table, 2, 48, messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale), regular, null, locale);
+			createCell(table, 1, 47, messageSource.getMessage("export.odt.H2020.td28", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 47, messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale), regular,
+					new Color(210, 210, 210), locale);
+			createCell(table, 1, 48, messageSource.getMessage("export.odt.H2020.td29", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 48, messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 48, dmp.getReliabilityTraining(), regular, null, locale);
-			createCell(table, 2, 49, messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale), regular, null, locale);
+			createCell(table, 2, 49, messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 49, dmp.getMultipleMeasurements(), regular, null, locale);
-			createCell(table, 2, 50, messageSource.getMessage("dmp.edit.qualitityOther", null, locale), regular, null, locale);
+			createCell(table, 2, 50, messageSource.getMessage("dmp.edit.qualitityOther", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 50, dmp.getQualitityOther(), regular, null, locale);
-			createCell(table, 1, 51, messageSource.getMessage("export.odt.H2020.td30", null, locale), regular, null, locale);
-			createCell(table, 2, 51, messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale), regular, null, locale);
+			createCell(table, 1, 51, messageSource.getMessage("export.odt.H2020.td30", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 51, messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 51, dmp.getStorageSuccessionTxt(), regular, null, locale);
-			
 
 			doc.save(baos);
 			log.trace("Leaving createH2020Doc");
@@ -1116,7 +1197,7 @@ public class ODFUtil {
 						initFormTpes();
 					}
 					if (usedType instanceof Integer) {
-						FormTypesDTO type = FORMTYPES.parallelStream().filter(dt -> (dt.getId() == Integer.parseInt((String) usedType)))
+						FormTypesDTO type = FORMTYPES.parallelStream().filter(dt -> (dt.getId() == (Integer) usedType))
 								.findFirst().orElse(null);
 						// TODO OTHER
 						if (type != null) {
