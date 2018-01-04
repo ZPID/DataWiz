@@ -936,11 +936,10 @@ public class ODFUtil {
 				AtomicInteger count = new AtomicInteger(1);
 				usedTypes.forEach(usedType -> {
 					if (FORMTYPES == null || FORMTYPES.isEmpty()) {
-
 						initFormTpes();
 					}
 					if (usedType instanceof Integer) {
-						FormTypesDTO type = FORMTYPES.parallelStream().filter(dt -> (dt.getId() == (int) usedType))
+						FormTypesDTO type = FORMTYPES.parallelStream().filter(dt -> (dt.getId() == Integer.parseInt((String) usedType)))
 								.findFirst().orElse(null);
 						// TODO OTHER
 						if (type != null) {
