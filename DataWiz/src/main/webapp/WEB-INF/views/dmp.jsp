@@ -33,12 +33,12 @@
               </c:otherwise>
             </c:choose>
             <div class="row">
-              <div class="col-xs-4 col-sm-6">
+              <div class="col-xs-4">
                 <h4>
                   <s:message code="dmp.edit.headline" />
                 </h4>
               </div>
-              <div class="col-xs-8 col-sm-6 text-align-right">
+              <div class="col-xs-8 text-align-right">
                 (Export currently in work)
                 <div style="display: inline-block;">
                   <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank">BMBF</a>

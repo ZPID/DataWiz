@@ -20,7 +20,7 @@
           </c:when>
           <c:otherwise>
             <div class="row">
-              <div class="col-xs-7 col-sm-8">
+              <div class="col-xs-6 col-sm-7">
                 <h4>
                   <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
                 </h4>
@@ -32,7 +32,7 @@
                         principal.user.hasRole('ADMIN') or 
                         principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
-                <div class="col-xs-5 col-sm-4 text-align-right">
+                <div class="col-xs-6 col-sm-5 text-align-right">
                   <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                   <c:choose>
                     <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
