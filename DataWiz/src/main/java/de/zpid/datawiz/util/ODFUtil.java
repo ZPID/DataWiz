@@ -717,6 +717,7 @@ public class ODFUtil {
 
 			// write doc to outputstream
 			doc.save(baos);
+			doc.close();
 			log.trace("Leaving createBMBFDoc");
 			return baos.toByteArray();
 		} else {
@@ -1087,6 +1088,7 @@ public class ODFUtil {
 			createCell(table, 3, 66, dmp.getFunderRequirements(), regular, null, locale);
 
 			doc.save(baos);
+			doc.close();
 			log.trace("Leaving createH2020Doc");
 			return baos.toByteArray();
 		} else {
@@ -1131,7 +1133,7 @@ public class ODFUtil {
 			// Masterpage
 			MasterPage master = MasterPage.getOrCreateMasterPage(doc, "DFG");
 			master.setNumberFormat(NumberFormat.HINDU_ARABIC_NUMBER.toString());
-			master.setMargins(15, 15, 15, 15);
+			// master.setMargins(15, 15, 15, 15);
 			doc.addPageBreak(par, master);
 			// Zweite Seite
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zu1", null, locale)).setFont(regular);
@@ -1142,11 +1144,153 @@ public class ODFUtil {
 					new URI(messageSource.getMessage("export.odt.DFG.zu2l", null, locale)));
 			doc.addColumnBreak();
 
-			Table table = doc.addTable(56, 4);
+			Table table = doc.addTable(56, 3);
 			// merge
+			table.getCellRangeByPosition(0, 0, 0, 1).merge();
+			table.getCellRangeByPosition(1, 0, 2, 0).merge();
+			table.getCellRangeByPosition(0, 2, 0, 4).merge();
+			table.getCellRangeByPosition(1, 2, 1, 3).merge();
+			table.getCellRangeByPosition(2, 2, 2, 3).merge();
+			table.getCellRangeByPosition(0, 5, 0, 12).merge();
+			table.getCellRangeByPosition(1, 9, 1, 10).merge();
+			table.getCellRangeByPosition(2, 9, 2, 10).merge();
+			table.getCellRangeByPosition(0, 13, 0, 17).merge();
+			table.getCellRangeByPosition(0, 18, 0, 22).merge();
+			table.getCellRangeByPosition(1, 18, 1, 19).merge();
+			table.getCellRangeByPosition(2, 18, 2, 19).merge();
+			table.getCellRangeByPosition(0, 23, 0, 33).merge();
+			table.getCellRangeByPosition(0, 34, 0, 38).merge();
+			table.getCellRangeByPosition(0, 41, 0, 42).merge();
+			table.getCellRangeByPosition(0, 43, 0, 54).merge();
+			
+			
 			table.getColumnByIndex(0).setWidth(30);
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
+			
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.DFG.th1", null, locale), regular_bold, null, locale);
+			createCell(table, 1, 0, messageSource.getMessage("export.odt.DFG.th2", null, locale), regular_bold, null, locale);
+			createCell(table, 1, 1, messageSource.getMessage("export.odt.DFG.th3", null, locale), regular_bold, null, locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.DFG.th4", null, locale), regular_bold, null, locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.DFG.td1", null, locale), regular, null, locale);
+			createCell(table, 1, 2, messageSource.getMessage("dmp.edit.dataReproducibility", null, locale), regular, null, locale);
+			createCell(table, 2, 2, dmp.getDataReproducibility(), regular, null, locale);
+			createCell(table, 1, 4, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null, locale);
+			createCell(table, 2, 4, dmp.getExpectedUsage(), regular, null, locale);
+			createCell(table, 0, 5, messageSource.getMessage("export.odt.DFG.td2", null, locale), regular, null, locale);
+			createCell(table, 1, 5, messageSource.getMessage("dmp.edit.publStrategy", null, locale), regular, null, locale);
+			createCell(table, 2, 5, dmp.getPublStrategy(), regular, null, locale);
+			createCell(table, 1, 6, messageSource.getMessage("dmp.edit.searchableData", null, locale), regular, null, locale);
+			createCell(table, 2, 6, dmp.getSearchableData(), regular, null, locale);
+			createCell(table, 1, 7, messageSource.getMessage("dmp.edit.initialUsage", null, locale), regular, null, locale);
+			createCell(table, 2, 7, dmp.getInitialUsage(), regular, null, locale);
+			createCell(table, 1, 8, messageSource.getMessage("dmp.edit.usageRestriction", null, locale), regular, null, locale);
+			createCell(table, 2, 8, dmp.getUsageRestriction(), regular, null, locale);
+			createCell(table, 1, 9, messageSource.getMessage("dmp.edit.accessCosts", null, locale), regular, null, locale);
+			createCell(table, 2, 9, dmp.isAccessCosts(), regular, null, locale);
+			// createCell(table, 1, 10, messageSource.getMessage("dmp.edit.accessCostsTxt", null, locale), regular, null, locale);
+			createCell(table, 1, 11, messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale), regular, null, locale);
+			createCell(table, 2, 11, dmp.getAccessReasonAuthor(), regular, null, locale);
+			createCell(table, 1, 12, messageSource.getMessage("dmp.edit.noAccessReason", null, locale), regular, null, locale);
+			createCell(table, 2, 12, dmp.getNoAccessReason(), regular, null, locale);
+			createCell(table, 0, 13, messageSource.getMessage("export.odt.DFG.td3", null, locale), regular, null, locale);
+			createCell(table, 1, 13, messageSource.getMessage("dmp.edit.projectAims", null, locale), regular, null, locale);
+			createCell(table, 2, 13, project.getDescription(), regular, null, locale);
+			createCell(table, 1, 14, messageSource.getMessage("dmp.edit.usedDataTypes", null, locale), regular, null, locale);
+			createCell(table, 2, 14, dmp.getUsedDataTypes(), regular, null, locale);
+			createCell(table, 1, 15, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null, locale);
+			createCell(table, 2, 15, dmp.getExistingData(), regular, null, locale);
+			createCell(table, 1, 16, messageSource.getMessage("dmp.edit.dataCitation", null, locale), regular, null, locale);
+			createCell(table, 2, 16, dmp.getDataCitation(), regular, null, locale);
+			createCell(table, 1, 17, messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale), regular, null, locale);
+			createCell(table, 2, 17, dmp.getUsedCollectionModes(), regular, null, locale);
+			createCell(table, 0, 18, messageSource.getMessage("export.odt.DFG.td4", null, locale), regular, null, locale);
+			// createCell(table, 1, 18, messageSource.getMessage("dmp.edit.qualityAssurance", null, locale), regular, null, locale);
+			createCell(table, 1, 18, messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale), regular, null, locale);
+			createCell(table, 2, 18, dmp.getReliabilityTraining(), regular, null, locale);
+			createCell(table, 1, 20, messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale), regular, null, locale);
+			createCell(table, 2, 20, dmp.getMultipleMeasurements(), regular, null, locale);
+			createCell(table, 1, 21, messageSource.getMessage("dmp.edit.qualitityOther", null, locale), regular, null, locale);
+			createCell(table, 2, 21, dmp.getQualitityOther(), regular, null, locale);
+			createCell(table, 1, 22, messageSource.getMessage("dmp.edit.planningAdherence", null, locale), regular, null, locale);
+			createCell(table, 2, 22, dmp.getPlanningAdherence(), regular, null, locale);
+			createCell(table, 0, 23, messageSource.getMessage("export.odt.DFG.td5", null, locale), regular, null, locale);
+			createCell(table, 1, 23, messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale), regular, null, locale);
+			createCell(table, 2, 23, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 1, 24, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale), regular, null, locale);
+			createCell(table, 2, 24, dmp.getExistingDataIntegration(), regular, null, locale);
+			createCell(table, 1, 25, messageSource.getMessage("dmp.edit.dataSelection", null, locale), regular, null, locale);
+			createCell(table, 2, 25, dmp.isDataSelection(), regular, null, locale);
+			createCell(table, 1, 26, messageSource.getMessage("dmp.edit.selectionTime", null, locale), regular, null, locale);
+			createCell(table, 2, 26, dmp.getSelectionTime(), regular, null, locale);
+			createCell(table, 1, 27, messageSource.getMessage("dmp.edit.selectionResp", null, locale), regular, null, locale);
+			createCell(table, 2, 27, dmp.getSelectionResp(), regular, null, locale);
+			createCell(table, 1, 28, messageSource.getMessage("dmp.edit.deleteProcedure", null, locale), regular, null, locale);
+			createCell(table, 2, 28, dmp.getDeleteProcedure(), regular, null, locale);
+			createCell(table, 1, 29, messageSource.getMessage("dmp.edit.storagePlaces", null, locale), regular, null, locale);
+			createCell(table, 2, 29, dmp.getStoragePlaces(), regular, null, locale);
+			createCell(table, 1, 30, messageSource.getMessage("dmp.edit.storageBackups", null, locale), regular, null, locale);
+			createCell(table, 2, 30, dmp.getStorageBackups(), regular, null, locale);
+			createCell(table, 1, 31, messageSource.getMessage("dmp.edit.managementWorkflow", null, locale), regular, null, locale);
+			createCell(table, 2, 31, dmp.isManagementWorkflow(), regular, null, locale);
+			createCell(table, 1, 32, messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 32, dmp.getManagementWorkflowTxt(), regular, null, locale);
+			createCell(table, 1, 33, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular, null, locale);
+			createCell(table, 2, 33, dmp.getFunderRequirements(), regular, null, locale);
+			createCell(table, 0, 34, messageSource.getMessage("export.odt.DFG.td6", null, locale), regular, null, locale);
+			createCell(table, 1, 34, messageSource.getMessage("dmp.edit.storageResponsible", null, locale), regular, null, locale);
+			createCell(table, 2, 34, dmp.getStorageResponsible(), regular, null, locale);
+			createCell(table, 1, 35, messageSource.getMessage("dmp.edit.storageDuration", null, locale), regular, null, locale);
+			createCell(table, 2, 35, dmp.getStorageDuration(), regular, null, locale);
+			createCell(table, 1, 36, messageSource.getMessage("dmp.edit.sensitiveData", null, locale), regular, null, locale);
+			createCell(table, 2, 36, dmp.getSensitiveData(), regular, null, locale);
+			createCell(table, 1, 37, messageSource.getMessage("dmp.edit.clarifiedRights", null, locale), regular, null, locale);
+			createCell(table, 2, 37, dmp.isClarifiedRights(), regular, null, locale);
+			createCell(table, 1, 38, messageSource.getMessage("dmp.edit.usedPID", null, locale), regular, null, locale);
+			createCell(table, 2, 38, dmp.getUsedPID(), regular, null, locale);
+			createCell(table, 0, 39, messageSource.getMessage("export.odt.DFG.td7", null, locale), regular, null, locale);
+			createCell(table, 1, 39, messageSource.getMessage("dmp.edit.fileFormat", null, locale), regular, null, locale);
+			createCell(table, 2, 39, dmp.getFileFormat(), regular, null, locale);
+			createCell(table, 0, 40, messageSource.getMessage("export.odt.DFG.td8", null, locale), regular, null, locale);
+			createCell(table, 1, 40, messageSource.getMessage("dmp.edit.metaFramework", null, locale), regular, null, locale);
+			createCell(table, 2, 40, dmp.getMetaFramework(), regular, null, locale);
+			createCell(table, 0, 41, messageSource.getMessage("export.odt.DFG.td9", null, locale), regular, null, locale);
+			createCell(table, 1, 41, messageSource.getMessage("dmp.edit.depositName", null, locale), regular, null, locale);
+			createCell(table, 2, 41, dmp.getDepositName(), regular, null, locale);
+			createCell(table, 1, 42, messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale), regular, null, locale);
+			createCell(table, 2, 42, dmp.isAcquisitionAgreement(), regular, null, locale);
+			createCell(table, 0, 43, messageSource.getMessage("export.odt.DFG.td10", null, locale), regular, null, locale);
+			createCell(table, 1, 43, messageSource.getMessage("dmp.edit.dataProtection", null, locale), regular, null, locale);
+			createCell(table, 2, 43, dmp.isDataProtection(), regular, null, locale);
+			createCell(table, 1, 44, messageSource.getMessage("dmp.edit.protectionRequirements", null, locale), regular, null, locale);
+			createCell(table, 2, 44, dmp.getProtectionRequirements(), regular, null, locale);
+			createCell(table, 1, 45, messageSource.getMessage("dmp.edit.consentObtained", null, locale), regular, null, locale);
+			createCell(table, 2, 45, dmp.isConsentObtained(), regular, null, locale);
+			createCell(table, 1, 46, messageSource.getMessage("dmp.edit.consentObtained", null, locale), regular, null, locale);
+			createCell(table, 2, 46, dmp.getConsentObtainedTxt(), regular, null, locale);
+			createCell(table, 1, 47, messageSource.getMessage("dmp.edit.sharingConsidered", null, locale), regular, null, locale);
+			createCell(table, 2, 47, dmp.isSharingConsidered(), regular, null, locale);
+			createCell(table, 1, 48, messageSource.getMessage("dmp.edit.irbApproval", null, locale), regular, null, locale);
+			createCell(table, 2, 48, dmp.isIrbApproval(), regular, null, locale);
+			createCell(table, 1, 49, messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 49, dmp.getIrbApprovalTxt(), regular, null, locale);
+			createCell(table, 1, 50, messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale), regular, null, locale);
+			createCell(table, 2, 50, dmp.isSensitiveDataIncluded(), regular, null, locale);
+			createCell(table, 1, 51, messageSource.getMessage("dmp.edit.externalCopyright", null, locale), regular, null, locale);
+			createCell(table, 2, 51, dmp.isExternalCopyright(), regular, null, locale);
+			createCell(table, 1, 52, messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 52, dmp.getExternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 1, 53, messageSource.getMessage("dmp.edit.internalCopyright", null, locale), regular, null, locale);
+			createCell(table, 2, 53, dmp.isInternalCopyright(), regular, null, locale);
+			createCell(table, 1, 54, messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale), regular, null, locale);
+			createCell(table, 2, 54, dmp.getInternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 0, 55, messageSource.getMessage("export.odt.DFG.td11", null, locale), regular, null, locale);
+			createCell(table, 1, 55, messageSource.getMessage("dmp.edit.transferTime", null, locale), regular, null, locale);
+			createCell(table, 2, 55, dmp.getTransferTime(), regular, null, locale);
+			
+			
+			
+			
 
 			doc.addColumnBreak();
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zu3", null, locale)).setFont(regular);
@@ -1167,6 +1311,8 @@ public class ODFUtil {
 					locale);
 			createCell(table, 0, 2, messageSource.getMessage("export.odt.DFG.td12", null, locale), regular, null,
 					locale);
+			createCell(table, 1, 2, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null, locale);
+			createCell(table, 2, 2, dmp.getSpecificCosts(), regular, null, locale);
 
 			doc.addColumnBreak();
 
@@ -1188,6 +1334,7 @@ public class ODFUtil {
 					new URI(messageSource.getMessage("export.odt.DFG.src2l", null, locale)));
 
 			doc.save(baos);
+			doc.close();
 			log.trace("Leaving createDFGDoc");
 			return baos.toByteArray();
 		} else {
