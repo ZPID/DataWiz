@@ -19,297 +19,307 @@ import de.zpid.spss.dto.SPSSVarDTO;
 
 public class StudyForm implements Serializable {
 
-  private static final long serialVersionUID = 7871841325048805095L;
-
-  @Valid
-  private StudyDTO study;
-  private ProjectDTO project;
-  private List<ContributorDTO> projectContributors;
-  private List<FormTypesDTO> collectionModes;
-  private List<FormTypesDTO> sourFormat;
-  private List<RecordDTO> records;
-  private int hiddenVar;
-  private int delPos;
-  private String scrollPosition;
-  private String fileType;
-  private String jQueryMap;
-
-  private String selectedFileType;
-  private MultipartFile spssFile;
-  private MultipartFile codeBookFile;
-  private MultipartFile csvFile;
-  private char csvSeperator;
-  private char csvQuoteChar;
-  private char csvDecChar;
-  private String newChangeLog;
-  private boolean headerRow;
-  private RecordDTO record;
-  private RecordDTO previousRecordVersion;
-  private FileDTO file;
-  private List<String[]> importMatrix;
-  private Boolean parsingError;
-  private Set<String> warnings;
-  private List<String> errors;
-  private List<RecordCompareDTO> compList;
-  private List<SPSSVarDTO> viewVars;
-  private List<SPSSVarDTO> delVars;
-
-  private int pageLoadMin;
-  private int pageLoadMax;
-
-  public StudyDTO getStudy() {
-    return study;
-  }
-
-  public void setStudy(StudyDTO study) {
-    this.study = study;
-  }
-
-  public ProjectDTO getProject() {
-    return project;
-  }
-
-  public void setProject(ProjectDTO project) {
-    this.project = project;
-  }
-
-  public List<ContributorDTO> getProjectContributors() {
-    return projectContributors;
-  }
-
-  public void setProjectContributors(List<ContributorDTO> projectContributors) {
-    this.projectContributors = projectContributors;
-  }
-
-  public int getHiddenVar() {
-    return hiddenVar;
-  }
-
-  public void setHiddenVar(int hiddenVar) {
-    this.hiddenVar = hiddenVar;
-  }
-
-  public List<FormTypesDTO> getCollectionModes() {
-    return collectionModes;
-  }
-
-  public void setCollectionModes(List<FormTypesDTO> collectionModes) {
-    this.collectionModes = collectionModes;
-  }
-
-  public List<FormTypesDTO> getSourFormat() {
-    return sourFormat;
-  }
-
-  public void setSourFormat(List<FormTypesDTO> sourFormat) {
-    this.sourFormat = sourFormat;
-  }
-
-  public int getDelPos() {
-    return delPos;
-  }
-
-  public void setDelPos(int delPos) {
-    this.delPos = delPos;
-  }
-
-  public String getScrollPosition() {
-    return scrollPosition;
-  }
-
-  public void setScrollPosition(String scrollPosition) {
-    this.scrollPosition = scrollPosition;
-  }
-
-  public List<RecordDTO> getRecords() {
-    return records;
-  }
-
-  public void setRecords(List<RecordDTO> records) {
-    this.records = records;
-  }
-
-  public String getFileType() {
-    return fileType;
-  }
-
-  public void setFileType(String fileType) {
-    this.fileType = fileType;
-  }
-
-  public String getNewChangeLog() {
-    return newChangeLog;
-  }
-
-  public void setNewChangeLog(String newChangeLog) {
-    this.newChangeLog = newChangeLog;
-  }
-
-  public MultipartFile getSpssFile() {
-    return spssFile;
-  }
-
-  public void setSpssFile(MultipartFile spssFile) {
-    this.spssFile = spssFile;
-  }
-
-  public MultipartFile getCodeBookFile() {
-    return codeBookFile;
-  }
-
-  public void setCodeBookFile(MultipartFile codeBookFile) {
-    this.codeBookFile = codeBookFile;
-  }
-
-  public MultipartFile getCsvFile() {
-    return csvFile;
-  }
-
-  public void setCsvFile(MultipartFile csvFile) {
-    this.csvFile = csvFile;
-  }
-
-  public String getSelectedFileType() {
-    return selectedFileType;
-  }
-
-  public void setSelectedFileType(String selectedFileType) {
-    this.selectedFileType = selectedFileType;
-  }
-
-  public char getCsvSeperator() {
-    return csvSeperator;
-  }
-
-  public void setCsvSeperator(char csvSeperator) {
-    this.csvSeperator = csvSeperator;
-  }
-
-  public char getCsvQuoteChar() {
-    return csvQuoteChar;
-  }
-
-  public void setCsvQuoteChar(char csvQuoteChar) {
-    this.csvQuoteChar = csvQuoteChar;
-  }
-
-  public char getCsvDecChar() {
-    return csvDecChar;
-  }
-
-  public void setCsvDecChar(char csvDecChar) {
-    this.csvDecChar = csvDecChar;
-  }
-
-  public boolean isHeaderRow() {
-    return headerRow;
-  }
-
-  public void setHeaderRow(boolean headerRow) {
-    this.headerRow = headerRow;
-  }
-
-  public RecordDTO getRecord() {
-    return record;
-  }
-
-  public void setRecord(RecordDTO record) {
-    this.record = record;
-  }
-
-  public List<String[]> getImportMatrix() {
-    return importMatrix;
-  }
-
-  public void setImportMatrix(List<String[]> importMatrix) {
-    this.importMatrix = importMatrix;
-  }
-
-  public FileDTO getFile() {
-    return file;
-  }
-
-  public void setFile(FileDTO file) {
-    this.file = file;
-  }
-
-  public Boolean getParsingError() {
-    return parsingError;
-  }
-
-  public void setParsingError(Boolean parsingError) {
-    this.parsingError = parsingError;
-  }
-
-  public Set<String> getWarnings() {
-    return warnings;
-  }
-
-  public void setWarnings(Set<String> warnings) {
-    this.warnings = warnings;
-  }
-
-  public List<String> getErrors() {
-    return errors;
-  }
-
-  public void setErrors(List<String> errors) {
-    this.errors = errors;
-  }
-
-  public RecordDTO getPreviousRecordVersion() {
-    return previousRecordVersion;
-  }
-
-  public void setPreviousRecordVersion(RecordDTO previousRecordVersion) {
-    this.previousRecordVersion = previousRecordVersion;
-  }
-
-  public List<RecordCompareDTO> getCompList() {
-    return compList;
-  }
-
-  public void setCompList(List<RecordCompareDTO> compList) {
-    this.compList = compList;
-  }
-
-  public List<SPSSVarDTO> getViewVars() {
-    return viewVars;
-  }
-
-  public void setViewVars(List<SPSSVarDTO> viewVars) {
-    this.viewVars = viewVars;
-  }
-
-  public List<SPSSVarDTO> getDelVars() {
-    return delVars;
-  }
-
-  public void setDelVars(List<SPSSVarDTO> delVars) {
-    this.delVars = delVars;
-  }
-
-  public String getjQueryMap() {
-    return jQueryMap;
-  }
-
-  public void setjQueryMap(String jQueryMap) {
-    this.jQueryMap = jQueryMap;
-  }
-
-  public int getPageLoadMin() {
-    return pageLoadMin;
-  }
-
-  public void setPageLoadMin(int pageLoadMin) {
-    this.pageLoadMin = pageLoadMin;
-  }
-
-  public int getPageLoadMax() {
-    return pageLoadMax;
-  }
-
-  public void setPageLoadMax(int pageLoadMax) {
-    this.pageLoadMax = pageLoadMax;
-  }
+	private static final long serialVersionUID = 7871841325048805095L;
+
+	@Valid
+	private StudyDTO study;
+	private ProjectDTO project;
+	private List<ContributorDTO> projectContributors;
+	private List<FormTypesDTO> collectionModes;
+	private List<FormTypesDTO> sourFormat;
+	private List<RecordDTO> records;
+	private int hiddenVar;
+	private int delPos;
+	private String scrollPosition;
+	private String fileType;
+	private String jQueryMap;
+
+	private String selectedFileType;
+	private MultipartFile spssFile;
+	private MultipartFile codeBookFile;
+	private MultipartFile csvFile;
+	private char csvSeperator;
+	private char csvQuoteChar;
+	private char csvDecChar;
+	private String newChangeLog;
+	private boolean headerRow;
+	private RecordDTO record;
+	private RecordDTO previousRecordVersion;
+	private FileDTO file;
+	private List<String[]> importMatrix;
+	private Boolean parsingError;
+	private Set<String> warnings;
+	private List<String> errors;
+	private List<RecordCompareDTO> compList;
+	private List<SPSSVarDTO> viewVars;
+	private List<SPSSVarDTO> delVars;
+
+	private int pageLoadMin;
+	private int pageLoadMax;
+	private boolean ignoreValidationErrors;
+
+	public StudyDTO getStudy() {
+		return study;
+	}
+
+	public void setStudy(StudyDTO study) {
+		this.study = study;
+	}
+
+	public ProjectDTO getProject() {
+		return project;
+	}
+
+	public void setProject(ProjectDTO project) {
+		this.project = project;
+	}
+
+	public List<ContributorDTO> getProjectContributors() {
+		return projectContributors;
+	}
+
+	public void setProjectContributors(List<ContributorDTO> projectContributors) {
+		this.projectContributors = projectContributors;
+	}
+
+	public int getHiddenVar() {
+		return hiddenVar;
+	}
+
+	public void setHiddenVar(int hiddenVar) {
+		this.hiddenVar = hiddenVar;
+	}
+
+	public List<FormTypesDTO> getCollectionModes() {
+		return collectionModes;
+	}
+
+	public void setCollectionModes(List<FormTypesDTO> collectionModes) {
+		this.collectionModes = collectionModes;
+	}
+
+	public List<FormTypesDTO> getSourFormat() {
+		return sourFormat;
+	}
+
+	public void setSourFormat(List<FormTypesDTO> sourFormat) {
+		this.sourFormat = sourFormat;
+	}
+
+	public int getDelPos() {
+		return delPos;
+	}
+
+	public void setDelPos(int delPos) {
+		this.delPos = delPos;
+	}
+
+	public String getScrollPosition() {
+		return scrollPosition;
+	}
+
+	public void setScrollPosition(String scrollPosition) {
+		this.scrollPosition = scrollPosition;
+	}
+
+	public List<RecordDTO> getRecords() {
+		return records;
+	}
+
+	public void setRecords(List<RecordDTO> records) {
+		this.records = records;
+	}
+
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public String getNewChangeLog() {
+		return newChangeLog;
+	}
+
+	public void setNewChangeLog(String newChangeLog) {
+		this.newChangeLog = newChangeLog;
+	}
+
+	public MultipartFile getSpssFile() {
+		return spssFile;
+	}
+
+	public void setSpssFile(MultipartFile spssFile) {
+		this.spssFile = spssFile;
+	}
+
+	public MultipartFile getCodeBookFile() {
+		return codeBookFile;
+	}
+
+	public void setCodeBookFile(MultipartFile codeBookFile) {
+		this.codeBookFile = codeBookFile;
+	}
+
+	public MultipartFile getCsvFile() {
+		return csvFile;
+	}
+
+	public void setCsvFile(MultipartFile csvFile) {
+		this.csvFile = csvFile;
+	}
+
+	public String getSelectedFileType() {
+		return selectedFileType;
+	}
+
+	public void setSelectedFileType(String selectedFileType) {
+		this.selectedFileType = selectedFileType;
+	}
+
+	public char getCsvSeperator() {
+		return csvSeperator;
+	}
+
+	public void setCsvSeperator(char csvSeperator) {
+		this.csvSeperator = csvSeperator;
+	}
+
+	public char getCsvQuoteChar() {
+		return csvQuoteChar;
+	}
+
+	public void setCsvQuoteChar(char csvQuoteChar) {
+		this.csvQuoteChar = csvQuoteChar;
+	}
+
+	public char getCsvDecChar() {
+		return csvDecChar;
+	}
+
+	public void setCsvDecChar(char csvDecChar) {
+		this.csvDecChar = csvDecChar;
+	}
+
+	public boolean isHeaderRow() {
+		return headerRow;
+	}
+
+	public void setHeaderRow(boolean headerRow) {
+		this.headerRow = headerRow;
+	}
+
+	public RecordDTO getRecord() {
+		return record;
+	}
+
+	public void setRecord(RecordDTO record) {
+		this.record = record;
+	}
+
+	public List<String[]> getImportMatrix() {
+		return importMatrix;
+	}
+
+	public void setImportMatrix(List<String[]> importMatrix) {
+		this.importMatrix = importMatrix;
+	}
+
+	public FileDTO getFile() {
+		return file;
+	}
+
+	public void setFile(FileDTO file) {
+		this.file = file;
+	}
+
+	public Boolean getParsingError() {
+		return parsingError;
+	}
+
+	public void setParsingError(Boolean parsingError) {
+		this.parsingError = parsingError;
+	}
+
+	public Set<String> getWarnings() {
+		return warnings;
+	}
+
+	public void setWarnings(Set<String> warnings) {
+		this.warnings = warnings;
+	}
+
+	public List<String> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<String> errors) {
+		this.errors = errors;
+	}
+
+	public RecordDTO getPreviousRecordVersion() {
+		return previousRecordVersion;
+	}
+
+	public void setPreviousRecordVersion(RecordDTO previousRecordVersion) {
+		this.previousRecordVersion = previousRecordVersion;
+	}
+
+	public List<RecordCompareDTO> getCompList() {
+		return compList;
+	}
+
+	public void setCompList(List<RecordCompareDTO> compList) {
+		this.compList = compList;
+	}
+
+	public List<SPSSVarDTO> getViewVars() {
+		return viewVars;
+	}
+
+	public void setViewVars(List<SPSSVarDTO> viewVars) {
+		this.viewVars = viewVars;
+	}
+
+	public List<SPSSVarDTO> getDelVars() {
+		return delVars;
+	}
+
+	public void setDelVars(List<SPSSVarDTO> delVars) {
+		this.delVars = delVars;
+	}
+
+	public String getjQueryMap() {
+		return jQueryMap;
+	}
+
+	public void setjQueryMap(String jQueryMap) {
+		this.jQueryMap = jQueryMap;
+	}
+
+	public int getPageLoadMin() {
+		return pageLoadMin;
+	}
+
+	public void setPageLoadMin(int pageLoadMin) {
+		this.pageLoadMin = pageLoadMin;
+	}
+
+	public int getPageLoadMax() {
+		return pageLoadMax;
+	}
+
+	public void setPageLoadMax(int pageLoadMax) {
+		this.pageLoadMax = pageLoadMax;
+	}
+
+	public boolean isIgnoreValidationErrors() {
+		return ignoreValidationErrors;
+	}
+
+	public void setIgnoreValidationErrors(boolean ignoreValidationErrors) {
+		this.ignoreValidationErrors = ignoreValidationErrors;
+	}
+
 }

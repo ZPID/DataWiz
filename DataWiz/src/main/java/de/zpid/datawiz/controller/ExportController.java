@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.exceptions.DWDownloadException;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
@@ -36,14 +35,13 @@ import de.zpid.datawiz.util.UserUtil;
  * <br />
  * This file is part of Datawiz.<br />
  * 
- * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
- * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * <a rel="license" href= "http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
  * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
- * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
- * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
- * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * <span xmlns:dct="http://purl.org/dc/terms/" property= "dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property= "cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href= "http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
  * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
  * 
  * @author Ronny Boelter
@@ -95,8 +93,8 @@ public class ExportController {
 	}
 
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST, produces = "application/zip")
-	public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid,
-	    final ModelMap model, HttpServletResponse response, final RedirectAttributes redirectAttributes) throws Exception {
+	public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid, final ModelMap model,
+	    HttpServletResponse response, final RedirectAttributes redirectAttributes) throws Exception {
 
 		final UserDTO user = UserUtil.getCurrentUser();
 
@@ -124,8 +122,7 @@ public class ExportController {
 			if (export != null) {
 				try {
 					response.setContentType("application/zip");
-					response.setHeader("Content-Disposition",
-					    "attachment; filename=\"" + exportService.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
 					response.getOutputStream().write(export);
 					response.flushBuffer();
 				} catch (Exception e) {
@@ -140,7 +137,6 @@ public class ExportController {
 		} else {
 			throw new DWDownloadException("export.error.exception.thown");
 		}
-
 	}
 
 }

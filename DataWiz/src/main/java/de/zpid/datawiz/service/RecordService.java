@@ -104,11 +104,9 @@ public class RecordService {
 	public StudyForm setStudyform(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final Optional<Long> versionId,
 	    final Optional<String> subpage, final List<String> parsingErrors) throws Exception {
 		if (!pid.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_PID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		if (!studyId.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_STUDYID_ERROR);
 		StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
 		sForm.setProject(projectDAO.findById(pid.get()));
 		if (sForm.getProject() == null) {
@@ -124,6 +122,8 @@ public class RecordService {
 			if (rec != null) {
 				if (!subpage.isPresent()) {
 					sForm.setRecords(recordDAO.findRecordVersionList(recordId.get()));
+					rec.setVariables(recordDAO.findVariablesByVersionID(rec.getVersionId()));
+					setCodebook(parsingErrors, rec, false);
 				} else if (subpage.get().equals("codebook")) {
 					sForm.getStudy().setConstructs(studyConstructDAO.findAllByStudy(studyId.get()));
 					sForm.getStudy().setMeasOcc(studyListTypesDAO.findAllByStudyAndType(studyId.get(), DWFieldTypes.MEASOCCNAME));
@@ -190,8 +190,7 @@ public class RecordService {
 			for (SPSSVarDTO var : rec.getVariables()) {
 				int sd = varPosition++;
 				rec.getDataMatrix().parallelStream().forEach(row -> {
-					if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE) && row.get(sd) != null
-					    && !String.valueOf(row.get(sd)).isEmpty()) {
+					if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_DATE) && row.get(sd) != null && !String.valueOf(row.get(sd)).isEmpty()) {
 						String viewDate = null;
 						viewDate = parseDateToViewTime(String.valueOf(row.get(sd)), var.getType(), parsingErrors, var, "matrix-row-" + sd, false);
 						if (viewDate != null && !viewDate.isEmpty()) {
@@ -220,8 +219,8 @@ public class RecordService {
 	 * @return
 	 * @throws DataWizSystemException
 	 */
-	private String parseDateToViewTime(String valueString, SPSSVarTypes varType, final List<String> parsingErrors, final SPSSVarDTO var,
-	    final String type, boolean missing) {
+	private String parseDateToViewTime(String valueString, SPSSVarTypes varType, final List<String> parsingErrors, final SPSSVarDTO var, final String type,
+	    boolean missing) {
 		String viewDate = null;
 		if (valueString != null && !valueString.isEmpty()) {
 			try {
@@ -231,22 +230,18 @@ public class RecordService {
 					date = LocalDate.parse(dt[0].trim(), DateTimeFormatter.ofPattern("M/d/yyyy"));
 					viewDate = ((date.getDayOfMonth() <= 9 ? "0" + date.getDayOfMonth() : date.getDayOfMonth()) + "."
 					    + (date.getMonthValue() <= 9 ? "0" + date.getMonthValue() : date.getMonthValue()) + "." + date.getYear() + " " + dt[1].trim()).trim();
-				} else if (varType.equals(SPSSVarTypes.SPSS_FMT_DATE) || varType.equals(SPSSVarTypes.SPSS_FMT_ADATE)
-				    || varType.equals(SPSSVarTypes.SPSS_FMT_JDATE) || varType.equals(SPSSVarTypes.SPSS_FMT_EDATE)
-				    || varType.equals(SPSSVarTypes.SPSS_FMT_SDATE)) {
+				} else if (varType.equals(SPSSVarTypes.SPSS_FMT_DATE) || varType.equals(SPSSVarTypes.SPSS_FMT_ADATE) || varType.equals(SPSSVarTypes.SPSS_FMT_JDATE)
+				    || varType.equals(SPSSVarTypes.SPSS_FMT_EDATE) || varType.equals(SPSSVarTypes.SPSS_FMT_SDATE)) {
 					date = LocalDate.parse(valueString.trim(), DateTimeFormatter.ofPattern("M/d/yyyy"));
 					viewDate = ((date.getDayOfMonth() <= 9 ? "0" + date.getDayOfMonth() : date.getDayOfMonth()) + "."
 					    + (date.getMonthValue() <= 9 ? "0" + date.getMonthValue() : date.getMonthValue()) + "." + date.getYear()).trim();
 				}
 			} catch (Exception e) {
-				log.warn(
-				    "DBS Warning in parseDateToViewTime: corrupt {} date found in database: value [{}] of variable [id:{}] doesn't match the correct dateformat",
+				log.warn("DBS Warning in parseDateToViewTime: corrupt {} date found in database: value [{}] of variable [id:{}] doesn't match the correct dateformat",
 				    () -> type, () -> valueString, () -> var.getId());
 				parsingErrors.add(messageSource.getMessage("record.dbs.date.corrupt",
-				    new Object[] { valueString,
-				        messageSource.getMessage(missing ? "dataset.import.report.codebook.missings" : "dataset.import.report.codebook.values", null,
-				            LocaleContextHolder.getLocale()),
-				        var.getName() },
+				    new Object[] { valueString, messageSource.getMessage(missing ? "dataset.import.report.codebook.missings" : "dataset.import.report.codebook.values",
+				        null, LocaleContextHolder.getLocale()), var.getName() },
 				    LocaleContextHolder.getLocale()));
 			}
 		}
@@ -268,9 +263,8 @@ public class RecordService {
 				date = LocalDate.parse(dt[0].trim(), DateTimeFormatter.ofPattern("d.M.yyyy"));
 				viewDate = ((date.getMonthValue() <= 9 ? "0" + date.getMonthValue() : date.getMonthValue()) + "/"
 				    + (date.getDayOfMonth() <= 9 ? "0" + date.getDayOfMonth() : date.getDayOfMonth()) + "/" + date.getYear() + " " + dt[1].trim()).trim();
-			} else if (varType.equals(SPSSVarTypes.SPSS_FMT_DATE) || varType.equals(SPSSVarTypes.SPSS_FMT_ADATE)
-			    || varType.equals(SPSSVarTypes.SPSS_FMT_JDATE) || varType.equals(SPSSVarTypes.SPSS_FMT_EDATE)
-			    || varType.equals(SPSSVarTypes.SPSS_FMT_SDATE)) {
+			} else if (varType.equals(SPSSVarTypes.SPSS_FMT_DATE) || varType.equals(SPSSVarTypes.SPSS_FMT_ADATE) || varType.equals(SPSSVarTypes.SPSS_FMT_JDATE)
+			    || varType.equals(SPSSVarTypes.SPSS_FMT_EDATE) || varType.equals(SPSSVarTypes.SPSS_FMT_SDATE)) {
 				date = LocalDate.parse(valueString.trim(), DateTimeFormatter.ofPattern("d.M.yyyy"));
 				viewDate = ((date.getMonthValue() <= 9 ? "0" + date.getMonthValue() : date.getMonthValue()) + "/"
 				    + (date.getDayOfMonth() <= 9 ? "0" + date.getDayOfMonth() : date.getDayOfMonth()) + "/" + date.getYear()).trim();
@@ -279,10 +273,8 @@ public class RecordService {
 			log.debug("corrupt {} date found in form: value [{}] of variable [id:{}] doesn't match the correct dateformat", () -> type, () -> valueString,
 			    () -> var.getId());
 			parsingErrors.add(messageSource.getMessage("record.dbs.date.corrupt",
-			    new Object[] { valueString,
-			        messageSource.getMessage(missing ? "dataset.import.report.codebook.missings" : "dataset.import.report.codebook.values", null,
-			            LocaleContextHolder.getLocale()),
-			        var.getName() },
+			    new Object[] { valueString, messageSource.getMessage(missing ? "dataset.import.report.codebook.missings" : "dataset.import.report.codebook.values",
+			        null, LocaleContextHolder.getLocale()), var.getName() },
 			    LocaleContextHolder.getLocale()));
 		}
 		return viewDate;
@@ -295,8 +287,7 @@ public class RecordService {
 	 * @param user
 	 * @throws Exception
 	 */
-	public void insertOrUpdateRecordMetadata(final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm, final UserDTO user)
-	    throws Exception {
+	public void insertOrUpdateRecordMetadata(final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm, final UserDTO user) throws Exception {
 		if (!recordId.isPresent() || sForm.getRecord().getId() <= 0) {
 			sForm.getRecord().setCreatedBy(user.getEmail());
 			sForm.getRecord().setStudyId(studyId.get());
@@ -445,10 +436,10 @@ public class RecordService {
 	 * @throws DataWizSystemException
 	 * @throws NoSuchMessageException
 	 */
-	public void deleteRecord(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final UserDTO user,
-	    boolean singleCommit) throws DataWizSystemException {
-		log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(),
-		    () -> studyId.get(), () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+	public void deleteRecord(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final UserDTO user, boolean singleCommit)
+	    throws DataWizSystemException {
+		log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
+		    () -> pid.get(), () -> user.getId(), () -> user.getEmail());
 		TransactionStatus status = null;
 		if (singleCommit)
 			status = txManager.getTransaction(new DefaultTransactionDefinition());
@@ -486,8 +477,8 @@ public class RecordService {
 					    DataWizErrorCodes.MINIO_DELETE_ERROR);
 				}
 			} else {
-				log.warn("User [email:{}; id: {}] tried to delete Record [projectId: {}; studyId: {}; recordId: {}]", () -> user.getEmail(),
-				    () -> user.getId(), () -> pid, () -> studyId, () -> recordId);
+				log.warn("User [email:{}; id: {}] tried to delete Record [projectId: {}; studyId: {}; recordId: {}]", () -> user.getEmail(), () -> user.getId(),
+				    () -> pid, () -> studyId, () -> recordId);
 				throw new DataWizSystemException(
 				    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "record", recordId.get() }, Locale.ENGLISH),
 				    DataWizErrorCodes.USER_ACCESS_RECORD_PERMITTED);
@@ -517,7 +508,7 @@ public class RecordService {
 		Set<String> parsingErrors = new HashSet<String>();
 		Set<String> parsingWarnings = new HashSet<String>();
 		try {
-			validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, parsingWarnings, null, true);
+			validateAndPrepareCodebookForm(sForm.getRecord(), parsingErrors, parsingWarnings, null, true, false);
 			sForm.setWarnings(parsingWarnings);
 		} catch (DataWizSystemException e) {
 			log.debug("Parsing Exception during saveCodebook - Code{}; Message: {}", () -> e.getErrorCode(), () -> e.getMessage());
@@ -534,7 +525,7 @@ public class RecordService {
 	 * @throws DataWizSystemException
 	 */
 	public void validateAndPrepareCodebookForm(final RecordDTO currentVersion, final Set<String> parsingErrors, final Set<String> parsingWarnings,
-	    final String changelog, final boolean onlyValidation) throws DataWizSystemException {
+	    final String changelog, final boolean onlyValidation, final boolean ignoreValErrors) throws DataWizSystemException {
 		boolean missingChangelog = false;
 		if (!onlyValidation) {
 			if (changelog == null || changelog.trim().isEmpty()) {
@@ -552,20 +543,19 @@ public class RecordService {
 						parsingErrors.add(messageSource.getMessage("record.name.too.long", new Object[] { var.getPosition(), var.getName(), VAR_NAME_MAX_LENGTH },
 						    LocaleContextHolder.getLocale()));
 					} else if (!names.add(var.getName().toUpperCase())) {
-						parsingErrors.add(
-						    messageSource.getMessage("record.name.equal", new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
-					} else if (!Pattern.compile(RegexUtil.VAR_NAME_REGEX).matcher(var.getName()).find()) {
-						parsingErrors.add(
-						    messageSource.getMessage("record.name.invalid", new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
+						parsingErrors
+						    .add(messageSource.getMessage("record.name.equal", new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
+					} else if (!ignoreValErrors && !Pattern.compile(RegexUtil.VAR_NAME_REGEX).matcher(var.getName()).find()) {
+						parsingErrors
+						    .add(messageSource.getMessage("record.name.invalid", new Object[] { var.getPosition(), var.getName() }, LocaleContextHolder.getLocale()));
 					}
-					if (var.getLabel() != null && !var.getLabel().isEmpty()
-					    && var.getLabel().getBytes(Charset.forName("UTF-8")).length > VAR_LABEL_MAX_LENGTH) {
-						parsingErrors.add(messageSource.getMessage("record.label.too.long",
-						    new Object[] { var.getPosition(), var.getName(), VAR_LABEL_MAX_LENGTH }, LocaleContextHolder.getLocale()));
+					if (var.getLabel() != null && !var.getLabel().isEmpty() && var.getLabel().getBytes(Charset.forName("UTF-8")).length > VAR_LABEL_MAX_LENGTH) {
+						parsingErrors.add(messageSource.getMessage("record.label.too.long", new Object[] { var.getPosition(), var.getName(), VAR_LABEL_MAX_LENGTH },
+						    LocaleContextHolder.getLocale()));
 					}
 					if (var.getDecimals() > 16) {
-						parsingWarnings.add(messageSource.getMessage("record.decimals.too.long", new Object[] { var.getPosition(), var.getName(), 16 },
-						    LocaleContextHolder.getLocale()));
+						parsingWarnings.add(
+						    messageSource.getMessage("record.decimals.too.long", new Object[] { var.getPosition(), var.getName(), 16 }, LocaleContextHolder.getLocale()));
 					}
 					for (SPSSValueLabelDTO val : var.getValues()) {
 						validateValueorMissingField(parsingErrors, onlyValidation, var, val, false, 0, parsingWarnings);
@@ -643,11 +633,11 @@ public class RecordService {
 		}
 		if (!switchToMissing && (label.isEmpty() || value.isEmpty())) {
 			if (label.isEmpty()) {
-				parsingWarnings.add(
-				    messageSource.getMessage("record.value.label.empty", new Object[] { var.getName(), var.getPosition() }, LocaleContextHolder.getLocale()));
+				parsingWarnings
+				    .add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName(), var.getPosition() }, LocaleContextHolder.getLocale()));
 			} else
-				parsingErrors.add(
-				    messageSource.getMessage("record.value.label.empty", new Object[] { var.getName(), var.getPosition() }, LocaleContextHolder.getLocale()));
+				parsingErrors
+				    .add(messageSource.getMessage("record.value.label.empty", new Object[] { var.getName(), var.getPosition() }, LocaleContextHolder.getLocale()));
 			varError = true;
 		} else if (switchToMissing && (value == null || value.isEmpty())) {
 			parsingErrors.add(messageSource.getMessage("record.value.missing.empty", new Object[] { var.getName(), missingNum, var.getMissingFormat() },
@@ -732,12 +722,14 @@ public class RecordService {
 	 * @param parsingErrorString
 	 */
 	private void addParsingError(final Set<String> parsingErrors, SPSSVarDTO var, String value, String parsingErrorString, boolean switchtoMissing) {
-		parsingErrors.add(messageSource.getMessage(parsingErrorString,
-		    new Object[] { value,
-		        messageSource.getMessage(switchtoMissing ? "dataset.import.report.codebook.missings" : "dataset.import.report.codebook.values", null,
-		            LocaleContextHolder.getLocale()),
-		        var.getName(), var.getDecimals(), var.getWidth(), var.getPosition() },
-		    LocaleContextHolder.getLocale()));
+		parsingErrors
+		    .add(
+		        messageSource.getMessage(parsingErrorString,
+		            new Object[] { value,
+		                messageSource.getMessage(switchtoMissing ? "dataset.import.report.codebook.missings" : "dataset.import.report.codebook.values", null,
+		                    LocaleContextHolder.getLocale()),
+		                var.getName(), var.getDecimals(), var.getWidth(), var.getPosition() },
+		            LocaleContextHolder.getLocale()));
 	}
 
 	/**
@@ -803,8 +795,8 @@ public class RecordService {
 	}
 
 	/**
-	 * Saves the Record to the DB and the uploaded file to the Minio System. Transaction Manager is used, to eventually rollback the transmission if an
-	 * error occurs.
+	 * Saves the Record to the DB and the uploaded file to the Minio System. Transaction Manager is used, to eventually rollback the transmission if an error
+	 * occurs.
 	 * 
 	 * @param sForm
 	 *          StudyForm, which contains the Record
@@ -846,16 +838,14 @@ public class RecordService {
 						    && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.MOVED)
 						    && !sForm.getCompList().get(position).getVarStatus().equals(VariableStatus.MOVED_CSV)) {
 							long varId = recordDAO.insertVariable(var);
-							recordDAO.insertVariableVersionRelation(varId, record.getVersionId(), var.getPosition(),
-							    sForm.getCompList().get(position).getMessage());
+							recordDAO.insertVariableVersionRelation(varId, record.getVersionId(), var.getPosition(), sForm.getCompList().get(position).getMessage());
 							if (var.getAttributes() != null) {
 								recordDAO.insertAttributes(var.getAttributes(), record.getVersionId(), varId);
 							}
 							if (var.getValues() != null)
 								recordDAO.insertVarLabels(var.getValues(), varId);
 						} else {
-							recordDAO.insertVariableVersionRelation(var.getId(), record.getVersionId(), var.getPosition(),
-							    sForm.getCompList().get(position).getMessage());
+							recordDAO.insertVariableVersionRelation(var.getId(), record.getVersionId(), var.getPosition(), sForm.getCompList().get(position).getMessage());
 						}
 						position++;
 					}
@@ -878,8 +868,7 @@ public class RecordService {
 				throw (e);
 			}
 		} else {
-			throw new DataWizSystemException("saveRecordToDBAndMinio canceled: sForm.getRecord(), or sForm.getFile() is empty  ",
-			    DataWizErrorCodes.NO_DATA_ERROR);
+			throw new DataWizSystemException("saveRecordToDBAndMinio canceled: sForm.getRecord(), or sForm.getFile() is empty  ", DataWizErrorCodes.NO_DATA_ERROR);
 		}
 	}
 
@@ -897,8 +886,7 @@ public class RecordService {
 		while (itt.hasNext()) {
 			SPSSValueLabelDTO attribute = itt.next();
 			if (!attribute.getValue().startsWith("@") || attribute.getValue().equals("@dw_construct") || attribute.getValue().equals("@dw_measocc")
-			    || attribute.getValue().equals("@dw_instrument") || attribute.getValue().equals("@dw_itemtext")
-			    || attribute.getValue().equals("@dw_filtervar")) {
+			    || attribute.getValue().equals("@dw_instrument") || attribute.getValue().equals("@dw_itemtext") || attribute.getValue().equals("@dw_filtervar")) {
 				itt.remove();
 			}
 		}
@@ -921,8 +909,7 @@ public class RecordService {
 				} else if (comp.getVarStatus().equals(VariableStatus.MOVED) || comp.getVarStatus().equals(VariableStatus.MOVED_CSV)
 				    || comp.getVarStatus().equals(VariableStatus.MOVED)) {
 					newVars.get(position).setId(prevVars.get(comp.getMovedFrom() - 1).getId());
-				} else if (comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED)
-				    || comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
+				} else if (comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED) || comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
 				    || comp.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)) {
 					newVar = newVars.get(position);
 					prevVar = prevVars.get(comp.getMovedFrom() - 1);
@@ -975,8 +962,8 @@ public class RecordService {
 	}
 
 	/**
-	 * This function copies the needed missing types from the temporary SPSSvarDTO varval (used for the missing modal), to the SPSSVarVar of the current
-	 * edited record. The needed missing values are selected by the missing type.
+	 * This function copies the needed missing types from the temporary SPSSvarDTO varval (used for the missing modal), to the SPSSVarVar of the current edited
+	 * record. The needed missing values are selected by the missing type.
 	 * 
 	 * @param varVal
 	 *          Temporary SPSSVarDTO of the missing modal form
@@ -1050,8 +1037,8 @@ public class RecordService {
 	}
 
 	private String loadDataMatrix(final RecordDTO record, final long pid) throws DataWizSystemException {
-		log.trace("Entering loadDataMatrix for Record [pid: {}; studtyid:{}; recordid: {}; path: {}]", () -> pid, () -> record.getStudyId(),
-		    () -> record.getId(), () -> record.getMinioName());
+		log.trace("Entering loadDataMatrix for Record [pid: {}; studtyid:{}; recordid: {}; path: {}]", () -> pid, () -> record.getStudyId(), () -> record.getId(),
+		    () -> record.getMinioName());
 		if (record != null) {
 			if (record.getMinioName() == null)
 				return new String();

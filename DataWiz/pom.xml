@@ -7,6 +7,7 @@
 	<packaging>war</packaging>
 	<name>DataWiz</name>
 	<properties>
+		<spss.java.io.version>1.0.0.RELEASE</spss.java.io.version>
 		<!-- http://mvnrepository.com/artifact/org.springframework/spring-core -->
 		<!-- <springframework.version>4.3.11.RELEASE</springframework.version> -->
 		<springframework.version>5.0.2.RELEASE</springframework.version>
@@ -52,7 +53,7 @@
 		<!-- https://mvnrepository.com/artifact/io.minio/minio -->
 		<minio.version>3.0.10</minio.version>
 		<!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
-		<dom4j.version>1.6.1</dom4j.version>
+		<dom4j.version>2.1.0</dom4j.version>
 		<!-- https://mvnrepository.com/artifact/org.apache.odftoolkit/simple-odf -->
 		<odf.simple.version>0.8.2-incubating</odf.simple.version>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-math3 -->
@@ -81,7 +82,7 @@
 			<version>${sargue.jsptags.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>dom4j</groupId>
+			<groupId>org.dom4j</groupId>
 			<artifactId>dom4j</artifactId>
 			<version>${dom4j.version}</version>
 		</dependency>
@@ -96,9 +97,9 @@
 			<version>${csv.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>SPSS</groupId>
-			<artifactId>SPSS</artifactId>
-			<version>3.0</version>
+			<groupId>de.zpid</groupId>
+			<artifactId>spss.java.io</artifactId>
+			<version>${spss.java.io.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.minio</groupId>
@@ -185,11 +186,11 @@
 			<version>${jstl.version}</version>
 		</dependency>
 		<!-- JSON -->
-		<dependency>
+<!-- 		<dependency>
 			<groupId>com.googlecode.json-simple</groupId>
 			<artifactId>json-simple</artifactId>
 			<version>${googlecode.json-simple.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>

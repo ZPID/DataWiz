@@ -431,6 +431,7 @@ public class ProjectController {
 			resp = new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
 		} else {
 			switch (projectService.prepareMaterialDownload(docId, response)) {
+			
 			case MINIO_READ_ERROR:
 				throw new DataWizSystemException(messageSource.getMessage("minio.connection.exception.upload",
 				    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()),
