@@ -214,7 +214,7 @@
 														</div>
 														<div style="cursor: pointer;"
 															class="divTableCell th-width-200"
-															onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=values');">
+															onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=values', ${var.id}, 'values', event, this);">
 															<c:forEach items="${var.values}" var="val">
 																<div>
 																	<s:message
@@ -225,7 +225,7 @@
 														</div>
 														<div style="cursor: pointer;"
 															class="divTableCell th-width-200"
-															onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=missings');">
+															onclick="showAjaxModal('${accessUrl}/modal?varId=${var.id}&modal=missings', ${var.id}, 'missings', event, this);">
 															<c:choose>
 																<c:when
 																	test="${var.missingFormat eq 'SPSS_ONE_MISSVAL'}">
@@ -458,7 +458,8 @@
 										<s:message code="codebook.submit.disable.validation" />&nbsp;										
 									</sf:label>
 									<sf:checkbox path="ignoreValidationErrors" />
-									<s:message code="codebook.submit.disable.validation.help" var="appresmess" />
+									<s:message code="codebook.submit.disable.validation.help"
+										var="appresmess" />
 									<%@ include file="templates/helpblock.jsp"%>
 								</div>
 							</div>

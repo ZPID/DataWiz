@@ -10,91 +10,114 @@ $tag_box = null;
  */
 
 (function($, window, document, undefined) {
-	$(document).ready(
-	    function() {
-		    backTotop();
-		    $("#dwmainnavbar").on('affixed-top.bs.affix', function() {
-			    $("#navbarlogo").fadeOut();
-		    });
-		    $("#dwmainnavbar").on('affix.bs.affix', function() {
-			    $("#navbarlogo").fadeIn();
-		    });
-		    $.ajaxSetup({
-			    headers : {
-				    'X-CSRF-TOKEN' : $('input[name="_csrf"]').val()
-			    }
-		    });
-		    $('[data-toggle="tooltip"]').tooltip()
+	$(document)
+			.ready(
+					function() {
+						backTotop();
+						$("#dwmainnavbar").on('affixed-top.bs.affix',
+								function() {
+									$("#navbarlogo").fadeOut();
+								});
+						$("#dwmainnavbar").on('affix.bs.affix', function() {
+							$("#navbarlogo").fadeIn();
+						});
+						$.ajaxSetup({
+							headers : {
+								'X-CSRF-TOKEN' : $('input[name="_csrf"]').val()
+							}
+						});
+						$('[data-toggle="tooltip"]').tooltip()
 
-		    // loading DMP Content
-		    if (window.location.pathname.search("/dmp") > 0) {
-			    $("#dmpForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
-			    // $("#dmpForm :input").prop("disabled", false);
-			    setProjectSubmenu((($("#pagePosi").val() != undefined && $("#pagePosi").val().trim() != "") ? $("#pagePosi")
-			        .val() : null));
-			    showorHideDMPContent();
-			    $("#dmpForm").trackChanges();
-			    $(window).on('beforeunload', function(e) {
-				    if ($("#dmpForm").isChanged()) {
-					    var msg = 'You are about to leave the page.  Continue?';
-					    (e || window.event).returnValue = msg; // IE + Gecko
-					    return msg; // Webkit
-				    }
-			    });
-		    } // loading Project Content without study!
-		    else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
-			    $("#ProjectForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
-			    // startTagging();
-		    } // loading Study Content
-		    else if (window.location.pathname.search("/study") > 0
-		        && (window.location.pathname.search("/record") <= 0 || window.location.pathname.search("/records") > 0)) {
-			    $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
-			    $("#switchEditMode").attr("disabled", false);
-			    scrollToPosition();
-			    startAccordion();
-			    startDatePicker();
-			    setStudySubmenu(null);
-			    showorHideStudyContent();
-		    } // loading Record Content
-		    else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
-			    $("#studyFormDis :input:not([name=pageLoadMin],[name=pageLoadMax],[name=setNumofVars])").attr("disabled",
-			        $("#disStudyContent").val() === 'disabled');
-			    if ($("#selectedFileType").val() === 'SPSS') {
-				    $("#spssSelected").show();
-				    $("#csvSelected").hide();
-			    } else {
-				    $("#spssSelected").hide();
-				    $("#csvSelected").show();
-			    }
-			    $("#selectedFileType").change(function() {
-				    if ($("#selectedFileType").val() === 'SPSS') {
-					    $("#spssSelected").show();
-					    $("#csvSelected").hide();
-				    } else {
-					    $("#spssSelected").hide();
-					    $("#csvSelected").show();
-				    }
-			    });
-		    }// loading Panel Content
-		    else if (window.location.pathname.search("/panel") > 0) {
-			    $("#projectfilter").keyup(function() {
-				    filterProjectList($(this).val());
-			    });
-			    $("#filterSelect").change(function() {
-				    filterProjectList($("#projectfilter").val());
-			    });
-		    } // loading access Content
-		    else if (window.location.pathname.search("/access") > 0) {
-			    showHideNewRole();
-		    } // loading usersetings Content
-		    else if (window.location.pathname.search("/usersettings") > 0) {
-			    if ($('#passwd_error').val())
-				    $('.user-pswd-button, #user-pswd-content').toggle();
-			    $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
-		    }
-		    $(".loader").fadeOut("slow");
-		    $(".uploader").fadeOut("slow");
-	    });
+						// loading DMP Content
+						if (window.location.pathname.search("/dmp") > 0) {
+							$("#dmpForm :input")
+									.attr(
+											"disabled",
+											$("#disProjectContent").val() === 'disabled');
+							// $("#dmpForm :input").prop("disabled", false);
+							setProjectSubmenu((($("#pagePosi").val() != undefined && $(
+									"#pagePosi").val().trim() != "") ? $(
+									"#pagePosi").val() : null));
+							showorHideDMPContent();
+							$("#dmpForm").trackChanges();
+							$(window)
+									.on(
+											'beforeunload',
+											function(e) {
+												if ($("#dmpForm").isChanged()) {
+													var msg = 'You are about to leave the page.  Continue?';
+													(e || window.event).returnValue = msg; // IE +
+													// Gecko
+													return msg; // Webkit
+												}
+											});
+						} // loading Project Content without study!
+						else if (window.location.pathname.search("/project") > 0
+								&& window.location.pathname.search("/study") <= 0) {
+							$("#ProjectForm :input")
+									.attr(
+											"disabled",
+											$("#disProjectContent").val() === 'disabled');
+							// startTagging();
+						} // loading Study Content
+						else if (window.location.pathname.search("/study") > 0
+								&& (window.location.pathname.search("/record") <= 0 || window.location.pathname
+										.search("/records") > 0)) {
+							$("#studyFormDis :input").attr("disabled",
+									$("#disStudyContent").val() === 'disabled');
+							$("#switchEditMode").attr("disabled", false);
+							scrollToPosition();
+							startAccordion();
+							startDatePicker();
+							setStudySubmenu(null);
+							showorHideStudyContent();
+						} // loading Record Content
+						else if (window.location.pathname.search("/record") > 0
+								&& window.location.pathname.search("/records") <= 0) {
+							$(
+									"#studyFormDis :input:not([name=pageLoadMin],[name=pageLoadMax],[name=setNumofVars])")
+									.attr(
+											"disabled",
+											$("#disStudyContent").val() === 'disabled');
+							if ($("#selectedFileType").val() === 'SPSS') {
+								$("#spssSelected").show();
+								$("#csvSelected").hide();
+							} else {
+								$("#spssSelected").hide();
+								$("#csvSelected").show();
+							}
+							$("#selectedFileType").change(function() {
+								if ($("#selectedFileType").val() === 'SPSS') {
+									$("#spssSelected").show();
+									$("#csvSelected").hide();
+								} else {
+									$("#spssSelected").hide();
+									$("#csvSelected").show();
+								}
+							});
+						}// loading Panel Content
+						else if (window.location.pathname.search("/panel") > 0) {
+							$("#projectfilter").keyup(function() {
+								filterProjectList($(this).val());
+							});
+							$("#filterSelect").change(function() {
+								filterProjectList($("#projectfilter").val());
+							});
+						} // loading access Content
+						else if (window.location.pathname.search("/access") > 0) {
+							showHideNewRole();
+						} // loading usersetings Content
+						else if (window.location.pathname
+								.search("/usersettings") > 0) {
+							if ($('#passwd_error').val())
+								$('.user-pswd-button, #user-pswd-content')
+										.toggle();
+							$('#pwdcheckstr span').html(
+									checkStrength($('.pwdcheckin').val()))
+						}
+						$(".loader").fadeOut("slow");
+						$(".uploader").fadeOut("slow");
+					});
 })(window.jQuery, window, document);
 
 $(".projectContentClick").click(function() {
@@ -115,8 +138,9 @@ $("#meta_submit").click(function() {
 });
 
 /**
- * Handles the project sub-menu and the content This is important, because the whole project page is loaded as single
- * page and is divided with jQuery into individual parts.
+ * Handles the project sub-menu and the content This is important, because the
+ * whole project page is loaded as single page and is divided with jQuery into
+ * individual parts.
  * 
  * @param id
  */
@@ -207,12 +231,12 @@ function GetURLParameter(sParam) {
 
 function startTagging() {
 	var my_custom_options = {
-	  "no-duplicate" : true,
-	  "no-duplicate-callback" : false,
-	  "no-duplicate-text" : "Duplicate tags",
-	  "tags-input-name" : "taggone",
-	  "edit-on-delete" : false,
-	  "no-comma" : false,
+		"no-duplicate" : true,
+		"no-duplicate-callback" : false,
+		"no-duplicate-text" : "Duplicate tags",
+		"tags-input-name" : "taggone",
+		"edit-on-delete" : false,
+		"no-comma" : false,
 	};
 	if ($("#tagging").length) {
 		var t = $("#tagging").tagging(my_custom_options);
@@ -235,101 +259,108 @@ function startAccordion() {
 
 function startDatePicker() {
 	$('.input-daterange').datepicker({
-	  format : "dd/mm/yyyy",
-	  weekStart : 1,
-	  todayBtn : "linked",
-	  clearBtn : true,
-	  language : "de",
-	  todayHighlight : true
+		format : "dd/mm/yyyy",
+		weekStart : 1,
+		todayBtn : "linked",
+		clearBtn : true,
+		language : "de",
+		todayHighlight : true
 	});
 }
 
 function toggleChevron(e) {
 	$(e.target).prev('.panel-heading').find('.indicator').toggleClass(
-	    'glyphicon glyphicon-plus glyphicon glyphicon-minus');
+			'glyphicon glyphicon-plus glyphicon glyphicon-minus');
 }
 
 var uploaderror = false;
 // Start DROPZONE for project-material upload!
 Dropzone.options.myDropzone = {
-  uploadMultiple : true,
-  autoProcessQueue : false,
-  autoDiscover : false,
-  parallelUploads : 1,
-  // maxFiles : 20,
-  maxFilesize : 1536, // MB
-  dictMaxFilesExceeded : $('#maxFiles').val(),
-  dictResponseError : $('#responseError').val(),
-  dictDefaultMessage : $('#defaultMsg').val(),
-  headers : {
-	  'X-CSRF-Token' : $('input[name="_csrf"]').val()
-  },
-  init : function() {
-	  $("#dz-upload-button").prop('disabled', true);
-	  // upload button click event
-	  var myDropzone = this;
-	  $('#dz-upload-button').on("click", function(e) {
-		  uploaderror = false;
-		  myDropzone.processQueue();
-	  });
-	  // reset button click event
-	  $('#dz-reset-button').on("click", function(e) {
-		  myDropzone.removeAllFiles(true);
-	  });
-	  // adds the delete button after a file is added
-	  this.on("addedfile", function(file) {
-		  $("#dz-upload-button").prop('disabled', false);
-		  var removeButton = Dropzone
-		      .createElement("<button class='btn btn-block btn-danger btn-xs' style='margin-top: 5px;' >"
-		          + $('#genDelete').val() + "</button>");
-		  // Capture the Dropzone instance as closure.
-		  var _this = this;
-		  removeButton.addEventListener("click", function(e) {
-			  e.preventDefault();
-			  e.stopPropagation();
-			  _this.removeFile(file);
-		  });
-		  // Add the button to the file preview element.
-		  file.previewElement.appendChild(removeButton);
-	  });
-	  this.on("removedfile", function(file) {
-		  $("#dz-upload-button").prop('disabled', false);
-	  });
-	  // shows a dialog after multiple upload finished
-	  this.on("queuecomplete", function(file, res) {
-		  console.log(uploaderror + ' - ' + file + ' - ' + res);
-		  // calls controller after successful multiple saving to reload the page"
-		  if (!uploaderror) {
-			  setTimeout(function() {
-				  $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
-			  }, 500);
-		  }
-	  });
-	  this.on("successmultiple", function(files, serverResponse) {
-		  myDropzone.processQueue();
-	  });
-	  var totalpercent = 0;
-	  this.on("totaluploadprogress", function(progress) {
-		  if (progress > totalpercent)
-			  totalpercent = progress;
-		  $('#loadstatebar .progress-bar').css('width', totalpercent + '%').attr('aria-valuenow', totalpercent).html(
-		      Math.round(totalpercent) + '%');
-	  });
-	  this.on("error", function(file, serverResponse) {
-		  uploaderror = true;
-		  if (serverResponse.indexOf("Exception") > 0) {
-			  this.defaultOptions.error(file, 'An error occurred!');
-		  }
-		  $("#loadstate").fadeOut("slow");
-	  });
-	  this.on("processingmultiple", function(files, serverResponse) {
-		  $("#loadstate").fadeIn("slow");
-	  });
-	  this.on("maxfilesexceeded", function(file) {
-		  $("#dz-upload-button").prop('disabled', true);
-		  this.removeFile(file);
-	  });
-  }
+	uploadMultiple : true,
+	autoProcessQueue : false,
+	autoDiscover : false,
+	parallelUploads : 1,
+	// maxFiles : 20,
+	maxFilesize : 1536, // MB
+	dictMaxFilesExceeded : $('#maxFiles').val(),
+	dictResponseError : $('#responseError').val(),
+	dictDefaultMessage : $('#defaultMsg').val(),
+	headers : {
+		'X-CSRF-Token' : $('input[name="_csrf"]').val()
+	},
+	init : function() {
+		$("#dz-upload-button").prop('disabled', true);
+		// upload button click event
+		var myDropzone = this;
+		$('#dz-upload-button').on("click", function(e) {
+			uploaderror = false;
+			myDropzone.processQueue();
+		});
+		// reset button click event
+		$('#dz-reset-button').on("click", function(e) {
+			myDropzone.removeAllFiles(true);
+		});
+		// adds the delete button after a file is added
+		this
+				.on(
+						"addedfile",
+						function(file) {
+							$("#dz-upload-button").prop('disabled', false);
+							var removeButton = Dropzone
+									.createElement("<button class='btn btn-block btn-danger btn-xs' style='margin-top: 5px;' >"
+											+ $('#genDelete').val()
+											+ "</button>");
+							// Capture the Dropzone instance as closure.
+							var _this = this;
+							removeButton.addEventListener("click", function(e) {
+								e.preventDefault();
+								e.stopPropagation();
+								_this.removeFile(file);
+							});
+							// Add the button to the file preview element.
+							file.previewElement.appendChild(removeButton);
+						});
+		this.on("removedfile", function(file) {
+			$("#dz-upload-button").prop('disabled', false);
+		});
+		// shows a dialog after multiple upload finished
+		this.on("queuecomplete", function(file, res) {
+			console.log(uploaderror + ' - ' + file + ' - ' + res);
+			// calls controller after successful multiple saving to reload the
+			// page"
+			if (!uploaderror) {
+				setTimeout(function() {
+					$("form#my-dropzone").attr("enctype", "").attr("action",
+							"multisaved").submit();
+				}, 500);
+			}
+		});
+		this.on("successmultiple", function(files, serverResponse) {
+			myDropzone.processQueue();
+		});
+		var totalpercent = 0;
+		this.on("totaluploadprogress", function(progress) {
+			if (progress > totalpercent)
+				totalpercent = progress;
+			$('#loadstatebar .progress-bar').css('width', totalpercent + '%')
+					.attr('aria-valuenow', totalpercent).html(
+							Math.round(totalpercent) + '%');
+		});
+		this.on("error", function(file, serverResponse) {
+			uploaderror = true;
+			if (serverResponse.indexOf("Exception") > 0) {
+				this.defaultOptions.error(file, 'An error occurred!');
+			}
+			$("#loadstate").fadeOut("slow");
+		});
+		this.on("processingmultiple", function(files, serverResponse) {
+			$("#loadstate").fadeIn("slow");
+		});
+		this.on("maxfilesexceeded", function(file) {
+			$("#dz-upload-button").prop('disabled', true);
+			this.removeFile(file);
+		});
+	}
 };
 
 function showorHideDMPContent() {
@@ -361,7 +392,8 @@ function showorHideDMPContent() {
 	switchViewIfSelected('selectsensitiveDataIncluded', 1);
 	switchViewIfSelected('selectexternalCopyright', 1);
 	switchViewIfSelected('selectinternalCopyright', 1);
-	switchViewIfSelectedMulti('selectspecificCosts', 'reference,lifecycle,other');
+	switchViewIfSelectedMulti('selectspecificCosts',
+			'reference,lifecycle,other');
 }
 
 function startloader() {
@@ -401,8 +433,8 @@ function showInformationDialog(files, objectArray) {
 	var responseHead = objectArray["headline"];
 	var responseContent = objectArray["content"];
 	BootstrapDialog.show({
-	  title : '<b>' + responseHead + '</b>',
-	  message : responseContent
+		title : '<b>' + responseHead + '</b>',
+		message : responseContent
 	});
 }
 
@@ -448,7 +480,7 @@ function switchViewIfSelectedMulti(name, show) {
 /**
  * 
  * @param hideContainer@param
- *          show
+ *            show
  */
 function switchViewIfChecked(name) {
 	var selected = $("#" + name).is(':checked');
@@ -471,14 +503,14 @@ function checkOnSubmit() {
 }
 
 $.fn.extend({
-  trackChanges : function() {
-	  $(":input", this).change(function() {
-		  $(this.form).data("changed", true);
-	  });
-  },
-  isChanged : function() {
-	  return this.data("changed");
-  }
+	trackChanges : function() {
+		$(":input", this).change(function() {
+			$(this.form).data("changed", true);
+		});
+	},
+	isChanged : function() {
+		return this.data("changed");
+	}
 });
 
 function showHideNewRole() {
@@ -486,7 +518,8 @@ function showHideNewRole() {
 	if (val != 0) {
 		$("#accessChange, #accessChangeSel").prop("disabled", false);
 		var val2 = $("#accessChangeSel").val();
-		if (val2 == 0 || val2 === "PROJECT_ADMIN" || val2 === "PROJECT_READER" || val2 === "PROJECT_WRITER") {
+		if (val2 == 0 || val2 === "PROJECT_ADMIN" || val2 === "PROJECT_READER"
+				|| val2 === "PROJECT_WRITER") {
 			$("#accessChange").val("0");
 			$("#accessChange").prop("disabled", true);
 		} else {
@@ -514,28 +547,34 @@ $.fn.serializeObject = function() {
 	return o;
 };
 
-// Abfangen ob offline, oder Server nicht erreichbar, falls ja speichern der daten in json datei für späteren import
+// Abfangen ob offline, oder Server nicht erreichbar, falls ja speichern der
+// daten in json datei für späteren import
 $(function() {
-	$('#dmpForm').on('submit', function(e) {
-		var formData = $(this).serializeObject();
-		e.preventDefault();
-		$.ajax({
-		  url : "checkConnection",
-		  timeout : 10000,
-		  error : function(jqXHR) {
-			  if (jqXHR.status == 0) {
-				  console.log(formData);
-				  var a = document.createElement('a');
-				  a.setAttribute('href', 'data:text/plain;charset=utf-u,' + encodeURIComponent(JSON.stringify(formData)));
-				  a.setAttribute('download', 'test.json');
-				  a.click();
-			  }
-		  },
-		  success : function() {
-			  $('#dmpForm').unbind('submit').submit();
-		  }
-		});
-	});
+	$('#dmpForm').on(
+			'submit',
+			function(e) {
+				var formData = $(this).serializeObject();
+				e.preventDefault();
+				$.ajax({
+					url : "checkConnection",
+					timeout : 10000,
+					error : function(jqXHR) {
+						if (jqXHR.status == 0) {
+							console.log(formData);
+							var a = document.createElement('a');
+							a.setAttribute('href',
+									'data:text/plain;charset=utf-u,'
+											+ encodeURIComponent(JSON
+													.stringify(formData)));
+							a.setAttribute('download', 'test.json');
+							a.click();
+						}
+					},
+					success : function() {
+						$('#dmpForm').unbind('submit').submit();
+					}
+				});
+			});
 });
 
 $('.user-pswd-button').on("click", function(e) {
@@ -552,7 +591,8 @@ $('.pwdcheckin').keyup(function() {
 function checkStrength(password) {
 	var str = 0;
 	if (password.length <= 0) {
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width(0);
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-danger').width(0);
 		$('.progress_custom span').css('color', '#000');
 		return 'Passwort eingeben';
 	}
@@ -570,37 +610,45 @@ function checkStrength(password) {
 				if (password.length >= 16)
 					str++;
 			}
-		} else if (password.match(/([a-zA-Z])/) && password.match(/([^A-Za-z0-9])/)) {
+		} else if (password.match(/([a-zA-Z])/)
+				&& password.match(/([^A-Za-z0-9])/)) {
 			str++;
 		}
 	}
 	switch (str) {
 	case 0:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width(0);
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-danger').width(0);
 		$('.progress_custom span').css('color', '#000');
 		return 'Too short';
 	case 1:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width("15%");
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-danger').width("15%");
 		$('.progress_custom span').css('color', '#000');
 		return 'Extrem Weak';
 	case 2:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("30%");
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-warning').width("30%");
 		$('.progress_custom span').css('color', '#000');
 		return 'Weak';
 	case 3:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-warning').width("50%");
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-warning').width("50%");
 		$('.progress_custom span').css('color', '#000');
 		return 'Good';
 	case 4:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("70%");
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-success').width("70%");
 		$('.progress_custom span').css('color', '#fff');
 		return 'Strong';
 	case 5:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("85%");
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-success').width("85%");
 		$('.progress_custom span').css('color', '#fff');
 		return 'Strong';
 	case 6:
-		$('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-success').width("100%");
+		$('#pwdcheckstr').removeClass().addClass(
+				'progress-bar progress-bar-success').width("100%");
 		$('.progress_custom span').css('color', '#fff');
 		return 'Strongest';
 	default:
@@ -615,7 +663,8 @@ function setScrollPosition() {
 	var position = 0;
 	if (typeof window.pageYOffset != 'undefined') {
 		position = window.pageYOffset;
-	} else if (typeof document.documentElement.scrollTop != 'undefined' && document.documentElement.scrollTop > 0) {
+	} else if (typeof document.documentElement.scrollTop != 'undefined'
+			&& document.documentElement.scrollTop > 0) {
 		position = document.documentElement.scrollTop;
 	} else if (typeof document.body.scrollTop != 'undefined') {
 		position = document.body.scrollTop;
@@ -632,16 +681,23 @@ function scrollToPosition() {
 }
 
 $(function() {
-	$(".popup").click(
-	    function(event) {
-		    event.preventDefault();
-		    var href = $(this).attr("href");
-		    var width = $(this).attr("data-width");
-		    var height = $(this).attr("data-height");
-		    var popup = window.open(href, "popup",
-		        "toolbar=no, location=no, directories=no, status=no, menubar=no, top=20, left=20, height=" + height
-		            + ", width=" + width + "");
-	    });
+	$(".popup")
+			.click(
+					function(event) {
+						event.preventDefault();
+						var href = $(this).attr("href");
+						var width = $(this).attr("data-width");
+						var height = $(this).attr("data-height");
+						var popup = window
+								.open(
+										href,
+										"popup",
+										"toolbar=no, location=no, directories=no, status=no, menubar=no, top=20, left=20, height="
+												+ height
+												+ ", width="
+												+ width
+												+ "");
+					});
 });
 
 function shortFilename(spanName, filePath) {
@@ -654,30 +710,88 @@ function delVarValues(position) {
 	$('#values' + position).hide();
 	return false;
 }
+var copyVal = "";
+var copyType = "";
 
-function showAjaxModal(url) {
-	asyncSumbit(url, false);
+function showAjaxModal(url, id, type, event, item) {
+	if (event.shiftKey) {
+		copyCellVal(id, type);
+	} else if (event.ctrlKey) {
+		if (copyType == type)
+			pasteCellVal(id, type, item);
+	} else {
+		asyncSumbit(url, false);
+	}
+
 }
 
 function showGlobalAjaxModal(url) {
 	asyncSumbit(url, true);
 }
 
+function copyCellVal(id, type) {
+	$.ajax({
+		type : "get",
+		data : {
+			"type" : type,
+			"varId" : id
+		},
+		url : "copyCellValue",
+		async : true,
+		dataType : "json",
+		success : function(result) {
+			console.log(result);
+			copyVal = result;
+			copyType = type;
+		},
+		error : function(result) {
+			copyVal = "";
+			copyType = "";
+		}
+	});
+}
+
+function pasteCellVal(id, type, item) {
+	console.log(copyVal);
+	var str = JSON.stringify(copyVal);
+	$.ajax({
+		type : "post",
+		data : {
+			"type" : type,
+			"varId" : id,
+			"valContent" : str
+		},
+		url : "pasteCellValue",
+		async : true,
+		dataType : "json",
+		success : function() {
+			var txt = "";
+			copyVal.forEach(function(itm) {
+				txt += itm.value + "&nbsp;=&nbsp;&quot" + itm.label
+						+ "&quot;<br />";
+			});
+			item.innerHTML = txt;
+		},
+		error : function(result) {
+
+		}
+	});
+}
+
 function asyncSumbit(uri, global) {
 	var str = $("#studyFormDis").serialize();
-	console.log(str);
 	$.ajax({
-	  type : "post",
-	  data : str,
-	  url : "asyncSubmit",
-	  async : true,
-	  dataType : "json",
-	  success : function() {
-		  loadAjaxModal(uri, global)
-	  },
-	  error : function(result) {
-		  loadAjaxModal(null, true);
-	  }
+		type : "post",
+		data : str,
+		url : "asyncSubmit",
+		async : true,
+		dataType : "json",
+		success : function() {
+			loadAjaxModal(uri, global)
+		},
+		error : function(result) {
+			loadAjaxModal(null, true);
+		}
 	});
 }
 
@@ -703,7 +817,8 @@ document.onkeypress = stopRKey;
 
 function stopRKey(evt) {
 	var evt = (evt) ? evt : ((event) ? event : null);
-	var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
+	var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement
+			: null);
 	if ((evt.which == 13) && (node.type == "text")) {
 		return false;
 	}
@@ -717,7 +832,8 @@ function backTotop() {
 	// Funktion für das Scroll-Verhalten
 	$(function() {
 		$(window).scroll(function() {
-			if ($(this).scrollTop() > 100) { // Wenn 100 Pixel gescrolled wurde
+			if ($(this).scrollTop() > 100) { // Wenn 100 Pixel gescrolled
+				// wurde
 				$('.dwgoup').fadeIn();
 			} else {
 				$('.dwgoup').fadeOut();
@@ -733,37 +849,46 @@ function backTotop() {
 	});
 }
 
-$('.exportlist li :checkbox').on('click', function() {
-	var $chk = $(this), $li = $chk.closest('li'), $ul, $parent;
-	if ($chk.hasClass('li_chkbox')) {
-		$li.siblings().find(':checkbox').not(this).prop('checked', this.checked);
-	}
-	$state = $chk.prop('checked');
-	$ul = $li.closest('ul');
-	if ($state == false) {
-		if ($ul.hasClass('li_head_u3')) {
-			$ul.find('.li_checkbox_a3').prop('checked', this.checked);
-			$ul.parent().closest('ul').find('.li_checkbox_a2').prop('checked', this.checked);
-			$ul.parent().closest('ul').parent().closest('ul').find('.li_checkbox_a1').prop('checked', this.checked);
-		} else if ($ul.hasClass('li_head_u2')) {
-			$ul.find('.li_checkbox_a2').prop('checked', this.checked);
-			$ul.parent().closest('ul').find('.li_checkbox_a1').prop('checked', this.checked);
-		} else if ($ul.hasClass('exportlist')) {
-			$ul.find('.li_checkbox_a1').prop('checked', this.checked);
-		}
-	} else {
-		if ($ul.hasClass('li_head_u3')) {
-			setParentChkbox($chk, '.li_checkbox_a3', 'li_head_u3');
-			setParentChkbox($ul.parent(), '.li_checkbox_a2', 'li_head_u2');
-			setParentChkbox($ul.parent().closest('ul').parent(), '.li_checkbox_a1', 'li_head_u1');
-		} else if ($ul.hasClass('li_head_u2')) {
-			setParentChkbox($chk, '.li_checkbox_a2', 'li_head_u2');
-			setParentChkbox($ul.parent(), '.li_checkbox_a1', 'exportlist');
-		} else if ($ul.hasClass('li_head_u2')) {
-			setParentChkbox($chk, '.li_checkbox_a1', 'exportlist');
-		}
-	}
-});
+$('.exportlist li :checkbox').on(
+		'click',
+		function() {
+			var $chk = $(this), $li = $chk.closest('li'), $ul, $parent;
+			if ($chk.hasClass('li_chkbox')) {
+				$li.siblings().find(':checkbox').not(this).prop('checked',
+						this.checked);
+			}
+			$state = $chk.prop('checked');
+			$ul = $li.closest('ul');
+			if ($state == false) {
+				if ($ul.hasClass('li_head_u3')) {
+					$ul.find('.li_checkbox_a3').prop('checked', this.checked);
+					$ul.parent().closest('ul').find('.li_checkbox_a2').prop(
+							'checked', this.checked);
+					$ul.parent().closest('ul').parent().closest('ul').find(
+							'.li_checkbox_a1').prop('checked', this.checked);
+				} else if ($ul.hasClass('li_head_u2')) {
+					$ul.find('.li_checkbox_a2').prop('checked', this.checked);
+					$ul.parent().closest('ul').find('.li_checkbox_a1').prop(
+							'checked', this.checked);
+				} else if ($ul.hasClass('exportlist')) {
+					$ul.find('.li_checkbox_a1').prop('checked', this.checked);
+				}
+			} else {
+				if ($ul.hasClass('li_head_u3')) {
+					setParentChkbox($chk, '.li_checkbox_a3', 'li_head_u3');
+					setParentChkbox($ul.parent(), '.li_checkbox_a2',
+							'li_head_u2');
+					setParentChkbox($ul.parent().closest('ul').parent(),
+							'.li_checkbox_a1', 'li_head_u1');
+				} else if ($ul.hasClass('li_head_u2')) {
+					setParentChkbox($chk, '.li_checkbox_a2', 'li_head_u2');
+					setParentChkbox($ul.parent(), '.li_checkbox_a1',
+							'exportlist');
+				} else if ($ul.hasClass('li_head_u2')) {
+					setParentChkbox($chk, '.li_checkbox_a1', 'exportlist');
+				}
+			}
+		});
 
 function setParentChkbox($chk, $checkbox, $li) {
 	$ul = $chk.closest('ul');

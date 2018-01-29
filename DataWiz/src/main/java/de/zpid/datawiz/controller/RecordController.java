@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import de.zpid.datawiz.dto.DataTableDTO;
 import de.zpid.datawiz.dto.RecordDTO;
@@ -52,6 +53,7 @@ import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.UserUtil;
 import de.zpid.spss.SPSSIO;
+import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
 import de.zpid.spss.util.SPSSMissing;
 import de.zpid.spss.util.SPSSVarTypes;
@@ -828,6 +830,34 @@ public class RecordController {
 			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
 		}
 		log.trace("Method setFormAsync completed with satus: {}", () -> HttpStatus.OK.toString());
+		return new ResponseEntity<String>("{}", HttpStatus.OK);
+	}
+
+	@RequestMapping(value = { "{recordId}/version/{versionId}/copyCellValue" })
+	public @ResponseBody String copyCellValue(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @RequestParam("type") final String type,
+	    @RequestParam("varId") final long varId) {
+		log.trace("Entering copyCellValue for [type {}; varId: {}]", () -> type, () -> varId);
+		String gson = null;
+		try {
+			gson = new Gson().toJson(recordService.getVariableValues(varId));
+		} catch (Exception e) {
+			gson = "[]";
+		}
+		log.trace("Method copyCellValue completed with satus: {}", () -> HttpStatus.OK.toString());
+		return gson;
+	}
+
+	@RequestMapping(value = { "{recordId}/version/{versionId}/pasteCellValue" })
+	public @ResponseBody ResponseEntity<String> pasteCellValue(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
+	    @RequestParam("type") final String type, @RequestParam("varId") final long varId, @RequestParam("valContent") final String valContent) {
+		log.trace("Entering pasteCellValue for [type {}; varId: {}]", () -> type, () -> varId);
+		SPSSVarDTO var = sForm.getRecord().getVariables().parallelStream().filter(var_t -> var_t.getId() == varId).findFirst().orElse(null);
+		List<SPSSValueLabelDTO> values = new Gson().fromJson(valContent, new TypeToken<ArrayList<SPSSValueLabelDTO>>() {
+		}.getType());
+		if (var != null && values != null) {
+			var.setValues(values);
+		}
+		log.trace("Method pasteCellValue completed with satus: {}", () -> HttpStatus.OK.toString());
 		return new ResponseEntity<String>("{}", HttpStatus.OK);
 	}
 

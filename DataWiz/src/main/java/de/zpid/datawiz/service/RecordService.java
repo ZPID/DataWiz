@@ -296,6 +296,11 @@ public class RecordService {
 			recordDAO.updateRecordMetaData(sForm.getRecord());
 		}
 	}
+	
+	
+	public List<SPSSValueLabelDTO> getVariableValues(final long varId) throws Exception{
+		return recordDAO.findVariableValues(varId, true);
+	}
 
 	/**
 	 * @param varVal

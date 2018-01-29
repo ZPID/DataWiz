@@ -223,12 +223,12 @@ public class DMPService {
 		case "H2020":
 			content = odfUtil.createH2020Doc(pForm, locale);
 			break;
-		case "PreReg":
+/*		case "PreReg":
 			content = odfUtil.createPreRegistrationDoc(pForm, locale);
 			break;
 		case "PsychData":
 			content = odfUtil.createPsychdataDoc(pForm, locale);
-			break;
+			break;*/
 		default:
 			break;
 		}

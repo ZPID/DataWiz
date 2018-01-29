@@ -50,7 +50,7 @@ body, #mainWrapper, .form-control {
   display: table;
   width: 100%;
   display: block;
-  max-height: 600px;
+  
   overflow-y: auto;
 }
 
