@@ -13,6 +13,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <sec:csrfMetaTags />
 <title><s:eval expression="@environment.getProperty('application.name')" /></title>
+<link href="<c:url value='/static/css/microsite_css/fonts.css' />" rel="stylesheet" />
+<link href="<c:url value='/static/css/microsite_css/style.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/font-awesome.css' />" rel="stylesheet" type="text/css" />
