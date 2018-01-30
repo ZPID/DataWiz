@@ -41,19 +41,16 @@
               <div class="col-xs-8 text-align-right">
                 (Export currently in work)
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank">BMBF</a>
+                  <a class="btn btn-primary btn-sm"
+                    href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank">BMBF</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank">H2020</a>
+                  <a class="btn btn-primary btn-sm"
+                    href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank">H2020</a>
                 </div>
                 <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank">DFG</a>
-                </div>
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/PsychData" />" target="_blank">PsychData</a>
-                </div>
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/PreReg" />" target="_blank">Präregistrierung</a>
+                  <a class="btn btn-primary btn-sm"
+                    href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank">DFG</a>
                 </div>
               </div>
             </div>
@@ -64,17 +61,26 @@
         </c:choose>
       </div>
       <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
-        <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.administrative" /></a></li>
-        <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message code="dmp.submenu.research" /></a></li>
-        <li role="presentation" id="metadataActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.metadata" /></a></li>
-        <li role="presentation" id="accessActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.access" /></a></li>
-        <li role="presentation" id="storageActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.storage" /></a></li>
-        <li role="presentation" id="organizationActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.organization" /></a></li>
-        <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.ethical" /></a></li>
-        <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message code="dmp.submenu.costs" /></a></li>
+        <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.administrative" /></a></li>
+        <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message
+              code="dmp.submenu.research" /></a></li>
+        <li role="presentation" id="metadataActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.metadata" /></a></li>
+        <li role="presentation" id="accessActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.access" /></a></li>
+        <li role="presentation" id="storageActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.storage" /></a></li>
+        <li role="presentation" id="organizationActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.organization" /></a></li>
+        <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.ethical" /></a></li>
+        <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message
+              code="dmp.submenu.costs" /></a></li>
       </ul>
       <c:url var="dmpUrl" value="/dmp/${ProjectForm.project.id}" />
-      <sf:form action="${dmpUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form" id="dmpForm" onsubmit="checkOnSubmit();">
+      <sf:form action="${dmpUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form" id="dmpForm"
+        onsubmit="checkOnSubmit();">
         <sf:hidden path="pagePosi" id="pagePosi" />
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <!-- Messages -->

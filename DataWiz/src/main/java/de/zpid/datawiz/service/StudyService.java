@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -50,6 +51,7 @@ import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ListUtil;
+import de.zpid.datawiz.util.ODFUtil;
 
 @Service
 public class StudyService {
@@ -69,11 +71,11 @@ public class StudyService {
 	@Autowired
 	private FormTypesDAO formTypeDAO;
 	@Autowired
-	ProjectDAO projectDAO;
+	private ProjectDAO projectDAO;
 	@Autowired
-	StudyDAO studyDAO;
+	private StudyDAO studyDAO;
 	@Autowired
-	RecordDAO recordDAO;
+	private RecordDAO recordDAO;
 	@Autowired
 	private int sessionTimeout;
 	@Autowired
@@ -81,7 +83,11 @@ public class StudyService {
 	@Autowired
 	RecordService recordService;
 	@Autowired
-	protected SmartValidator validator;
+	private SmartValidator validator;
+	@Autowired
+	private ODFUtil odfUtil;
+	@Autowired
+	private ClassPathXmlApplicationContext applicationContext;
 
 	/**
 	 * 
@@ -96,8 +102,7 @@ public class StudyService {
 	public String setStudyForm(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, final UserDTO user,
 	    StudyForm sForm) throws DataWizSystemException {
 		if (!pid.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_PID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		String accessState = "disabled";
 		ProjectDTO project = null;
 		StudyDTO study = null;
@@ -154,11 +159,9 @@ public class StudyService {
 	public void setRecordList(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, StudyForm sForm)
 	    throws DataWizSystemException {
 		if (!pid.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_PID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		if (!studyId.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_STUDYID_ERROR);
 		ProjectDTO project = null;
 		StudyDTO study = null;
 		try {
@@ -193,11 +196,9 @@ public class StudyService {
 	public String checkActualLock(final Optional<Long> pid, final Optional<Long> studyId, UserDTO user, String actLock, final ModelMap model)
 	    throws DataWizSystemException {
 		if (!pid.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_PID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		if (!studyId.isPresent())
-			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_STUDYID_ERROR);
 		StudyDTO study = null;
 		try {
 			study = studyDAO.findById(studyId.get(), pid.get(), true, true);
@@ -309,8 +310,7 @@ public class StudyService {
 			} catch (Exception e) {
 				log.warn("Database Error: ", () -> e);
 				txManager.rollback(status);
-				throw new DataWizSystemException(
-				    messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, LocaleContextHolder.getLocale()),
+				throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, LocaleContextHolder.getLocale()),
 				    DataWizErrorCodes.DATABASE_ERROR, e);
 			}
 		} else {
@@ -326,8 +326,7 @@ public class StudyService {
 	 * @param type
 	 * @throws Exception
 	 */
-	private void updateStudyListItems(final Long studyId, List<StudyListTypesDTO> list, final DWFieldTypes type, final boolean createCopy)
-	    throws Exception {
+	private void updateStudyListItems(final Long studyId, List<StudyListTypesDTO> list, final DWFieldTypes type, final boolean createCopy) throws Exception {
 		List<StudyListTypesDTO> dbtmp = studyListTypesDAO.findAllByStudyAndType(studyId, type);
 		if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
 			List<StudyListTypesDTO> insert = new ArrayList<>();
@@ -443,18 +442,14 @@ public class StudyService {
 			study.setContributors(contributorDAO.findByStudy(study.getId()));
 			study.setSoftware(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE), new StudyListTypesDTO()));
 			study.setPubOnData(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.PUBONDATA), new StudyListTypesDTO()));
-			study.setConflInterests(
-			    ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.CONFLINTEREST), new StudyListTypesDTO()));
-			study
-			    .setRelTheorys(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.RELTHEORY), new StudyListTypesDTO()));
-			study.setObjectives(
-			    ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.OBJECTIVES), new StudyListTypesDTO()));
+			study.setConflInterests(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.CONFLINTEREST), new StudyListTypesDTO()));
+			study.setRelTheorys(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.RELTHEORY), new StudyListTypesDTO()));
+			study.setObjectives(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.OBJECTIVES), new StudyListTypesDTO()));
 			study.setMeasOcc(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.MEASOCCNAME), new StudyListTypesDTO()));
 			study.setInterArms(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.INTERARMS), new StudyListTypesDTO()));
 			study.setConstructs(ListUtil.addObject(studyConstructDAO.findAllByStudy(study.getId()), new StudyConstructDTO()));
 			study.setInstruments(ListUtil.addObject(studyInstrumentDAO.findAllByStudy(study.getId(), false), new StudyInstrumentDTO()));
-			study.setEligibilities(
-			    ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.ELIGIBILITY), new StudyListTypesDTO()));
+			study.setEligibilities(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.ELIGIBILITY), new StudyListTypesDTO()));
 			study.setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.COLLECTIONMODE, true));
 			study.setUsedSourFormat(formTypeDAO.findSelectedFormTypesByIdAndType(study.getId(), DWFieldTypes.DATAFORMAT, true));
 		}
@@ -498,12 +493,14 @@ public class StudyService {
 	 * @param model
 	 */
 	public void createStudyBreadCrump(final String projectName, final String studyName, final long pid, final ModelMap model) {
-		model.put("breadcrumpList",
-		    BreadCrumpUtil.generateBC(PageState.STUDY,
-		        new String[] { projectName,
-		            (studyName != null && !studyName.trim().isEmpty() ? studyName
-		                : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
-		        new long[] { pid }, messageSource));
+		model
+		    .put("breadcrumpList",
+		        BreadCrumpUtil
+		            .generateBC(PageState.STUDY,
+		                new String[] { projectName,
+		                    (studyName != null && !studyName.trim().isEmpty() ? studyName
+		                        : messageSource.getMessage("study.new.study.breadcrump", null, LocaleContextHolder.getLocale())) },
+		                new long[] { pid }, messageSource));
 	}
 
 	/**
@@ -521,13 +518,11 @@ public class StudyService {
 			status = txManager.getTransaction(new DefaultTransactionDefinition());
 		if (!studyId.isPresent()) {
 			log.warn("StudyId emtpy - study delete aborted");
-			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.presentt", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.presentt", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_STUDYID_ERROR);
 		}
 		if (!pid.isPresent()) {
 			log.warn("ProjectId emtpy - study delete aborted");
-			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_PID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		}
 		if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)) {
 			try {
@@ -556,8 +551,7 @@ public class StudyService {
 						throw (DataWizSystemException) e;
 					} else {
 						throw new DataWizSystemException(messageSource.getMessage("logging.record.delete.error",
-						    new Object[] { ((DataWizSystemException) e).getErrorCode(), e.getMessage() }, Locale.ENGLISH), DataWizErrorCodes.RECORD_DELETE_ERROR,
-						    e);
+						    new Object[] { ((DataWizSystemException) e).getErrorCode(), e.getMessage() }, Locale.ENGLISH), DataWizErrorCodes.RECORD_DELETE_ERROR, e);
 					}
 				}
 				log.fatal("DeleteStudy Database-Exception:", () -> e);
@@ -565,8 +559,8 @@ public class StudyService {
 				    DataWizErrorCodes.DATABASE_ERROR, e);
 			}
 		} else {
-			log.warn("User [email:{}; id: {}] tried to delete Study [projectId: {}; studyId: {}]", () -> user.getEmail(), () -> user.getId(),
-			    () -> pid.get(), () -> studyId.get());
+			log.warn("User [email:{}; id: {}] tried to delete Study [projectId: {}; studyId: {}]", () -> user.getEmail(), () -> user.getId(), () -> pid.get(),
+			    () -> studyId.get());
 			throw new DataWizSystemException(
 			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "study", studyId.get() }, Locale.ENGLISH),
 			    DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
@@ -588,8 +582,7 @@ public class StudyService {
 	 *          the validate errors
 	 * @return true, if successful
 	 */
-	public boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls, final PageState state,
-	    Set<String> validateErrors) {
+	public boolean validateStudyForm(final StudyForm sForm, final BindingResult bRes, final Class<?> cls, final PageState state, Set<String> validateErrors) {
 		boolean error = false;
 		if (sForm != null && bRes != null) {
 			BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
@@ -600,12 +593,11 @@ public class StudyService {
 				Iterator<ObjectError> itt = errors.iterator();
 				while (itt.hasNext()) {
 					ObjectError err = itt.next();
-					if (!state.equals(PageState.STUDYGENERAL) && err.getCodes() != null && err.getCodes()[0] != null && (err.getCodes()[0].contains("software")
-					    || err.getCodes()[0].contains("pubOnData") || err.getCodes()[0].contains("conflInterests"))) {
+					if (!state.equals(PageState.STUDYGENERAL) && err.getCodes() != null && err.getCodes()[0] != null
+					    && (err.getCodes()[0].contains("software") || err.getCodes()[0].contains("pubOnData") || err.getCodes()[0].contains("conflInterests"))) {
 						itt.remove();
-					} else if (!state.equals(PageState.STUDYDESIGN) && err.getCodes() != null && err.getCodes()[0] != null
-					    && (err.getCodes()[0].contains("objectives") || err.getCodes()[0].contains("relTheorys") || err.getCodes()[0].contains("measOcc")
-					        || err.getCodes()[0].contains("interArms"))) {
+					} else if (!state.equals(PageState.STUDYDESIGN) && err.getCodes() != null && err.getCodes()[0] != null && (err.getCodes()[0].contains("objectives")
+					    || err.getCodes()[0].contains("relTheorys") || err.getCodes()[0].contains("measOcc") || err.getCodes()[0].contains("interArms"))) {
 						itt.remove();
 					} else if (!state.equals(PageState.STUDYSAMPLE) && err.getCodes() != null && err.getCodes()[0] != null
 					    && err.getCodes()[0].contains("eligibilities")) {
@@ -655,8 +647,7 @@ public class StudyService {
 	 * @throws Exception
 	 * @throws DataWizSystemException
 	 */
-	public StudyDTO copyStudy(Optional<Long> pid, Optional<Long> studyId, Optional<Long> selected, final UserDTO user)
-	    throws Exception, DataWizSystemException {
+	public StudyDTO copyStudy(Optional<Long> pid, Optional<Long> studyId, Optional<Long> selected, final UserDTO user) throws Exception, DataWizSystemException {
 		if (pid == null || !pid.isPresent())
 			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, LocaleContextHolder.getLocale()),
 			    DataWizErrorCodes.MISSING_PID_ERROR);
@@ -664,13 +655,11 @@ public class StudyService {
 			throw new DataWizSystemException(messageSource.getMessage("logging.studyid.not.present", null, LocaleContextHolder.getLocale()),
 			    DataWizErrorCodes.MISSING_STUDYID_ERROR);
 		if (selected == null || !selected.isPresent())
-			throw new DataWizSystemException(
-			    messageSource.getMessage("logging.param.not.present", new Object[] { "selected" }, LocaleContextHolder.getLocale()),
+			throw new DataWizSystemException(messageSource.getMessage("logging.param.not.present", new Object[] { "selected" }, LocaleContextHolder.getLocale()),
 			    DataWizErrorCodes.NO_DATA_ERROR);
 		if (user == null || (!user.hasRole(Roles.ADMIN) && !user.hasRole(Roles.PROJECT_ADMIN, studyId.get(), true))) {
-			throw new DataWizSystemException(messageSource.getMessage("logging.user.permitted",
-			    new Object[] { user != null ? user.getId() : null, "study", studyId }, LocaleContextHolder.getLocale()),
-			    DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
+			throw new DataWizSystemException(messageSource.getMessage("logging.user.permitted", new Object[] { user != null ? user.getId() : null, "study", studyId },
+			    LocaleContextHolder.getLocale()), DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
 		}
 		StudyDTO study;
 		study = studyDAO.findById(studyId.get(), pid.get(), false, false);
@@ -682,6 +671,41 @@ public class StudyService {
 		sForm.setStudy(study);
 		study = saveStudyForm(sForm, Optional.empty(), selected, user, true);
 		return study;
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * @param pid
+	 * @param type
+	 * @param locale
+	 * @return
+	 * @throws Exception
+	 */
+	public byte[] createStudyExport(final Optional<Long> pid, final Optional<Long> studyId, final Optional<String> type, final Locale locale) throws Exception {
+		StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
+		if (pid.isPresent() && studyId.isPresent()) {
+			StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false, false);
+			if (study != null) {
+				setStudyDTOExport(study);
+				sForm.setStudy(study);
+			}
+		} else if (!pid.isPresent())
+			throw new DataWizSystemException("Error Missing PID Parameter", DataWizErrorCodes.MISSING_PID_ERROR);
+		else
+			throw new DataWizSystemException("Error Missing StudyID Parameter", DataWizErrorCodes.MISSING_STUDYID_ERROR);
+		byte[] content = null;
+		switch (type.get()) {
+		case "PreReg":
+			content = odfUtil.createPreRegistrationDoc(sForm, locale);
+			break;
+		case "PsychData":
+			content = odfUtil.createPsychdataDoc(sForm, locale);
+			break;
+		default:
+			break;
+		}
+		return content;
 	}
 
 }
