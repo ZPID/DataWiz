@@ -2,8 +2,11 @@ package de.zpid.datawiz.controller;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,6 +34,8 @@ import de.zpid.datawiz.dto.StudyListTypesDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.exceptions.DWDownloadException;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.ExceptionService;
@@ -45,8 +50,7 @@ import de.zpid.datawiz.util.UserUtil;
  * <br />
  * This file is part of Datawiz.<br />
  * 
- * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
  * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
  * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
@@ -101,8 +105,8 @@ public class StudyController {
 	}
 
 	/**
-	 * This function load the study data and passes it to study.jsp. It distinguishes between two cases: First: study identifier is present - edit study
-	 * data; second study identifier is not present - create new study.
+	 * This function load the study data and passes it to study.jsp. It distinguishes between two cases: First: study identifier is present - edit study data;
+	 * second study identifier is not present - create new study.
 	 *
 	 * @param sForm
 	 *          {@link StudyForm}
@@ -117,8 +121,8 @@ public class StudyController {
 	 * @return @return Mapping to study.jsp on success, otherwise exception handling and mapping via exceptionService.setErrorMessagesAndRedirects
 	 */
 	@RequestMapping(value = { "", "/{studyId}" }, method = RequestMethod.GET)
-	public String showStudyPage(@ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Optional<Long> pid,
-	    @PathVariable final Optional<Long> studyId, final ModelMap model, final RedirectAttributes redirectAttributes) {
+	public String showStudyPage(@ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
+	    final ModelMap model, final RedirectAttributes redirectAttributes) {
 		String ret;
 		final UserDTO user = UserUtil.getCurrentUser();
 		String jQueryMap = null;
@@ -138,8 +142,7 @@ public class StudyController {
 		if (ret == null) {
 			try {
 				accessState = studyService.setStudyForm(pid, studyId, redirectAttributes, user, sForm);
-				studyService.createStudyBreadCrump(sForm.getProject().getTitle(), sForm.getStudy() != null ? sForm.getStudy().getTitle() : null, pid.get(),
-				    model);
+				studyService.createStudyBreadCrump(sForm.getProject().getTitle(), sForm.getStudy() != null ? sForm.getStudy().getTitle() : null, pid.get(), model);
 				model.put("disStudyContent", accessState);
 				model.put("StudyForm", sForm);
 				model.put("studySubMenu", true);
@@ -150,8 +153,7 @@ public class StudyController {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.setStudyForm");
 			}
 		} else {
-			log.warn("Unexpected event: User [email: {}] tries to showStudyPage for Study [id: {}] without permissions", () -> user.getEmail(),
-			    () -> studyId);
+			log.warn("Unexpected event: User [email: {}] tries to showStudyPage for Study [id: {}] without permissions", () -> user.getEmail(), () -> studyId);
 		}
 		log.trace("Method showStudyPage completed with mapping to \"{}\"", ret);
 		return ret;
@@ -180,8 +182,8 @@ public class StudyController {
 			try {
 				StudyForm sForm = createStudyForm();
 				studyService.setRecordList(pid, studyId, redirectAttributes, sForm);
-				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.STUDY,
-				    new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() }, new long[] { pid.get() }, messageSource));
+				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() },
+				    new long[] { pid.get() }, messageSource));
 				model.put("studySubMenu", true);
 				model.put("subnaviActive", PageState.RECORDS.name());
 				model.put("StudyForm", sForm);
@@ -190,8 +192,7 @@ public class StudyController {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.setRecordList");
 			}
 		} else {
-			log.warn("Unexpected event: User [email: {}] tries to showRecordOverview for Study [id: {}] without permissions", () -> user.getEmail(),
-			    () -> studyId);
+			log.warn("Unexpected event: User [email: {}] tries to showRecordOverview for Study [id: {}] without permissions", () -> user.getEmail(), () -> studyId);
 		}
 		log.trace("Method showRecordOverview completed with mapping to \"{}\"", ret);
 		return ret;
@@ -266,8 +267,8 @@ public class StudyController {
 	}
 
 	/**
-	 * This function switches the edit mode. The study has a lock, so that only one user can edit the study data at the same time. If the study is
-	 * locked by a user, other user have to wait until the user unlock the study, or the session time is over and the study automatically unlocks.
+	 * This function switches the edit mode. The study has a lock, so that only one user can edit the study data at the same time. If the study is locked by a
+	 * user, other user have to wait until the user unlock the study, or the session time is over and the study automatically unlocks.
 	 *
 	 * @param sForm
 	 *          the s form
@@ -288,8 +289,7 @@ public class StudyController {
 		UserDTO user = UserUtil.getCurrentUser();
 		String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
 		if (ret != null)
-			log.warn("Unexpected event: User [email: {}] tries to switchEditMode for Study [id: {}] without permissions", () -> user.getEmail(),
-			    () -> studyId);
+			log.warn("Unexpected event: User [email: {}] tries to switchEditMode for Study [id: {}] without permissions", () -> user.getEmail(), () -> studyId);
 		if ((sForm == null || sForm.getStudy() == null || sForm.getProject() == null || sForm.getProject().getId() == 0) && ret == null) {
 			log.warn("Unexpected event: StudyForm is emtpy - Maybe Session Timeout");
 			ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();
@@ -309,8 +309,8 @@ public class StudyController {
 	}
 
 	/**
-	 * Appends a ContributorDTO to the list of study contributors items taken from the existing project contributors. After appending the item, it will
-	 * be deleted from the project contributor list. If the study list is NULL, a new ArrayList is created before a new item is appended.
+	 * Appends a ContributorDTO to the list of study contributors items taken from the existing project contributors. After appending the item, it will be deleted
+	 * from the project contributor list. If the study list is NULL, a new ArrayList is created before a new item is appended.
 	 * 
 	 * @param sForm
 	 *          StudyForm
@@ -336,8 +336,8 @@ public class StudyController {
 
 	/**
 	 * 
-	 * Deletes the selected ContributorDTO from the study contributors list. Before deleting, the selected item is appended to the project contributor
-	 * list for re-selection. If the study list is NULL, a new ArrayList is created before a new item is appended.
+	 * Deletes the selected ContributorDTO from the study contributors list. Before deleting, the selected item is appended to the project contributor list for
+	 * re-selection. If the study list is NULL, a new ArrayList is created before a new item is appended.
 	 * 
 	 * @param sForm
 	 *          StudyForm
@@ -610,8 +610,8 @@ public class StudyController {
 			} else if (e.getErrorCode().equals(DataWizErrorCodes.RECORD_DELETE_ERROR)) {
 				model.put("studySubMenu", true);
 				model.put("subnaviActive", PageState.STUDY.name());
-				model.put("errorMSG", messageSource.getMessage("study.record.delete.error", new Object[] { e.getMessage(), e.getErrorCode() },
-				    LocaleContextHolder.getLocale()));
+				model.put("errorMSG",
+				    messageSource.getMessage("study.record.delete.error", new Object[] { e.getMessage(), e.getErrorCode() }, LocaleContextHolder.getLocale()));
 				ret = "study";
 			} else {
 				model.put("studySubMenu", true);
@@ -635,8 +635,8 @@ public class StudyController {
 	 * @return
 	 */
 	@RequestMapping(value = { "/{studyId}/duplicate" }, method = RequestMethod.GET)
-	public String duplicateStudy(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model,
-	    RedirectAttributes redirectAttributes, @RequestParam("selected") Optional<Long> selected) {
+	public String duplicateStudy(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, ModelMap model, RedirectAttributes redirectAttributes,
+	    @RequestParam("selected") Optional<Long> selected) {
 		log.trace("Entering duplicateStudy for study [id:{}] to project [id: {}]", () -> studyId, () -> selected);
 		final UserDTO user = UserUtil.getCurrentUser();
 		String ret = null;
@@ -648,8 +648,7 @@ public class StudyController {
 			model.put("subnaviActive", PageState.STUDY.name());
 			ret = "study";
 			if (e instanceof DataWizSystemException) {
-				log.warn("DataWizSystemException thrown by function studyService.copyStudy Code: {}", () -> ((DataWizSystemException) e).getErrorCode(),
-				    () -> e);
+				log.warn("DataWizSystemException thrown by function studyService.copyStudy Code: {}", () -> ((DataWizSystemException) e).getErrorCode(), () -> e);
 				switch (((DataWizSystemException) e).getErrorCode()) {
 				case MISSING_PID_ERROR:
 					model.put("errorMSG", messageSource.getMessage("error.study.duplicate.pid", null, LocaleContextHolder.getLocale()));
@@ -682,6 +681,46 @@ public class StudyController {
 		}
 		log.trace("Leaving duplicateStudy for study [id:{}] to project [id: {}]", () -> studyId, () -> selected);
 		return ret;
+	}
+
+	@RequestMapping(value = { "/{studyId}/exportStudy/{type}" }, method = RequestMethod.GET)
+	public void exportStudyODF(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable final Optional<String> type,
+	    final RedirectAttributes redirectAttributes, final HttpServletResponse response) throws DWDownloadException {
+		log.trace("Entering exportStudyODF for Study [studyID: {}] and exportType [{}]", () -> studyId, () -> type);
+		UserDTO user = UserUtil.getCurrentUser();
+		if (user == null
+		    || (!user.hasRole(Roles.PROJECT_READER, pid, false) && !user.hasRole(Roles.PROJECT_ADMIN, pid, false) && !user.hasRole(Roles.DS_READER, studyId, true)
+		        && !user.hasRole(Roles.DS_WRITER, studyId, true) && !user.hasRole(Roles.PROJECT_WRITER, pid, false) && !user.hasRole(Roles.ADMIN))) {
+			log.warn("Auth User Object empty or User is permitted to download this file");
+			throw new DWDownloadException("export.access.denied");
+		}
+		byte[] content = null;
+		try {
+			// TODO? locale is set to German - should be changed if the form inputs are available in English
+			content = studyService.createStudyExport(pid, studyId, type, Locale.GERMAN);
+		} catch (Exception e) {
+			log.warn("Exception during dmpService.createDMPExport Message: ", () -> e);
+			if (e instanceof DataWizSystemException) {
+				if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.MISSING_PID_ERROR))
+					throw new DWDownloadException("export.odt.error.project");
+				else
+					throw new DWDownloadException("export.odt.error.study");
+			} else {
+				throw new DWDownloadException("dbs.sql.exception");
+			}
+		}
+		try {
+			response.setContentType("application/vnd.oasis.opendocument.text");
+			response.setHeader("Content-Disposition", "attachment; filename=\"datawiz_export_" + type.get() + ".odt\"");
+			response.setContentLength(content.length);
+			response.getOutputStream().write(content);
+			response.flushBuffer();
+			log.trace("Leaving exportStudyODF for Study [studyID: {}] and exportType [{}]", () -> studyId, () -> type);
+		} catch (Exception e) {
+			log.warn("Exception during creating response ", () -> e);
+			throw new DWDownloadException("export.error.response");
+		}
+
 	}
 
 }

@@ -33,7 +33,8 @@
                         principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
                 <div class="col-xs-6 col-sm-5 text-align-right">
-                  <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
+                  <c:url var="accessUrl"
+                    value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
                   <c:choose>
                     <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
                       <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
@@ -55,8 +56,20 @@
                 </div>
               </c:if>
             </div>
-            <div>
-              <s:message code="study.edit.basis.info" />
+            <div class="row">
+              <div class="col-xs-12 col-sm-9">
+                <s:message code="study.edit.basis.info" />
+              </div>
+              <div class="col-xs-12 col-sm-3 text-align-right">
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="${StudyForm.study.id}/exportStudy/PsychData" />"
+                    target="_blank">PsychData</a>
+                </div>
+                <div style="display: inline-block;">
+                  <a class="btn btn-primary btn-sm" href="<c:url value="${StudyForm.study.id}/exportStudy/PreReg" />"
+                    target="_blank">Präregistrierung</a>
+                </div>
+              </div>
             </div>
           </c:otherwise>
         </c:choose>
@@ -64,12 +77,17 @@
       <!-- Submenu -->
       <c:if test="${!hideMenu}">
         <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
-          <li role="presentation" id="basisDataActiveClick" class="studyContentClick"><a><s:message code="study.submenu.basic.data" /></a></li>
+          <li role="presentation" id="basisDataActiveClick" class="studyContentClick"><a><s:message
+                code="study.submenu.basic.data" /></a></li>
           <c:if test="${not empty StudyForm.study.id}">
-            <li role="presentation" id="designActiveClick" class="studyContentClick"><a><s:message code="study.submenu.design" /></a></li>
-            <li role="presentation" id="sampleActiveClick" class="studyContentClick"><a><s:message code="study.submenu.sample" /></a></li>
-            <li role="presentation" id="surveyActiveClick" class="studyContentClick"><a><s:message code="study.submenu.survey" /></a></li>
-            <li role="presentation" id="ethicalActiveClick" class="studyContentClick"><a><s:message code="study.submenu.ethical" /></a></li>
+            <li role="presentation" id="designActiveClick" class="studyContentClick"><a><s:message
+                  code="study.submenu.design" /></a></li>
+            <li role="presentation" id="sampleActiveClick" class="studyContentClick"><a><s:message
+                  code="study.submenu.sample" /></a></li>
+            <li role="presentation" id="surveyActiveClick" class="studyContentClick"><a><s:message
+                  code="study.submenu.survey" /></a></li>
+            <li role="presentation" id="ethicalActiveClick" class="studyContentClick"><a><s:message
+                  code="study.submenu.ethical" /></a></li>
           </c:if>
         </ul>
       </c:if>
@@ -155,8 +173,8 @@
       </div>
       <div class="modal-footer">
         <c:url var="accessUrl" value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/deleteStudy" />
-        <a href="${accessUrl}" class="btn btn-warning btn-sm" id="deleteBTN" onclick="return checkDeletePhrase('${deletePhrase}')"><s:message
-            code="study.delete.modal.final.del" /></a>
+        <a href="${accessUrl}" class="btn btn-warning btn-sm" id="deleteBTN"
+          onclick="return checkDeletePhrase('${deletePhrase}')"><s:message code="study.delete.modal.final.del" /></a>
       </div>
     </div>
   </div>
