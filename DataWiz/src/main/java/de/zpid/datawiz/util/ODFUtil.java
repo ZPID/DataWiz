@@ -1493,8 +1493,8 @@ public class ODFUtil {
 			createCell(table, 2, 6, messageSource.getMessage("study.sAbstractTrans", null, locale), regular, null, locale);
 			createCell(table, 3, 6, study.getsAbstractTrans(), regular, null, locale);
 			createCell(table, 0, 7, messageSource.getMessage("export.odt.PsychData.td11", null, locale), regular, null, locale);
-			createCell(table, 1, 7, messageSource.getMessage("export.odt.PsychDatatd12", null, locale), regular, null, locale);
-			createCell(table, 2, 7, messageSource.getMessage("study.completesel", null, locale), regular, null, locale);
+			createCell(table, 1, 7, messageSource.getMessage("export.odt.PsychData.td12", null, locale), regular, null, locale);
+			createCell(table, 2, 7, messageSource.getMessage("study.completeSel", null, locale), regular, null, locale);
 			createCell(table, 3, 7, study.getCompleteSel(), regular, null, locale);
 			createCell(table, 2, 8, messageSource.getMessage("study.excerpt", null, locale), regular, null, locale);
 			createCell(table, 3, 8, study.getExcerpt(), regular, null, locale);
