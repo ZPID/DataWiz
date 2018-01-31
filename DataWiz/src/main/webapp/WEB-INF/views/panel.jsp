@@ -28,7 +28,7 @@
         <input type="hidden" value="<s:message code="project.panel.no.researcher" />" id="unsetResearcher">
         <div class="panel-group">
           <c:if test="${not empty CProjectForm}">
-            <div class="panel panel-default">
+            <div class="panel">
               <div class="panel-heading">
                 <div class="row">
                   <s:message code="project.filter.placeholder" var="filterPH" />
@@ -131,7 +131,7 @@
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default boxShadow">
+                        <div class="panel panel-primary">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}" style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.studies.showhide" /></strong>
                           </div>
@@ -215,7 +215,7 @@
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default boxShadow">
+                        <div class="panel panel-primary">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}" style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.shared.showhide" /></strong>
                           </div>

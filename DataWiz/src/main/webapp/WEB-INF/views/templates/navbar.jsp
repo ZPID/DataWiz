@@ -1,17 +1,18 @@
 <div class="nav-wrapper">
-  <nav class="navbar navbar-default mainnavtop" data-spy="affix" data-offset-top="50" style="z-index: 10;" id="dwmainnavbar">
+  <nav class="navbar navbar-default mainnavtop" data-spy="affix" data-offset-top="300" style="z-index: 10;"
+    id="dwmainnavbar">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+          data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span
+            class="icon-bar"></span>
         </button>
         <!-- <a class="navbar-brand" href="#">DataWiz</a> -->
       </div>
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <s:eval expression="@environment.getProperty('application.logo.navbar.url')" var="logoUri" />
-        <img alt="" src="<c:url value="${logoUri}" />" id="navbarlogo" style="display: none;">
         <ul class="breadcrumb">
           <c:forEach var="map" items="${breadcrumpList}">
             <c:choose>
@@ -24,10 +25,11 @@
             </c:choose>
           </c:forEach>
         </ul>
-        <ul class="nav navbar-nav navbar-right" style="margin-right: 8.7%;">
+        <ul class="nav navbar-nav navbar-right">
           <sec:authorize access="isAuthenticated()">
-            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-              aria-expanded="false"><c:out value="${principal.username}" /><span class="caret"></span></a>
+            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+              aria-haspopup="true" aria-expanded="false" id="dropdown_username"><c:out value="${principal.username}" /><span
+                class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a href="<c:url value="/panel" />"><s:message code="navbar.sub.projects" /></a></li>
                 <li><a href="<c:url value="/usersettings" />"><s:message code="navbar.sub.userdata" /></a></li>
@@ -40,7 +42,7 @@
             <li><a href="<c:url value="/login" />"><s:message code="navbar.main.login" /></a></li>
             <li><a href="<c:url value="/register" />"><s:message code="navbar.main.register" /></a></li>
           </sec:authorize>
-          <li><div style="position: relative; top: 10px;">
+          <%--           <li><div style="position: relative; top: 10px;">
               <c:set var="localeCode" value="${pageContext.response.locale}" />
               <c:choose>
                 <c:when test="${localeCode eq 'de'}">
@@ -58,12 +60,13 @@
                   </div>
                 </c:when>
               </c:choose>
-            </div></li>
+            </div></li> --%>
           <c:if test="${isBetaVersion}">
             <li>
               <div style="position: absolute; left: 100%; top: -20px; padding-left: 20px;">
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdRx1aiehMr7iUhUjRiZyueuWpDSPE3JURDSGCWtI1H8Ucghg/viewform?c=0&w=1" target="_blank"><img
-                  alt="Logo" src="<c:url value='/static/images/feedback.png' />" height="100px"></a>
+                <a
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSdRx1aiehMr7iUhUjRiZyueuWpDSPE3JURDSGCWtI1H8Ucghg/viewform?c=0&w=1"
+                  target="_blank"><img alt="Logo" src="<c:url value='/static/images/feedback.png' />" height="100px"></a>
               </div>
             </li>
           </c:if>
