@@ -6,7 +6,6 @@ html {
 
 body {
   font-family: 'Montserrat', sans-serif;
-  margin-bottom: 80px;
 }
 
 .dropzone .dz-preview .dz-error-message {
@@ -258,7 +257,12 @@ label.btn::after {
   background-color: inherit;
 }
 
-#dropdown_username{
+.navbar {
+  border: none;
+  margin-bottom: inherit;
+}
+
+#dropdown_username {
   color: rgb(43, 33, 113);
 }
 
@@ -308,15 +312,21 @@ label.btn::after {
 }
 
 .content-container {
+  min-height: 50vH;
   -webkit-box-shadow: 0px 0px 15px -4px rgba(43, 33, 113, 0.39);
   -moz-box-shadow: 0px 0px 15px -4px rgba(43, 33, 113, 0.39);
   box-shadow: 0px 0px 15px -4px rgba(43, 33, 113, 0.39);
+  padding-bottom: 60px;
+}
+
+#filter_row {
+  margin-bottom: 20px;
 }
 
 /**************** END CONTENT ****************/
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
-@media ( max-width : 765px) {
+@media ( max-width : 749px) {
   /* LOGIN */
   .login_container {
     background-color: white;
@@ -357,9 +367,21 @@ label.btn::after {
   .btn-block+.btn-xs-block, .btn-xs-block+.btn-block, .btn-xs-block+.btn-xs-block {
     margin-top: 0.5rem;
   }
+  .header-content, .nav-wrapper {
+    width: 100%;
+    max-width: 100%
+  }
+  .mainnavtop.affix {
+    top: 0px;
+    width: 100%
+  }
+  .subnavtop.affix {
+    width: 100%;
+    left: 0%;
+  }
 }
 /* Breite ab 980 pixel */
-@media ( min-width : 765px) {
+@media ( min-width : 750px) {
   .login_container {
     background-color: white;
     width: 100%;
@@ -396,9 +418,21 @@ label.btn::after {
   .breadcrumb li {
     max-width: 250px;
   }
+  .header-content, .nav-wrapper {
+    width: 100%;
+    max-width: 100%
+  }
+  .mainnavtop.affix {
+    top: 0px;
+    width: 100%
+  }
+  .subnavtop.affix {
+    width: 100%;
+    left: 0%;
+  }
 }
 /* Breite ab 1200 pixel */
-@media ( min-width : 1200px) {
+@media ( min-width : 970px) {
   .breadcrumb>*:nth-last-child(-n+3) {
     display: inline-block;
   }
@@ -413,9 +447,21 @@ label.btn::after {
   .content-padding {
     padding: 5px 2%;
   }
+  .header-content, .nav-wrapper {
+    width: 90%;
+    max-width: 90%
+  }
+  .mainnavtop.affix {
+    top: 0px;
+    width: 90%
+  }
+  .subnavtop.affix {
+    width: 90%;
+    left: 5%;
+  }
 }
 /* Breite ab 1600 pixel */
-@media ( min-width : 1600px) {
+@media ( min-width : 1170px) {
   .login_container {
     background-color: white;
     width: 40%;
@@ -446,17 +492,19 @@ label.btn::after {
   .breadcrumb li {
     max-width: 300px;
   }
+  .header-content, .nav-wrapper {
+    max-width: 80%
+  }
+  .mainnavtop.affix {
+    top: 0px;
+    width: 80%
+  }
+  .subnavtop.affix {
+    width: 80%;
+    left: 10%;
+  }
 }
-/**************** END RESPONSIVE ****************/
-/**************** START FOOTER ****************/
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #337ab7;
-}
+
 /**************** END FOOTER ****************/
 /**************** START TAGGING STYLE ****************/
 .tagging {
@@ -518,11 +566,6 @@ label.btn::after {
 /**************** END TAGGING STYLE ****************/
 
 /**************** START FIXED NAVBAR SETTINGS ****************/
-.mainnavtop.affix {
-  top: 0px;
-  width: 80%
-}
-
 .mainnavtop {
   min-height: 61px;
 }
@@ -530,13 +573,10 @@ label.btn::after {
 .subnavtop.affix {
   position: fixed;
   top: 51px;
-  left: 0px;
-  z-index: 99;
-  width: 100%;
   background-color: white;
   text-align: center;
-  margin: 0 auto;
-  padding-left: 15.6%
+  margin: auto;
+  z-index: 99;
 }
 
 .subnavtop {
