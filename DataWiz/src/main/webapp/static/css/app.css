@@ -327,12 +327,6 @@ label.btn::after {
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
 @media ( max-width : 749px) {
-  /* LOGIN */
-  .login_container {
-    background-color: white;
-    width: 100%;
-    margin: auto;
-  }
   .login-card {
     width: 90%;
     margin: auto;
@@ -341,7 +335,7 @@ label.btn::after {
     padding: 3%;
   }
   /* Content */
-  .content-container {
+  .content-container{
     background-color: white;
     width: 100%;
     margin: auto;

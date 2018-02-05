@@ -83,11 +83,12 @@
 
 #lp_ms_header_2_logo_bold{
   font-weight: 600;
-  content: 
+  color: white;
 }
 
 #lp_ms_header_2_logo_thin{
   font-weight: 100;
+  color: white;
 }
 
 #lp_ms_header_2_logo a,

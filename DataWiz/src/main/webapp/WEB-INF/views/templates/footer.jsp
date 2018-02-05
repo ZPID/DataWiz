@@ -1,4 +1,9 @@
-<%@ include file="footer_microsite.jsp"%>
+<c:catch var="catchException">
+  <c:import url="http://localhost/microsite/footer.php" /> 
+</c:catch>
+<c:if test="${catchException != null}">
+  <%@ include file="footer_microsite.jsp"%>
+</c:if>
 <div class="dwgoup"></div>
 </body>
 <script src="<c:url value='/static/js/jquery-2.2.0.min.js' />" type="text/javascript"></script>
