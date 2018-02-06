@@ -8,10 +8,11 @@ import java.util.Locale;
 import java.util.Properties;
 
 import javax.annotation.PreDestroy;
-import javax.sql.DataSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.tomcat.jdbc.pool.DataSource;
+import org.apache.tomcat.jdbc.pool.PoolProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.MessageSource;
@@ -25,7 +26,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.SmartValidator;
@@ -76,14 +76,24 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 		}
 	}
 
-	private DataSource getDataSource() {
-		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-		dataSource.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName"));
-		dataSource.setUrl(env.getRequiredProperty("dataSource.url"));
-		dataSource.setUsername(env.getRequiredProperty("dataSource.username"));
-		dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
+	/*
+	 * private DataSource getDataSource() { DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	 * dataSource.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName")); dataSource.setUrl(env.getRequiredProperty("dataSource.url"));
+	 * dataSource.setUsername(env.getRequiredProperty("dataSource.username")); dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
+	 * log.info("dataSource succesfully loaded"); return dataSource; }
+	 */
+	@Bean
+	public DataSource getDataSource() {
+		PoolProperties poolProperties = new PoolProperties();
+		poolProperties.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName"));
+		poolProperties.setUrl(env.getRequiredProperty("dataSource.url"));
+		poolProperties.setUsername(env.getRequiredProperty("dataSource.username"));
+		poolProperties.setPassword(env.getRequiredProperty("dataSource.password"));
+		poolProperties.setTestWhileIdle(true);
+		poolProperties.setTestOnBorrow(true);
+		poolProperties.setValidationQuery("SELECT 1");
 		log.info("dataSource succesfully loaded");
-		return dataSource;
+		return new DataSource(poolProperties);
 	}
 
 	@Bean
@@ -124,8 +134,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 	public MessageSource resourceBundleMessageSource() {
 		ReloadableResourceBundleMessageSource resolver = new ReloadableResourceBundleMessageSource();
 		resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale/DMPResources", "classpath:locale/EmailResources",
-		    "classpath:locale/StudyResources", "classpath:locale/RecordResources", "classpath:locale/LoggingResources",
-		    "classpath:locale/ExportResources");
+		    "classpath:locale/StudyResources", "classpath:locale/RecordResources", "classpath:locale/LoggingResources", "classpath:locale/ExportResources");
 		resolver.setDefaultEncoding("UTF-8");
 		Properties fileCharsets = new Properties();
 		fileCharsets.setProperty("org/springframework/context/support/messages_de", "unicode");
