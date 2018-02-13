@@ -1,8 +1,8 @@
 package de.zpid.datawiz.enumeration;
 
 public enum DataWizErrorCodes {
-
   OK,
+  SESSION_ERROR,
   DATABASE_ERROR,
   RECORD_SAVE_ERROR,
   NO_DATA_ERROR,

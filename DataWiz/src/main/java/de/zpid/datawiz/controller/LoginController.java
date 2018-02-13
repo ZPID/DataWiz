@@ -45,8 +45,10 @@ import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.service.LoginService;
+import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -106,7 +108,8 @@ public class LoginController {
 		if (log.isDebugEnabled()) {
 			log.debug("execute homePage()");
 		}
-		return "redirect:/panel";
+		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.INDEX, null, null, messageSource));
+		return "welcome";
 	}
 
 	/**
@@ -124,6 +127,7 @@ public class LoginController {
 		if (error != null) {
 			model.put("error", getErrorMessage("SPRING_SECURITY_LAST_EXCEPTION"));
 		}
+		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.LOGIN, null, null, messageSource));
 		return "login";
 	}
 
@@ -153,12 +157,13 @@ public class LoginController {
 		} else {
 			model.put("UserDTO", createUserDTO());
 		}
+		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.REGISTER, null, null, messageSource));
 		return "register";
 	}
 
 	/**
-	 * Function for user registration. After the validation of the required form fields, the function saves the new user into the database and sends an
-	 * email to the given emailadress to complete registration
+	 * Function for user registration. After the validation of the required form fields, the function saves the new user into the database and sends an email to
+	 * the given emailadress to complete registration
 	 * 
 	 * @param person
 	 * @param bindingResult
@@ -197,6 +202,7 @@ public class LoginController {
 			// return to registerform if errors
 			if (bindingResult.hasErrors()) {
 				log.trace("UserDTO has Errors - return to register form");
+				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.REGISTER, null, null, messageSource));
 				return "register";
 			}
 			// at this point registerform is valid
@@ -226,9 +232,8 @@ public class LoginController {
 		if (person != null && person.getId() > 0) {
 			try {
 				mail.sendSSLMail(person.getEmail(), messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
-				    messageSource.getMessage("reg.mail.content",
-				        new Object[] { request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()), person.getEmail(),
-				            person.getActivationCode() },
+				    messageSource.getMessage("reg.mail.content", new Object[] {
+				        request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()), person.getEmail(), person.getActivationCode() },
 				        LocaleContextHolder.getLocale()));
 			} catch (Exception e) {
 				log.error("Mail error during user registration: ", () -> e);
@@ -236,7 +241,6 @@ public class LoginController {
 				return "error";
 			}
 		}
-
 		return "redirect:/login?activationmail";
 	}
 
@@ -256,8 +260,7 @@ public class LoginController {
 		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 		try {
 			UserDTO user = userDAO.findByMail(mail, false);
-			if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty()
-			    && user.getActivationCode().equals(activationCode)) {
+			if (user != null && user.getActivationCode() != null && !user.getActivationCode().isEmpty() && user.getActivationCode().equals(activationCode)) {
 				userDAO.activateUserAccount(user);
 				roleDAO.saveRole(new UserRoleDTO(Roles.USER.toInt(), user.getId(), 0, 0, Roles.USER.name()));
 				long pid = Long.parseLong(projectDAO.findValFromInviteData(mail, activationCode, "project_id"));
@@ -315,18 +318,15 @@ public class LoginController {
 		String retErr = loginService.sendPasswordRecoveryMail(person, request);
 		if (retErr != null && retErr.equals("dbs.sql.exception")) {
 			ret = "error";
-			model.put("errormsg", messageSource.getMessage(retErr, new Object[] { env.getRequiredProperty("organisation.admin.email"), "" },
-			    LocaleContextHolder.getLocale()));
+			model.put("errormsg",
+			    messageSource.getMessage(retErr, new Object[] { env.getRequiredProperty("organisation.admin.email"), "" }, LocaleContextHolder.getLocale()));
 		} else if (retErr != null && (retErr.equals("reset.password.no.secemail") || retErr.equals("reset.password.email.send"))) {
-			model.put("successMSG",
-			    messageSource.getMessage(retErr, new Object[] { person != null ? person.getEmail() : "" }, LocaleContextHolder.getLocale()));
+			model.put("successMSG", messageSource.getMessage(retErr, new Object[] { person != null ? person.getEmail() : "" }, LocaleContextHolder.getLocale()));
 			model.put("setemailview", true);
 			model.put("sendSuccess", true);
 		} else {
-			model.put("errorMSG",
-			    messageSource.getMessage(retErr,
-			        new Object[] { person != null ? person.getEmail() : "", env.getRequiredProperty("organisation.admin.email"), "" },
-			        LocaleContextHolder.getLocale()));
+			model.put("errorMSG", messageSource.getMessage(retErr,
+			    new Object[] { person != null ? person.getEmail() : "", env.getRequiredProperty("organisation.admin.email"), "" }, LocaleContextHolder.getLocale()));
 			model.put("setemailview", true);
 		}
 		return ret;
@@ -344,8 +344,8 @@ public class LoginController {
 			model.put("setemailview", false);
 		} else if (retErr.equals("dbs.sql.exception")) {
 			ret = "error";
-			model.put("errormsg", messageSource.getMessage(retErr, new Object[] { env.getRequiredProperty("organisation.admin.email"), "" },
-			    LocaleContextHolder.getLocale()));
+			model.put("errormsg",
+			    messageSource.getMessage(retErr, new Object[] { env.getRequiredProperty("organisation.admin.email"), "" }, LocaleContextHolder.getLocale()));
 		} else {
 			model.put("errorMSG", messageSource.getMessage(retErr, null, LocaleContextHolder.getLocale()));
 			model.put("setemailview", true);
@@ -429,20 +429,16 @@ public class LoginController {
 		Exception exception = (Exception) request.getSession().getAttribute(key);
 		String error = "";
 		if (exception instanceof BadCredentialsException) {
-			error = messageSource.getMessage("login.failed", new Object[] { env.getRequiredProperty("organisation.admin.email") },
-			    LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.failed", new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale());
 		} else if (exception instanceof LockedException) {
-			error = messageSource.getMessage("login.locked", new Object[] { env.getRequiredProperty("organisation.admin.email") },
-			    LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.locked", new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale());
 		} else if (exception instanceof AccountExpiredException) {
-			error = messageSource.getMessage("login.expired", new Object[] { env.getRequiredProperty("organisation.admin.email") },
-			    LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.expired", new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale());
 		} else if (exception instanceof InternalAuthenticationServiceException) {
 			error = messageSource.getMessage("login.system.error", new Object[] { env.getRequiredProperty("organisation.admin.email") },
 			    LocaleContextHolder.getLocale());
 		} else {
-			error = messageSource.getMessage("login.failed", new Object[] { env.getRequiredProperty("organisation.admin.email") },
-			    LocaleContextHolder.getLocale());
+			error = messageSource.getMessage("login.failed", new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale());
 		}
 		return error;
 	}

@@ -846,19 +846,22 @@ function checkDeletePhrase(phrase) {
 	}
 }
 
-/*function headHeight() {
+/*
+ * function headHeight() {
+ * 
+ * var topline = $("#dwmainnavbar").outerHeight(); var header = $("header").outerHeight(); var headerHeight = topline +
+ * header $(".header-bg").css("height", headerHeight); }
+ * 
+ * $(document).ready(function() { headHeight(); });
+ * 
+ * $(window).resize(function() { headHeight(); });
+ */
 
-	var topline = $("#dwmainnavbar").outerHeight();
-	var header = $("header").outerHeight();
-	var headerHeight = topline + header
-	$(".header-bg").css("height", headerHeight);
-
+function addField(id, springID) {
+	var parent = $("#" + id);
+	var countChildren = $("#" + id + " textarea").length;
+	var last = $("#" + id + " textarea")[countChildren - 1];
+	$(last).after(
+			'<textarea id="' + springID + countChildren + '.text" name="' + springID + '[' + countChildren
+					+ '].text" class="form-control margin-bottom-10" rows="1"></textarea>')
 }
-
-$(document).ready(function() {
-	headHeight();
-});
-
-$(window).resize(function() {
-	headHeight();
-});*/

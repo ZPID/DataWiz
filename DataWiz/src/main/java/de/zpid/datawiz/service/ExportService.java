@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -83,6 +84,8 @@ public class ExportService {
 	private final String STUDY_FILE_NAME = "study_long_term.xml";
 	private final String RECORD_FILE_NAME = "record_long_term.xml";
 	private final String RECORD_MATRIX_NAME = "record_matrix.csv";
+	private final String RECORD_CODEBOOK_NAME_CSV = "record_codebook.csv";
+	private final String RECORD_CODEBOOK_NAME_PDF = "record_codebook.pdf";
 
 	@Autowired
 	protected MessageSource messageSource;
@@ -181,8 +184,7 @@ public class ExportService {
 				}
 			}
 		} else {
-			log.warn(
-			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "getExportForm for project", pid }, Locale.ENGLISH));
+			log.warn(messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "getExportForm for project", pid }, Locale.ENGLISH));
 			throw new DataWizSystemException(
 			    messageSource.getMessage("logging.user.permitted", new Object[] { user.getEmail(), "getExportForm for project", pid }, Locale.ENGLISH),
 			    DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED);
@@ -198,58 +200,14 @@ public class ExportService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Entry<String, byte[]>> createExportFileList(ExportProjectForm exportForm, final Optional<Long> pid, final UserDTO user)
-	    throws Exception {
+	public List<Entry<String, byte[]>> createExportFileList(ExportProjectForm exportForm, final Optional<Long> pid, final UserDTO user) throws Exception {
 		List<Entry<String, byte[]>> files = new ArrayList<>();
 		ProjectDTO projectDB = projectDAO.findById(pid.get());
 		if (projectDB != null) {
 			List<FileDTO> pFiles = null;
 			List<UserDTO> pUploader = new ArrayList<>();
 			ProjectForm pForm = (ProjectForm) applicationContext.getBean("ProjectForm");
-			if (exportForm.isExportMetaData() || exportForm.isExportDMP() || exportForm.isExportProjectMaterial()) {
-				if (exportForm.isExportMetaData()) {
-					pForm.setProject(projectDB);
-					pForm.setContributors(contributorDAO.findByProject(projectDB, false, false));
-				} else {
-					ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
-					project.setId(projectDB.getId());
-					project.setTitle(projectDB.getTitle());
-					project.setDescription(projectDB.getDescription());
-					project.setFunding(projectDB.getFunding());
-					pForm.setProject(project);
-				}
-				if (exportForm.isExportProjectMaterial()) {
-					pFiles = fileDAO.findProjectMaterialFiles(projectDB);
-					if (pFiles != null && pFiles.size() > 0) {
-						setAdditionalFilestoExportList(files, pFiles, FILES_PROJECT_FOLDER);
-						pForm.setFiles(pFiles);
-						for (FileDTO file : pFiles) {
-							pUploader.add(userDAO.findById(file.getUserId()));
-						}
-					}
-				}
-				pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(projectDB));
-				if (exportForm.isExportDMP()) {
-					DmpDTO dmpDB = dmpDAO.findByID(projectDB);
-					if (dmpDB != null && dmpDB.getId() > 0) {
-						dmpDB.setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.DATATYPE, false));
-						dmpDB.setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.COLLECTIONMODE, false));
-						dmpDB.setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.METAPORPOSE, false));
-						pForm.setDataTypes(formTypeDAO.findAllByType(false, DWFieldTypes.DATATYPE));
-						pForm.setCollectionModes(formTypeDAO.findAllByType(false, DWFieldTypes.COLLECTIONMODE));
-						pForm.setMetaPurposes(formTypeDAO.findAllByType(false, DWFieldTypes.METAPORPOSE));
-					}
-					pForm.setDmp(dmpDB);
-				}
-				Document pdoc = ddi.createProjectDocument(pForm, pFiles, pUploader);
-				if (pdoc != null)
-					files.add(new SimpleEntry<String, byte[]>(PROJECT_FILE_NAME, createByteArrayFromXML(pdoc)));
-				else {
-					throw new DataWizSystemException(
-					    messageSource.getMessage("logging.xml.create.error", new Object[] { "createProjectDocument", exportForm.toString() }, Locale.ENGLISH),
-					    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
-				}
-			}
+			createProjectExport(exportForm, files, projectDB, pFiles, pUploader, pForm);
 			// Create Studies
 			if (exportForm.getStudies() != null) {
 				Set<String> studyNames = new HashSet<>();
@@ -291,106 +249,202 @@ public class ExportService {
 							if (sdoc != null) {
 								files.add(new SimpleEntry<String, byte[]>(studyFolder + STUDY_FILE_NAME, createByteArrayFromXML(sdoc)));
 							} else {
-								throw new DataWizSystemException(messageSource.getMessage("logging.xml.create.error",
-								    new Object[] { "createProjectDocument", exportForm.toString() }, Locale.ENGLISH), DataWizErrorCodes.STUDY_NOT_AVAILABLE);
+								throw new DataWizSystemException(
+								    messageSource.getMessage("logging.xml.create.error", new Object[] { "createProjectDocument", exportForm.toString() }, Locale.ENGLISH),
+								    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 							}
 						}
 						// Create Records
-						if (studyEx.getRecords() != null) {
-							Set<String> recordNames = new HashSet<>();
-							int recNameDoublette = 0;
-							for (ExportRecordDTO recordEx : studyEx.getRecords()) {
-								if (recordEx.isExportMetaData() || recordEx.isExportCodebook() || recordEx.isExportMatrix()) {
-									RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
-									if (recordDB != null) {
-										if (!recordNames.add(recordDB.getRecordName())) {
-											recordDB.setRecordName(recordDB.getRecordName() + "_" + ++recNameDoublette);
-										}
-										String recordFolder = studyFolder + RECORD_FOLDER + formatFilename(recordDB.getRecordName()) + "/";
-										RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
-										List<String> parsingErrors = new LinkedList<>();
-										if (recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
-											recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
-											recordService.setCodebook(parsingErrors, recordDB, false);
-											record = recordDB;
-										} else if (!recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
-											record.setRecordName(recordDB.getRecordName());
-											record.setVersionId(recordDB.getVersionId());
-											record.setId(recordDB.getId());
-											record.setStudyId(recordDB.getStudyId());
-											record.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
-											recordService.setCodebook(parsingErrors, record, false);
-										} else if (recordEx.isExportMetaData() && !recordEx.isExportCodebook()) {
-											record = recordDB;
-										} else {
-											record = null;
-										}
-										if (!parsingErrors.isEmpty()) {
-											StringBuilder s = new StringBuilder();
-											parsingErrors.forEach(pe -> {
-												s.append(pe + " ; ");
-											});
-											throw new DataWizSystemException(messageSource.getMessage("logging.record.parsing.error",
-											    new Object[] { recordEx.getRecordId(), s.toString() }, Locale.ENGLISH), DataWizErrorCodes.RECORD_PARSING_ERROR);
-										}
-										StringBuilder res = new StringBuilder();
-										FileDTO fileHash = null;
-										byte[] content = null;
-										if (recordEx.isExportMatrix()) {
-											RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(recordDB);
-											copy.setVariables(recordDAO.findVariablesByVersionID(copy.getVersionId()));
-											recordService.setDataMatrix(parsingErrors, copy, false, pid.get());
-											if (!parsingErrors.isEmpty()) {
-												StringBuilder s = new StringBuilder();
-												parsingErrors.forEach(pe -> {
-													s.append(pe + " ; ");
-												});
-												throw new DataWizSystemException(messageSource.getMessage("logging.record.parsing.error",
-												    new Object[] { recordEx.getRecordId(), s.toString() }, Locale.ENGLISH), DataWizErrorCodes.RECORD_PARSING_ERROR);
-											}
-											if (copy.getDataMatrix() != null && !copy.getDataMatrix().isEmpty())
-												content = exportCSV(copy, res, true);
-											if (content != null && res.toString().trim().isEmpty()) {
-												fileHash = (FileDTO) applicationContext.getBean("FileDTO");
-												fileHash.setMd5checksum(fileUtil.getFileChecksum("MD5", content));
-												fileHash.setSha1Checksum(fileUtil.getFileChecksum("SHA-1", content));
-												fileHash.setSha256Checksum(fileUtil.getFileChecksum("SHA-256", content));
-												files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_MATRIX_NAME, content));
-											} else if (!res.toString().trim().isEmpty()) {
-												throw new DataWizSystemException(messageSource.getMessage("logging.record.parsing.error",
-												    new Object[] { recordEx.getRecordId(), messageSource.getMessage(res.toString(), null, Locale.ENGLISH) }, Locale.ENGLISH),
-												    DataWizErrorCodes.RECORD_PARSING_ERROR);
-											}
-										}
-										if (record != null) {
-											sForm.setRecord(record);
-											sForm.setStudy(studyDB);
-											Document rdoc = ddi.createRecordDocument(sForm, fileHash, user);
-											if (rdoc != null) {
-												files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_FILE_NAME, createByteArrayFromXML(rdoc)));
-											} else {
-												throw new DataWizSystemException(messageSource.getMessage("logging.xml.create.error",
-												    new Object[] { "createProjectDocument", exportForm.toString() }, LocaleContextHolder.getLocale()),
-												    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
-											}
-										}
-									}
-								}
-							}
-						}
+						createRecordExport(exportForm, pid, user, files, pForm, studyEx, sForm, study, studyDB, studyFolder);
 					} else {
-						throw new DataWizSystemException(
-						    messageSource.getMessage("logging.study.not.found", new Object[] { studyEx.getStudyId() }, Locale.ENGLISH),
+						throw new DataWizSystemException(messageSource.getMessage("logging.study.not.found", new Object[] { studyEx.getStudyId() }, Locale.ENGLISH),
 						    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
 					}
 				}
 			}
 		} else {
-			throw new DataWizSystemException(
-			    messageSource.getMessage("logging.project.not.found", new Object[] { exportForm.getProjectId() }, Locale.ENGLISH),
+			throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[] { exportForm.getProjectId() }, Locale.ENGLISH),
 			    DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 		}
 		return files;
+	}
+
+	/**
+	 * 
+	 * @param exportForm
+	 * @param pid
+	 * @param user
+	 * @param files
+	 * @param pForm
+	 * @param studyEx
+	 * @param sForm
+	 * @param study
+	 * @param studyDB
+	 * @param studyFolder
+	 * @throws Exception
+	 * @throws DataWizSystemException
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 * @throws NoSuchAlgorithmException
+	 */
+	private void createRecordExport(ExportProjectForm exportForm, final Optional<Long> pid, final UserDTO user, List<Entry<String, byte[]>> files,
+	    ProjectForm pForm, ExportStudyDTO studyEx, StudyForm sForm, StudyDTO study, StudyDTO studyDB, String studyFolder)
+	    throws Exception, DataWizSystemException, IOException, ClassNotFoundException, NoSuchAlgorithmException {
+		if (studyEx.getRecords() != null) {
+			Set<String> recordNames = new HashSet<>();
+			int recNameDoublette = 0;
+			for (ExportRecordDTO recordEx : studyEx.getRecords()) {
+				if (recordEx.isExportMetaData() || recordEx.isExportCodebook() || recordEx.isExportMatrix()) {
+					RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
+					if (recordDB != null) {
+						if (!recordNames.add(recordDB.getRecordName())) {
+							recordDB.setRecordName(recordDB.getRecordName() + "_" + ++recNameDoublette);
+						}
+						String recordFolder = studyFolder + RECORD_FOLDER + formatFilename(recordDB.getRecordName()) + "/";
+						RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
+						List<String> parsingErrors = new LinkedList<>();
+						recordService.setDataMatrix(parsingErrors, recordDB, false, pid.get());
+						if (recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
+							recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
+							recordService.setCodebook(parsingErrors, recordDB, false);
+							record = recordDB;
+						} else if (!recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
+							record.setRecordName(recordDB.getRecordName());
+							record.setVersionId(recordDB.getVersionId());
+							record.setId(recordDB.getId());
+							record.setStudyId(recordDB.getStudyId());
+							record.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
+							recordService.setCodebook(parsingErrors, record, false);
+						} else if (recordEx.isExportMetaData() && !recordEx.isExportCodebook()) {
+							record = recordDB;
+						} else {
+							record = null;
+						}
+						if (!parsingErrors.isEmpty()) {
+							StringBuilder s = new StringBuilder();
+							parsingErrors.forEach(pe -> {
+								s.append(pe + " ; ");
+							});
+							throw new DataWizSystemException(
+							    messageSource.getMessage("logging.record.parsing.error", new Object[] { recordEx.getRecordId(), s.toString() }, Locale.ENGLISH),
+							    DataWizErrorCodes.RECORD_PARSING_ERROR);
+						}
+						FileDTO fileHash = null;
+						StringBuilder res = new StringBuilder();
+						if (recordEx.isExportMatrix()) {
+							byte[] content = null;
+							RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(recordDB);
+							copy.setVariables(recordDAO.findVariablesByVersionID(copy.getVersionId()));
+							if (copy.getDataMatrix() != null && !copy.getDataMatrix().isEmpty())
+								content = exportCSV(copy, res, true);
+							if (content != null && res.toString().trim().isEmpty()) {
+								fileHash = (FileDTO) applicationContext.getBean("FileDTO");
+								fileHash.setMd5checksum(fileUtil.getFileChecksum("MD5", content));
+								fileHash.setSha1Checksum(fileUtil.getFileChecksum("SHA-1", content));
+								fileHash.setSha256Checksum(fileUtil.getFileChecksum("SHA-256", content));
+								files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_MATRIX_NAME, content));
+							} else if (!res.toString().trim().isEmpty()) {
+								throw new DataWizSystemException(
+								    messageSource.getMessage("logging.record.parsing.error",
+								        new Object[] { recordEx.getRecordId(), messageSource.getMessage(res.toString(), null, Locale.ENGLISH) }, Locale.ENGLISH),
+								    DataWizErrorCodes.RECORD_PARSING_ERROR);
+							}
+						}
+						if (record != null) {
+							sForm.setRecord(record);
+							sForm.setStudy(studyDB);
+							Document rdoc = ddi.createRecordDocument(sForm, fileHash, user);
+							if (rdoc != null) {
+								if (recordEx.isExportCodebook()) {
+									files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_CODEBOOK_NAME_CSV, exportCSV(record, res, false)));
+									if (!res.toString().trim().isEmpty()) {
+										throw new DataWizSystemException(
+										    messageSource.getMessage("logging.record.parsing.error",
+										        new Object[] { recordEx.getRecordId(), messageSource.getMessage(res.toString(), null, Locale.ENGLISH) }, Locale.ENGLISH),
+										    DataWizErrorCodes.RECORD_PARSING_ERROR);
+									}
+									ProjectDTO project = pForm.getProject();
+									if (project == null || project.getId() == 0)
+										project = projectDAO.findById(pid.get());
+									ContributorDTO primContri = pForm.getPrimaryContributor();
+									if (project != null) {
+										if (primContri == null || primContri.getId() == 0)
+											primContri = contributorDAO.findPrimaryContributorByProject(project);										
+										recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
+										recordService.setCodebook(parsingErrors, recordDB, false);
+										files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_CODEBOOK_NAME_PDF,
+										    itextUtil.createRecordCodeBookPDFA(recordDB, studyDB, project, primContri, false, false)));
+									}
+								}
+								files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_FILE_NAME, createByteArrayFromXML(rdoc)));
+							} else {
+								throw new DataWizSystemException(messageSource.getMessage("logging.xml.create.error",
+								    new Object[] { "createProjectDocument", exportForm.toString() }, LocaleContextHolder.getLocale()), DataWizErrorCodes.STUDY_NOT_AVAILABLE);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param exportForm
+	 * @param files
+	 * @param projectDB
+	 * @param pFiles
+	 * @param pUploader
+	 * @param pForm
+	 * @throws Exception
+	 * @throws DataWizSystemException
+	 */
+	private void createProjectExport(ExportProjectForm exportForm, List<Entry<String, byte[]>> files, ProjectDTO projectDB, List<FileDTO> pFiles,
+	    List<UserDTO> pUploader, ProjectForm pForm) throws Exception, DataWizSystemException {
+		if (exportForm.isExportMetaData() || exportForm.isExportDMP() || exportForm.isExportProjectMaterial()) {
+			if (exportForm.isExportMetaData()) {
+				pForm.setProject(projectDB);
+				pForm.setContributors(contributorDAO.findByProject(projectDB, false, false));
+			} else {
+				ProjectDTO project = (ProjectDTO) applicationContext.getBean("ProjectDTO");
+				project.setId(projectDB.getId());
+				project.setTitle(projectDB.getTitle());
+				project.setDescription(projectDB.getDescription());
+				project.setFunding(projectDB.getFunding());
+				pForm.setProject(project);
+			}
+			if (exportForm.isExportProjectMaterial()) {
+				pFiles = fileDAO.findProjectMaterialFiles(projectDB);
+				if (pFiles != null && pFiles.size() > 0) {
+					setAdditionalFilestoExportList(files, pFiles, FILES_PROJECT_FOLDER);
+					pForm.setFiles(pFiles);
+					for (FileDTO file : pFiles) {
+						pUploader.add(userDAO.findById(file.getUserId()));
+					}
+				}
+			}
+			pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(projectDB));
+			if (exportForm.isExportDMP()) {
+				DmpDTO dmpDB = dmpDAO.findByID(projectDB);
+				if (dmpDB != null && dmpDB.getId() > 0) {
+					dmpDB.setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.DATATYPE, false));
+					dmpDB.setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.COLLECTIONMODE, false));
+					dmpDB.setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(dmpDB.getId(), DWFieldTypes.METAPORPOSE, false));
+					pForm.setDataTypes(formTypeDAO.findAllByType(false, DWFieldTypes.DATATYPE));
+					pForm.setCollectionModes(formTypeDAO.findAllByType(false, DWFieldTypes.COLLECTIONMODE));
+					pForm.setMetaPurposes(formTypeDAO.findAllByType(false, DWFieldTypes.METAPORPOSE));
+				}
+				pForm.setDmp(dmpDB);
+			}
+			Document pdoc = ddi.createProjectDocument(pForm, pFiles, pUploader);
+			if (pdoc != null)
+				files.add(new SimpleEntry<String, byte[]>(PROJECT_FILE_NAME, createByteArrayFromXML(pdoc)));
+			else {
+				throw new DataWizSystemException(
+				    messageSource.getMessage("logging.xml.create.error", new Object[] { "createProjectDocument", exportForm.toString() }, Locale.ENGLISH),
+				    DataWizErrorCodes.STUDY_NOT_AVAILABLE);
+			}
+		}
 	}
 
 	/**
@@ -458,9 +512,8 @@ public class ExportService {
 	}
 
 	/**
-	 * This function prepares the record DTO for the export and transfers it to the SPSS IO Module. If the return of the SPSS IO Module is valid, a
-	 * byte[] which contains the spss file is returned. If some errors occur diring this process, null is returned and an error code is written to
-	 * ResponseEntity<String> resp.
+	 * This function prepares the record DTO for the export and transfers it to the SPSS IO Module. If the return of the SPSS IO Module is valid, a byte[] which
+	 * contains the spss file is returned. If some errors occur diring this process, null is returned and an error code is written to ResponseEntity<String> resp.
 	 * 
 	 * @param record
 	 *          Complete copy of the requested record version
@@ -515,8 +568,8 @@ public class ExportService {
 							res.insert(0, "export.error.file.not.exist");
 					}
 				} catch (Exception e) {
-					log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Error: {}; Exception: {}", () -> record.getId(),
-					    () -> record.getVersionId(), () -> res.toString(), () -> e);
+					log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Error: {}; Exception: {}", () -> record.getId(), () -> record.getVersionId(),
+					    () -> res.toString(), () -> e);
 					e.printStackTrace();
 					res.insert(0, "export.error.exception.thown");
 				} finally {
@@ -534,8 +587,8 @@ public class ExportService {
 	}
 
 	/**
-	 * This function transfers the record into a CSV String and returns it as byte array. It handles the CSV export for the Caodebook and the matrix
-	 * (boolean matrix = true).If some errors occur diring this process, null is returned and an error code is written to ResponseEntity<String> resp.
+	 * This function transfers the record into a CSV String and returns it as byte array. It handles the CSV export for the Caodebook and the matrix (boolean
+	 * matrix = true).If some errors occur diring this process, null is returned and an error code is written to ResponseEntity<String> resp.
 	 * 
 	 * @param record
 	 *          Complete copy of the requested record version
@@ -559,8 +612,8 @@ public class ExportService {
 					res.insert(0, "export.csv.string.empty");
 				}
 			} catch (Exception e) {
-				log.warn("Error during CSV export: RecordDTO: [id: {}; version:{} matrix[{}]] Exception: {}", () -> record.getId(),
-				    () -> record.getVersionId(), () -> matrix, () -> e);
+				log.warn("Error during CSV export: RecordDTO: [id: {}; version:{} matrix[{}]] Exception: {}", () -> record.getId(), () -> record.getVersionId(),
+				    () -> matrix, () -> e);
 				res.insert(0, "export.error.exception.thown");
 			}
 		} else {
@@ -571,8 +624,8 @@ public class ExportService {
 	}
 
 	/**
-	 * This function transfers the record into a JSON String and returns it as byte array. If some errors occur diring this process, null is returned
-	 * and an error code is written to ResponseEntity resp.
+	 * This function transfers the record into a JSON String and returns it as byte array. If some errors occur diring this process, null is returned and an error
+	 * code is written to ResponseEntity resp.
 	 * 
 	 * @param record
 	 *          Complete copy of the requested record version
