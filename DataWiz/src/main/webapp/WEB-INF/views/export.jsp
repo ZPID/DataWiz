@@ -6,15 +6,13 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <h4>
-          <s:message code="project.export.headline" />
-        </h4>
-        <div>
-          <s:message code="project.export.info" />
-        </div>
+        <s:message code="project.export.headline" var="headline_head" />
+        <s:message code="project.export.info" var="headline_info" />
+        <%@ include file="templates/pages_headline.jsp"%>
       </div>
       <c:url var="accessUrl" value="/export/${ExportProjectForm.projectId}" />
-      <sf:form action="${accessUrl}" modelAttribute="ExportProjectForm" class="form-horizontal" role="form" target="_blank">
+      <sf:form action="${accessUrl}" modelAttribute="ExportProjectForm" class="form-horizontal" role="form"
+        target="_blank">
         <ul class="list-group exportlist">
           <li class="list-group-item">
             <div class="row">
@@ -102,8 +100,9 @@
                           <c:set var="sizeWarn" value="true" />
                         </c:if>
                         <tr <c:if test="${sizeWarn}">class="danger text-danger"</c:if>>
-                          <td><a href="<c:url value='/project/${ExportProjectForm.projectId}/download/${file.id}' />" target="_blank"><s:message
-                                text="${file.fileName}" /></a></td>
+                          <td><a
+                            href="<c:url value='/project/${ExportProjectForm.projectId}/download/${file.id}' />"
+                            target="_blank"><s:message text="${file.fileName}" /></a></td>
                           <td><c:choose>
                               <c:when test="${file.fileSize>(1000000)}">
                                 <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000000}" />
@@ -200,8 +199,8 @@
                       <div class="row">
                         <div class="col-sm-6">
                           <s:message code="export.view.project.mat" arguments="(${fn:length(study.material)})" />
-                          <strong data-target="#tableColapse_${studyLoop.index}" data-toggle="collapse" style="cursor: pointer;"><s:message
-                              code="export.view.project.mat.show" /></strong>
+                          <strong data-target="#tableColapse_${studyLoop.index}" data-toggle="collapse"
+                            style="cursor: pointer;"><s:message code="export.view.project.mat.show" /></strong>
                         </div>
                         <div class="col-sm-5">
                           <div id="sizeWarn_${studyLoop.index}" class="text-danger">
@@ -230,14 +229,17 @@
                                 <c:set var="sizeWarn" value="true" />
                               </c:if>
                               <tr <c:if test="${sizeWarn}">class="danger text-danger"</c:if>>
-                                <td><a href="<c:url value='/project/${ExportProjectForm.projectId}/download/${file.id}' />" target="_blank"><s:message
-                                      text="${file.fileName}" /></a></td>
+                                <td><a
+                                  href="<c:url value='/project/${ExportProjectForm.projectId}/download/${file.id}' />"
+                                  target="_blank"><s:message text="${file.fileName}" /></a></td>
                                 <td><c:choose>
                                     <c:when test="${file.fileSize>(1000000)}">
-                                      <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000000}" /> MB
+                                      <fmt:formatNumber type="number" maxFractionDigits="2"
+                                        value="${file.fileSize/1000000}" /> MB
                           </c:when>
                                     <c:otherwise>
-                                      <fmt:formatNumber type="number" maxFractionDigits="2" value="${file.fileSize/1000}" /> KB
+                                      <fmt:formatNumber type="number" maxFractionDigits="2"
+                                        value="${file.fileSize/1000}" /> KB
                           </c:otherwise>
                                   </c:choose></td>
                               </tr>
@@ -283,7 +285,8 @@
                                 <b><s:message text="${record.recordTitle}" /></b>
                               </div>
                               <div class="col-sm-1">
-                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportFullRecord"
+                                <sf:checkbox
+                                  path="studies[${studyLoop.index}].records[${recordLoop.index}].exportFullRecord"
                                   class="li_chkbox li_checkbox_a3" />
                               </div>
                             </div>
@@ -293,7 +296,8 @@
                                 <s:message code="export.view.recordmeta" />
                               </div>
                               <div class="col-sm-1">
-                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMetaData" />
+                                <sf:checkbox
+                                  path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMetaData" />
                               </div>
                             </div></li>
                           <li class="list-group-item"><div class="row">
@@ -301,7 +305,8 @@
                                 <s:message code="export.view.codebook" />
                               </div>
                               <div class="col-sm-1">
-                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportCodebook" />
+                                <sf:checkbox
+                                  path="studies[${studyLoop.index}].records[${recordLoop.index}].exportCodebook" />
                               </div>
                             </div></li>
                           <li class="list-group-item"><div class="row">
@@ -309,7 +314,8 @@
                                 <s:message code="export.view.matrix" />
                               </div>
                               <div class="col-sm-1">
-                                <sf:checkbox path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMatrix" />
+                                <sf:checkbox
+                                  path="studies[${studyLoop.index}].records[${recordLoop.index}].exportMatrix" />
                               </div>
                             </div></li>
                         </ul>

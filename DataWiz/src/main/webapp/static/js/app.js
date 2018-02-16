@@ -858,10 +858,42 @@ function checkDeletePhrase(phrase) {
  */
 
 function addField(id, springID) {
-	var parent = $("#" + id);
-	var countChildren = $("#" + id + " textarea").length;
-	var last = $("#" + id + " textarea")[countChildren - 1];
-	$(last).after(
-			'<textarea id="' + springID + countChildren + '.text" name="' + springID + '[' + countChildren
-					+ '].text" class="form-control margin-bottom-10" rows="1"></textarea>')
+	if ($("#disStudyContent").val() === "enabled") {
+		var parent = $("#" + id);
+		var countChildren = $("#" + id + " textarea").length;
+		var last = $("#" + id + " textarea")[countChildren - 1];
+		$(last).after(
+				'<textarea id="' + springID + countChildren + '.text" name="' + springID + '[' + countChildren
+						+ '].text" class="form-control margin-bottom-10" rows="1"></textarea>')
+	}
 }
+
+$("#contriListAdd").click(
+		function() {
+			var clone = $("#primaryContri").clone();
+			var list = $("#contriList");
+			var actPos = $("#contriList").children().length - 1;
+			var items = [ "title", "orcid", "firstName", "lastName", "institution", "department" ]
+			items.forEach(function(item) {
+				$(clone[0]).find("#primaryContributor\\." + item).val("").attr('id', 'contributors' + actPos + '.' + item)
+						.attr('name', 'contributors[' + actPos + '].' + item);
+			});
+			$(clone[0]).find(".btn").show();
+			if (actPos >= 1)
+				$(clone).insertAfter(list.children()[actPos - 1])
+			else
+				$(clone).insertBefore(list.children()[0])
+		});
+
+function removeParentLI(elem) {
+
+	$(elem).parents('li').remove();
+}
+
+$(".bg_hoover").mouseover(function(elem) {
+	$(this).css("background-color", "rgba(43, 33, 113,0.05)");
+});
+
+$(".bg_hoover").mouseout(function(elem) {
+	$(this).css("background-color", "white");
+});

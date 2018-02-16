@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +21,29 @@ import de.zpid.datawiz.dao.DmpDAO;
 import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.DmpCategory;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.util.ODFUtil;
 
+/**
+ * Service Class for the DMP <br />
+ * <br />
+ * This file is part of Datawiz.<br />
+ * 
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ */
 @Service
 public class DMPService {
 
@@ -49,147 +67,122 @@ public class DMPService {
 	private ContributorDAO contributorDAO;
 
 	/**
+	 * This function saves a new DMP into the DMP table if the DMP identifier is not set.
 	 * 
 	 * @param pForm
+	 *          ProjectForm
 	 * @param hasErrors
-	 * @return
+	 *          boolean
+	 * @return Returns an error if saving was not sucessful
+	 * @throws DataWizSystemException
 	 */
-	public boolean saveNewDMPSetID(final ProjectForm pForm, boolean hasErrors) {
-		log.trace("Entering saveNewDMPSetID for Project [pid: {}] with Error [{}]", () -> pForm.getProject().getId(), () -> hasErrors);
-		boolean err = hasErrors;
-		if (!hasErrors && pForm.getDmp() != null && (pForm.getDmp().getId() <= 0)) {
+	public void saveNewDMPSetID(final ProjectForm pForm) throws DataWizSystemException {
+		log.trace("Entering saveNewDMPSetID for Project [pid: {}]", () -> pForm.getProject().getId());
+		if (pForm.getDmp() != null && pForm.getDmp().getId() <= 0) {
 			try {
-				int chk = dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
-				if (chk <= 0)
-					err = true;
-				else
-					pForm.getDmp().setId(pForm.getProject().getId());
+				dmpDAO.insertNewDMP(BigInteger.valueOf(pForm.getProject().getId()));
+				pForm.getDmp().setId(pForm.getProject().getId());
 			} catch (Exception e) {
-				err = true;
 				log.fatal("DBS Error - Saving new DMP was not successful Exception: ", () -> e);
+				throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+				    DataWizErrorCodes.DATABASE_ERROR);
 			}
 		}
-		log.trace("Leaving saveNewDMPSetID for Project [pid: {}] with Error [{}]", pForm.getProject().getId(), err);
-		return err;
+		log.trace("Leaving saveNewDMPSetID for Project [pid: {}]", pForm.getProject().getId());
 	}
 
 	/**
+	 * This functions saves the form data of the DMP for each specific subpage. Because of the fact, that the DMP-form is very huge, it was decidet to split them
+	 * for a better overview.
 	 * 
 	 * @param pForm
+	 *          ProjectForm
 	 * @param bRes
+	 *          BindingResult
 	 * @param cat
+	 *          DmpCategory
 	 * @param cls
-	 * @return
+	 *          Class
+	 * @return Returns an error if saving was not sucessful
+	 * @throws DataWizSystemException
 	 */
-	public boolean saveDMPDataPart(ProjectForm pForm, BindingResult bRes, DmpCategory cat, Class<?> cls) {
+	public void saveDMPDataPart(final ProjectForm pForm, final BindingResult bRes, final DmpCategory cat, final Class<?> cls) throws DataWizSystemException {
 		BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
-		int changed = 0;
 		log.trace("Entering saveDMPDataPart " + cat);
 		validator.validate(pForm, bResTmp, cls);
 		if (!bResTmp.hasErrors()) {
 			try {
 				switch (cat) {
 				case ADMIN:
-					changed = dmpDAO.updateAdminData(pForm.getDmp());
-					if (changed > 0)
-						pForm.getDmp().setAdminChanged(false);
+					dmpDAO.updateAdminData(pForm.getDmp());
 					break;
 				case RESEARCH:
-					changed = dmpDAO.updateResearchData(pForm.getDmp());
-					updateFormTypes(pForm, changed, cat);
-					if (changed > 0)
-						pForm.getDmp().setResearchChanged(false);
+					dmpDAO.updateResearchData(pForm.getDmp());
+					updateFormTypes(pForm, cat);
 					break;
 				case META:
-					changed = dmpDAO.updateMetaData(pForm.getDmp());
-					updateFormTypes(pForm, changed, cat);
-					if (changed > 0)
-						pForm.getDmp().setMetaChanged(false);
+					dmpDAO.updateMetaData(pForm.getDmp());
+					updateFormTypes(pForm, cat);
 					break;
 				case SHARING:
-					changed = (dmpDAO.updateSharingData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setSharingChanged(false);
+					dmpDAO.updateSharingData(pForm.getDmp());
 					break;
 				case STORAGE:
-					changed = (dmpDAO.updateStorageData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setStorageChanged(false);
+					dmpDAO.updateStorageData(pForm.getDmp());
 					break;
 				case ORGANIZATION:
-					changed = (dmpDAO.updateOrganizationData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setOrganizationChanged(false);
+					dmpDAO.updateOrganizationData(pForm.getDmp());
 					break;
 				case ETHICAL:
-					changed = (dmpDAO.updateEthicalData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setEthicalChanged(false);
+					dmpDAO.updateEthicalData(pForm.getDmp());
 					break;
 				case COSTS:
-					changed = (dmpDAO.updateCostsData(pForm.getDmp()));
-					if (changed > 0)
-						pForm.getDmp().setCostsChanged(false);
-					break;
-				default:
+					dmpDAO.updateCostsData(pForm.getDmp());
 					break;
 				}
 			} catch (Exception e) {
-				if (log.isEnabled(Level.ERROR))
-					log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception:", e);
-				return true;
+				log.fatal("ERROR: Database error during database transaction, saveDMPDataPart aborted - Exception:", () -> e);
+				throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+				    DataWizErrorCodes.DATABASE_ERROR);
 			}
 		} else {
 			for (ObjectError error : bResTmp.getAllErrors()) {
 				bRes.addError(error);
 			}
-			if (log.isEnabled(Level.INFO)) {
-				log.info("Validation Errors for cat: " + cat.toString());
-				bRes.reject("globalErrors",
-				    messageSource.getMessage("dmp.edit." + cat.name().toLowerCase() + ".globalerror.valid", null, LocaleContextHolder.getLocale()));
-			}
-			return true;
-		}
-		if (changed <= 0) {
 			bRes.reject("globalErrors",
-			    messageSource.getMessage("dmp.edit." + cat.name().toLowerCase() + ".globalerror.save", null, LocaleContextHolder.getLocale()));
-			return true;
+			    messageSource.getMessage("dmp.edit." + cat.name().toLowerCase() + ".globalerror.valid", null, LocaleContextHolder.getLocale()));
 		}
-		return false;
 	}
 
 	/**
 	 * 
 	 * @param pForm
-	 * @param changed
 	 * @param cat
 	 * @throws Exception
 	 */
-	private void updateFormTypes(ProjectForm pForm, int changed, DmpCategory cat) throws Exception {
-		if (changed > 0) {
-			if (cat.equals(DmpCategory.RESEARCH)) {
-				List<Integer> datatypes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.DATATYPE, false);
-				if (datatypes != null && datatypes.size() > 0) {
-					formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), datatypes, false);
-				}
-				if (pForm.getDmp().getUsedDataTypes() != null && pForm.getDmp().getUsedDataTypes().size() > 0) {
-					formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedDataTypes(), false);
-				}
-				List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.COLLECTIONMODE, false);
-				if (collectionModes != null && collectionModes.size() > 0) {
-					formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), collectionModes, false);
-				}
-				if (pForm.getDmp().getUsedCollectionModes() != null && pForm.getDmp().getUsedCollectionModes().size() > 0) {
-					formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedCollectionModes(), false);
-				}
-			} else if (cat.equals(DmpCategory.META)) {
-				List<Integer> metaporpose = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.METAPORPOSE, false);
-				if (metaporpose != null && metaporpose.size() > 0) {
-					formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), metaporpose, false);
-				}
-				if (pForm.getDmp().getSelectedMetaPurposes() != null && pForm.getDmp().getSelectedMetaPurposes().size() > 0) {
-					formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getSelectedMetaPurposes(), false);
-				}
+	private void updateFormTypes(final ProjectForm pForm, final DmpCategory cat) throws Exception {
+		if (cat.equals(DmpCategory.RESEARCH)) {
+			List<Integer> datatypes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.DATATYPE, false);
+			if (datatypes != null && datatypes.size() > 0) {
+				formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), datatypes, false);
+			}
+			if (pForm.getDmp().getUsedDataTypes() != null && pForm.getDmp().getUsedDataTypes().size() > 0) {
+				formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedDataTypes(), false);
+			}
+			List<Integer> collectionModes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.COLLECTIONMODE, false);
+			if (collectionModes != null && collectionModes.size() > 0) {
+				formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), collectionModes, false);
+			}
+			if (pForm.getDmp().getUsedCollectionModes() != null && pForm.getDmp().getUsedCollectionModes().size() > 0) {
+				formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getUsedCollectionModes(), false);
+			}
+		} else if (cat.equals(DmpCategory.META)) {
+			List<Integer> metaporpose = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.METAPORPOSE, false);
+			if (metaporpose != null && metaporpose.size() > 0) {
+				formTypeDAO.deleteSelectedFormType(pForm.getDmp().getId(), metaporpose, false);
+			}
+			if (pForm.getDmp().getSelectedMetaPurposes() != null && pForm.getDmp().getSelectedMetaPurposes().size() > 0) {
+				formTypeDAO.insertSelectedFormType(pForm.getDmp().getId(), pForm.getDmp().getSelectedMetaPurposes(), false);
 			}
 		}
 	}

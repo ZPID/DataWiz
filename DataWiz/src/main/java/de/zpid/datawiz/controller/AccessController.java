@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.mail.MessagingException;
@@ -114,7 +115,7 @@ public class AccessController {
 		}
 		final UserDTO user = UserUtil.getCurrentUser();
 		if (user == null) {
-			log.warn("Auth User Object == null - redirect to login");
+			log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
 			return "redirect:/login";
 		}
 		final ProjectForm pForm = createProjectForm();

@@ -1,6 +1,7 @@
 package de.zpid.datawiz.controller;
 
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -108,7 +109,7 @@ public class UserController {
 			return "redirect:/panel";
 		}
 		if (user == null) {
-			log.warn("Auth User Object == null - redirect to login");
+			log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
 			return "redirect:/login";
 		}
 		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.USERSETTING, null, null, messageSource));

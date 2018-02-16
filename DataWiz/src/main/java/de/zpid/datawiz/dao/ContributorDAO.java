@@ -28,8 +28,7 @@ import de.zpid.datawiz.dto.ProjectDTO;
 /**
  * This file is part of Datawiz
  * 
- * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
  * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
  * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
@@ -78,9 +77,8 @@ public class ContributorDAO {
 	 */
 	public List<ContributorDTO> findByProject(final ProjectDTO project, final boolean withStudy, final boolean withPrimary) throws Exception {
 		log.trace("Entering getByProject for project [id: {}]", () -> project.getId());
-		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
-		    + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE " + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ")
-		    + (withPrimary ? "" : "dw_contributors.primaryContributor IS FALSE AND ")
+		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors " + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+		    + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ") + (withPrimary ? "" : "dw_contributors.primaryContributor IS FALSE AND ")
 		    + "dw_study_contributors.project_id = ? ORDER BY dw_contributors.sort ASC";
 		List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<ContributorDTO>() {
 			public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -101,8 +99,7 @@ public class ContributorDAO {
 	 */
 	public List<ContributorDTO> findByStudy(final long studyId) throws Exception {
 		log.trace("Entering findByStudy for project [id: {}]", () -> studyId);
-		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
-		    + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors " + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
 		    + "dw_study_contributors.study_id = ? ORDER BY dw_contributors.id DESC";
 		List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { studyId }, new RowMapper<ContributorDTO>() {
 			public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -123,8 +120,7 @@ public class ContributorDAO {
 	 */
 	public ContributorDTO findPrimaryContributorByProject(ProjectDTO project) throws Exception {
 		log.trace("Entering findPrimaryContributorByProject for project [id: {}, name: {}]", () -> project.getId(), () -> project.getTitle());
-		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
-		    + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors " + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
 		    + "dw_contributors.primaryContributor IS TRUE AND dw_study_contributors.project_id = ?";
 		ContributorDTO contri = jdbcTemplate.query(sql, new Object[] { project.getId() }, new ResultSetExtractor<ContributorDTO>() {
 			@Override
@@ -149,8 +145,7 @@ public class ContributorDAO {
 	 */
 	public int deleteFromProject(ContributorDTO contri) throws Exception {
 		log.trace("execute deleteFromProject [projectId: {}; contributorId: {}]", () -> contri.getProjectId(), () -> contri.getId());
-		int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?", contri.getProjectId(),
-		    contri.getId());
+		int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?", contri.getProjectId(), contri.getId());
 		log.debug("leaving deleteFromProject with result: [success: {}]", () -> chk);
 		return chk;
 	}
@@ -269,8 +264,7 @@ public class ContributorDAO {
 	 */
 	public int insertProjectRelation(ContributorDTO contri) throws Exception {
 		log.trace("execute insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
-		int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)", contri.getProjectId(),
-		    contri.getId());
+		int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)", contri.getProjectId(), contri.getId());
 		log.trace("leaving insertIntoProject with result: [success: {}]", () -> ret);
 		return ret;
 	}
@@ -286,8 +280,8 @@ public class ContributorDAO {
 	public int updateContributor(ContributorDTO contri) throws Exception {
 		log.trace("execute updateContributor [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
 		int ret = this.jdbcTemplate.update(
-		    "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ? WHERE dw_contributors.id = ?",
-		    contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(), contri.getOrcid(),
+		    "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ?, sort = ? WHERE dw_contributors.id = ?",
+		    contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(), contri.getOrcid(), contri.getSort(),
 		    contri.getId());
 		log.trace("leaving updateContributor with result: [success: {}]", () -> ret);
 		return ret;
@@ -313,6 +307,7 @@ public class ContributorDAO {
 		contri.setDepartment(rs.getString("department"));
 		contri.setOrcid(rs.getString("orcid"));
 		contri.setPrimaryContributor(rs.getBoolean("primaryContributor"));
+		contri.setSort(rs.getInt("sort"));
 		return contri;
 	}
 

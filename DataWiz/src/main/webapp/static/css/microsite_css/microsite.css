@@ -3,9 +3,9 @@
   /* main violet */
   --lg_ms_color_violet: #352071;
   /* standard text font size */ 
-  --lg_ms_font_size: 1.35em;
+  --lg_ms_font_size: 1.2em;
   /* standard h3 font size */ 
-  --lg_ms_h3_font_size: 1.8em;
+  --lg_ms_h3_font_size: 1.6em;
   /* standard line height */ 
   --lg_ms_line_height: 1.6em;
   /* content width for resolution > 1170px */ 
@@ -95,7 +95,7 @@
 #lp_ms_header_2_logo a:hover,
 #lp_ms_header_2_logo a:active,
 #lp_ms_header_2_logo a:visited{
-  font-size: 3.2em;
+  font-size: 3em;
   font-family: 'Zilla Slab', serif;
   color: white;
   text-decoration: none;  

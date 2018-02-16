@@ -6,6 +6,8 @@ html {
 
 body {
   font-family: 'Montserrat', sans-serif;
+  font-size: 1.3em !important;
+  line-height: 1.3em;
 }
 
 .dropzone .dz-preview .dz-error-message {
@@ -30,9 +32,6 @@ body, #mainWrapper {
   background-color: #fff;
 }
 
-body, #mainWrapper, .form-control {
-  font-size: 1.1em !important;
-}
 /**************** END DOC SETTINGS ****************/
 /**************** START HEADER ****************/
 #logo2 {
@@ -66,8 +65,24 @@ body, #mainWrapper, .form-control {
   border-style: solid;
 }
 
+.page_headline_h{
+  font-size: 1.65em;
+  font-weight: 400;
+  color: #352071;
+  font-family: 'Zilla Slab', serif;
+}
+
+.btn-line{
+  margin: 10px 0px 10px 0px;
+  min-height: 30px;
+}
+
+.page_headline_p{
+  text-align: justify;
+}
+
 .divTableHeading {
-  background-color: #286090;
+  background-color: #0097c6;
   display: table-header-group;
   font-weight: bold;
   color: white;
@@ -246,14 +261,17 @@ label.btn::after {
 
 .breadcrumb {
   position: absolute;
-  top: 10px;
-  font-size: 1.4em;
+  top: 15px;
+  font-size: 1.2em;
   background-color: inherit;
+  font-family: 'Zilla Slab', serif;
 }
 
 .navbar-right {
-  padding-top: 5px;
-  font-size: 1.4em;
+  position: relative;
+  top: 6px;
+  font-size: 1.2em;
+  font-family: 'Zilla Slab', serif;
   background-color: inherit;
 }
 

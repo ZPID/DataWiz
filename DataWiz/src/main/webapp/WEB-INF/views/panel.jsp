@@ -13,7 +13,7 @@
             </h4>
           </div>
           <div class="col-xs-4 col-sm-2 text-align-right">
-            <a href="${projectUrl}/" class="btn btn-info btn-sm"><s:message code="project.create.button" /></a>
+            <a href="${projectUrl}" class="btn btn-info btn-sm"><s:message code="project.create.button" /></a>
           </div>
         </div>
         <div>
@@ -148,7 +148,7 @@
                                       </c:when>
                                     </c:choose>
                                   </c:if>
-                                  <div class="panel  <s:message text="${sRole}"/> studyFilter"
+                                  <div class="bg_hoover panel  <s:message text="${sRole}"/> studyFilter"
                                     onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
                                     style="cursor: pointer;">
                                     <div class="panel-heading studyTitleFilter">
@@ -217,7 +217,7 @@
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default">
+                        <div class="panel panel-default" >
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
                             style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.shared.showhide" /></strong>
@@ -267,7 +267,7 @@
               </div>
               <div class="panel-footer">
                 <div class="row">
-                  <div class="col-sm-12 text-align-right">
+                  <div class="col-lg-10 col-md-9 col-sm-7 col-xs-12 text-align-left">
                     <c:choose>
                       <c:when test="${not empty form.studies[0] && form.studies.size() > 0 }">
                         <c:forEach items="${form.sharedUser}" var="user">
@@ -292,6 +292,10 @@
                         <s:message code="panel.created" arguments="${strDate}" htmlEscape="false" argumentSeparator=";" />
                       </c:otherwise>
                     </c:choose>
+                  </div>
+                  <div class="col-lg-2 col-md-3 col-sm-5 col-xs-12 text-align-right">
+                    <div class="btn btn-info btn-xs"
+                      onclick="location.href='<c:url value="project/${form.project.id}/"/>';" style="cursor: pointer;">Ansehen/Bearbeiten</div>
                   </div>
                 </div>
                 <c:set var="shared" value="" />
