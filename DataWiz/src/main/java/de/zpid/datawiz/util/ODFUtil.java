@@ -1478,106 +1478,159 @@ public class ODFUtil {
 			table.getCellRangeByPosition(1, 64, 1, 66).merge();
 			table.getCellRangeByPosition(0, 67, 0, 68).merge();
 			table.getCellRangeByPosition(1, 67, 1, 68).merge();
-			
+
 			// inhalt
-			createCell(table, 0, 0, messageSource.getMessage("export.odt.PsychData.pd", null, locale), regular_bold, new Color(190, 190, 190), locale);
-			createCell(table, 2, 0, messageSource.getMessage("export.odt.PsychData.dw", null, locale), regular_bold, new Color(190, 190, 190), locale);
-			createCell(table, 0, 1, messageSource.getMessage("export.odt.PsychData.th1", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 1, 1, messageSource.getMessage("export.odt.PsychData.th2", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 2, 1, messageSource.getMessage("export.odt.PsychData.th3", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 3, 1, messageSource.getMessage("export.odt.PsychData.th4", null, locale), regular_bold, new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.PsychData.td1", null, locale), regular, null, locale);
-			createCell(table, 1, 2, messageSource.getMessage("export.odt.PsychData.td2", null, locale), regular, null, locale);
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.PsychData.pd", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 2, 0, messageSource.getMessage("export.odt.PsychData.dw", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 0, 1, messageSource.getMessage("export.odt.PsychData.th1", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 1, 1, messageSource.getMessage("export.odt.PsychData.th2", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.PsychData.th3", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 3, 1, messageSource.getMessage("export.odt.PsychData.th4", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.PsychData.td1", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 2, messageSource.getMessage("export.odt.PsychData.td2", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 2, messageSource.getMessage("study.title", null, locale), regular, null, locale);
 			createCell(table, 3, 2, study.getTitle(), regular, null, locale);
-			createCell(table, 0, 3, messageSource.getMessage("export.odt.PsychData.td3", null, locale), regular, null, locale);
-			createCell(table, 1, 3, messageSource.getMessage("export.odt.PsychData.td4", null, locale), regular, null, locale);
+			createCell(table, 0, 3, messageSource.getMessage("export.odt.PsychData.td3", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 3, messageSource.getMessage("export.odt.PsychData.td4", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 3, messageSource.getMessage("study.transTitle", null, locale), regular, null, locale);
 			createCell(table, 3, 3, study.getTransTitle(), regular, null, locale);
-			createCell(table, 0, 4, messageSource.getMessage("export.odt.PsychData.td5", null, locale), regular, null, locale);
-			createCell(table, 1, 4, messageSource.getMessage("export.odt.PsychData.td6", null, locale), regular, null, locale);
-			createCell(table, 2, 4, messageSource.getMessage("study.contributors", null, locale), regular, null, locale);
+			createCell(table, 0, 4, messageSource.getMessage("export.odt.PsychData.td5", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 4, messageSource.getMessage("export.odt.PsychData.td6", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 4, messageSource.getMessage("study.contributors", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 4, study.getContributors(), regular, null, locale);
-			createCell(table, 0, 5, messageSource.getMessage("export.odt.PsychData.td7", null, locale), regular, null, locale);
-			createCell(table, 1, 5, messageSource.getMessage("export.odt.PsychData.td8", null, locale), regular, null, locale);
+			createCell(table, 0, 5, messageSource.getMessage("export.odt.PsychData.td7", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 5, messageSource.getMessage("export.odt.PsychData.td8", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 5, messageSource.getMessage("study.sAbstract", null, locale), regular, null, locale);
 			createCell(table, 3, 5, study.getsAbstract(), regular, null, locale);
-			createCell(table, 0, 6, messageSource.getMessage("export.odt.PsychData.td9", null, locale), regular, null, locale);
-			createCell(table, 1, 6, messageSource.getMessage("export.odt.PsychData.td10", null, locale), regular, null, locale);
-			createCell(table, 2, 6, messageSource.getMessage("study.sAbstractTrans", null, locale), regular, null, locale);
+			createCell(table, 0, 6, messageSource.getMessage("export.odt.PsychData.td9", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 6, messageSource.getMessage("export.odt.PsychData.td10", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 6, messageSource.getMessage("study.sAbstractTrans", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 6, study.getsAbstractTrans(), regular, null, locale);
-			createCell(table, 0, 7, messageSource.getMessage("export.odt.PsychData.td11", null, locale), regular, null, locale);
-			createCell(table, 1, 7, messageSource.getMessage("export.odt.PsychData.td12", null, locale), regular, null, locale);
+			createCell(table, 0, 7, messageSource.getMessage("export.odt.PsychData.td11", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 7, messageSource.getMessage("export.odt.PsychData.td12", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 7, messageSource.getMessage("study.completeSel", null, locale), regular, null, locale);
 			createCell(table, 3, 7, study.getCompleteSel(), regular, null, locale);
 			createCell(table, 2, 8, messageSource.getMessage("study.excerpt", null, locale), regular, null, locale);
 			createCell(table, 3, 8, study.getExcerpt(), regular, null, locale);
-			createCell(table, 0, 9, messageSource.getMessage("export.odt.PsychData.td13", null, locale), regular, null, locale);
-			createCell(table, 1, 9, messageSource.getMessage("export.odt.PsychData.td14", null, locale), regular, null, locale);
+			createCell(table, 0, 9, messageSource.getMessage("export.odt.PsychData.td13", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 9, messageSource.getMessage("export.odt.PsychData.td14", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 9, messageSource.getMessage("study.pubOnData", null, locale), regular, null, locale);
 			createCell(table, 3, 9, study.getPubOnData(), regular, null, locale);
-			createCell(table, 0, 10, messageSource.getMessage("export.odt.PsychData.td15", null, locale), regular, null, locale);
-			createCell(table, 1, 10, messageSource.getMessage("export.odt.PsychData.td16", null, locale), regular, null, locale);
+			createCell(table, 0, 10, messageSource.getMessage("export.odt.PsychData.td15", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 10, messageSource.getMessage("export.odt.PsychData.td16", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 10, messageSource.getMessage("study.objectives", null, locale), regular, null, locale);
 			createCell(table, 3, 10, study.getObjectives(), regular, null, locale);
-			createCell(table, 0, 11, messageSource.getMessage("export.odt.PsychData.td17", null, locale), regular, null, locale);
-			createCell(table, 1, 11, messageSource.getMessage("export.odt.PsychData.td18", null, locale), regular, null, locale);
-			createCell(table, 2, 11, messageSource.getMessage("study.repMeasures", null, locale), regular, null, locale);
+			createCell(table, 0, 11, messageSource.getMessage("export.odt.PsychData.td17", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 11, messageSource.getMessage("export.odt.PsychData.td18", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 11, messageSource.getMessage("study.repMeasures", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 11, study.getRepMeasures(), regular, null, locale);
-			createCell(table, 0, 12, messageSource.getMessage("export.odt.PsychData.td19", null, locale), regular, null, locale);
-			createCell(table, 1, 12, messageSource.getMessage("export.odt.PsychData.td20", null, locale), regular, null, locale);
+			createCell(table, 0, 12, messageSource.getMessage("export.odt.PsychData.td19", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 12, messageSource.getMessage("export.odt.PsychData.td20", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 12, messageSource.getMessage("study.timeDim", null, locale), regular, null, locale);
 			createCell(table, 3, 12, study.getTimeDim(), regular, null, locale);
-			createCell(table, 0, 13, messageSource.getMessage("export.odt.PsychData.td21", null, locale), regular, null, locale);
-			createCell(table, 1, 13, messageSource.getMessage("export.odt.PsychData.td22", null, locale), regular, null, locale);
-			createCell(table, 2, 13, messageSource.getMessage("study.intervention", null, locale), regular, null, locale);
-			createCell(table, 3, 13, messageSource.getMessage("export.odt.PsychData.td22.5", null, locale), regular, null, locale);
-			createCell(table, 2, 14, messageSource.getMessage("study.intervention.survey", null, locale), regular, null, locale);
+			createCell(table, 0, 13, messageSource.getMessage("export.odt.PsychData.td21", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 13, messageSource.getMessage("export.odt.PsychData.td22", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 13, messageSource.getMessage("study.intervention", null, locale), regular, null,
+					locale);
+			createCell(table, 3, 13, messageSource.getMessage("export.odt.PsychData.td22.5", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 14, messageSource.getMessage("study.intervention.survey", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 14, study.isSurveyIntervention(), regular, null, locale);
-			createCell(table, 2, 15, messageSource.getMessage("study.intervention.test", null, locale), regular, null, locale);
+			createCell(table, 2, 15, messageSource.getMessage("study.intervention.test", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 15, study.isTestIntervention(), regular, null, locale);
-			createCell(table, 2, 16, messageSource.getMessage("study.intervention.experimental", null, locale), regular, null, locale);
+			createCell(table, 2, 16, messageSource.getMessage("study.intervention.experimental", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 16, study.isExperimentalIntervention(), regular, null, locale);
-			createCell(table, 0, 17, messageSource.getMessage("export.odt.PsychData.td23", null, locale), regular, null, locale);
-			createCell(table, 1, 17, messageSource.getMessage("export.odt.PsychData.td24", null, locale), regular, null, locale);
-			createCell(table, 2, 17, messageSource.getMessage("study.interTypeExp", null, locale), regular, null, locale);
+			createCell(table, 0, 17, messageSource.getMessage("export.odt.PsychData.td23", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 17, messageSource.getMessage("export.odt.PsychData.td24", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 17, messageSource.getMessage("study.interTypeExp", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 17, study.getInterTypeExp(), regular, null, locale);
-			createCell(table, 2, 18, messageSource.getMessage("study.interTypeDes", null, locale), regular, null, locale);
+			createCell(table, 2, 18, messageSource.getMessage("study.interTypeDes", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 18, study.getInterTypeDes(), regular, null, locale);
-			createCell(table, 2, 19, messageSource.getMessage("study.interTypeLab", null, locale), regular, null, locale);
+			createCell(table, 2, 19, messageSource.getMessage("study.interTypeLab", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 19, study.getInterTypeLab(), regular, null, locale);
-			createCell(table, 2, 20, messageSource.getMessage("study.randomization", null, locale), regular, null, locale);
+			createCell(table, 2, 20, messageSource.getMessage("study.randomization", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 20, study.getRandomization(), regular, null, locale);
-			createCell(table, 0, 21, messageSource.getMessage("export.odt.PsychData.no.equivalent", null, locale), regular, new Color(210, 210, 210), locale);
+			createCell(table, 0, 21, messageSource.getMessage("export.odt.PsychData.no.equivalent", null, locale),
+					regular, new Color(210, 210, 210), locale);
 			createCell(table, 2, 21, messageSource.getMessage("study.measOcc", null, locale), regular, null, locale);
 			createCell(table, 3, 21, study.getMeasOcc(), regular, null, locale);
-			createCell(table, 0, 22, messageSource.getMessage("export.odt.PsychData.td23", null, locale), regular, null, locale);
-			createCell(table, 1, 22, messageSource.getMessage("export.odt.PsychData.td25", null, locale), regular, null, locale);
+			createCell(table, 0, 22, messageSource.getMessage("export.odt.PsychData.td23", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 22, messageSource.getMessage("export.odt.PsychData.td25", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 22, messageSource.getMessage("study.surveyType", null, locale), regular, null, locale);
 			createCell(table, 3, 22, study.getSurveyType(), regular, null, locale);
-			createCell(table, 0, 23, messageSource.getMessage("export.odt.PsychData.td26", null, locale), regular, null, locale);
-			createCell(table, 1, 23, messageSource.getMessage("export.odt.PsychData.td27", null, locale), regular, null, locale);
+			createCell(table, 0, 23, messageSource.getMessage("export.odt.PsychData.td26", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 23, messageSource.getMessage("export.odt.PsychData.td27", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 23, messageSource.getMessage("study.constructs", null, locale), regular, null, locale);
 			createCell(table, 3, 23, study.getConstructs(), regular, null, locale);
 			String constructnames = "";
 			String constructtypes = "";
 			String constructothers = "";
 			int index = 1;
-			for(StudyConstructDTO construct : study.getConstructs()) {
+			for (StudyConstructDTO construct : study.getConstructs()) {
 				constructnames = constructnames + index + ": " + construct.getName() + ". ";
 				constructtypes = constructtypes + index + ": " + construct.getType() + ". ";
 				constructothers = constructothers + index + ": " + construct.getOther() + ". ";
 				index = index + 1;
 			}
-			createCell(table, 2, 24, messageSource.getMessage("study.constructs.name", null, locale), regular, null, locale);
+			createCell(table, 2, 24, messageSource.getMessage("study.constructs.name", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 24, constructnames, regular, null, locale);
-			createCell(table, 2, 25, messageSource.getMessage("study.constructs.type", null, locale), regular, null, locale);
+			createCell(table, 2, 25, messageSource.getMessage("study.constructs.type", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 25, constructtypes, regular, null, locale);
-			createCell(table, 2, 26, messageSource.getMessage("study.constructs.other", null, locale), regular, null, locale);
+			createCell(table, 2, 26, messageSource.getMessage("study.constructs.other", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 26, constructothers, regular, null, locale);
-			createCell(table, 0, 27, messageSource.getMessage("export.odt.PsychData.td23", null, locale), regular, null, locale);
-			createCell(table, 1, 27, messageSource.getMessage("export.odt.PsychData.td28", null, locale), regular, null, locale);
-			createCell(table, 2, 27, messageSource.getMessage("study.instruments", null, locale), regular, null, locale);
+			createCell(table, 0, 27, messageSource.getMessage("export.odt.PsychData.td23", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 27, messageSource.getMessage("export.odt.PsychData.td28", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 27, messageSource.getMessage("study.instruments", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 27, study.getInstruments(), regular, null, locale);
 			String inids = "";
 			String intitles = "";
@@ -1592,7 +1645,7 @@ public class ODFUtil {
 			String invalidities = "";
 			String innorms = "";
 			index = 1;
-			for(StudyInstrumentDTO instrument : study.getInstruments()) {
+			for (StudyInstrumentDTO instrument : study.getInstruments()) {
 				inids = inids + index + ": " + instrument.getId() + ". ";
 				intitles = intitles + index + ": " + instrument.getTitle() + ". ";
 				inauthors = inauthors + index + ": " + instrument.getAuthor() + ". ";
@@ -1609,134 +1662,199 @@ public class ODFUtil {
 			}
 			createCell(table, 2, 28, messageSource.getMessage("study.instrument", null, locale), regular, null, locale);
 			createCell(table, 3, 28, inids, regular, null, locale);
-			createCell(table, 2, 29, messageSource.getMessage("study.instruments.title", null, locale), regular, null, locale);
+			createCell(table, 2, 29, messageSource.getMessage("study.instruments.title", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 29, intitles, regular, null, locale);
-			createCell(table, 2, 30, messageSource.getMessage("study.instruments.author", null, locale), regular, null, locale);
+			createCell(table, 2, 30, messageSource.getMessage("study.instruments.author", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 30, inauthors, regular, null, locale);
-			createCell(table, 2, 31, messageSource.getMessage("study.instruments.citation", null, locale), regular, null, locale);
+			createCell(table, 2, 31, messageSource.getMessage("study.instruments.citation", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 31, incitations, regular, null, locale);
-			createCell(table, 2, 32, messageSource.getMessage("study.instruments.summary", null, locale), regular, null, locale);
+			createCell(table, 2, 32, messageSource.getMessage("study.instruments.summary", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 32, insummaries, regular, null, locale);
-			createCell(table, 2, 33, messageSource.getMessage("study.instruments.theoHint", null, locale), regular, null, locale);
+			createCell(table, 2, 33, messageSource.getMessage("study.instruments.theoHint", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 33, intheohints, regular, null, locale);
-			createCell(table, 2, 34, messageSource.getMessage("study.instruments.structure", null, locale), regular, null, locale);
+			createCell(table, 2, 34, messageSource.getMessage("study.instruments.structure", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 34, instructures, regular, null, locale);
-			createCell(table, 2, 35, messageSource.getMessage("study.instruments.construction", null, locale), regular, null, locale);
+			createCell(table, 2, 35, messageSource.getMessage("study.instruments.construction", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 35, inconstructions, regular, null, locale);
-			createCell(table, 2, 36, messageSource.getMessage("study.instruments.objectivity", null, locale), regular, null, locale);
+			createCell(table, 2, 36, messageSource.getMessage("study.instruments.objectivity", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 36, inobjectivities, regular, null, locale);
-			createCell(table, 2, 37, messageSource.getMessage("study.instruments.reliability", null, locale), regular, null, locale);
+			createCell(table, 2, 37, messageSource.getMessage("study.instruments.reliability", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 37, inreliabilities, regular, null, locale);
-			createCell(table, 2, 38, messageSource.getMessage("study.instruments.validity", null, locale), regular, null, locale);
+			createCell(table, 2, 38, messageSource.getMessage("study.instruments.validity", null, locale), regular,
+					null, locale);
 			createCell(table, 3, 38, invalidities, regular, null, locale);
-			createCell(table, 2, 39, messageSource.getMessage("study.instruments.norm", null, locale), regular, null, locale);
+			createCell(table, 2, 39, messageSource.getMessage("study.instruments.norm", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 39, innorms, regular, null, locale);
-			createCell(table, 2, 40, messageSource.getMessage("study.description", null, locale), regular, null, locale);
+			createCell(table, 2, 40, messageSource.getMessage("study.description", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 40, study.getDescription(), regular, null, locale);
-			createCell(table, 0, 41, messageSource.getMessage("export.odt.PsychData.td30", null, locale), regular, null, locale);
-			createCell(table, 1, 41, messageSource.getMessage("export.odt.PsychData.td31", null, locale), regular, null, locale);
-			createCell(table, 2, 41, messageSource.getMessage("study.eligibilities", null, locale), regular, null, locale);
+			createCell(table, 0, 41, messageSource.getMessage("export.odt.PsychData.td30", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 41, messageSource.getMessage("export.odt.PsychData.td31", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 41, messageSource.getMessage("study.eligibilities", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 41, study.getEligibilities(), regular, null, locale);
 			createCell(table, 2, 42, messageSource.getMessage("study.population", null, locale), regular, null, locale);
-			createCell(table, 0, 43, messageSource.getMessage("export.odt.PsychData.td32", null, locale), regular, null, locale);
-			createCell(table, 1, 43, messageSource.getMessage("export.odt.PsychData.td33", null, locale), regular, null, locale);
+			createCell(table, 0, 43, messageSource.getMessage("export.odt.PsychData.td32", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 43, messageSource.getMessage("export.odt.PsychData.td33", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 43, messageSource.getMessage("study.sampleSize", null, locale), regular, null, locale);
 			createCell(table, 3, 43, study.getSampleSize(), regular, null, locale);
-			createCell(table, 0, 44, messageSource.getMessage("export.odt.PsychData.td34", null, locale), regular, null, locale);
-			createCell(table, 1, 44, messageSource.getMessage("export.odt.PsychData.td35", null, locale), regular, null, locale);
+			createCell(table, 0, 44, messageSource.getMessage("export.odt.PsychData.td34", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 44, messageSource.getMessage("export.odt.PsychData.td35", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 44, messageSource.getMessage("study.obsUnit", null, locale), regular, null, locale);
 			createCell(table, 3, 44, study.getObsUnit(), regular, null, locale);
-			createCell(table, 0, 45, messageSource.getMessage("export.odt.PsychData.td36", null, locale), regular, null, locale);
-			createCell(table, 1, 45, messageSource.getMessage("export.odt.PsychData.td37", null, locale), regular, null, locale);
+			createCell(table, 0, 45, messageSource.getMessage("export.odt.PsychData.td36", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 45, messageSource.getMessage("export.odt.PsychData.td37", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 45, messageSource.getMessage("study.sex", null, locale), regular, null, locale);
 			createCell(table, 3, 45, study.getSex(), regular, null, locale);
-			createCell(table, 0, 46, messageSource.getMessage("export.odt.PsychData.td38", null, locale), regular, null, locale);
-			createCell(table, 1, 46, messageSource.getMessage("export.odt.PsychData.td39", null, locale), regular, null, locale);
+			createCell(table, 0, 46, messageSource.getMessage("export.odt.PsychData.td38", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 46, messageSource.getMessage("export.odt.PsychData.td39", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 46, messageSource.getMessage("study.age", null, locale), regular, null, locale);
 			createCell(table, 3, 46, study.getAge(), regular, null, locale);
-			createCell(table, 0, 47, messageSource.getMessage("export.odt.PsychData.td40", null, locale), regular, null, locale);
-			createCell(table, 1, 47, messageSource.getMessage("export.odt.PsychData.td41", null, locale), regular, null, locale);
+			createCell(table, 0, 47, messageSource.getMessage("export.odt.PsychData.td40", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 47, messageSource.getMessage("export.odt.PsychData.td41", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 47, messageSource.getMessage("study.specGroups", null, locale), regular, null, locale);
 			createCell(table, 3, 47, study.getSpecGroups(), regular, null, locale);
-			createCell(table, 0, 48, messageSource.getMessage("export.odt.PsychData.td42", null, locale), regular, null, locale);
-			createCell(table, 1, 48, messageSource.getMessage("export.odt.PsychData.td43", null, locale), regular, null, locale);
+			createCell(table, 0, 48, messageSource.getMessage("export.odt.PsychData.td42", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 48, messageSource.getMessage("export.odt.PsychData.td43", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 48, messageSource.getMessage("study.country", null, locale), regular, null, locale);
 			createCell(table, 3, 48, study.getCountry(), regular, null, locale);
-			createCell(table, 0, 49, messageSource.getMessage("export.odt.PsychData.td44", null, locale), regular, null, locale);
-			createCell(table, 1, 49, messageSource.getMessage("export.odt.PsychData.td45", null, locale), regular, null, locale);
+			createCell(table, 0, 49, messageSource.getMessage("export.odt.PsychData.td44", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 49, messageSource.getMessage("export.odt.PsychData.td45", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 49, messageSource.getMessage("study.city", null, locale), regular, null, locale);
 			createCell(table, 3, 49, study.getCity(), regular, null, locale);
-			createCell(table, 0, 50, messageSource.getMessage("export.odt.PsychData.td46", null, locale), regular, null, locale);
-			createCell(table, 1, 50, messageSource.getMessage("export.odt.PsychData.td47", null, locale), regular, null, locale);
+			createCell(table, 0, 50, messageSource.getMessage("export.odt.PsychData.td46", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 50, messageSource.getMessage("export.odt.PsychData.td47", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 50, messageSource.getMessage("study.region", null, locale), regular, null, locale);
 			createCell(table, 3, 50, study.getRegion(), regular, null, locale);
-			createCell(table, 0, 51, messageSource.getMessage("export.odt.PsychData.td48", null, locale), regular, null, locale);
-			createCell(table, 1, 51, messageSource.getMessage("export.odt.PsychData.td49", null, locale), regular, null, locale);
+			createCell(table, 0, 51, messageSource.getMessage("export.odt.PsychData.td48", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 51, messageSource.getMessage("export.odt.PsychData.td49", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 51, messageSource.getMessage("study.dataRerun", null, locale), regular, null, locale);
 			createCell(table, 3, 51, study.getDataRerun(), regular, null, locale);
-			createCell(table, 0, 52, messageSource.getMessage("export.odt.PsychData.td50", null, locale), regular, null, locale);
-			createCell(table, 1, 52, messageSource.getMessage("export.odt.PsychData.td51", null, locale), regular, null, locale);
-			createCell(table, 2, 52, messageSource.getMessage("study.responsibility", null, locale), regular, null, locale);
+			createCell(table, 0, 52, messageSource.getMessage("export.odt.PsychData.td50", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 52, messageSource.getMessage("export.odt.PsychData.td51", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 52, messageSource.getMessage("study.responsibility", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 52, study.getResponsibility(), regular, null, locale);
-			createCell(table, 0, 53, messageSource.getMessage("export.odt.PsychData.td52", null, locale), regular, null, locale);
-			createCell(table, 1, 53, messageSource.getMessage("export.odt.PsychData.td53", null, locale), regular, null, locale);
+			createCell(table, 0, 53, messageSource.getMessage("export.odt.PsychData.td52", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 53, messageSource.getMessage("export.odt.PsychData.td53", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 53, messageSource.getMessage("study.collStart", null, locale), regular, null, locale);
 			createCell(table, 3, 53, study.getCollStart(), regular, null, locale);
-			createCell(table, 0, 54, messageSource.getMessage("export.odt.PsychData.td54", null, locale), regular, null, locale);
-			createCell(table, 1, 54, messageSource.getMessage("export.odt.PsychData.td55", null, locale), regular, null, locale);
+			createCell(table, 0, 54, messageSource.getMessage("export.odt.PsychData.td54", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 54, messageSource.getMessage("export.odt.PsychData.td55", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 54, messageSource.getMessage("study.collEnd", null, locale), regular, null, locale);
 			createCell(table, 3, 54, study.getCollEnd(), regular, null, locale);
-			createCell(table, 0, 55, messageSource.getMessage("export.odt.PsychData.td56", null, locale), regular, null, locale);
-			createCell(table, 1, 54, messageSource.getMessage("export.odt.PsychData.td57", null, locale), regular, null, locale);
-			createCell(table, 2, 54, messageSource.getMessage("study.usedCollectionModes", null, locale), regular, null, locale);
+			createCell(table, 0, 55, messageSource.getMessage("export.odt.PsychData.td56", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 54, messageSource.getMessage("export.odt.PsychData.td57", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 54, messageSource.getMessage("study.usedCollectionModes", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 55, study.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 0, 56, messageSource.getMessage("export.odt.PsychData.td58", null, locale), regular, null, locale);
-			createCell(table, 1, 56, messageSource.getMessage("export.odt.PsychData.td59", null, locale), regular, null, locale);
+			createCell(table, 0, 56, messageSource.getMessage("export.odt.PsychData.td58", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 56, messageSource.getMessage("export.odt.PsychData.td59", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 56, messageSource.getMessage("study.sampMethod", null, locale), regular, null, locale);
 			createCell(table, 3, 56, study.getSampMethod(), regular, null, locale);
-			createCell(table, 0, 57, messageSource.getMessage("export.odt.PsychData.td60", null, locale), regular, null, locale);
-			createCell(table, 1, 57, messageSource.getMessage("export.odt.PsychData.td61", null, locale), regular, null, locale);
+			createCell(table, 0, 57, messageSource.getMessage("export.odt.PsychData.td60", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 57, messageSource.getMessage("export.odt.PsychData.td61", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 57, messageSource.getMessage("study.recruiting", null, locale), regular, null, locale);
 			createCell(table, 3, 57, study.getRecruiting(), regular, null, locale);
-			createCell(table, 0, 58, messageSource.getMessage("export.odt.PsychData.td62", null, locale), regular, null, locale);
-			createCell(table, 1, 58, messageSource.getMessage("export.odt.PsychData.td63", null, locale), regular, null, locale);
-			createCell(table, 2, 58, messageSource.getMessage("study.usedSourFormat", null, locale), regular, null, locale);
+			createCell(table, 0, 58, messageSource.getMessage("export.odt.PsychData.td62", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 58, messageSource.getMessage("export.odt.PsychData.td63", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 58, messageSource.getMessage("study.usedSourFormat", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 58, study.getUsedSourFormat(), regular, null, locale);
-			createCell(table, 0, 59, messageSource.getMessage("export.odt.PsychData.td64", null, locale), regular, null, locale);
-			createCell(table, 1, 59, messageSource.getMessage("export.odt.PsychData.td65", null, locale), regular, null, locale);
+			createCell(table, 0, 59, messageSource.getMessage("export.odt.PsychData.td64", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 59, messageSource.getMessage("export.odt.PsychData.td65", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 59, messageSource.getMessage("study.sourTrans", null, locale), regular, null, locale);
 			createCell(table, 3, 59, study.getSourTrans(), regular, null, locale);
-			createCell(table, 0, 60, messageSource.getMessage("export.odt.PsychData.td66", null, locale), regular, null, locale);
-			createCell(table, 1, 60, messageSource.getMessage("export.odt.PsychData.td67", null, locale), regular, null, locale);
+			createCell(table, 0, 60, messageSource.getMessage("export.odt.PsychData.td66", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 60, messageSource.getMessage("export.odt.PsychData.td67", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 60, messageSource.getMessage("study.specCirc", null, locale), regular, null, locale);
 			createCell(table, 3, 60, study.getSpecCirc(), regular, null, locale);
-			createCell(table, 0, 61, messageSource.getMessage("export.odt.PsychData.td68", null, locale), regular, null, locale);
-			createCell(table, 1, 61, messageSource.getMessage("export.odt.PsychData.td69", null, locale), regular, null, locale);
+			createCell(table, 0, 61, messageSource.getMessage("export.odt.PsychData.td68", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 61, messageSource.getMessage("export.odt.PsychData.td69", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 61, messageSource.getMessage("study.transDescr", null, locale), regular, null, locale);
 			createCell(table, 3, 61, study.getTransDescr(), regular, null, locale);
-			createCell(table, 0, 62, messageSource.getMessage("export.odt.PsychData.td70", null, locale), regular, null, locale);
-			createCell(table, 1, 62, messageSource.getMessage("export.odt.PsychData.td71", null, locale), regular, null, locale);
+			createCell(table, 0, 62, messageSource.getMessage("export.odt.PsychData.td70", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 62, messageSource.getMessage("export.odt.PsychData.td71", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 62, messageSource.getMessage("study.qualInd", null, locale), regular, null, locale);
 			createCell(table, 3, 62, study.getQualInd(), regular, null, locale);
 			createCell(table, 2, 63, messageSource.getMessage("study.qualLim", null, locale), regular, null, locale);
 			createCell(table, 3, 63, study.getQualLim(), regular, null, locale);
-			createCell(table, 0, 64, messageSource.getMessage("export.odt.PsychData.td72", null, locale), regular, null, locale);
-			createCell(table, 1, 64, messageSource.getMessage("export.odt.PsychData.td73", null, locale), regular, null, locale);
-			createCell(table, 2, 64, messageSource.getMessage("study.persDataColl", null, locale), regular, null, locale);
+			createCell(table, 0, 64, messageSource.getMessage("export.odt.PsychData.td72", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 64, messageSource.getMessage("export.odt.PsychData.td73", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 64, messageSource.getMessage("study.persDataColl", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 64, study.isPersDataColl(), regular, null, locale);
-			createCell(table, 2, 65, messageSource.getMessage("study.persDataPres", null, locale), regular, null, locale);
+			createCell(table, 2, 65, messageSource.getMessage("study.persDataPres", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 65, study.getPersDataPres(), regular, null, locale);
 			createCell(table, 2, 66, messageSource.getMessage("study.anonymProc", null, locale), regular, null, locale);
 			createCell(table, 3, 66, study.getAnonymProc(), regular, null, locale);
-			createCell(table, 0, 67, messageSource.getMessage("export.odt.PsychData.td74", null, locale), regular, null, locale);
-			createCell(table, 1, 67, messageSource.getMessage("export.odt.PsychData.td75", null, locale), regular, null, locale);
+			createCell(table, 0, 67, messageSource.getMessage("export.odt.PsychData.td74", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 67, messageSource.getMessage("export.odt.PsychData.td75", null, locale), regular, null,
+					locale);
 			createCell(table, 2, 67, messageSource.getMessage("study.copyright", null, locale), regular, null, locale);
 			createCell(table, 3, 67, study.isCopyright(), regular, null, locale);
-			createCell(table, 2, 68, messageSource.getMessage("study.copyrightHolder", null, locale), regular, null, locale);
+			createCell(table, 2, 68, messageSource.getMessage("study.copyrightHolder", null, locale), regular, null,
+					locale);
 			createCell(table, 3, 68, study.getCopyrightHolder(), regular, null, locale);
-			
+
 			doc.addColumnBreak();
-			
+
 			doc.addParagraph(messageSource.getMessage("export.odt.PsychData.ft1h", null, locale)).setFont(blue_large);
 			doc.addColumnBreak();
 			par = doc.addParagraph(messageSource.getMessage("export.odt.PsychData.ft1", null, locale));
@@ -1744,11 +1862,10 @@ public class ODFUtil {
 			par.appendHyperlink(messageSource.getMessage("export.odt.PsychData.ft1li", null, locale),
 					new URI(messageSource.getMessage("export.odt.PsychData.ft1li", null, locale)));
 			doc.addColumnBreak();
-			
 
 			doc.save(baos);
 			doc.close();
-			log.trace("Leaving createPsychdataDocc");
+			log.trace("Leaving createPsychdataDoc");
 			return baos.toByteArray();
 		} else {
 			log.warn("Error during createPsychdataDoc - Study is null");
@@ -1778,15 +1895,107 @@ public class ODFUtil {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			TextDocument doc = TextDocument.newTextDocument();
 
-			/**
-			 * TODO
-			 */
+			// Erste Seite
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zpid", null, locale)).setFont(blue_reg);
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.headline", null, locale)).setFont(headline);
+			doc.addColumnBreak();
+			Paragraph par = doc.addParagraph(messageSource.getMessage("export.odt.Pre.subline", null, locale));
+			par.setFont(blue_reg);
+			// Masterpage
+			MasterPage master = MasterPage.getOrCreateMasterPage(doc, "Preregistration");
+			master.setNumberFormat(NumberFormat.HINDU_ARABIC_NUMBER.toString());
+			// master.setMargins(15, 15, 15, 15);
+			doc.addPageBreak(par, master);
+			// Zweite Seite
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu1h", null, locale)).setFont(blue_large);
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu1", null, locale)).setFont(regular);
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu2", null, locale)).setFont(regular);
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu2", null, locale)).setFont(regular);
+			doc.addColumnBreak();
+
+			Table table = doc.addTable(60, 3);
+			// merge
+			table.getCellRangeByPosition(0, 0, 0, 1).merge();
+			table.getCellRangeByPosition(1, 0, 2, 0).merge();
+			table.getCellRangeByPosition(0, 2, 0, 7).merge();
+			table.getCellRangeByPosition(0, 8, 0, 9).merge();
+			table.getCellRangeByPosition(0, 10, 0, 17).merge();
+			// inhalt
+			createCell(table, 0, 0, messageSource.getMessage("export.odt.Pre.th1", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 1, 0, messageSource.getMessage("export.odt.Pre.dw", null, locale), regular_bold,
+					new Color(190, 190, 190), locale);
+			createCell(table, 1, 1, messageSource.getMessage("export.odt.Pre.th2", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 2, 1, messageSource.getMessage("export.odt.Pre.th2", null, locale), regular_bold,
+					new Color(210, 210, 210), locale);
+			createCell(table, 0, 2, messageSource.getMessage("export.odt.Pre.td1", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 2, messageSource.getMessage("study.title", null, locale), regular, null, locale);
+			createCell(table, 2, 2, study.getTitle(), regular, null, locale);
+			createCell(table, 1, 3, messageSource.getMessage("study.transTitle", null, locale), regular, null, locale);
+			createCell(table, 2, 3, study.getTransTitle(), regular, null, locale);
+			createCell(table, 1, 4, messageSource.getMessage("study.sAbstract", null, locale), regular, null, locale);
+			createCell(table, 2, 4, study.getsAbstract(), regular, null, locale);
+			createCell(table, 1, 5, messageSource.getMessage("study.sAbstractTrans", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 5, study.getsAbstractTrans(), regular, null, locale);
+			createCell(table, 1, 6, messageSource.getMessage("study.prevWork", null, locale), regular, null, locale);
+			createCell(table, 2, 6, study.getPrevWork(), regular, null, locale);
+			createCell(table, 1, 7, messageSource.getMessage("study.prevWorkStr", null, locale), regular, null, locale);
+			createCell(table, 2, 7, study.getPrevWorkStr(), regular, null, locale);
+			createCell(table, 0, 8, messageSource.getMessage("export.odt.Pre.td2", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 8, messageSource.getMessage("study.objectives", null, locale), regular, null, locale);
+			createCell(table, 2, 8, study.getObjectives(), regular, null, locale);
+			createCell(table, 1, 9, messageSource.getMessage("study.relTheorys", null, locale), regular, null, locale);
+			createCell(table, 2, 9, study.getRelTheorys(), regular, null, locale);
+			createCell(table, 0, 10, messageSource.getMessage("export.odt.Pre.td3", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 10, messageSource.getMessage("study.intervention", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 10, messageSource.getMessage("export.odt.Pre.tdh", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 11, messageSource.getMessage("study.intervention.experimental", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 11, study.getInterTypeExp(), regular, null, locale);
+			createCell(table, 1, 12, messageSource.getMessage("study.intervention.survey", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 12, study.getInterTypeDes(), regular, null, locale);
+			createCell(table, 1, 13, messageSource.getMessage("study.intervention.test", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 13, study.getInterTypeLab(), regular, null, locale);
+			String constructnames = "";
+			String constructtypes = "";
+			String constructothers = "";
+			int index = 1;
+			for (StudyConstructDTO construct : study.getConstructs()) {
+				constructnames = constructnames + index + ": " + construct.getName() + ". ";
+				constructtypes = constructtypes + index + ": " + construct.getType() + ". ";
+				constructothers = constructothers + index + ": " + construct.getOther() + ". ";
+				index = index + 1;
+			}
+			createCell(table, 1, 14, messageSource.getMessage("study.constructs", null, locale), regular, null, locale);
+			createCell(table, 2, 14, study.getConstructs(), regular, null, locale);
+			createCell(table, 1, 15, messageSource.getMessage("study.constructs.name", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 15, constructnames, regular, null, locale);
+			createCell(table, 1, 16, messageSource.getMessage("study.constructs.type", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 16, constructtypes, regular, null, locale);
+			createCell(table, 1, 17, messageSource.getMessage("study.constructs.other", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 17, constructothers, regular, null, locale);
 
 			doc.save(baos);
-			log.trace("Leaving createPsychdataDocc");
+			log.trace("Leaving createPreregistrationDoc");
 			return baos.toByteArray();
 		} else {
-			log.warn("Error during createPsychdataDoc - Study is null");
+			log.warn("Error during createPreregistrationDoc - Study is null");
 			throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
 					DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 		}
