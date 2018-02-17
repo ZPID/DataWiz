@@ -1992,6 +1992,7 @@ public class ODFUtil {
 			createCell(table, 2, 17, constructothers, regular, null, locale);
 
 			doc.save(baos);
+			doc.close();
 			log.trace("Leaving createPreregistrationDoc");
 			return baos.toByteArray();
 		} else {
