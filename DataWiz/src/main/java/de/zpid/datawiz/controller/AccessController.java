@@ -45,8 +45,7 @@ import de.zpid.datawiz.util.UserUtil;
 /**
  * This file is part of Datawiz.<br />
  * 
- * <b>Copyright 2016, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <b>Copyright 2016, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
  * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
  * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
@@ -122,8 +121,7 @@ public class AccessController {
 		String pName = "";
 		try {
 			user.setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
-			projectService.getProjectForm(pForm, projectId.get(), user, PageState.ACCESS,
-			    projectService.checkProjectRoles(user, projectId.get(), 0, false, false));
+			projectService.getProjectForm(pForm, projectId.get(), user, PageState.ACCESS, projectService.checkProjectRoles(user, projectId.get(), 0, false, false));
 			if (pForm.getProject() != null && pForm.getProject().getId() > 0) {
 				pForm.setSharedUser(userDAO.findGroupedByProject(pForm.getProject().getId()));
 				pForm.setRoleList(roleDAO.findAllProjectRoles());
@@ -202,7 +200,7 @@ public class AccessController {
 			return check;
 		}
 		try {
-			projectDAO.deleteInvitationEntree(projectId, mail);
+			projectDAO.deleteInvitationEntity(projectId, mail);
 		} catch (Exception e) {
 			log.error("ERROR: Database error during database transaction, deleteInvite aborted - Exception: ", e);
 			model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
@@ -223,8 +221,8 @@ public class AccessController {
 	 * @return addUserToProject Method
 	 */
 	@RequestMapping(value = { "/{projectId}/resendInvite/{mail}" }, method = RequestMethod.GET)
-	public String resendInvite(final ModelMap model, @PathVariable final long projectId, @PathVariable final String mail,
-	    final RedirectAttributes reAtt, final boolean resend) {
+	public String resendInvite(final ModelMap model, @PathVariable final long projectId, @PathVariable final String mail, final RedirectAttributes reAtt,
+	    final boolean resend) {
 		log.trace("Entering resendInvite for project [id: {}] and user [mail: {}] ", () -> projectId, () -> mail);
 		final UserDTO admin = UserUtil.getCurrentUser();
 		final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
@@ -253,8 +251,8 @@ public class AccessController {
 	}
 
 	/**
-	 * Adds a user to project or sending a reminder mail if boolean resend is true. Checks if an user exists for the submitted mail address: if yes, a
-	 * project invitation is send to the user, if no, a datawiz invitation is sent to the submitted email
+	 * Adds a user to project or sending a reminder mail if boolean resend is true. Checks if an user exists for the submitted mail address: if yes, a project
+	 * invitation is send to the user, if no, a datawiz invitation is sent to the submitted email
 	 *
 	 * @param pForm
 	 * @param projectId
@@ -264,8 +262,8 @@ public class AccessController {
 	 * @return redirect to access/{projectId} if successful and to access.jsp if an error has occurred
 	 */
 	@RequestMapping(value = { "/{projectId}" }, params = { "addUser" })
-	public String addUserToProject(@ModelAttribute("ProjectForm") final ProjectForm pForm, @PathVariable final long projectId,
-	    final RedirectAttributes reAtt, final BindingResult bRes, final boolean resend) {
+	public String addUserToProject(@ModelAttribute("ProjectForm") final ProjectForm pForm, @PathVariable final long projectId, final RedirectAttributes reAtt,
+	    final BindingResult bRes, final boolean resend) {
 		log.trace("Entering addUserToProject for project [id: {}]", () -> projectId);
 		final UserDTO admin = UserUtil.getCurrentUser();
 		final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
@@ -278,7 +276,7 @@ public class AccessController {
 		try {
 			user = userDAO.findByMail(pForm.getDelMail(), false);
 			if (resend != true)
-				projectDAO.insertInviteEntree(projectId, pForm.getDelMail(), admin.getEmail());
+				projectDAO.insertInviteEntity(projectId, pForm.getDelMail(), admin.getEmail());
 			linkhash = projectDAO.findValFromInviteData(pForm.getDelMail(), projectId, "linkhash");
 		} catch (Exception e) {
 			if (e instanceof DuplicateKeyException) {
@@ -316,19 +314,19 @@ public class AccessController {
 						    messageSource.getMessage(subject, new Object[] { pForm.getProject().getTitle() }, LocaleContextHolder.getLocale()),
 						    messageSource.getMessage(content, new Object[] { adminName, pForm.getProject().getTitle(), url }, LocaleContextHolder.getLocale()));
 					} catch (Exception e) {
-						projectDAO.deleteInvitationEntree(projectId, pForm.getDelMail());
+						projectDAO.deleteInvitationEntity(projectId, pForm.getDelMail());
 						log.error("ERROR: Mail error, Mail was not sent - Exception: {}", () -> e.getMessage());
 						bRes.reject("globalErrors", messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
 					}
 				} else {
 					log.warn("WARN: add User not successful something went wrot with the requestURL url: {}", url);
-					bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form",
-					    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+					bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+					    LocaleContextHolder.getLocale()));
 				}
 			} else {
 				log.warn("WARN: add User not successful because the hashcode is empty");
-				bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form",
-				    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+				bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+				    LocaleContextHolder.getLocale()));
 			}
 		}
 		if (bRes.hasErrors()) {
@@ -341,8 +339,7 @@ public class AccessController {
 
 	/**
 	 * This function is called from the invitation mail. <br />
-	 * Before it saves the REL_ROLE (Relation Role), it checks the project's availability and if the calling user equals the user of the link address
-	 * <br />
+	 * Before it saves the REL_ROLE (Relation Role), it checks the project's availability and if the calling user equals the user of the link address <br />
 	 * If the invitation is successful, a mail is sent to the inviting administrator, to remember him to add access rights to the new project user
 	 *
 	 * @param email
@@ -375,15 +372,14 @@ public class AccessController {
 					if (hash != null && !hash.isEmpty() && !linkhash.isEmpty() && linkhash.trim().equals(hash.trim())) {
 						UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), admin.getId(), projectId, 0, Roles.REL_ROLE.name());
 						roleDAO.saveRole(role);
-						projectDAO.deleteInvitationEntree(projectId, email);
+						projectDAO.deleteInvitationEntity(projectId, email);
 					}
 					StringBuffer url = request.getRequestURL();
 					url = url.delete(url.indexOf(request.getRequestURI()), url.length()).append(request.getContextPath());
 					EmailUtil mail = new EmailUtil(env);
 					mail.sendSSLMail(adminMail, messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
 					    messageSource.getMessage("accept.mail.admin.content",
-					        new Object[] { email, project.getTitle(), url.toString() + "/access/" + String.valueOf(project.getId()) },
-					        LocaleContextHolder.getLocale()));
+					        new Object[] { email, project.getTitle(), url.toString() + "/access/" + String.valueOf(project.getId()) }, LocaleContextHolder.getLocale()));
 					reAtt.addFlashAttribute("infoMSG", messageSource.getMessage("roles.success.accept", null, LocaleContextHolder.getLocale()));
 				} else {
 					reAtt.addFlashAttribute("infoMSG", messageSource.getMessage("roles.error.accept", null, LocaleContextHolder.getLocale()));
@@ -453,8 +449,8 @@ public class AccessController {
 			msgType = "errorMSG";
 			msgTxt = "project.access.denied";
 			log.error("ERROR: Database error during database transaction, role not deleted - Exception:", e);
-			model.put("errorMSG", messageSource.getMessage("roles.error.db", new Object[] { env.getRequiredProperty("organisation.admin.email") },
-			    LocaleContextHolder.getLocale()));
+			model.put("errorMSG",
+			    messageSource.getMessage("roles.error.db", new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
 			return "access";
 		}
 		reAtt.addFlashAttribute(msgType, messageSource.getMessage(msgTxt, null, LocaleContextHolder.getLocale()));
@@ -472,8 +468,8 @@ public class AccessController {
 	 * @return String
 	 */
 	@RequestMapping(value = { "/{projectId}" }, params = { "addRole" })
-	public String addRoleToProjectUser(@PathVariable final long projectId, @ModelAttribute("ProjectForm") final ProjectForm pForm,
-	    final RedirectAttributes reAtt, final BindingResult bRes) {
+	public String addRoleToProjectUser(@PathVariable final long projectId, @ModelAttribute("ProjectForm") final ProjectForm pForm, final RedirectAttributes reAtt,
+	    final BindingResult bRes) {
 		log.trace("Entering addRoleToProjectUser for Project [id:" + projectId + "]");
 		final UserDTO admin = UserUtil.getCurrentUser();
 		final String check = projectService.checkProjectAdmin(reAtt, projectId, admin);
@@ -533,20 +529,19 @@ public class AccessController {
 				}
 			} else {
 				log.warn("WARN: add Role not successful because role has no userid - role: {}", () -> newRole);
-				bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form",
-				    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+				bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+				    LocaleContextHolder.getLocale()));
 			}
 		} else {
 			log.warn("WARN: add Role not successful because ProjectForm is empty");
-			bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form",
-			    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
+			bRes.reject("globalErrors", messageSource.getMessage("roles.error.empty.form", new Object[] { env.getRequiredProperty("organisation.admin.email") },
+			    LocaleContextHolder.getLocale()));
 		}
 		if (bRes.hasErrors()) {
 			log.trace("Method addRoleToProjectUser completed with errors - return to access.jsp");
 			return "access";
 		}
-		reAtt.addFlashAttribute("infoMSG",
-		    messageSource.getMessage("roles.success.add.role", new Object[] { user.getEmail() }, LocaleContextHolder.getLocale()));
+		reAtt.addFlashAttribute("infoMSG", messageSource.getMessage("roles.success.add.role", new Object[] { user.getEmail() }, LocaleContextHolder.getLocale()));
 		log.trace("Method addRoleToProjectUser successfully completed");
 		return "redirect:/access/" + projectId;
 	}
@@ -570,8 +565,8 @@ public class AccessController {
 	}
 
 	/**
-	 * Checks if the new role has a higher priority as roles which are already set, because it is not useful to have global rights and additional study
-	 * rights for example
+	 * Checks if the new role has a higher priority as roles which are already set, because it is not useful to have global rights and additional study rights for
+	 * example
 	 * 
 	 * @param user
 	 * @param newRole
@@ -584,8 +579,7 @@ public class AccessController {
 			for (UserRoleDTO roleTmp : user.getGlobalRoles()) {
 				if (roleTmp.getProjectId() == newRole.getProjectId()) {
 					System.out.println(roleTmp);
-					if (newRole.getType().equals(Roles.PROJECT_ADMIN.name()) && !roleTmp.getType().equals(Roles.REL_ROLE.name())
-					    && roleTmp.getProjectId() > 0) {
+					if (newRole.getType().equals(Roles.PROJECT_ADMIN.name()) && !roleTmp.getType().equals(Roles.REL_ROLE.name()) && roleTmp.getProjectId() > 0) {
 						roleDAO.deleteRole(roleTmp);
 					} else if (newRole.getType().equals(Roles.PROJECT_READER.name()) && roleTmp.getType().equals(Roles.DS_READER.name())) {
 						roleDAO.deleteRole(roleTmp);

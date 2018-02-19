@@ -17,89 +17,98 @@ import org.springframework.stereotype.Repository;
 
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.dto.StudyDTO;
 
+/**
+ * This file is part of Datawiz
+ * 
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>. <br />
+ * <br />
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ */
 @Repository
 @Scope("singleton")
 public class FileDAO {
 
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
-	protected JdbcTemplate jdbcTemplate;
-
+	private JdbcTemplate jdbcTemplate;
 	private static Logger log = LogManager.getLogger(FileDAO.class);
 
+	/**
+	 * Instantiates a new file DAO.
+	 */
 	public FileDAO() {
 		super();
-		if (log.isInfoEnabled())
-			log.info("Loading FileDAO as Singleton and Service");
+		log.info("Loading FileDAO as Singleton and Service");
 	}
 
 	/**
+	 * This function searches for all matching project file entities in the table dmp_files by the passed identifiers.
 	 * 
-	 * @param project
-	 * @return
+	 * @param ProjectDTO
+	 *          ProjectDTO with the required project identifier
+	 * @return List of Files, which contains the selected subset
 	 * @throws Exception
 	 */
 	public List<FileDTO> findProjectMaterialFiles(final ProjectDTO project) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute getProjectFiles for project [id: " + project.getId() + " name: " + project.getTitle() + "]");
+		log.trace("Entering findProjectMaterialFiles for project [id: {}; name: {}]", () -> project.getId(), () -> project.getTitle());
 		String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id IS NULL "
 		    + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
-		return jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<FileDTO>() {
+		List<FileDTO> files = jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<FileDTO>() {
 			public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return setFileDTO(rs);
 			}
 		});
+		log.debug("Transaction \"findProjectMaterialFiles\" terminates with result: [length: {}]", () -> ((files != null) ? files.size() : "null"));
+		return files;
 	}
 
 	/**
+	 * This function searches for all matching study file entities in the table dmp_files by the passed identifiers.
 	 * 
-	 * @param project
-	 * @return
+	 * @param pid
+	 *          Project identifier
+	 * @param studyId
+	 *          Study identifier
+	 * @return List of Files, which contains the selected subset
 	 * @throws Exception
 	 */
-	public List<FileDTO> findStudyMaterialFiles(long pid, long studyId) throws Exception {
-		if (log.isDebugEnabled())
-			log.trace("execute findStudyMaterialFiles for project [id: {}] study[id: {}]", () -> pid, () -> studyId);
+	public List<FileDTO> findStudyMaterialFiles(final long pid, final long studyId) throws Exception {
+		log.trace("Entering findStudyMaterialFiles for study [id: {}; pid: {}]", () -> studyId, () -> pid);
 		String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id = ? "
 		    + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
-		return jdbcTemplate.query(sql, new Object[] { pid, studyId }, new RowMapper<FileDTO>() {
+		List<FileDTO> files = jdbcTemplate.query(sql, new Object[] { pid, studyId }, new RowMapper<FileDTO>() {
 			public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return setFileDTO(rs);
 			}
 		});
+		log.debug("Transaction \"findStudyMaterialFiles\" terminates with result: [length: {}]", () -> ((files != null) ? files.size() : "null"));
+		return files;
 	}
 
 	/**
-	 * 
-	 * @param project
-	 * @return
-	 * @throws Exception
-	 */
-	public List<FileDTO> findStudyMaterialFiles(final StudyDTO study) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute findStudyFiles for study [id: " + study.getId() + " name: " + study.getTitle() + "]");
-		String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id = ? "
-		    + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
-		return jdbcTemplate.query(sql, new Object[] { study.getProjectId(), study.getId() }, new RowMapper<FileDTO>() {
-			public FileDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return setFileDTO(rs);
-			}
-		});
-	}
-
-	/**
+	 * This function searches for a file entity in the table dmp_files by the passed identifier. If an entity has been found a FileDTO object will be returned,
+	 * otherwise null.
 	 * 
 	 * @param id
-	 * @return
+	 *          File identifier
+	 * @return FileDTO, which contains all attributes if entity has been found, otherwise null
 	 * @throws Exception
 	 */
 	public FileDTO findById(final long id) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute findById with id: " + id);
-		return jdbcTemplate.query("SELECT * FROM dw_files WHERE dw_files.id = ?", new Object[] { id }, new ResultSetExtractor<FileDTO>() {
+		log.trace("Entering findById for study [id: {}]", () -> id);
+		FileDTO file = jdbcTemplate.query("SELECT * FROM dw_files WHERE dw_files.id = ?", new Object[] { id }, new ResultSetExtractor<FileDTO>() {
 			@Override
 			public FileDTO extractData(ResultSet rs) throws SQLException, DataAccessException {
 				if (rs.next()) {
@@ -108,43 +117,54 @@ public class FileDAO {
 				return null;
 			}
 		});
+		log.debug("Transaction \"findById\" terminates with result: [file: {}]", () -> file);
+		return file;
 	}
 
 	/**
+	 * This function saves a new file entity into the table dw_files.
 	 * 
 	 * @param file
-	 * @return
+	 *          Contains all file attributes
+	 * @return 1 if changes have happened, otherwise 0
 	 * @throws Exception
 	 */
 	public int saveFile(final FileDTO file) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute saveFile file: " + file.getFileName());
-		return this.jdbcTemplate.update(
+		log.trace("Entering saveFile for file [{}]", () -> file);
+		int ret = this.jdbcTemplate.update(
 		    "INSERT INTO dw_files (project_id, study_id, record_id, version_id, user_id, name, size, contentType, sha1, sha256, md5, uploadDate, filePath) "
 		        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
 		    file.getProjectId(), file.getStudyId() == 0 ? null : file.getStudyId(), file.getRecordID() == 0 ? null : file.getRecordID(),
 		    file.getVersion() == 0 ? null : file.getVersion(), file.getUserId(), file.getFileName(), file.getFileSize(), file.getContentType(),
 		    file.getSha1Checksum(), file.getSha256Checksum(), file.getMd5checksum(), file.getUploadDate(), file.getFilePath());
+		log.debug("Transaction \"saveFile\" terminates with result: [result: {}]", () -> ret);
+		return ret;
 	}
 
 	/**
+	 * This function deletes a file entity from the table dw_files with the passed identifier.
 	 * 
 	 * @param id
-	 * @return
+	 *          File identifier
+	 * @return 1 if changes have happened, otherwise 0
 	 * @throws Exception
 	 */
 	public int deleteFile(final long id) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute deleteFile id: " + id);
-		return this.jdbcTemplate.update("DELETE FROM dw_files WHERE id = ? ", id);
+		log.trace("Entering deleteFile for file [id: {}]", () -> id);
+		int ret = this.jdbcTemplate.update("DELETE FROM dw_files WHERE id = ? ", id);
+		log.debug("Transaction \"deleteFile\" terminates with result: [result: {}]", () -> ret);
+		return ret;
 	}
 
 	/**
+	 * This function transfers the values from the ResultSet to a FileDTO
+	 * 
 	 * @param rs
-	 * @return
+	 *          ResultSet
+	 * @return FileDTO
 	 * @throws SQLException
 	 */
-	private FileDTO setFileDTO(ResultSet rs) throws SQLException {
+	private FileDTO setFileDTO(final ResultSet rs) throws SQLException {
 		FileDTO file = (FileDTO) applicationContext.getBean("FileDTO");
 		file.setId(rs.getInt("id"));
 		file.setProjectId(rs.getInt("project_id"));

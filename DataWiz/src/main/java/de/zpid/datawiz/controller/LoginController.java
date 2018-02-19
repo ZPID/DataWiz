@@ -217,7 +217,7 @@ public class LoginController {
 			if (chkmail != null && !chkmail.isEmpty() && projectId > 0) {
 				person.setSecEmail(null);
 				if (!chkmail.equals(person.getEmail())) {
-					projectDAO.updateInvitationEntree(projectId, chkmail, person.getEmail());
+					projectDAO.updateInvitationEntity(projectId, chkmail, person.getEmail());
 				}
 			}
 			person.setPassword(passwordEncoder.encode(person.getPassword()));
@@ -267,7 +267,7 @@ public class LoginController {
 				if (pid > 0) {
 					UserRoleDTO role = new UserRoleDTO(Roles.REL_ROLE.toInt(), user.getId(), pid, 0, Roles.REL_ROLE.name());
 					roleDAO.saveRole(role);
-					projectDAO.deleteInvitationEntree(pid, mail);
+					projectDAO.deleteInvitationEntity(pid, mail);
 				}
 			}
 			txManager.commit(status);

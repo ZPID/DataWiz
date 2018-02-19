@@ -153,7 +153,7 @@ public class ExportService {
 							studExp.setStudyId(study.getId());
 							studExp.setStudyTitle(study.getTitle());
 							studExp.setRecords(new ArrayList<>());
-							studExp.setMaterial(fileDAO.findStudyMaterialFiles(study));
+							studExp.setMaterial(fileDAO.findStudyMaterialFiles(study.getProjectId(), study.getId()));
 							List<RecordDTO> records = recordDAO.findRecordsWithStudyID(study.getId());
 							if (records != null) {
 								for (RecordDTO record : records) {
@@ -233,7 +233,7 @@ public class ExportService {
 								study.setTitle(studyDB.getTitle());
 							}
 							if (studyEx.isExportStudyMaterial()) {
-								sFiles = fileDAO.findStudyMaterialFiles(studyDB);
+								sFiles = fileDAO.findStudyMaterialFiles(study.getProjectId(), study.getId());
 								if (sFiles != null && sFiles.size() > 0) {
 									setAdditionalFilestoExportList(files, sFiles, studyFolder + FILES_PROJECT_FOLDER);
 									for (FileDTO file : sFiles) {
@@ -369,7 +369,7 @@ public class ExportService {
 									ContributorDTO primContri = pForm.getPrimaryContributor();
 									if (project != null) {
 										if (primContri == null || primContri.getId() == 0)
-											primContri = contributorDAO.findPrimaryContributorByProject(project);										
+											primContri = contributorDAO.findPrimaryContributorByProject(project);
 										recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
 										recordService.setCodebook(parsingErrors, recordDB, false);
 										files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_CODEBOOK_NAME_PDF,

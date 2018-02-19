@@ -237,7 +237,6 @@ public class ProjectController {
 					model.put("projectId", pid.get());
 					model.put("ProjectForm", pForm);
 					model.put("subnaviActive", PageState.MATERIAL.name());
-					model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
 				} catch (Exception e) {
 					log.warn("Error in setMaterialForm Message: ", () -> e);
 					exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "projectService.setMaterialForm");
