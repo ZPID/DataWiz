@@ -130,7 +130,7 @@ public class FileDAO {
 	 * @throws Exception
 	 */
 	public int saveFile(final FileDTO file) throws Exception {
-		log.trace("Entering saveFile for file [{}]", () -> file);
+		log.trace("Entering saveFile for file [name:{}]", () -> file.getFileName());
 		int ret = this.jdbcTemplate.update(
 		    "INSERT INTO dw_files (project_id, study_id, record_id, version_id, user_id, name, size, contentType, sha1, sha256, md5, uploadDate, filePath) "
 		        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",

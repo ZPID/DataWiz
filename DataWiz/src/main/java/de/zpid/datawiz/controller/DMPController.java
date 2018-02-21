@@ -99,7 +99,7 @@ public class DMPController {
 
 	/**
 	 * 
-	 * This function loads the DMP data for editing. Therefore, the pid is required. If no DMP is found with the given pid, or other errors occur, the
+	 * This function loads the DMP data for editing. Therefore, the pid is required. If no DMP has been found with the given pid, or other errors occur, the
 	 * exceptionService is called to handle the exceptions and redirect to the correct jsp.
 	 * 
 	 * @param pid

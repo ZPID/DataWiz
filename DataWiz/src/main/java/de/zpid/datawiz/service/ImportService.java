@@ -92,8 +92,8 @@ public class ImportService {
 	 * @param user
 	 * @throws DataWizSystemException
 	 */
-	public void importFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final StudyForm sForm,
-	    final UserDTO user) throws DataWizSystemException {
+	public void importFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, final StudyForm sForm, final UserDTO user)
+	    throws DataWizSystemException {
 		boolean error = false;
 		Set<String> warnings = new HashSet<>();
 		List<String> errors = new ArrayList<>();
@@ -108,8 +108,8 @@ public class ImportService {
 		}
 		if (file != null && file.length > 1)
 			fileType = file[file.length - 1].trim().toLowerCase();
-		if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null
-		    && sForm.getSpssFile().getSize() > 0 && fileType != null && fileType.equals("sav")) {
+		if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null && sForm.getSpssFile().getSize() > 0
+		    && fileType != null && fileType.equals("sav")) {
 			error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors, warnings);
 		} else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV") && sForm.getCsvFile() != null
 		    && sForm.getCsvFile().getSize() > 0 && fileType != null && (fileType.equals("csv") || fileType.equals("txt") || fileType.equals("dat"))) {
@@ -122,8 +122,9 @@ public class ImportService {
 			    messageSource.getMessage("logging.selected.file.empty", new Object[] { sForm.getSelectedFileType() }, LocaleContextHolder.getLocale()),
 			    DataWizErrorCodes.IMPORT_FILE_IS_EMPTY);
 		} else {
-			throw new DataWizSystemException(messageSource.getMessage("logging.selected.filetype.missmatch", new Object[] { sForm.getSelectedFileType() },
-			    LocaleContextHolder.getLocale()), DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED);
+			throw new DataWizSystemException(
+			    messageSource.getMessage("logging.selected.filetype.missmatch", new Object[] { sForm.getSelectedFileType() }, LocaleContextHolder.getLocale()),
+			    DataWizErrorCodes.IMPORT_TYPE_NOT_SUPPORTED);
 		}
 		sForm.setParsingError(error);
 		sForm.setErrors(errors);
@@ -166,17 +167,16 @@ public class ImportService {
 	 * @param errors
 	 * @param error
 	 */
-	public Boolean validateCSVFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm,
-	    final UserDTO user, Set<String> warnings, List<String> errors) {
+	public Boolean validateCSVFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm, final UserDTO user,
+	    Set<String> warnings, List<String> errors) {
 		FileDTO file = null;
 		boolean init = true, error = false;
 		try {
 			file = fileUtil.buildFileDTO(pid.get(), studyId.get(), recordId.get(), 0, user.getId(), sForm.getCsvFile());
 		} catch (Exception e) {
 			error = true;
-			log.error("Error creating FileDTO with input: [pid: {}; studyid: {}; recordid: {}; userid: {}; uploadedFile: {}]", () -> pid.get(),
-			    () -> studyId.get(), () -> recordId.get(), () -> 0, () -> user.getId(),
-			    () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getOriginalFilename(), () -> e);
+			log.error("Error creating FileDTO with input: [pid: {}; studyid: {}; recordid: {}; userid: {}; uploadedFile: {}]", () -> pid.get(), () -> studyId.get(),
+			    () -> recordId.get(), () -> 0, () -> user.getId(), () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getOriginalFilename(), () -> e);
 			errors.add(messageSource.getMessage("error.upload.creating.file", null, LocaleContextHolder.getLocale()));
 		}
 		if (!error) {
@@ -196,8 +196,8 @@ public class ImportService {
 				CSVParser parser = new CSVParserBuilder().withSeparator((sForm.getCsvSeperator() == 't' ? '\t' : sForm.getCsvSeperator()))
 				    .withQuoteChar(sForm.getCsvQuoteChar() == 'q' ? '\"' : '\'').build();
 				CSVReader reader = new CSVReaderBuilder(
-				    new BufferedReader(new InputStreamReader(sForm.getCsvFile().getInputStream(), ch != null ? ch : Charset.forName("UTF-8"))))
-				        .withCSVParser(parser).build();
+				    new BufferedReader(new InputStreamReader(sForm.getCsvFile().getInputStream(), ch != null ? ch : Charset.forName("UTF-8")))).withCSVParser(parser)
+				        .build();
 				String[] nextLine;
 				int numOfCol = 0, lineNumber = 1;
 				List<List<Object>> matrix = new ArrayList<>();
@@ -229,8 +229,7 @@ public class ImportService {
 							while (!store.add(changedName.toUpperCase())) {
 								changedName = s + "_" + varNum++;
 							}
-							warnings.add(
-							    messageSource.getMessage("warning.var.name.doublette", new Object[] { s, (i + 1), changedName }, LocaleContextHolder.getLocale()));
+							warnings.add(messageSource.getMessage("warning.var.name.doublette", new Object[] { s, (i + 1), changedName }, LocaleContextHolder.getLocale()));
 							s = changedName;
 						}
 						var.setName(s);
@@ -258,8 +257,8 @@ public class ImportService {
 					if (nextLine.length != numOfCol) {
 						log.debug("CSV File corrupt - Number of Cols incorrect in [line: {}; current colums: {}, 1st row colums: {}", lineNumber, nextLine.length,
 						    numOfCol);
-						errors.add(messageSource.getMessage("error.upload.csv.corrupt", new Object[] { lineNumber, numOfCol, nextLine.length },
-						    LocaleContextHolder.getLocale()));
+						errors.add(
+						    messageSource.getMessage("error.upload.csv.corrupt", new Object[] { lineNumber, numOfCol, nextLine.length }, LocaleContextHolder.getLocale()));
 						error = true;
 						break;
 					}
@@ -610,17 +609,16 @@ public class ImportService {
 	 * @param errors
 	 * @return
 	 */
-	public Boolean validateSPSSFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm,
-	    final UserDTO user, final List<String> errors, final Set<String> warnings) {
+	public Boolean validateSPSSFile(final Optional<Long> pid, final Optional<Long> studyId, final Optional<Long> recordId, StudyForm sForm, final UserDTO user,
+	    final List<String> errors, final Set<String> warnings) {
 		FileDTO file = null;
 		Boolean error = false;
 		try {
 			file = fileUtil.buildFileDTO(pid.get(), studyId.get(), recordId.get(), 0, user.getId(), sForm.getSpssFile());
 		} catch (Exception e) {
 			error = true;
-			log.error("Error creating FileDTO with input: [pid: {}; studyid: {}; recordid: {}; userid: {}; uploadedFile: {}]", () -> pid.get(),
-			    () -> studyId.get(), () -> recordId.get(), () -> 0, () -> user.getId(),
-			    () -> (sForm.getSpssFile() == null) ? "null" : sForm.getSpssFile().getOriginalFilename(), () -> e);
+			log.error("Error creating FileDTO with input: [pid: {}; studyid: {}; recordid: {}; userid: {}; uploadedFile: {}]", () -> pid.get(), () -> studyId.get(),
+			    () -> recordId.get(), () -> 0, () -> user.getId(), () -> (sForm.getSpssFile() == null) ? "null" : sForm.getSpssFile().getOriginalFilename(), () -> e);
 			errors.add(messageSource.getMessage("error.upload.creating.file", null, LocaleContextHolder.getLocale()));
 		}
 		// SAVE TMP FILE!!!
@@ -715,9 +713,8 @@ public class ImportService {
 	}
 
 	/**
-	 * This function tries to parse the values to numbers. It checks if the string contains untypical chars, or if the decimal separator is a comma
-	 * instead of a dot. This functions is also used for checking purposes, therefore an Exception is only thrown during parsing and not during checking
-	 * procedure.
+	 * This function tries to parse the values to numbers. It checks if the string contains untypical chars, or if the decimal separator is a comma instead of a
+	 * dot. This functions is also used for checking purposes, therefore an Exception is only thrown during parsing and not during checking procedure.
 	 * 
 	 * @param String
 	 *          with the value which has to be checked or parsed
@@ -818,16 +815,10 @@ public class ImportService {
 		List<SPSSVarDTO> delVars = new ArrayList<>();
 		int delcount = 0;
 		for (RecordCompareDTO comp : compList2) {
-			if (position >= compList.size()) {
+			if (comp.getVarStatus().equals(VariableStatus.NEW_VAR) && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
 				SPSSVarDTO del = vars.get(position - delcount++);
 				delVars.add(del);
 				vars.remove(del);
-			} else {
-				if (comp.getVarStatus().equals(VariableStatus.NEW_VAR) && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
-					SPSSVarDTO del = vars.get(position - delcount++);
-					delVars.add(del);
-					vars.remove(del);
-				}
 			}
 			position++;
 		}
@@ -845,13 +836,19 @@ public class ImportService {
 			    || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV) || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
 			    || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
 				SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get((rc.getMovedFrom() - 1));
-				if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo()) && viewVars.size() >= (rc.getMovedFrom() - 1)) {
-					viewVars.set((rc.getMovedFrom() - 1), new SPSSVarDTO());
-					compList.get((rc.getMovedFrom() - 1)).setKeepExpMeta(false);
-					compList.get((rc.getMovedFrom() - 1)).setVarStatus(VariableStatus.NEW_VAR);
-					compList.get((rc.getMovedFrom() - 1)).setBootstrapItemColor("warning");
-					compList.get((rc.getMovedFrom() - 1))
-					    .setMessage(messageSource.getMessage("import.check." + VariableStatus.NEW_VAR.name(), null, LocaleContextHolder.getLocale()));
+				System.err.println(compList2.size() + " - " + compList.size() + " - " + viewVars.size() + "  -  " + (rc.getMovedFrom() - 1) + " - "
+				    + compList2.get(compList2.size() - 1));
+				if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())) {
+					System.err.println("*** " + compList2.size() + " - " + compList.size() + " - " + viewVars.size() + "  -  " + (rc.getMovedFrom() - 1) + " - "
+					    + compList2.get(compList2.size() - 1));
+					if (viewVars.size() > (rc.getMovedFrom() - 1)) {
+						viewVars.set((rc.getMovedFrom() - 1), new SPSSVarDTO());
+						compList.get((rc.getMovedFrom() - 1)).setKeepExpMeta(false);
+						compList.get((rc.getMovedFrom() - 1)).setVarStatus(VariableStatus.NEW_VAR);
+						compList.get((rc.getMovedFrom() - 1)).setBootstrapItemColor("warning");
+						compList.get((rc.getMovedFrom() - 1))
+						    .setMessage(messageSource.getMessage("import.check." + VariableStatus.NEW_VAR.name(), null, LocaleContextHolder.getLocale()));
+					}
 				}
 				viewVars.set((rc.getMovedTo() - 1), moved);
 			}

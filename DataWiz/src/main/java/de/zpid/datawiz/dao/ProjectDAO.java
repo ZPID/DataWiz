@@ -26,6 +26,23 @@ import org.springframework.stereotype.Repository;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 
+/**
+ * This file is part of Datawiz
+ * 
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>. <br />
+ * <br />
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ */
 @Repository
 @Scope("singleton")
 public class ProjectDAO {
@@ -43,9 +60,12 @@ public class ProjectDAO {
 	}
 
 	/**
+	 * This function returns a list of all matching ProjectDTO entities from table dw_project for which the passed user object is linked by one of the different
+	 * roles.
 	 * 
 	 * @param user
-	 * @return
+	 *          User
+	 * @return List of Projects
 	 * @throws Exception
 	 */
 	public List<ProjectDTO> findAllByUserID(final UserDTO user) throws Exception {
@@ -63,8 +83,9 @@ public class ProjectDAO {
 	}
 
 	/**
+	 * This function returns a List of all ProjectDTO entities from the table dw_project
 	 * 
-	 * @return
+	 * @return List of ProjectDTO
 	 * @throws Exception
 	 */
 	public List<ProjectDTO> findAll() throws Exception {
@@ -80,9 +101,11 @@ public class ProjectDAO {
 	}
 
 	/**
+	 * This function returns a List of all matching ProjectDTO entities from the table dw_project, for which the passed user object has the role "PROJECT_ADMIN"
 	 * 
-	 * @param userID
-	 * @return
+	 * @param user
+	 *          User
+	 * @return List of Projects
 	 * @throws Exception
 	 */
 	public List<ProjectDTO> findAllByAdminRole(final long userID) throws Exception {
@@ -100,13 +123,12 @@ public class ProjectDAO {
 	}
 
 	/**
-	 * Returns the project and the UserRole in one turn. For that, UserID and ProjectID is important, because projects and users have an mxn relationship!
+	 * This function returns a ProjectDTO entity from the table dw_project, depending on the passed identifier. If no project was found, null is returned.
 	 * 
 	 * @param projectId
-	 * @param userId
-	 * @return
-	 * @throws SQLException
-	 * @throws DataAccessException
+	 *          Project identifier
+	 * @return Project, if found - otherwise null
+	 * @throws Exception
 	 */
 	public ProjectDTO findById(final long projectId) throws Exception {
 		log.trace("Entering findById for project [id: {}]", () -> projectId);
@@ -124,8 +146,16 @@ public class ProjectDAO {
 		return project;
 	}
 
+	/**
+	 * 
+	 * @param email
+	 * @param projectId
+	 * @param val
+	 * @return
+	 * @throws Exception
+	 */
 	public String findValFromInviteData(final String email, final long projectId, final String val) throws Exception {
-		log.trace("Entering getValFromInviteData for project [id: {}], user [id: {}] and [val: {}]", () -> projectId, () -> email, () -> val);
+		log.trace("Entering getValFromInviteData for [email: {}], [pid: {}] and [val: {}]", () -> email, () -> projectId, () -> val);
 		final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
 		String ret = jdbcTemplate.queryForObject(sql, new Object[] { email, projectId }, String.class);
 		log.debug("Transaction \"findValFromInviteData\" terminates with result: [value:{}; resul: {}]", () -> val, () -> ret);
@@ -133,7 +163,7 @@ public class ProjectDAO {
 	}
 
 	public String findValFromInviteData(final String email, final String linkhash, final String val) throws Exception {
-		log.trace("Entering getValFromInviteData for project [email: {}], [linkhash : {}] and [val: {}]", () -> email, () -> linkhash, () -> val);
+		log.trace("Entering getValFromInviteData for [email: {}], [linkhash : {}] and [val: {}]", () -> email, () -> linkhash, () -> val);
 		final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND linkhash = ?";
 		String ret;
 		try {

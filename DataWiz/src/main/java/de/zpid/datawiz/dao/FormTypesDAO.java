@@ -55,7 +55,7 @@ public class FormTypesDAO {
 	}
 
 	/**
-	 * This function returns all matching FormTypes entities from the table dmp_formtypes, which are found by the passed parameters.
+	 * This function returns all matching FormTypes entities from the table dmp_formtypes depending on the passed parameters.
 	 * 
 	 * @param active
 	 *          If true, only active FormTypes will be returned
