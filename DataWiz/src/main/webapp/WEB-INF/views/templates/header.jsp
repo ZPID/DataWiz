@@ -13,11 +13,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <sec:csrfMetaTags />
 <title><s:eval expression="@environment.getProperty('application.name')" /></title>
-<link href="<c:url value='/static/css/bootstrap.css' />" rel="stylesheet" />
+<link href="<c:url value='/static/css/microsite_css/fonts.css' />" rel="stylesheet" />
+<%-- <link href="<c:url value='/static/css/microsite_css/style.css' />" rel="stylesheet" /> --%>
+<link href="<c:url value='/static/css/theme.min.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/font-awesome.css' />" rel="stylesheet" type="text/css" />
 <link href="<c:url value='/static/css/app.css' />" rel="stylesheet" />
-<link href="<c:url value='/static/js/DataTables/datatables.min.css' />" rel="stylesheet" type="text/css" />
+<link href="<c:url value='/static/css/microsite_css/microsite.css' />" rel="stylesheet" />
+<link href="https://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
 <link href="<c:url value='/static/js/datepicker/css/bootstrap-datepicker.min.css' />" rel="stylesheet" />
 <s:eval expression="@environment.getProperty('application.favicon.url')" var="faviconUri" />
 <link rel="icon" href="<c:url value="${faviconUri}" />" type="image/x-icon">
@@ -25,16 +28,14 @@
 <s:eval expression="@environment.getProperty('datawiz.beta')" var="isBetaVersion" />
 </head>
 <body>
+  <c:choose>
+    <c:when test="${isBetaVersion}">
+      <s:eval expression="@environment.getProperty('application.logo.url.beta')" var="logoUri" />
+    </c:when>
+    <c:otherwise>
+      <s:eval expression="@environment.getProperty('application.logo.url')" var="logoUri" />
+    </c:otherwise>
+  </c:choose>
   <sec:authentication var="principal" property="principal" />
   <div class="loader"></div>
-  <div id="logo">
-    <c:choose>
-      <c:when test="${isBetaVersion}">
-        <s:eval expression="@environment.getProperty('application.logo.url.beta')" var="logoUri" />
-      </c:when>
-      <c:otherwise>
-        <s:eval expression="@environment.getProperty('application.logo.url')" var="logoUri" />
-      </c:otherwise>
-    </c:choose>
-    <img alt="Logo" src="<c:url value="${logoUri}" />">    
-  </div>
+  <%@ include file="header_microsite.jsp"%>

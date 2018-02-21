@@ -14,6 +14,17 @@ public class BreadCrumpUtil {
       final MessageSource messageSource) {
     List<BreadCrump> bcl = new ArrayList<BreadCrump>();
     switch (position) {
+    case INDEX:
+    	bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), ""));    	
+    	break;
+    case LOGIN:
+    	bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
+    	bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.login", null, LocaleContextHolder.getLocale()), ""));
+    	break;
+    case REGISTER:
+    	bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
+    	bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.register", null, LocaleContextHolder.getLocale()), ""));
+    	break;
     case PANEL:
       bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), "/"));
       bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.panel", null, LocaleContextHolder.getLocale()), ""));

@@ -9,8 +9,8 @@ import javax.validation.constraints.Size;
 import de.zpid.datawiz.util.ListUtil;
 
 /**
- * Data-management-plan data transfer object: Includes all necessary information for the data-management-plan. Some DMP information are saved in the
- * Project information, such as name of the project Please read the metadata excel sheet
+ * Data-management-plan data transfer object: Includes all necessary information for the data-management-plan. Some DMP information are saved in the Project
+ * information, such as name of the project Please read the metadata excel sheet
  *
  * @author Ronny Boelter
  * @version 1.0
@@ -25,9 +25,6 @@ public class DmpDTO implements Serializable {
 	private long id;
 
 	// ***************** Administrative Data *****************
-	/** checks if the fields of the Administrative Data has changed, this is used for particular saving. */
-	private boolean adminChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -47,9 +44,6 @@ public class DmpDTO implements Serializable {
 	private String planAims;
 
 	// ***************** Research Data *****************
-	/** checks if the fields of the Research Data has changed, this is used for particular saving. */
-	private boolean researchChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -152,9 +146,6 @@ public class DmpDTO implements Serializable {
 	private String deleteProcedure;
 
 	// ***************** MetaData Data *****************
-	/** checks if the fields of the MetaData Data has changed, this is used for particular saving. */
-	private boolean metaChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -185,9 +176,6 @@ public class DmpDTO implements Serializable {
 	private String metaFormat;
 
 	// ***************** Data Sharing *****************
-	/** checks if the fields of the Data Sharing has changed, this is used for particular saving. */
-	private boolean sharingChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -257,9 +245,6 @@ public class DmpDTO implements Serializable {
 	private String usedPIDTxt;
 
 	// ***************** Storage and infrastructure *****************
-	/** checks if the fields of the Storage has changed, this is used for particular saving. */
-	private boolean storageChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -305,8 +290,6 @@ public class DmpDTO implements Serializable {
 	private String storageSuccessionTxt;
 
 	// ***************** Organization, management and policies *****************
-	/** checks if the fields of the Organization has changed, this is used for particular saving. */
-	private boolean organizationChanged = false;
 
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
@@ -365,9 +348,6 @@ public class DmpDTO implements Serializable {
 	private String planningAdherence;
 
 	// ***************** Ethical and legal aspects *****************
-	/** checks if the fields of the Ethical has changed, this is used for particular saving. */
-	private boolean ethicalChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -420,9 +400,6 @@ public class DmpDTO implements Serializable {
 	private String internalCopyrightTxt;
 
 	// ***************** Costs *****************
-	/** checks if the fields of the Costs has changed, this is used for particular saving. */
-	private boolean costsChanged = false;
-
 	/**
 	 * group interface for validation - see {@link http://stackoverflow.com/questions/19190592/manually-call-spring-annotation-validation}
 	 */
@@ -450,15 +427,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Checks if is {@link #adminChanged}.
-	 *
-	 * @return true, if is admin changed
-	 */
-	public boolean isAdminChanged() {
-		return adminChanged;
-	}
-
-	/**
 	 * Getter for {@link #duration}.
 	 *
 	 * @return duration
@@ -483,15 +451,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public String getPlanAims() {
 		return planAims;
-	}
-
-	/**
-	 * Checks if is {@link #researchChanged}.
-	 *
-	 * @return true, if is research changed
-	 */
-	public boolean isResearchChanged() {
-		return researchChanged;
 	}
 
 	/**
@@ -720,15 +679,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Checks if is {@link #metaChanged}.
-	 *
-	 * @return true, if is meta changed
-	 */
-	public boolean isMetaChanged() {
-		return metaChanged;
-	}
-
-	/**
 	 * Getter for {@link #selectedMetaPurposes}.
 	 *
 	 * @return selectedMetaPurposes
@@ -780,15 +730,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public String getMetaFormat() {
 		return metaFormat;
-	}
-
-	/**
-	 * Checks if is {@link #sharingChanged}.
-	 *
-	 * @return true, if is sharing changed
-	 */
-	public boolean isSharingChanged() {
-		return sharingChanged;
 	}
 
 	/**
@@ -945,15 +886,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Checks if is {@link #storageChanged}.
-	 *
-	 * @return true, if is storage changed
-	 */
-	public boolean isStorageChanged() {
-		return storageChanged;
-	}
-
-	/**
 	 * Getter for {@link #storageResponsible}.
 	 *
 	 * @return storageResponsible
@@ -1041,15 +973,6 @@ public class DmpDTO implements Serializable {
 	 */
 	public String getStorageSuccessionTxt() {
 		return storageSuccessionTxt;
-	}
-
-	/**
-	 * Checks if is {@link #organizationChanged}.
-	 *
-	 * @return true, if is organization changed
-	 */
-	public boolean isOrganizationChanged() {
-		return organizationChanged;
 	}
 
 	/**
@@ -1179,15 +1102,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Checks if is {@link #ethicalChanged}.
-	 *
-	 * @return true, if is ethical changed
-	 */
-	public boolean isEthicalChanged() {
-		return ethicalChanged;
-	}
-
-	/**
 	 * Checks if is {@link #dataProtection}.
 	 *
 	 * @return true, if is data protection
@@ -1305,15 +1219,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Checks if is {@link #costsChanged}.
-	 *
-	 * @return true, if is costs changed
-	 */
-	public boolean isCostsChanged() {
-		return costsChanged;
-	}
-
-	/**
 	 * Getter for {@link #specificCosts}.
 	 *
 	 * @return specificCosts
@@ -1351,16 +1256,6 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Setter for {@link #adminChanged}.
-	 *
-	 * @param adminChanged
-	 *          -> this.adminChanged
-	 */
-	public void setAdminChanged(boolean adminChanged) {
-		this.adminChanged = adminChanged;
-	}
-
-	/**
 	 * Setter for {@link #duration}.
 	 *
 	 * @param duration
@@ -1369,7 +1264,6 @@ public class DmpDTO implements Serializable {
 	public void setDuration(String duration) {
 		if (!Objects.equals(this.duration, duration)) {
 			this.duration = duration;
-			this.adminChanged = true;
 		}
 	}
 
@@ -1382,7 +1276,6 @@ public class DmpDTO implements Serializable {
 	public void setOrganizations(String organizations) {
 		if (!Objects.equals(this.organizations, organizations)) {
 			this.organizations = organizations;
-			this.adminChanged = true;
 		}
 	}
 
@@ -1395,18 +1288,7 @@ public class DmpDTO implements Serializable {
 	public void setPlanAims(String planAims) {
 		if (!Objects.equals(this.planAims, planAims)) {
 			this.planAims = planAims;
-			this.adminChanged = true;
 		}
-	}
-
-	/**
-	 * Setter for {@link #researchChanged}.
-	 *
-	 * @param researchChanged
-	 *          -> this.researchChanged
-	 */
-	public void setResearchChanged(boolean researchChanged) {
-		this.researchChanged = researchChanged;
 	}
 
 	/**
@@ -1418,7 +1300,7 @@ public class DmpDTO implements Serializable {
 	public void setExistingData(String existingData) {
 		if (!Objects.equals(this.existingData, existingData)) {
 			this.existingData = existingData;
-			this.researchChanged = true;
+
 		}
 	}
 
@@ -1431,7 +1313,7 @@ public class DmpDTO implements Serializable {
 	public void setDataCitation(String dataCitation) {
 		if (!Objects.equals(this.dataCitation, dataCitation)) {
 			this.dataCitation = dataCitation;
-			this.researchChanged = true;
+
 		}
 	}
 
@@ -1444,7 +1326,7 @@ public class DmpDTO implements Serializable {
 	public void setExistingDataRelevance(String existingDataRelevance) {
 		if (!Objects.equals(this.existingDataRelevance, existingDataRelevance)) {
 			this.existingDataRelevance = existingDataRelevance;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1458,7 +1340,7 @@ public class DmpDTO implements Serializable {
 	public void setExistingDataIntegration(String existingDataIntegration) {
 		if (!Objects.equals(this.existingDataIntegration, existingDataIntegration)) {
 			this.existingDataIntegration = existingDataIntegration;
-			this.researchChanged = true;
+
 		}
 	}
 
@@ -1472,7 +1354,7 @@ public class DmpDTO implements Serializable {
 		if ((this.usedDataTypes != null && this.usedDataTypes.size() > 0) || (usedDataTypes != null && usedDataTypes.size() > 0))
 			if (!ListUtil.equalsWithoutOrder(this.usedDataTypes, usedDataTypes)) {
 				this.usedDataTypes = usedDataTypes;
-				this.researchChanged = true;
+
 			}
 	}
 
@@ -1485,7 +1367,7 @@ public class DmpDTO implements Serializable {
 	public void setOtherDataTypes(String otherDataTypes) {
 		if (!Objects.equals(this.otherDataTypes, otherDataTypes)) {
 			this.otherDataTypes = otherDataTypes;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1499,7 +1381,7 @@ public class DmpDTO implements Serializable {
 	public void setDataReproducibility(String dataReproducibility) {
 		if (!Objects.equals(this.dataReproducibility, dataReproducibility)) {
 			this.dataReproducibility = dataReproducibility;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1514,7 +1396,7 @@ public class DmpDTO implements Serializable {
 		if ((this.usedCollectionModes != null && this.usedCollectionModes.size() > 0) || (usedCollectionModes != null && usedCollectionModes.size() > 0))
 			if (!ListUtil.equalsWithoutOrder(this.usedCollectionModes, usedCollectionModes)) {
 				this.usedCollectionModes = usedCollectionModes;
-				this.researchChanged = true;
+
 			}
 	}
 
@@ -1527,7 +1409,7 @@ public class DmpDTO implements Serializable {
 	public void setOtherCMIP(String otherCMIP) {
 		if (!Objects.equals(this.otherCMIP, otherCMIP)) {
 			this.otherCMIP = otherCMIP;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1541,7 +1423,7 @@ public class DmpDTO implements Serializable {
 	public void setOtherCMINP(String otherCMINP) {
 		if (!Objects.equals(this.otherCMINP, otherCMINP)) {
 			this.otherCMINP = otherCMINP;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1555,7 +1437,7 @@ public class DmpDTO implements Serializable {
 	public void setMeasOccasions(String measOccasions) {
 		if (!Objects.equals(this.measOccasions, measOccasions)) {
 			this.measOccasions = measOccasions;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1569,7 +1451,7 @@ public class DmpDTO implements Serializable {
 	public void setReliabilityTraining(String reliabilityTraining) {
 		if (!Objects.equals(this.reliabilityTraining, reliabilityTraining)) {
 			this.reliabilityTraining = reliabilityTraining;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1583,7 +1465,7 @@ public class DmpDTO implements Serializable {
 	public void setMultipleMeasurements(String multipleMeasurements) {
 		if (!Objects.equals(this.multipleMeasurements, multipleMeasurements)) {
 			this.multipleMeasurements = multipleMeasurements;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1597,7 +1479,7 @@ public class DmpDTO implements Serializable {
 	public void setQualitityOther(String qualitityOther) {
 		if (!Objects.equals(this.qualitityOther, qualitityOther)) {
 			this.qualitityOther = qualitityOther;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1611,7 +1493,7 @@ public class DmpDTO implements Serializable {
 	public void setFileFormat(String fileFormat) {
 		if (!Objects.equals(this.fileFormat, fileFormat)) {
 			this.fileFormat = fileFormat;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1625,7 +1507,7 @@ public class DmpDTO implements Serializable {
 	public void setWorkingCopy(boolean workingCopy) {
 		if (!Objects.equals(this.workingCopy, workingCopy)) {
 			this.workingCopy = workingCopy;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1639,7 +1521,7 @@ public class DmpDTO implements Serializable {
 	public void setGoodScientific(boolean goodScientific) {
 		if (!Objects.equals(this.goodScientific, goodScientific)) {
 			this.goodScientific = goodScientific;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1653,7 +1535,7 @@ public class DmpDTO implements Serializable {
 	public void setSubsequentUse(boolean subsequentUse) {
 		if (!Objects.equals(this.subsequentUse, subsequentUse)) {
 			this.subsequentUse = subsequentUse;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1667,7 +1549,7 @@ public class DmpDTO implements Serializable {
 	public void setRequirements(boolean requirements) {
 		if (!Objects.equals(this.requirements, requirements)) {
 			this.requirements = requirements;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1681,7 +1563,7 @@ public class DmpDTO implements Serializable {
 	public void setDocumentation(boolean documentation) {
 		if (!Objects.equals(this.documentation, documentation)) {
 			this.documentation = documentation;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1695,7 +1577,7 @@ public class DmpDTO implements Serializable {
 	public void setDataSelection(boolean dataSelection) {
 		if (!Objects.equals(this.dataSelection, dataSelection)) {
 			this.dataSelection = dataSelection;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1709,7 +1591,7 @@ public class DmpDTO implements Serializable {
 	public void setSelectionTime(String selectionTime) {
 		if (!Objects.equals(this.selectionTime, selectionTime)) {
 			this.selectionTime = selectionTime;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1723,7 +1605,7 @@ public class DmpDTO implements Serializable {
 	public void setSelectionResp(String selectionResp) {
 		if (!Objects.equals(this.selectionResp, selectionResp)) {
 			this.selectionResp = selectionResp;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1737,7 +1619,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageDuration(String storageDuration) {
 		if (!Objects.equals(this.storageDuration, storageDuration)) {
 			this.storageDuration = storageDuration;
-			this.researchChanged = true;
+
 		}
 
 	}
@@ -1751,19 +1633,9 @@ public class DmpDTO implements Serializable {
 	public void setDeleteProcedure(String deleteProcedure) {
 		if (!Objects.equals(this.deleteProcedure, deleteProcedure)) {
 			this.deleteProcedure = deleteProcedure;
-			this.researchChanged = true;
+
 		}
 
-	}
-
-	/**
-	 * Setter for {@link #metaChanged}.
-	 *
-	 * @param metaChanged
-	 *          -> this.metaChanged
-	 */
-	public void setMetaChanged(boolean metaChanged) {
-		this.metaChanged = metaChanged;
 	}
 
 	/**
@@ -1773,11 +1645,10 @@ public class DmpDTO implements Serializable {
 	 *          -> this.selectedMetaPurposes
 	 */
 	public void setSelectedMetaPurposes(List<Integer> selectedMetaPurposes) {
-		if ((this.selectedMetaPurposes != null && this.selectedMetaPurposes.size() > 0)
-		    || (selectedMetaPurposes != null && selectedMetaPurposes.size() > 0))
+		if ((this.selectedMetaPurposes != null && this.selectedMetaPurposes.size() > 0) || (selectedMetaPurposes != null && selectedMetaPurposes.size() > 0))
 			if (!ListUtil.equalsWithoutOrder(this.selectedMetaPurposes, selectedMetaPurposes)) {
 				this.selectedMetaPurposes = selectedMetaPurposes;
-				this.metaChanged = true;
+
 			}
 	}
 
@@ -1790,7 +1661,7 @@ public class DmpDTO implements Serializable {
 	public void setMetaDescription(String metaDescription) {
 		if (!Objects.equals(this.metaDescription, metaDescription)) {
 			this.metaDescription = metaDescription;
-			this.metaChanged = true;
+
 		}
 	}
 
@@ -1803,7 +1674,7 @@ public class DmpDTO implements Serializable {
 	public void setMetaFramework(String metaFramework) {
 		if (!Objects.equals(this.metaFramework, metaFramework)) {
 			this.metaFramework = metaFramework;
-			this.metaChanged = true;
+
 		}
 	}
 
@@ -1816,7 +1687,7 @@ public class DmpDTO implements Serializable {
 	public void setMetaGeneration(String metaGeneration) {
 		if (!Objects.equals(this.metaGeneration, metaGeneration)) {
 			this.metaGeneration = metaGeneration;
-			this.metaChanged = true;
+
 		}
 	}
 
@@ -1829,7 +1700,7 @@ public class DmpDTO implements Serializable {
 	public void setMetaMonitor(String metaMonitor) {
 		if (!Objects.equals(this.metaMonitor, metaMonitor)) {
 			this.metaMonitor = metaMonitor;
-			this.metaChanged = true;
+
 		}
 
 	}
@@ -1843,18 +1714,8 @@ public class DmpDTO implements Serializable {
 	public void setMetaFormat(String metaFormat) {
 		if (!Objects.equals(this.metaFormat, metaFormat)) {
 			this.metaFormat = metaFormat;
-			this.metaChanged = true;
-		}
-	}
 
-	/**
-	 * Setter for {@link #sharingChanged}.
-	 *
-	 * @param sharingChanged
-	 *          -> this.sharingChanged
-	 */
-	public void setSharingChanged(boolean sharingChanged) {
-		this.sharingChanged = sharingChanged;
+		}
 	}
 
 	/**
@@ -1866,7 +1727,7 @@ public class DmpDTO implements Serializable {
 	public void setReleaseObligation(boolean releaseObligation) {
 		if (!Objects.equals(this.releaseObligation, releaseObligation)) {
 			this.releaseObligation = releaseObligation;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1879,7 +1740,7 @@ public class DmpDTO implements Serializable {
 	public void setSearchableData(String searchableData) {
 		if (!Objects.equals(this.searchableData, searchableData)) {
 			this.searchableData = searchableData;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1892,7 +1753,7 @@ public class DmpDTO implements Serializable {
 	public void setExpectedUsage(String expectedUsage) {
 		if (!Objects.equals(this.expectedUsage, expectedUsage)) {
 			this.expectedUsage = expectedUsage;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1905,7 +1766,7 @@ public class DmpDTO implements Serializable {
 	public void setPublStrategy(String publStrategy) {
 		if (!Objects.equals(this.publStrategy, publStrategy)) {
 			this.publStrategy = publStrategy;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1918,7 +1779,7 @@ public class DmpDTO implements Serializable {
 	public void setAccessReasonAuthor(String accessReasonAuthor) {
 		if (!Objects.equals(this.accessReasonAuthor, accessReasonAuthor)) {
 			this.accessReasonAuthor = accessReasonAuthor;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1931,7 +1792,7 @@ public class DmpDTO implements Serializable {
 	public void setNoAccessReason(String noAccessReason) {
 		if (!Objects.equals(this.noAccessReason, noAccessReason)) {
 			this.noAccessReason = noAccessReason;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1944,7 +1805,7 @@ public class DmpDTO implements Serializable {
 	public void setNoAccessReasonOther(String noAccessReasonOther) {
 		if (!Objects.equals(this.noAccessReasonOther, noAccessReasonOther)) {
 			this.noAccessReasonOther = noAccessReasonOther;
-			this.sharingChanged = true;
+
 		}
 
 	}
@@ -1958,7 +1819,7 @@ public class DmpDTO implements Serializable {
 	public void setDepositName(String depositName) {
 		if (!Objects.equals(this.depositName, depositName)) {
 			this.depositName = depositName;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1971,7 +1832,7 @@ public class DmpDTO implements Serializable {
 	public void setTransferTime(String transferTime) {
 		if (!Objects.equals(this.transferTime, transferTime)) {
 			this.transferTime = transferTime;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1984,7 +1845,7 @@ public class DmpDTO implements Serializable {
 	public void setSensitiveData(String sensitiveData) {
 		if (!Objects.equals(this.sensitiveData, sensitiveData)) {
 			this.sensitiveData = sensitiveData;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -1997,7 +1858,7 @@ public class DmpDTO implements Serializable {
 	public void setInitialUsage(String initialUsage) {
 		if (!Objects.equals(this.initialUsage, initialUsage)) {
 			this.initialUsage = initialUsage;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -2010,7 +1871,7 @@ public class DmpDTO implements Serializable {
 	public void setUsageRestriction(String usageRestriction) {
 		if (!Objects.equals(this.usageRestriction, usageRestriction)) {
 			this.usageRestriction = usageRestriction;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -2023,7 +1884,7 @@ public class DmpDTO implements Serializable {
 	public void setAccessCosts(boolean accessCosts) {
 		if (!Objects.equals(this.accessCosts, accessCosts)) {
 			this.accessCosts = accessCosts;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -2036,7 +1897,7 @@ public class DmpDTO implements Serializable {
 	public void setClarifiedRights(boolean clarifiedRights) {
 		if (!Objects.equals(this.clarifiedRights, clarifiedRights)) {
 			this.clarifiedRights = clarifiedRights;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -2049,7 +1910,7 @@ public class DmpDTO implements Serializable {
 	public void setAcquisitionAgreement(boolean acquisitionAgreement) {
 		if (!Objects.equals(this.acquisitionAgreement, acquisitionAgreement)) {
 			this.acquisitionAgreement = acquisitionAgreement;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -2062,7 +1923,7 @@ public class DmpDTO implements Serializable {
 	public void setUsedPID(String usedPID) {
 		if (!Objects.equals(this.usedPID, usedPID)) {
 			this.usedPID = usedPID;
-			this.sharingChanged = true;
+
 		}
 	}
 
@@ -2075,18 +1936,8 @@ public class DmpDTO implements Serializable {
 	public void setUsedPIDTxt(String usedPIDTxt) {
 		if (!Objects.equals(this.usedPIDTxt, usedPIDTxt)) {
 			this.usedPIDTxt = usedPIDTxt;
-			this.sharingChanged = true;
-		}
-	}
 
-	/**
-	 * Setter for {@link #storageChanged}.
-	 *
-	 * @param storageChanged
-	 *          -> this.storageChanged
-	 */
-	public void setStorageChanged(boolean storageChanged) {
-		this.storageChanged = storageChanged;
+		}
 	}
 
 	/**
@@ -2098,7 +1949,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageResponsible(String storageResponsible) {
 		if (!Objects.equals(this.storageResponsible, storageResponsible)) {
 			this.storageResponsible = storageResponsible;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2111,7 +1962,7 @@ public class DmpDTO implements Serializable {
 	public void setNamingCon(String namingCon) {
 		if (!Objects.equals(this.namingCon, namingCon)) {
 			this.namingCon = namingCon;
-			this.storageChanged = true;
+
 		}
 
 	}
@@ -2125,7 +1976,7 @@ public class DmpDTO implements Serializable {
 	public void setStoragePlaces(String storagePlaces) {
 		if (!Objects.equals(this.storagePlaces, storagePlaces)) {
 			this.storagePlaces = storagePlaces;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2138,7 +1989,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageBackups(String storageBackups) {
 		if (!Objects.equals(this.storageBackups, storageBackups)) {
 			this.storageBackups = storageBackups;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2151,7 +2002,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageTransfer(String storageTransfer) {
 		if (!Objects.equals(this.storageTransfer, storageTransfer)) {
 			this.storageTransfer = storageTransfer;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2164,7 +2015,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageExpectedSize(String storageExpectedSize) {
 		if (!Objects.equals(this.storageExpectedSize, storageExpectedSize)) {
 			this.storageExpectedSize = storageExpectedSize;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2177,7 +2028,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageRequirements(boolean storageRequirements) {
 		if (!Objects.equals(this.storageRequirements, storageRequirements)) {
 			this.storageRequirements = storageRequirements;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2190,7 +2041,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageRequirementsTxt(String storageRequirementsTxt) {
 		if (!Objects.equals(this.storageRequirementsTxt, storageRequirementsTxt)) {
 			this.storageRequirementsTxt = storageRequirementsTxt;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2203,7 +2054,7 @@ public class DmpDTO implements Serializable {
 	public void setStorageSuccession(boolean storageSuccession) {
 		if (!Objects.equals(this.storageSuccession, storageSuccession)) {
 			this.storageSuccession = storageSuccession;
-			this.storageChanged = true;
+
 		}
 	}
 
@@ -2216,18 +2067,8 @@ public class DmpDTO implements Serializable {
 	public void setStorageSuccessionTxt(String storageSuccessionTxt) {
 		if (!Objects.equals(this.storageSuccessionTxt, storageSuccessionTxt)) {
 			this.storageSuccessionTxt = storageSuccessionTxt;
-			this.storageChanged = true;
-		}
-	}
 
-	/**
-	 * Setter for {@link #organizationChanged}.
-	 *
-	 * @param organizationChanged
-	 *          -> this.organizationChanged
-	 */
-	public void setOrganizationChanged(boolean organizationChanged) {
-		this.organizationChanged = organizationChanged;
+		}
 	}
 
 	/**
@@ -2239,7 +2080,7 @@ public class DmpDTO implements Serializable {
 	public void setFrameworkNationality(String frameworkNationality) {
 		if (!Objects.equals(this.frameworkNationality, frameworkNationality)) {
 			this.frameworkNationality = frameworkNationality;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2252,7 +2093,7 @@ public class DmpDTO implements Serializable {
 	public void setFrameworkNationalityTxt(String frameworkNationalityTxt) {
 		if (!Objects.equals(this.frameworkNationalityTxt, frameworkNationalityTxt)) {
 			this.frameworkNationalityTxt = frameworkNationalityTxt;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2265,7 +2106,7 @@ public class DmpDTO implements Serializable {
 	public void setResponsibleUnit(String responsibleUnit) {
 		if (!Objects.equals(this.responsibleUnit, responsibleUnit)) {
 			this.responsibleUnit = responsibleUnit;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2278,7 +2119,7 @@ public class DmpDTO implements Serializable {
 	public void setInvolvedInstitutions(String involvedInstitutions) {
 		if (!Objects.equals(this.involvedInstitutions, involvedInstitutions)) {
 			this.involvedInstitutions = involvedInstitutions;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2291,7 +2132,7 @@ public class DmpDTO implements Serializable {
 	public void setInvolvedInformed(boolean involvedInformed) {
 		if (!Objects.equals(this.involvedInformed, involvedInformed)) {
 			this.involvedInformed = involvedInformed;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2304,7 +2145,7 @@ public class DmpDTO implements Serializable {
 	public void setContributionsDefined(boolean contributionsDefined) {
 		if (!Objects.equals(this.contributionsDefined, contributionsDefined)) {
 			this.contributionsDefined = contributionsDefined;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2317,7 +2158,7 @@ public class DmpDTO implements Serializable {
 	public void setContributionsDefinedTxt(String contributionsDefinedTxt) {
 		if (!Objects.equals(this.contributionsDefinedTxt, contributionsDefinedTxt)) {
 			this.contributionsDefinedTxt = contributionsDefinedTxt;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2330,7 +2171,7 @@ public class DmpDTO implements Serializable {
 	public void setGivenConsent(boolean givenConsent) {
 		if (!Objects.equals(this.givenConsent, givenConsent)) {
 			this.givenConsent = givenConsent;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2343,7 +2184,7 @@ public class DmpDTO implements Serializable {
 	public void setManagementWorkflow(boolean managementWorkflow) {
 		if (!Objects.equals(this.managementWorkflow, managementWorkflow)) {
 			this.managementWorkflow = managementWorkflow;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2356,7 +2197,7 @@ public class DmpDTO implements Serializable {
 	public void setManagementWorkflowTxt(String managementWorkflowTxt) {
 		if (!Objects.equals(this.managementWorkflowTxt, managementWorkflowTxt)) {
 			this.managementWorkflowTxt = managementWorkflowTxt;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2369,7 +2210,7 @@ public class DmpDTO implements Serializable {
 	public void setStaffDescription(boolean staffDescription) {
 		if (!Objects.equals(this.staffDescription, staffDescription)) {
 			this.staffDescription = staffDescription;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2382,7 +2223,7 @@ public class DmpDTO implements Serializable {
 	public void setStaffDescriptionTxt(String staffDescriptionTxt) {
 		if (!Objects.equals(this.staffDescriptionTxt, staffDescriptionTxt)) {
 			this.staffDescriptionTxt = staffDescriptionTxt;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2395,7 +2236,7 @@ public class DmpDTO implements Serializable {
 	public void setFunderRequirements(String funderRequirements) {
 		if (!Objects.equals(this.funderRequirements, funderRequirements)) {
 			this.funderRequirements = funderRequirements;
-			this.organizationChanged = true;
+
 		}
 	}
 
@@ -2408,18 +2249,8 @@ public class DmpDTO implements Serializable {
 	public void setPlanningAdherence(String planningAdherence) {
 		if (!Objects.equals(this.planningAdherence, planningAdherence)) {
 			this.planningAdherence = planningAdherence;
-			this.organizationChanged = true;
-		}
-	}
 
-	/**
-	 * Setter for {@link #ethicalChanged}.
-	 *
-	 * @param ethicalChanged
-	 *          -> this.ethicalChanged
-	 */
-	public void setEthicalChanged(boolean ethicalChanged) {
-		this.ethicalChanged = ethicalChanged;
+		}
 	}
 
 	/**
@@ -2431,7 +2262,7 @@ public class DmpDTO implements Serializable {
 	public void setDataProtection(boolean dataProtection) {
 		if (!Objects.equals(this.dataProtection, dataProtection)) {
 			this.dataProtection = dataProtection;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2444,7 +2275,7 @@ public class DmpDTO implements Serializable {
 	public void setProtectionRequirements(String protectionRequirements) {
 		if (!Objects.equals(this.protectionRequirements, protectionRequirements)) {
 			this.protectionRequirements = protectionRequirements;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2457,7 +2288,7 @@ public class DmpDTO implements Serializable {
 	public void setConsentObtained(boolean consentObtained) {
 		if (!Objects.equals(this.consentObtained, consentObtained)) {
 			this.consentObtained = consentObtained;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2470,7 +2301,7 @@ public class DmpDTO implements Serializable {
 	public void setConsentObtainedTxt(String consentObtainedTxt) {
 		if (!Objects.equals(this.consentObtainedTxt, consentObtainedTxt)) {
 			this.consentObtainedTxt = consentObtainedTxt;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2483,7 +2314,7 @@ public class DmpDTO implements Serializable {
 	public void setSharingConsidered(boolean sharingConsidered) {
 		if (!Objects.equals(this.sharingConsidered, sharingConsidered)) {
 			this.sharingConsidered = sharingConsidered;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2496,7 +2327,7 @@ public class DmpDTO implements Serializable {
 	public void setIrbApproval(boolean irbApproval) {
 		if (!Objects.equals(this.irbApproval, irbApproval)) {
 			this.irbApproval = irbApproval;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2509,7 +2340,7 @@ public class DmpDTO implements Serializable {
 	public void setIrbApprovalTxt(String irbApprovalTxt) {
 		if (!Objects.equals(this.irbApprovalTxt, irbApprovalTxt)) {
 			this.irbApprovalTxt = irbApprovalTxt;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2522,7 +2353,7 @@ public class DmpDTO implements Serializable {
 	public void setSensitiveDataIncluded(boolean sensitiveDataIncluded) {
 		if (!Objects.equals(this.sensitiveDataIncluded, sensitiveDataIncluded)) {
 			this.sensitiveDataIncluded = sensitiveDataIncluded;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2535,7 +2366,7 @@ public class DmpDTO implements Serializable {
 	public void setSensitiveDataIncludedTxt(String sensitiveDataIncludedTxt) {
 		if (!Objects.equals(this.sensitiveDataIncludedTxt, sensitiveDataIncludedTxt)) {
 			this.sensitiveDataIncludedTxt = sensitiveDataIncludedTxt;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2548,7 +2379,7 @@ public class DmpDTO implements Serializable {
 	public void setExternalCopyright(boolean externalCopyright) {
 		if (!Objects.equals(this.externalCopyright, externalCopyright)) {
 			this.externalCopyright = externalCopyright;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2561,7 +2392,7 @@ public class DmpDTO implements Serializable {
 	public void setExternalCopyrightTxt(String externalCopyrightTxt) {
 		if (!Objects.equals(this.externalCopyrightTxt, externalCopyrightTxt)) {
 			this.externalCopyrightTxt = externalCopyrightTxt;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2574,7 +2405,7 @@ public class DmpDTO implements Serializable {
 	public void setInternalCopyright(boolean internalCopyright) {
 		if (!Objects.equals(this.internalCopyright, internalCopyright)) {
 			this.internalCopyright = internalCopyright;
-			this.ethicalChanged = true;
+
 		}
 	}
 
@@ -2587,18 +2418,8 @@ public class DmpDTO implements Serializable {
 	public void setInternalCopyrightTxt(String internalCopyrightTxt) {
 		if (!Objects.equals(this.internalCopyrightTxt, internalCopyrightTxt)) {
 			this.internalCopyrightTxt = internalCopyrightTxt;
-			this.ethicalChanged = true;
-		}
-	}
 
-	/**
-	 * Setter for {@link #costsChanged}.
-	 *
-	 * @param costsChanged
-	 *          -> this.costsChanged
-	 */
-	public void setCostsChanged(boolean costsChanged) {
-		this.costsChanged = costsChanged;
+		}
 	}
 
 	/**
@@ -2610,7 +2431,7 @@ public class DmpDTO implements Serializable {
 	public void setSpecificCosts(String specificCosts) {
 		if (!Objects.equals(this.specificCosts, specificCosts)) {
 			this.specificCosts = specificCosts;
-			this.costsChanged = true;
+
 		}
 	}
 
@@ -2623,7 +2444,7 @@ public class DmpDTO implements Serializable {
 	public void setSpecificCostsTxt(String specificCostsTxt) {
 		if (!Objects.equals(this.specificCostsTxt, specificCostsTxt)) {
 			this.specificCostsTxt = specificCostsTxt;
-			this.costsChanged = true;
+
 		}
 	}
 
@@ -2636,44 +2457,535 @@ public class DmpDTO implements Serializable {
 	public void setBearCost(String bearCost) {
 		if (!Objects.equals(this.bearCost, bearCost)) {
 			this.bearCost = bearCost;
-			this.costsChanged = true;
+
 		}
 	}
 
 	@Override
 	public String toString() {
-		return "DmpDTO [id=" + id + ", adminChanged=" + adminChanged + ", duration=" + duration + ", organizations=" + organizations + ", planAims="
-		    + planAims + ", researchChanged=" + researchChanged + ", existingData=" + existingData + ", dataCitation=" + dataCitation
-		    + ", existingDataRelevance=" + existingDataRelevance + ", existingDataIntegration=" + existingDataIntegration + ", usedDataTypes="
-		    + usedDataTypes + ", otherDataTypes=" + otherDataTypes + ", dataReproducibility=" + dataReproducibility + ", usedCollectionModes="
-		    + usedCollectionModes + ", otherCMIP=" + otherCMIP + ", otherCMINP=" + otherCMINP + ", measOccasions=" + measOccasions
-		    + ", reliabilityTraining=" + reliabilityTraining + ", multipleMeasurements=" + multipleMeasurements + ", qualitityOther=" + qualitityOther
-		    + ", fileFormat=" + fileFormat + ", workingCopy=" + workingCopy + ", goodScientific=" + goodScientific + ", subsequentUse=" + subsequentUse
-		    + ", requirements=" + requirements + ", documentation=" + documentation + ", dataSelection=" + dataSelection + ", selectionTime="
-		    + selectionTime + ", selectionResp=" + selectionResp + ", storageDuration=" + storageDuration + ", deleteProcedure=" + deleteProcedure
-		    + ", metaChanged=" + metaChanged + ", selectedMetaPurposes=" + selectedMetaPurposes + ", metaDescription=" + metaDescription
-		    + ", metaFramework=" + metaFramework + ", metaGeneration=" + metaGeneration + ", metaMonitor=" + metaMonitor + ", metaFormat=" + metaFormat
-		    + ", sharingChanged=" + sharingChanged + ", releaseObligation=" + releaseObligation + ", searchableData=" + searchableData
-		    + ", expectedUsage=" + expectedUsage + ", publStrategy=" + publStrategy + ", accessReasonAuthor=" + accessReasonAuthor + ", noAccessReason="
-		    + noAccessReason + ", noAccessReasonOther=" + noAccessReasonOther + ", depositName=" + depositName + ", transferTime=" + transferTime
-		    + ", sensitiveData=" + sensitiveData + ", initialUsage=" + initialUsage + ", usageRestriction=" + usageRestriction + ", accessCosts="
-		    + accessCosts + ", clarifiedRights=" + clarifiedRights + ", acquisitionAgreement=" + acquisitionAgreement + ", usedPID=" + usedPID
-		    + ", usedPIDTxt=" + usedPIDTxt + ", storageChanged=" + storageChanged + ", storageResponsible=" + storageResponsible + ", namingCon="
-		    + namingCon + ", storagePlaces=" + storagePlaces + ", storageBackups=" + storageBackups + ", storageTransfer=" + storageTransfer
-		    + ", storageExpectedSize=" + storageExpectedSize + ", storageRequirements=" + storageRequirements + ", storageRequirementsTxt="
-		    + storageRequirementsTxt + ", storageSuccession=" + storageSuccession + ", storageSuccessionTxt=" + storageSuccessionTxt
-		    + ", organizationChanged=" + organizationChanged + ", frameworkNationality=" + frameworkNationality + ", frameworkNationalityTxt="
-		    + frameworkNationalityTxt + ", responsibleUnit=" + responsibleUnit + ", involvedInstitutions=" + involvedInstitutions + ", involvedInformed="
-		    + involvedInformed + ", contributionsDefined=" + contributionsDefined + ", contributionsDefinedTxt=" + contributionsDefinedTxt
-		    + ", givenConsent=" + givenConsent + ", managementWorkflow=" + managementWorkflow + ", managementWorkflowTxt=" + managementWorkflowTxt
-		    + ", staffDescription=" + staffDescription + ", staffDescriptionTxt=" + staffDescriptionTxt + ", funderRequirements=" + funderRequirements
-		    + ", planningAdherence=" + planningAdherence + ", ethicalChanged=" + ethicalChanged + ", dataProtection=" + dataProtection
-		    + ", protectionRequirements=" + protectionRequirements + ", consentObtained=" + consentObtained + ", consentObtainedTxt=" + consentObtainedTxt
-		    + ", sharingConsidered=" + sharingConsidered + ", irbApproval=" + irbApproval + ", irbApprovalTxt=" + irbApprovalTxt
-		    + ", sensitiveDataIncluded=" + sensitiveDataIncluded + ", sensitiveDataIncludedTxt=" + sensitiveDataIncludedTxt + ", externalCopyright="
-		    + externalCopyright + ", externalCopyrightTxt=" + externalCopyrightTxt + ", internalCopyright=" + internalCopyright
-		    + ", internalCopyrightTxt=" + internalCopyrightTxt + ", costsChanged=" + costsChanged + ", specificCosts=" + specificCosts
-		    + ", specificCostsTxt=" + specificCostsTxt + ", bearCost=" + bearCost + "]";
+		return "DmpDTO [id=" + id + ", duration=" + duration + ", organizations=" + organizations + ", planAims=" + planAims + ", existingData=" + existingData
+		    + ", dataCitation=" + dataCitation + ", existingDataRelevance=" + existingDataRelevance + ", existingDataIntegration=" + existingDataIntegration
+		    + ", usedDataTypes=" + usedDataTypes + ", otherDataTypes=" + otherDataTypes + ", dataReproducibility=" + dataReproducibility + ", usedCollectionModes="
+		    + usedCollectionModes + ", otherCMIP=" + otherCMIP + ", otherCMINP=" + otherCMINP + ", measOccasions=" + measOccasions + ", reliabilityTraining="
+		    + reliabilityTraining + ", multipleMeasurements=" + multipleMeasurements + ", qualitityOther=" + qualitityOther + ", fileFormat=" + fileFormat
+		    + ", workingCopy=" + workingCopy + ", goodScientific=" + goodScientific + ", subsequentUse=" + subsequentUse + ", requirements=" + requirements
+		    + ", documentation=" + documentation + ", dataSelection=" + dataSelection + ", selectionTime=" + selectionTime + ", selectionResp=" + selectionResp
+		    + ", storageDuration=" + storageDuration + ", deleteProcedure=" + deleteProcedure + ", selectedMetaPurposes=" + selectedMetaPurposes
+		    + ", metaDescription=" + metaDescription + ", metaFramework=" + metaFramework + ", metaGeneration=" + metaGeneration + ", metaMonitor=" + metaMonitor
+		    + ", metaFormat=" + metaFormat + ", releaseObligation=" + releaseObligation + ", searchableData=" + searchableData + ", expectedUsage=" + expectedUsage
+		    + ", publStrategy=" + publStrategy + ", accessReasonAuthor=" + accessReasonAuthor + ", noAccessReason=" + noAccessReason + ", noAccessReasonOther="
+		    + noAccessReasonOther + ", depositName=" + depositName + ", transferTime=" + transferTime + ", sensitiveData=" + sensitiveData + ", initialUsage="
+		    + initialUsage + ", usageRestriction=" + usageRestriction + ", accessCosts=" + accessCosts + ", clarifiedRights=" + clarifiedRights
+		    + ", acquisitionAgreement=" + acquisitionAgreement + ", usedPID=" + usedPID + ", usedPIDTxt=" + usedPIDTxt + ", storageResponsible="
+		    + storageResponsible + ", namingCon=" + namingCon + ", storagePlaces=" + storagePlaces + ", storageBackups=" + storageBackups + ", storageTransfer="
+		    + storageTransfer + ", storageExpectedSize=" + storageExpectedSize + ", storageRequirements=" + storageRequirements + ", storageRequirementsTxt="
+		    + storageRequirementsTxt + ", storageSuccession=" + storageSuccession + ", storageSuccessionTxt=" + storageSuccessionTxt + ", frameworkNationality="
+		    + frameworkNationality + ", frameworkNationalityTxt=" + frameworkNationalityTxt + ", responsibleUnit=" + responsibleUnit + ", involvedInstitutions="
+		    + involvedInstitutions + ", involvedInformed=" + involvedInformed + ", contributionsDefined=" + contributionsDefined + ", contributionsDefinedTxt="
+		    + contributionsDefinedTxt + ", givenConsent=" + givenConsent + ", managementWorkflow=" + managementWorkflow + ", managementWorkflowTxt="
+		    + managementWorkflowTxt + ", staffDescription=" + staffDescription + ", staffDescriptionTxt=" + staffDescriptionTxt + ", funderRequirements="
+		    + funderRequirements + ", planningAdherence=" + planningAdherence + ", dataProtection=" + dataProtection + ", protectionRequirements="
+		    + protectionRequirements + ", consentObtained=" + consentObtained + ", consentObtainedTxt=" + consentObtainedTxt + ", sharingConsidered="
+		    + sharingConsidered + ", irbApproval=" + irbApproval + ", irbApprovalTxt=" + irbApprovalTxt + ", sensitiveDataIncluded=" + sensitiveDataIncluded
+		    + ", sensitiveDataIncludedTxt=" + sensitiveDataIncludedTxt + ", externalCopyright=" + externalCopyright + ", externalCopyrightTxt="
+		    + externalCopyrightTxt + ", internalCopyright=" + internalCopyright + ", internalCopyrightTxt=" + internalCopyrightTxt + ", specificCosts="
+		    + specificCosts + ", specificCostsTxt=" + specificCostsTxt + ", bearCost=" + bearCost + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (accessCosts ? 1231 : 1237);
+		result = prime * result + ((accessReasonAuthor == null) ? 0 : accessReasonAuthor.hashCode());
+		result = prime * result + (acquisitionAgreement ? 1231 : 1237);
+		result = prime * result + ((bearCost == null) ? 0 : bearCost.hashCode());
+		result = prime * result + (clarifiedRights ? 1231 : 1237);
+		result = prime * result + (consentObtained ? 1231 : 1237);
+		result = prime * result + ((consentObtainedTxt == null) ? 0 : consentObtainedTxt.hashCode());
+		result = prime * result + (contributionsDefined ? 1231 : 1237);
+		result = prime * result + ((contributionsDefinedTxt == null) ? 0 : contributionsDefinedTxt.hashCode());
+		result = prime * result + ((dataCitation == null) ? 0 : dataCitation.hashCode());
+		result = prime * result + (dataProtection ? 1231 : 1237);
+		result = prime * result + ((dataReproducibility == null) ? 0 : dataReproducibility.hashCode());
+		result = prime * result + (dataSelection ? 1231 : 1237);
+		result = prime * result + ((deleteProcedure == null) ? 0 : deleteProcedure.hashCode());
+		result = prime * result + ((depositName == null) ? 0 : depositName.hashCode());
+		result = prime * result + (documentation ? 1231 : 1237);
+		result = prime * result + ((duration == null) ? 0 : duration.hashCode());
+		result = prime * result + ((existingData == null) ? 0 : existingData.hashCode());
+		result = prime * result + ((existingDataIntegration == null) ? 0 : existingDataIntegration.hashCode());
+		result = prime * result + ((existingDataRelevance == null) ? 0 : existingDataRelevance.hashCode());
+		result = prime * result + ((expectedUsage == null) ? 0 : expectedUsage.hashCode());
+		result = prime * result + (externalCopyright ? 1231 : 1237);
+		result = prime * result + ((externalCopyrightTxt == null) ? 0 : externalCopyrightTxt.hashCode());
+		result = prime * result + ((fileFormat == null) ? 0 : fileFormat.hashCode());
+		result = prime * result + ((frameworkNationality == null) ? 0 : frameworkNationality.hashCode());
+		result = prime * result + ((frameworkNationalityTxt == null) ? 0 : frameworkNationalityTxt.hashCode());
+		result = prime * result + ((funderRequirements == null) ? 0 : funderRequirements.hashCode());
+		result = prime * result + (givenConsent ? 1231 : 1237);
+		result = prime * result + (goodScientific ? 1231 : 1237);
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((initialUsage == null) ? 0 : initialUsage.hashCode());
+		result = prime * result + (internalCopyright ? 1231 : 1237);
+		result = prime * result + ((internalCopyrightTxt == null) ? 0 : internalCopyrightTxt.hashCode());
+		result = prime * result + (involvedInformed ? 1231 : 1237);
+		result = prime * result + ((involvedInstitutions == null) ? 0 : involvedInstitutions.hashCode());
+		result = prime * result + (irbApproval ? 1231 : 1237);
+		result = prime * result + ((irbApprovalTxt == null) ? 0 : irbApprovalTxt.hashCode());
+		result = prime * result + (managementWorkflow ? 1231 : 1237);
+		result = prime * result + ((managementWorkflowTxt == null) ? 0 : managementWorkflowTxt.hashCode());
+		result = prime * result + ((measOccasions == null) ? 0 : measOccasions.hashCode());
+		result = prime * result + ((metaDescription == null) ? 0 : metaDescription.hashCode());
+		result = prime * result + ((metaFormat == null) ? 0 : metaFormat.hashCode());
+		result = prime * result + ((metaFramework == null) ? 0 : metaFramework.hashCode());
+		result = prime * result + ((metaGeneration == null) ? 0 : metaGeneration.hashCode());
+		result = prime * result + ((metaMonitor == null) ? 0 : metaMonitor.hashCode());
+		result = prime * result + ((multipleMeasurements == null) ? 0 : multipleMeasurements.hashCode());
+		result = prime * result + ((namingCon == null) ? 0 : namingCon.hashCode());
+		result = prime * result + ((noAccessReason == null) ? 0 : noAccessReason.hashCode());
+		result = prime * result + ((noAccessReasonOther == null) ? 0 : noAccessReasonOther.hashCode());
+		result = prime * result + ((organizations == null) ? 0 : organizations.hashCode());
+		result = prime * result + ((otherCMINP == null) ? 0 : otherCMINP.hashCode());
+		result = prime * result + ((otherCMIP == null) ? 0 : otherCMIP.hashCode());
+		result = prime * result + ((otherDataTypes == null) ? 0 : otherDataTypes.hashCode());
+		result = prime * result + ((planAims == null) ? 0 : planAims.hashCode());
+		result = prime * result + ((planningAdherence == null) ? 0 : planningAdherence.hashCode());
+		result = prime * result + ((protectionRequirements == null) ? 0 : protectionRequirements.hashCode());
+		result = prime * result + ((publStrategy == null) ? 0 : publStrategy.hashCode());
+		result = prime * result + ((qualitityOther == null) ? 0 : qualitityOther.hashCode());
+		result = prime * result + (releaseObligation ? 1231 : 1237);
+		result = prime * result + ((reliabilityTraining == null) ? 0 : reliabilityTraining.hashCode());
+		result = prime * result + (requirements ? 1231 : 1237);
+		result = prime * result + ((responsibleUnit == null) ? 0 : responsibleUnit.hashCode());
+		result = prime * result + ((searchableData == null) ? 0 : searchableData.hashCode());
+		result = prime * result + ((selectedMetaPurposes == null) ? 0 : selectedMetaPurposes.hashCode());
+		result = prime * result + ((selectionResp == null) ? 0 : selectionResp.hashCode());
+		result = prime * result + ((selectionTime == null) ? 0 : selectionTime.hashCode());
+		result = prime * result + ((sensitiveData == null) ? 0 : sensitiveData.hashCode());
+		result = prime * result + (sensitiveDataIncluded ? 1231 : 1237);
+		result = prime * result + ((sensitiveDataIncludedTxt == null) ? 0 : sensitiveDataIncludedTxt.hashCode());
+		result = prime * result + (sharingConsidered ? 1231 : 1237);
+		result = prime * result + ((specificCosts == null) ? 0 : specificCosts.hashCode());
+		result = prime * result + ((specificCostsTxt == null) ? 0 : specificCostsTxt.hashCode());
+		result = prime * result + (staffDescription ? 1231 : 1237);
+		result = prime * result + ((staffDescriptionTxt == null) ? 0 : staffDescriptionTxt.hashCode());
+		result = prime * result + ((storageBackups == null) ? 0 : storageBackups.hashCode());
+		result = prime * result + ((storageDuration == null) ? 0 : storageDuration.hashCode());
+		result = prime * result + ((storageExpectedSize == null) ? 0 : storageExpectedSize.hashCode());
+		result = prime * result + ((storagePlaces == null) ? 0 : storagePlaces.hashCode());
+		result = prime * result + (storageRequirements ? 1231 : 1237);
+		result = prime * result + ((storageRequirementsTxt == null) ? 0 : storageRequirementsTxt.hashCode());
+		result = prime * result + ((storageResponsible == null) ? 0 : storageResponsible.hashCode());
+		result = prime * result + (storageSuccession ? 1231 : 1237);
+		result = prime * result + ((storageSuccessionTxt == null) ? 0 : storageSuccessionTxt.hashCode());
+		result = prime * result + ((storageTransfer == null) ? 0 : storageTransfer.hashCode());
+		result = prime * result + (subsequentUse ? 1231 : 1237);
+		result = prime * result + ((transferTime == null) ? 0 : transferTime.hashCode());
+		result = prime * result + ((usageRestriction == null) ? 0 : usageRestriction.hashCode());
+		result = prime * result + ((usedCollectionModes == null) ? 0 : usedCollectionModes.hashCode());
+		result = prime * result + ((usedDataTypes == null) ? 0 : usedDataTypes.hashCode());
+		result = prime * result + ((usedPID == null) ? 0 : usedPID.hashCode());
+		result = prime * result + ((usedPIDTxt == null) ? 0 : usedPIDTxt.hashCode());
+		result = prime * result + (workingCopy ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		DmpDTO other = (DmpDTO) obj;
+		if (accessCosts != other.accessCosts)
+			return false;
+		if (accessReasonAuthor == null) {
+			if (other.accessReasonAuthor != null)
+				return false;
+		} else if (!accessReasonAuthor.equals(other.accessReasonAuthor))
+			return false;
+		if (acquisitionAgreement != other.acquisitionAgreement)
+			return false;
+		if (bearCost == null) {
+			if (other.bearCost != null)
+				return false;
+		} else if (!bearCost.equals(other.bearCost))
+			return false;
+		if (clarifiedRights != other.clarifiedRights)
+			return false;
+		if (consentObtained != other.consentObtained)
+			return false;
+		if (consentObtainedTxt == null) {
+			if (other.consentObtainedTxt != null)
+				return false;
+		} else if (!consentObtainedTxt.equals(other.consentObtainedTxt))
+			return false;
+		if (contributionsDefined != other.contributionsDefined)
+			return false;
+		if (contributionsDefinedTxt == null) {
+			if (other.contributionsDefinedTxt != null)
+				return false;
+		} else if (!contributionsDefinedTxt.equals(other.contributionsDefinedTxt))
+			return false;
+		if (dataCitation == null) {
+			if (other.dataCitation != null)
+				return false;
+		} else if (!dataCitation.equals(other.dataCitation))
+			return false;
+		if (dataProtection != other.dataProtection)
+			return false;
+		if (dataReproducibility == null) {
+			if (other.dataReproducibility != null)
+				return false;
+		} else if (!dataReproducibility.equals(other.dataReproducibility))
+			return false;
+		if (dataSelection != other.dataSelection)
+			return false;
+		if (deleteProcedure == null) {
+			if (other.deleteProcedure != null)
+				return false;
+		} else if (!deleteProcedure.equals(other.deleteProcedure))
+			return false;
+		if (depositName == null) {
+			if (other.depositName != null)
+				return false;
+		} else if (!depositName.equals(other.depositName))
+			return false;
+		if (documentation != other.documentation)
+			return false;
+		if (duration == null) {
+			if (other.duration != null)
+				return false;
+		} else if (!duration.equals(other.duration))
+			return false;
+		if (existingData == null) {
+			if (other.existingData != null)
+				return false;
+		} else if (!existingData.equals(other.existingData))
+			return false;
+		if (existingDataIntegration == null) {
+			if (other.existingDataIntegration != null)
+				return false;
+		} else if (!existingDataIntegration.equals(other.existingDataIntegration))
+			return false;
+		if (existingDataRelevance == null) {
+			if (other.existingDataRelevance != null)
+				return false;
+		} else if (!existingDataRelevance.equals(other.existingDataRelevance))
+			return false;
+		if (expectedUsage == null) {
+			if (other.expectedUsage != null)
+				return false;
+		} else if (!expectedUsage.equals(other.expectedUsage))
+			return false;
+		if (externalCopyright != other.externalCopyright)
+			return false;
+		if (externalCopyrightTxt == null) {
+			if (other.externalCopyrightTxt != null)
+				return false;
+		} else if (!externalCopyrightTxt.equals(other.externalCopyrightTxt))
+			return false;
+		if (fileFormat == null) {
+			if (other.fileFormat != null)
+				return false;
+		} else if (!fileFormat.equals(other.fileFormat))
+			return false;
+		if (frameworkNationality == null) {
+			if (other.frameworkNationality != null)
+				return false;
+		} else if (!frameworkNationality.equals(other.frameworkNationality))
+			return false;
+		if (frameworkNationalityTxt == null) {
+			if (other.frameworkNationalityTxt != null)
+				return false;
+		} else if (!frameworkNationalityTxt.equals(other.frameworkNationalityTxt))
+			return false;
+		if (funderRequirements == null) {
+			if (other.funderRequirements != null)
+				return false;
+		} else if (!funderRequirements.equals(other.funderRequirements))
+			return false;
+		if (givenConsent != other.givenConsent)
+			return false;
+		if (goodScientific != other.goodScientific)
+			return false;
+		if (id != other.id)
+			return false;
+		if (initialUsage == null) {
+			if (other.initialUsage != null)
+				return false;
+		} else if (!initialUsage.equals(other.initialUsage))
+			return false;
+		if (internalCopyright != other.internalCopyright)
+			return false;
+		if (internalCopyrightTxt == null) {
+			if (other.internalCopyrightTxt != null)
+				return false;
+		} else if (!internalCopyrightTxt.equals(other.internalCopyrightTxt))
+			return false;
+		if (involvedInformed != other.involvedInformed)
+			return false;
+		if (involvedInstitutions == null) {
+			if (other.involvedInstitutions != null)
+				return false;
+		} else if (!involvedInstitutions.equals(other.involvedInstitutions))
+			return false;
+		if (irbApproval != other.irbApproval)
+			return false;
+		if (irbApprovalTxt == null) {
+			if (other.irbApprovalTxt != null)
+				return false;
+		} else if (!irbApprovalTxt.equals(other.irbApprovalTxt))
+			return false;
+		if (managementWorkflow != other.managementWorkflow)
+			return false;
+		if (managementWorkflowTxt == null) {
+			if (other.managementWorkflowTxt != null)
+				return false;
+		} else if (!managementWorkflowTxt.equals(other.managementWorkflowTxt))
+			return false;
+		if (measOccasions == null) {
+			if (other.measOccasions != null)
+				return false;
+		} else if (!measOccasions.equals(other.measOccasions))
+			return false;
+		if (metaDescription == null) {
+			if (other.metaDescription != null)
+				return false;
+		} else if (!metaDescription.equals(other.metaDescription))
+			return false;
+		if (metaFormat == null) {
+			if (other.metaFormat != null)
+				return false;
+		} else if (!metaFormat.equals(other.metaFormat))
+			return false;
+		if (metaFramework == null) {
+			if (other.metaFramework != null)
+				return false;
+		} else if (!metaFramework.equals(other.metaFramework))
+			return false;
+		if (metaGeneration == null) {
+			if (other.metaGeneration != null)
+				return false;
+		} else if (!metaGeneration.equals(other.metaGeneration))
+			return false;
+		if (metaMonitor == null) {
+			if (other.metaMonitor != null)
+				return false;
+		} else if (!metaMonitor.equals(other.metaMonitor))
+			return false;
+		if (multipleMeasurements == null) {
+			if (other.multipleMeasurements != null)
+				return false;
+		} else if (!multipleMeasurements.equals(other.multipleMeasurements))
+			return false;
+		if (namingCon == null) {
+			if (other.namingCon != null)
+				return false;
+		} else if (!namingCon.equals(other.namingCon))
+			return false;
+		if (noAccessReason == null) {
+			if (other.noAccessReason != null)
+				return false;
+		} else if (!noAccessReason.equals(other.noAccessReason))
+			return false;
+		if (noAccessReasonOther == null) {
+			if (other.noAccessReasonOther != null)
+				return false;
+		} else if (!noAccessReasonOther.equals(other.noAccessReasonOther))
+			return false;
+		if (organizations == null) {
+			if (other.organizations != null)
+				return false;
+		} else if (!organizations.equals(other.organizations))
+			return false;
+		if (otherCMINP == null) {
+			if (other.otherCMINP != null)
+				return false;
+		} else if (!otherCMINP.equals(other.otherCMINP))
+			return false;
+		if (otherCMIP == null) {
+			if (other.otherCMIP != null)
+				return false;
+		} else if (!otherCMIP.equals(other.otherCMIP))
+			return false;
+		if (otherDataTypes == null) {
+			if (other.otherDataTypes != null)
+				return false;
+		} else if (!otherDataTypes.equals(other.otherDataTypes))
+			return false;
+		if (planAims == null) {
+			if (other.planAims != null)
+				return false;
+		} else if (!planAims.equals(other.planAims))
+			return false;
+		if (planningAdherence == null) {
+			if (other.planningAdherence != null)
+				return false;
+		} else if (!planningAdherence.equals(other.planningAdherence))
+			return false;
+		if (protectionRequirements == null) {
+			if (other.protectionRequirements != null)
+				return false;
+		} else if (!protectionRequirements.equals(other.protectionRequirements))
+			return false;
+		if (publStrategy == null) {
+			if (other.publStrategy != null)
+				return false;
+		} else if (!publStrategy.equals(other.publStrategy))
+			return false;
+		if (qualitityOther == null) {
+			if (other.qualitityOther != null)
+				return false;
+		} else if (!qualitityOther.equals(other.qualitityOther))
+			return false;
+		if (releaseObligation != other.releaseObligation)
+			return false;
+		if (reliabilityTraining == null) {
+			if (other.reliabilityTraining != null)
+				return false;
+		} else if (!reliabilityTraining.equals(other.reliabilityTraining))
+			return false;
+		if (requirements != other.requirements)
+			return false;
+		if (responsibleUnit == null) {
+			if (other.responsibleUnit != null)
+				return false;
+		} else if (!responsibleUnit.equals(other.responsibleUnit))
+			return false;
+		if (searchableData == null) {
+			if (other.searchableData != null)
+				return false;
+		} else if (!searchableData.equals(other.searchableData))
+			return false;
+		if (selectedMetaPurposes == null) {
+			if (other.selectedMetaPurposes != null)
+				return false;
+		} else if (!selectedMetaPurposes.equals(other.selectedMetaPurposes))
+			return false;
+		if (selectionResp == null) {
+			if (other.selectionResp != null)
+				return false;
+		} else if (!selectionResp.equals(other.selectionResp))
+			return false;
+		if (selectionTime == null) {
+			if (other.selectionTime != null)
+				return false;
+		} else if (!selectionTime.equals(other.selectionTime))
+			return false;
+		if (sensitiveData == null) {
+			if (other.sensitiveData != null)
+				return false;
+		} else if (!sensitiveData.equals(other.sensitiveData))
+			return false;
+		if (sensitiveDataIncluded != other.sensitiveDataIncluded)
+			return false;
+		if (sensitiveDataIncludedTxt == null) {
+			if (other.sensitiveDataIncludedTxt != null)
+				return false;
+		} else if (!sensitiveDataIncludedTxt.equals(other.sensitiveDataIncludedTxt))
+			return false;
+		if (sharingConsidered != other.sharingConsidered)
+			return false;
+		if (specificCosts == null) {
+			if (other.specificCosts != null)
+				return false;
+		} else if (!specificCosts.equals(other.specificCosts))
+			return false;
+		if (specificCostsTxt == null) {
+			if (other.specificCostsTxt != null)
+				return false;
+		} else if (!specificCostsTxt.equals(other.specificCostsTxt))
+			return false;
+		if (staffDescription != other.staffDescription)
+			return false;
+		if (staffDescriptionTxt == null) {
+			if (other.staffDescriptionTxt != null)
+				return false;
+		} else if (!staffDescriptionTxt.equals(other.staffDescriptionTxt))
+			return false;
+		if (storageBackups == null) {
+			if (other.storageBackups != null)
+				return false;
+		} else if (!storageBackups.equals(other.storageBackups))
+			return false;
+		if (storageDuration == null) {
+			if (other.storageDuration != null)
+				return false;
+		} else if (!storageDuration.equals(other.storageDuration))
+			return false;
+		if (storageExpectedSize == null) {
+			if (other.storageExpectedSize != null)
+				return false;
+		} else if (!storageExpectedSize.equals(other.storageExpectedSize))
+			return false;
+		if (storagePlaces == null) {
+			if (other.storagePlaces != null)
+				return false;
+		} else if (!storagePlaces.equals(other.storagePlaces))
+			return false;
+		if (storageRequirements != other.storageRequirements)
+			return false;
+		if (storageRequirementsTxt == null) {
+			if (other.storageRequirementsTxt != null)
+				return false;
+		} else if (!storageRequirementsTxt.equals(other.storageRequirementsTxt))
+			return false;
+		if (storageResponsible == null) {
+			if (other.storageResponsible != null)
+				return false;
+		} else if (!storageResponsible.equals(other.storageResponsible))
+			return false;
+		if (storageSuccession != other.storageSuccession)
+			return false;
+		if (storageSuccessionTxt == null) {
+			if (other.storageSuccessionTxt != null)
+				return false;
+		} else if (!storageSuccessionTxt.equals(other.storageSuccessionTxt))
+			return false;
+		if (storageTransfer == null) {
+			if (other.storageTransfer != null)
+				return false;
+		} else if (!storageTransfer.equals(other.storageTransfer))
+			return false;
+		if (subsequentUse != other.subsequentUse)
+			return false;
+		if (transferTime == null) {
+			if (other.transferTime != null)
+				return false;
+		} else if (!transferTime.equals(other.transferTime))
+			return false;
+		if (usageRestriction == null) {
+			if (other.usageRestriction != null)
+				return false;
+		} else if (!usageRestriction.equals(other.usageRestriction))
+			return false;
+		if (usedCollectionModes == null) {
+			if (other.usedCollectionModes != null)
+				return false;
+		} else if (!usedCollectionModes.equals(other.usedCollectionModes))
+			return false;
+		if (usedDataTypes == null) {
+			if (other.usedDataTypes != null)
+				return false;
+		} else if (!usedDataTypes.equals(other.usedDataTypes))
+			return false;
+		if (usedPID == null) {
+			if (other.usedPID != null)
+				return false;
+		} else if (!usedPID.equals(other.usedPID))
+			return false;
+		if (usedPIDTxt == null) {
+			if (other.usedPIDTxt != null)
+				return false;
+		} else if (!usedPIDTxt.equals(other.usedPIDTxt))
+			return false;
+		if (workingCopy != other.workingCopy)
+			return false;
+		return true;
 	}
 
 }

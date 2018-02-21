@@ -18,6 +18,23 @@ import org.springframework.stereotype.Repository;
 import de.zpid.datawiz.dto.FormTypesDTO;
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 
+/**
+ * This file is part of Datawiz
+ * 
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>. <br />
+ * <br />
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ */
 @Repository
 @Scope("singleton")
 public class FormTypesDAO {
@@ -29,14 +46,26 @@ public class FormTypesDAO {
 
 	private static Logger log = LogManager.getLogger(FormTypesDAO.class);
 
+	/**
+	 * Instantiates a new FormTypesDAO.
+	 */
 	public FormTypesDAO() {
 		super();
-		if (log.isInfoEnabled())
-			log.info("Loading FormTypesDAO as Singleton and Service");
+		log.info("Loading FormTypesDAO as Singleton and Service");
 	}
 
+	/**
+	 * This function returns all matching FormTypes entities from the table dmp_formtypes depending on the passed parameters.
+	 * 
+	 * @param active
+	 *          If true, only active FormTypes will be returned
+	 * @param type
+	 *          Type of the form type to be selected
+	 * @return List of FormTypesDTO, which contains the selected subset
+	 * @throws Exception
+	 */
 	public List<FormTypesDTO> findAllByType(final boolean active, final DWFieldTypes type) throws Exception {
-		log.trace("execute getAllByType [type: {}; active: {}]", () -> type, () -> active);
+		log.trace("Entering getAllByType for DWFieldType [type: {}; active: {}]", () -> type, () -> active);
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT * FROM dw_formtypes WHERE");
 		if (active)
@@ -55,12 +84,25 @@ public class FormTypesDAO {
 				return dt;
 			}
 		});
-		log.debug("Transaction for getAllByType returned [size: {}]", () -> ret.size());
+		log.debug("Transaction \"getAllByType\" terminates with result: [length: {}]", () -> ((ret != null) ? ret.size() : "null"));
 		return ret;
 	}
 
-	public List<Integer> findSelectedFormTypesByIdAndType(final long id, final DWFieldTypes type, final boolean isStudy) throws Exception {
-		log.trace("execute getSelectedFormTypesByIdAndType for [id: {}; type: {}; isStudy: {}]", () -> id, () -> type.name(), () -> isStudy);
+	/**
+	 * This function returns a list of the selected form type for a DMP or study. To do this, the relation tables dw_dmp_formtypes or dw_study_formtypes are
+	 * searched, depending on the passed parameters.
+	 * 
+	 * @param identifier
+	 *          Study, or DMP identifier. Usage depends on boolean value isStudy
+	 * @param type
+	 *          Type of the form type to be selected
+	 * @param isStudy
+	 *          Has to be set true for finding study FormTypes, false for DMP FormTypes
+	 * @return List of FormTypesDTO, which contains the selected subset
+	 * @throws Exception
+	 */
+	public List<Integer> findSelectedFormTypesByIdAndType(final long identifier, final DWFieldTypes type, final boolean isStudy) throws Exception {
+		log.trace("Entering getSelectedFormTypesByIdAndType for DWFieldType [id: {}; type: {}; isStudy: {}]", () -> identifier, () -> type.name(), () -> isStudy);
 		String sql;
 		if (isStudy)
 			sql = "SELECT dw_study_formtypes.ftid FROM dw_study_formtypes " + "LEFT JOIN dw_formtypes ON dw_study_formtypes.ftid = dw_formtypes.id "
@@ -68,17 +110,28 @@ public class FormTypesDAO {
 		else
 			sql = "SELECT dw_dmp_formtypes.ftid FROM dw_dmp_formtypes " + "LEFT JOIN dw_formtypes ON dw_dmp_formtypes.ftid = dw_formtypes.id "
 			    + "WHERE dw_dmp_formtypes.dmpid = ? AND dw_formtypes.type = ? ";
-		final List<Integer> ret = jdbcTemplate.query(sql, new Object[] { id, type.toString() }, new RowMapper<Integer>() {
+		final List<Integer> ret = jdbcTemplate.query(sql, new Object[] { identifier, type.toString() }, new RowMapper<Integer>() {
 			public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return rs.getInt("ftid");
 			}
 		});
-		log.debug("Transaction for getSelectedFormTypesByIdAndType returned [size: {}]", () -> ret.size());
+		log.debug("Transaction \"getSelectedFormTypesByIdAndType\" terminates with result: [length: {}]", () -> ((ret != null) ? ret.size() : "null"));
 		return ret;
 	}
 
-	public int[] deleteSelectedFormType(final long dmpOrStudyID, final List<Integer> types, final boolean isStudy) {
-		log.trace("execute deleteSelectedFormType [size: {}]", () -> types.size());
+	/**
+	 * This functions deletes all FormTypes Study/DMP entities from the relation tables dw_study_formtypes or dw_dmp_formtypes depending on the passed parameters.
+	 * 
+	 * @param identifier
+	 *          Study, or DMP identifier. Usage depends on boolean value isStudy
+	 * @param types
+	 *          List of all FormTypes which have to be deleted
+	 * @param isStudy
+	 *          Has to be set true for deleting study FormTypes, false for DMP FormTypes
+	 * @return List of results
+	 */
+	public int[] deleteSelectedFormType(final long identifier, final List<Integer> types, final boolean isStudy) {
+		log.trace("Entering deleteSelectedFormType [size: {}]", () -> types.size());
 		String query = null;
 		if (isStudy)
 			query = "DELETE FROM dw_study_formtypes WHERE studyid = ? AND ftid = ?";
@@ -86,7 +139,7 @@ public class FormTypesDAO {
 			query = "DELETE FROM dw_dmp_formtypes WHERE dmpid = ? AND ftid = ?";
 		int[] ret = this.jdbcTemplate.batchUpdate(query, new BatchPreparedStatementSetter() {
 			public void setValues(PreparedStatement ps, int i) throws SQLException {
-				ps.setLong(1, dmpOrStudyID);
+				ps.setLong(1, identifier);
 				ps.setLong(2, types.get(i));
 			}
 
@@ -94,12 +147,24 @@ public class FormTypesDAO {
 				return types.size();
 			}
 		});
-		log.debug("leaving deleteSelectedFormType with result: {}", () -> ret.length);
+		log.debug("Transaction \"deleteSelectedFormType\" terminates with result: [length: {}]", () -> ret.length);
 		return ret;
 	}
 
+	/**
+	 * This functions saves a set of FormTypes Study/DMP entities into the relation tables dw_study_formtypes or dw_dmp_formtypes depending on the passed
+	 * parameters.
+	 * 
+	 * @param identifier
+	 *          Study, or DMP identifier. Usage depends on boolean value isStudy
+	 * @param types
+	 *          List of all FormTypes which have to be saved
+	 * @param isStudy
+	 *          Has to be set true for saving study FormTypes, false for DMP FormTypes
+	 * @return List of results
+	 */
 	public int[] insertSelectedFormType(final long dmpOrStudyID, final List<Integer> types, final boolean isStudy) {
-		log.trace("execute insertSelectedFormType [size: {}]", () -> types.size());
+		log.trace("Entering insertSelectedFormType [size: {}]", () -> types.size());
 		String query = null;
 		if (isStudy)
 			query = "INSERT INTO dw_study_formtypes (studyid, ftid) VALUES(?,?)";
@@ -115,7 +180,7 @@ public class FormTypesDAO {
 				return types.size();
 			}
 		});
-		log.debug("leaving insertSelectedFormType with result: {}", () -> ret.length);
+		log.debug("Transaction \"insertSelectedFormType\" terminates with result: [length: {}]", () -> ret.length);
 		return ret;
 	}
 }

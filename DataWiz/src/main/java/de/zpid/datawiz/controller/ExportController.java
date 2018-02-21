@@ -112,6 +112,7 @@ public class ExportController {
 					    () -> ((DataWizSystemException) e).getErrorCode(), () -> e);
 					throw (e);
 				} else {
+					log.error("Exception during EXPORT: ", () -> e);
 					throw new DWDownloadException("export.error.exception.thown");
 				}
 			}

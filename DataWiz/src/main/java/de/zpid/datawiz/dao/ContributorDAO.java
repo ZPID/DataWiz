@@ -28,8 +28,7 @@ import de.zpid.datawiz.dto.ProjectDTO;
 /**
  * This file is part of Datawiz
  * 
- * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
  * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
  * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
@@ -38,7 +37,6 @@ import de.zpid.datawiz.dto.ProjectDTO;
  * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
  * Attribution-NonCommercial-ShareAlike 4.0 International License</a>. <br />
  * <br />
- * Java JNA Wrapper Class for native SPSS IO modules. Includes all functions for the .sav import into Java.
  * 
  * @author Ronny Boelter
  * @version 1.0
@@ -49,18 +47,17 @@ import de.zpid.datawiz.dto.ProjectDTO;
 public class ContributorDAO {
 
 	@Autowired
-	protected ClassPathXmlApplicationContext applicationContext;
+	private ClassPathXmlApplicationContext applicationContext;
 	@Autowired
-	protected JdbcTemplate jdbcTemplate;
+	private JdbcTemplate jdbcTemplate;
 	private static Logger log = LogManager.getLogger(ContributorDAO.class);
 
 	/**
-	 * Instantiates a new contributor DAO.
+	 * Instantiates a new ContributorDAO.
 	 */
 	public ContributorDAO() {
 		super();
-		if (log.isInfoEnabled())
-			log.info("Loading ContributorDAO as Singleton and Repository");
+		log.info("Loading ContributorDAO as Singleton and Repository");
 	}
 
 	/**
@@ -78,16 +75,15 @@ public class ContributorDAO {
 	 */
 	public List<ContributorDTO> findByProject(final ProjectDTO project, final boolean withStudy, final boolean withPrimary) throws Exception {
 		log.trace("Entering getByProject for project [id: {}]", () -> project.getId());
-		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
-		    + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE " + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ")
-		    + (withPrimary ? "" : "dw_contributors.primaryContributor IS FALSE AND ")
+		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors " + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+		    + (withStudy ? "" : "dw_study_contributors.study_id IS NULL AND ") + (withPrimary ? "" : "dw_contributors.primaryContributor IS FALSE AND ")
 		    + "dw_study_contributors.project_id = ? ORDER BY dw_contributors.sort ASC";
 		List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { project.getId() }, new RowMapper<ContributorDTO>() {
 			public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return setContributorDTO(rs);
 			}
 		});
-		log.trace("Transaction getByProject returned result length: [{}]", () -> ((cContri != null) ? cContri.size() : "null"));
+		log.debug("Transaction \"getByProject\" terminates with result: [length: {}]", () -> ((cContri != null) ? cContri.size() : "null"));
 		return cContri;
 	}
 
@@ -101,15 +97,14 @@ public class ContributorDAO {
 	 */
 	public List<ContributorDTO> findByStudy(final long studyId) throws Exception {
 		log.trace("Entering findByStudy for project [id: {}]", () -> studyId);
-		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
-		    + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors " + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
 		    + "dw_study_contributors.study_id = ? ORDER BY dw_contributors.id DESC";
 		List<ContributorDTO> cContri = jdbcTemplate.query(sql, new Object[] { studyId }, new RowMapper<ContributorDTO>() {
 			public ContributorDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return setContributorDTO(rs);
 			}
 		});
-		log.trace("Transaction findByStudy returned result length: [{}]", () -> ((cContri != null) ? cContri.size() : "null"));
+		log.debug("Transaction \"findByStudy\" terminates with result: [length: {}]", () -> ((cContri != null) ? cContri.size() : "null"));
 		return cContri;
 	}
 
@@ -123,8 +118,7 @@ public class ContributorDAO {
 	 */
 	public ContributorDTO findPrimaryContributorByProject(ProjectDTO project) throws Exception {
 		log.trace("Entering findPrimaryContributorByProject for project [id: {}, name: {}]", () -> project.getId(), () -> project.getTitle());
-		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors "
-		    + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
+		String sql = "SELECT * FROM dw_contributors LEFT JOIN dw_study_contributors " + "ON dw_study_contributors.contributor_id = dw_contributors.id WHERE "
 		    + "dw_contributors.primaryContributor IS TRUE AND dw_study_contributors.project_id = ?";
 		ContributorDTO contri = jdbcTemplate.query(sql, new Object[] { project.getId() }, new ResultSetExtractor<ContributorDTO>() {
 			@Override
@@ -135,7 +129,7 @@ public class ContributorDAO {
 				return null;
 			}
 		});
-		log.trace("leaving findPrimaryContributorByProject with contributor: " + contri);
+		log.debug("Transaction \"findPrimaryContributorByProject\" terminates with result: [ContributorDTO: {}]", () -> contri);
 		return contri;
 	}
 
@@ -148,10 +142,9 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int deleteFromProject(ContributorDTO contri) throws Exception {
-		log.trace("execute deleteFromProject [projectId: {}; contributorId: {}]", () -> contri.getProjectId(), () -> contri.getId());
-		int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?", contri.getProjectId(),
-		    contri.getId());
-		log.debug("leaving deleteFromProject with result: [success: {}]", () -> chk);
+		log.trace("Entering deleteFromProject [projectId: {}; contributorId: {}]", () -> contri.getProjectId(), () -> contri.getId());
+		int chk = this.jdbcTemplate.update("DELETE FROM dw_study_contributors WHERE project_id = ? AND contributor_id= ?", contri.getProjectId(), contri.getId());
+		log.debug("Transaction \"deleteFromProject\" terminates with result: [deleted: {}]", () -> chk);
 		return chk;
 	}
 
@@ -164,9 +157,9 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int deleteContributor(ContributorDTO contri) throws Exception {
-		log.trace("execute deleteContributor [contributorId: {}]", () -> contri.getId());
+		log.trace("Entering deleteContributor [contributorId: {}]", () -> contri.getId());
 		int chk = this.jdbcTemplate.update("DELETE FROM dw_contributors WHERE id= ?", contri.getId());
-		log.trace("leaving deleteContributor with result: [success: {}]", () -> chk);
+		log.debug("Transaction \"deleteContributor\" terminates with result: [deleted: {}]", () -> chk);
 		return chk;
 	}
 
@@ -179,7 +172,7 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int[] deleteFromStudy(final List<ContributorDTO> contri) throws Exception {
-		log.trace("execute deleteFromStudy [size: {}]", () -> contri.size());
+		log.trace("Entering deleteFromStudy [size: {}]", () -> contri.size());
 		int[] ret = this.jdbcTemplate.batchUpdate("DELETE FROM dw_study_contributors WHERE project_id = ? AND study_id = ? AND contributor_id= ?",
 		    new BatchPreparedStatementSetter() {
 			    public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -193,7 +186,7 @@ public class ContributorDAO {
 				    return contri.size();
 			    }
 		    });
-		log.trace("leaving deleteFromStudy with result: [size: {}]", () -> ret.length);
+		log.debug("Transaction \"deleteFromStudy\" terminates with result: [deleted: {}]", () -> ret.length);
 		return ret;
 	}
 
@@ -208,7 +201,7 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int[] insertStudyRelation(final List<ContributorDTO> contri, final Long studyId) throws Exception {
-		log.trace("execute insertIntoStudy [size: {}]", () -> contri.size());
+		log.trace("Entering insertIntoStudy [size: {}]", () -> contri.size());
 		int[] ret = this.jdbcTemplate.batchUpdate("INSERT INTO dw_study_contributors (project_id, study_id, contributor_id) VALUES (?,?,?)",
 		    new BatchPreparedStatementSetter() {
 			    public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -222,7 +215,7 @@ public class ContributorDAO {
 				    return contri.size();
 			    }
 		    });
-		log.trace("leaving insertIntoStudy with result: [size: {}]", () -> ret.length);
+		log.debug("Transaction \"insertStudyRelation\" terminates with result: [size: {}]", () -> ret.length);
 		return ret;
 	}
 
@@ -235,7 +228,7 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int insertContributor(final ContributorDTO contri) throws Exception {
-		log.trace("execute insertContributor [contributor: {}]", () -> contri);
+		log.trace("Entering insertContributor [contributor: {}]", () -> contri);
 		KeyHolder holder = new GeneratedKeyHolder();
 		final String stmt = "INSERT INTO dw_contributors (sort, title, first_name, last_name, institution, department, orcid, primaryContributor) "
 		    + "VALUES (?,?,?,?,?,?,?,?)";
@@ -255,7 +248,7 @@ public class ContributorDAO {
 			}
 		}, holder);
 		contri.setId((holder.getKey().longValue() > 0) ? holder.getKey().longValue() : -1);
-		log.trace("leaving insertContributor with result: [success: {}]", () -> chk);
+		log.debug("Transaction \"insertContributor\" terminates with result: [success: {}]", () -> chk);
 		return chk;
 	}
 
@@ -268,10 +261,9 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int insertProjectRelation(ContributorDTO contri) throws Exception {
-		log.trace("execute insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
-		int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)", contri.getProjectId(),
-		    contri.getId());
-		log.trace("leaving insertIntoProject with result: [success: {}]", () -> ret);
+		log.trace("Entering insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
+		int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)", contri.getProjectId(), contri.getId());
+		log.debug("Transaction \"insertProjectRelation\" terminates with result: [success: {}]", () -> ret);
 		return ret;
 	}
 
@@ -284,12 +276,12 @@ public class ContributorDAO {
 	 * @throws Exception
 	 */
 	public int updateContributor(ContributorDTO contri) throws Exception {
-		log.trace("execute updateContributor [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
+		log.trace("Entering updateContributor [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
 		int ret = this.jdbcTemplate.update(
-		    "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ? WHERE dw_contributors.id = ?",
-		    contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(), contri.getOrcid(),
+		    "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ?, sort = ? WHERE dw_contributors.id = ?",
+		    contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(), contri.getOrcid(), contri.getSort(),
 		    contri.getId());
-		log.trace("leaving updateContributor with result: [success: {}]", () -> ret);
+		log.debug("Transaction \"updateContributor\" terminates with result: [success: {}]", () -> ret);
 		return ret;
 	}
 
@@ -313,6 +305,7 @@ public class ContributorDAO {
 		contri.setDepartment(rs.getString("department"));
 		contri.setOrcid(rs.getString("orcid"));
 		contri.setPrimaryContributor(rs.getBoolean("primaryContributor"));
+		contri.setSort(rs.getInt("sort"));
 		return contri;
 	}
 

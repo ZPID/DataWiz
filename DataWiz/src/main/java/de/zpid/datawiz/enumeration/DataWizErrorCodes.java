@@ -1,8 +1,8 @@
 package de.zpid.datawiz.enumeration;
 
 public enum DataWizErrorCodes {
-
   OK,
+  SESSION_ERROR,
   DATABASE_ERROR,
   RECORD_SAVE_ERROR,
   NO_DATA_ERROR,
@@ -18,6 +18,7 @@ public enum DataWizErrorCodes {
   RECORD_NOT_AVAILABLE,
   RECORD_PARSING_ERROR,
   RECORD_VALIDATION_ERROR,
+  DMP_VALIDATION_ERROR,
   RECORD_DELETE_ERROR,
   IMPORT_TYPE_NOT_SUPPORTED,
   DATE_PARSING_ERROR,  

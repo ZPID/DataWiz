@@ -14,6 +14,7 @@
       <label for="project.title"><s:message code="dmp.edit.projectname" /></label>
       <div class="well" style="">
         <s:message text="${ProjectForm.project.title}" />
+        <sf:hidden path="project.title" />
       </div>
     </div>
   </div>
@@ -25,12 +26,14 @@
           <label for="project.description"><s:message code="dmp.edit.projectAims" /></label>
         </div>
         <div class="col-xs-2 col-sm-1 text-nowrap text-align-right">
-          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /><img src="/DataWiz/static/images/${valimag2}" class="infoImages" /><img
-            src="/DataWiz/static/images/${valimag3}" class="infoImages" />
+          <img src="/DataWiz/static/images/${valimag1}" class="infoImages" /><img
+            src="/DataWiz/static/images/${valimag2}" class="infoImages" /><img src="/DataWiz/static/images/${valimag3}"
+            class="infoImages" />
         </div>
       </div>
       <div class="well" style="">
         <s:message text="${ProjectForm.project.description}" />
+        <sf:hidden path="project.description" />
       </div>
     </div>
   </div>
@@ -47,6 +50,7 @@
       </div>
       <div class="well" style="">
         <s:message text="${ProjectForm.project.funding}" />
+        <sf:hidden path="project.funding" />
       </div>
     </div>
   </div>
@@ -73,6 +77,9 @@
         text="${ProjectForm.primaryContributor.title}&nbsp;${ProjectForm.primaryContributor.firstName}&nbsp;${ProjectForm.primaryContributor.lastName}" />
       <div class="well" style="">
         <s:message text="${fn:trim(primaryName)}" />
+        <sf:hidden path="primaryContributor.title" />
+        <sf:hidden path="primaryContributor.firstName" />
+        <sf:hidden path="primaryContributor.lastName" />
       </div>
     </div>
   </div>

@@ -5,27 +5,19 @@
     <%@ include file="templates/breadcrump.jsp"%>
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
-      <div class="page-header">
-        <c:url var="projectUrl" value="study" />
-        <div class="row">
-
-          <div class="col-sm-10">
-            <h4>
-              <s:message code="project.studies.headline" />
-            </h4>
-          </div>
+      <div class="row text-align-right btn-line">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <c:url var="projectUrl" value="study" />
           <c:if
             test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
                   principal.user.hasRole('PROJECT_WRITER', ProjectForm.project.id, false) or principal.user.hasRole('ADMIN')}">
-            <div class="col-sm-2 text-align-right">
-              <a href="${projectUrl}" class="btn btn-success btn-sm"><s:message code="study.create.button" /></a>
-            </div>
+            <a href="${projectUrl}" class="btn btn-success btn-sm"><s:message code="study.create.button" /></a>
           </c:if>
         </div>
-        <div>
-          <s:message code="project.studies.info" />
-        </div>
       </div>
+      <s:message code="project.studies.headline" var="headline_head" />
+      <s:message code="project.studies.info" var="headline_info" />
+      <%@ include file="templates/pages_headline.jsp"%>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
       <c:choose>
@@ -59,7 +51,8 @@
             </c:choose>
           </c:if>
           <div class="panel <c:out value="${pRole_set}"/>">
-            <div class="panel-heading" onclick="location.href='<c:url value="study/${cstud.id}"/>';" style="cursor: pointer;">
+            <div class="panel-heading" onclick="location.href='<c:url value="study/${cstud.id}"/>';"
+              style="cursor: pointer;">
               <div class="row">
                 <div class="col-sm-12">
                   <s:message text="${cstud.title}" />
@@ -113,11 +106,12 @@
                       <javatime:format value="${cstud.timestamp}" style="MS" var="strDate" />
                       <c:choose>
                         <c:when test="${not empty user.lastName && not empty user.firstName}">
-                          <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
-                            argumentSeparator=";" />
+                          <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}"
+                            htmlEscape="false" argumentSeparator=";" />
                         </c:when>
                         <c:otherwise>
-                          <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false" argumentSeparator=";" />
+                          <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false"
+                            argumentSeparator=";" />
                         </c:otherwise>
                       </c:choose>
                     </c:if>

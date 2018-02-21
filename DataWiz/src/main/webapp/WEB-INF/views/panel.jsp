@@ -13,7 +13,7 @@
             </h4>
           </div>
           <div class="col-xs-4 col-sm-2 text-align-right">
-            <a href="${projectUrl}/" class="btn btn-success btn-sm"><s:message code="project.create.button" /></a>
+            <a href="${projectUrl}" class="btn btn-info btn-sm"><s:message code="project.create.button" /></a>
           </div>
         </div>
         <div>
@@ -26,25 +26,21 @@
         <input type="hidden" value="<s:message code="project.panel.no.description" />" id="unsetDescription">
         <input type="hidden" value="<s:message code="study.panel.no.description" />" id="unsetStudyDescription">
         <input type="hidden" value="<s:message code="project.panel.no.researcher" />" id="unsetResearcher">
-        <div class="panel-group">
-          <c:if test="${not empty CProjectForm}">
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                <div class="row">
-                  <s:message code="project.filter.placeholder" var="filterPH" />
-                  <div class="col-sm-10">
-                    <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}" style="width: 100%">
-                  </div>
-                  <div class="col-sm-2 form-group">
-                    <select id="filterSelect" class="form-control" style="width: 100%">
-                      <option value="project"><s:message code="project.panel.select.project" /></option>
-                      <option value="study"><s:message code="project.panel.select.study" /></option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+        <c:if test="${not empty CProjectForm}">
+          <div class="row" id="filter_row">
+            <s:message code="project.filter.placeholder" var="filterPH" />
+            <div class="col-sm-10">
+              <input type="text" id="projectfilter" class="form-control" placeholder="${filterPH}" style="width: 100%">
             </div>
-          </c:if>
+            <div class="col-sm-2">
+              <select id="filterSelect" class="form-control" style="width: 100%">
+                <option value="project"><s:message code="project.panel.select.project" /></option>
+                <option value="study"><s:message code="project.panel.select.study" /></option>
+              </select>
+            </div>
+          </div>
+        </c:if>
+        <div class="panel-group">
           <c:forEach items="${CProjectForm}" var="form" varStatus="loop">
             <c:choose>
               <c:when test="${principal.user.hasRole('PROJECT_ADMIN', form.project.id, false)}">
@@ -71,12 +67,13 @@
               <c:choose>
                 <c:when test="${pRole eq 'panel-default'}">
                   <div class="panel-heading projectTitle">
-                    <strong><s:message text="${form.project.title}" />&nbsp;<s:message code="project.role.pending.info" /></strong>
+                    <strong><s:message text="${form.project.title}" />&nbsp;<s:message
+                        code="project.role.pending.info" /></strong>
                   </div>
                 </c:when>
                 <c:otherwise>
-                  <div class="panel-heading projectTitle" onclick="location.href='<c:url value="project/${form.project.id}"/>';"
-                    style="cursor: pointer;">
+                  <div class="panel-heading projectTitle"
+                    onclick="location.href='<c:url value="project/${form.project.id}"/>';" style="cursor: pointer;">
                     <strong><s:message text="${form.project.title}" /></strong>
                   </div>
                 </c:otherwise>
@@ -131,8 +128,9 @@
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default boxShadow">
-                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}" style="cursor: pointer;">
+                        <div class="panel panel-default">
+                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_coll_${loop.count}"
+                            style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.studies.showhide" /></strong>
                           </div>
                           <div class="panel-collapse collapse" id="panel_coll_${loop.count}">
@@ -150,8 +148,9 @@
                                       </c:when>
                                     </c:choose>
                                   </c:if>
-                                  <div class="panel  <s:message text="${sRole}"/> studyFilter"
-                                    onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';" style="cursor: pointer;">
+                                  <div class="bg_hoover panel  <s:message text="${sRole}"/> studyFilter"
+                                    onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
+                                    style="cursor: pointer;">
                                     <div class="panel-heading studyTitleFilter">
                                       <strong><s:message text="${study.title}" /></strong>
                                     </div>
@@ -177,9 +176,12 @@
                                         </div>
                                         <div class="col-xs-12 col-sm-10 studyResearcherFilter">
                                           <c:choose>
-                                            <c:when test="${not empty study.contributors && study.contributors.size() > 0 }">
-                                              <c:forEach items="${study.contributors}" var="contri" varStatus="contriloop">
-                                                <s:message text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
+                                            <c:when
+                                              test="${not empty study.contributors && study.contributors.size() > 0 }">
+                                              <c:forEach items="${study.contributors}" var="contri"
+                                                varStatus="contriloop">
+                                                <s:message
+                                                  text="${contri.title}&nbsp;${contri.firstName}&nbsp;${contri.lastName}" />
                                                 <c:if test="${contriloop.index < study.contributors.size()-1}">
                                                   <s:message text="&#044;" />
                                                 </c:if>
@@ -215,8 +217,9 @@
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default boxShadow">
-                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}" style="cursor: pointer;">
+                        <div class="panel panel-default" >
+                          <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
+                            style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.shared.showhide" /></strong>
                           </div>
                           <div class="panel-collapse collapse" id="panel_user_${loop.count}">
@@ -234,10 +237,12 @@
                                           <c:if test="${userRole.type ne 'REL_ROLE'}">
                                             <div class="list-group-item">
                                               <s:message code="roles.${userRole.type}" />
-                                              <c:if test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
+                                              <c:if
+                                                test="${userRole.type eq 'PROJECT_ADMIN' and form.project.ownerId == user.id}">
                                                 <span class="reddot"></span>
                                               </c:if>
-                                              <c:if test="${userRole.type eq 'DS_READER' or userRole.type eq 'DS_WRITER'}">
+                                              <c:if
+                                                test="${userRole.type eq 'DS_READER' or userRole.type eq 'DS_WRITER'}">
                                                 <c:forEach items="${form.studies}" var="study">
                                                   <c:if test="${userRole.studyId eq study.id}">
                                                     <s:message text="&quot; ${study.title}&quot; " />
@@ -262,7 +267,7 @@
               </div>
               <div class="panel-footer">
                 <div class="row">
-                  <div class="col-sm-12 text-align-right">
+                  <div class="col-lg-10 col-md-9 col-sm-7 col-xs-12 text-align-left">
                     <c:choose>
                       <c:when test="${not empty form.studies[0] && form.studies.size() > 0 }">
                         <c:forEach items="${form.sharedUser}" var="user">
@@ -270,11 +275,13 @@
                             <javatime:format value="${form.studies[0].timestamp}" style="MS" var="strDate" />
                             <c:choose>
                               <c:when test="${not empty user.lastName && not empty user.firstName}">
-                                <s:message code="panel.last.commit" arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
+                                <s:message code="panel.last.commit"
+                                  arguments="${strDate};${user.firstName} ${user.lastName}" htmlEscape="false"
                                   argumentSeparator=";" />
                               </c:when>
                               <c:otherwise>
-                                <s:message code="panel.last.commit" arguments="${strDate};${user.email}" htmlEscape="false" argumentSeparator=";" />
+                                <s:message code="panel.last.commit" arguments="${strDate};${user.email}"
+                                  htmlEscape="false" argumentSeparator=";" />
                               </c:otherwise>
                             </c:choose>
                           </c:if>
@@ -285,6 +292,10 @@
                         <s:message code="panel.created" arguments="${strDate}" htmlEscape="false" argumentSeparator=";" />
                       </c:otherwise>
                     </c:choose>
+                  </div>
+                  <div class="col-lg-2 col-md-3 col-sm-5 col-xs-12 text-align-right">
+                    <div class="btn btn-info btn-xs"
+                      onclick="location.href='<c:url value="project/${form.project.id}/"/>';" style="cursor: pointer;">Ansehen/Bearbeiten</div>
                   </div>
                 </div>
                 <c:set var="shared" value="" />

@@ -1,7 +1,7 @@
 <%@ include file="templates/header.jsp"%>
 <%@ include file="templates/navbar.jsp"%>
 <div id="mainWrapper">
-  <div class="login_container">
+  <div class="content-container">
     <%@ include file="templates/breadcrump.jsp"%>
     <div class="login-card content-padding">
       <c:url var="loginUrl" value="/login" />

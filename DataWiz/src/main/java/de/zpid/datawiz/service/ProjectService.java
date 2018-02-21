@@ -89,8 +89,6 @@ public class ProjectService {
 	private FileUtil fileUtil;
 	@Autowired
 	private MinioUtil minioUtil;
-	@Autowired
-	private ExceptionService exceptionService;
 
 	private static Logger log = LogManager.getLogger(ProjectService.class);
 
@@ -103,18 +101,16 @@ public class ProjectService {
 	 * @param user
 	 * @return
 	 */
-	public String checkUserAccess(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes,
-	    final boolean onlyWrite, final UserDTO user) {
+	public String checkUserAccess(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, final boolean onlyWrite,
+	    final UserDTO user) {
 		String ret = null;
 		if (user == null) {
-			log.warn("Auth User Object == null - redirect to login");
+			log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
 			ret = "redirect:/login";
 		}
-		if (!pid.isPresent()
-		    || checkProjectRoles(user, pid.get(), (studyId != null && studyId.isPresent()) ? studyId.get() : -1, onlyWrite, true) == null) {
+		if (!pid.isPresent() || checkProjectRoles(user, pid.get(), (studyId != null && studyId.isPresent()) ? studyId.get() : -1, onlyWrite, true) == null) {
 			log.warn(
-			    "WARN: access denied because of: "
-			        + (!pid.isPresent() ? "missing project identifier" : "user [id: {}] has no rights to read/write study [id: {}]"),
+			    "WARN: access denied because of: " + (!pid.isPresent() ? "missing project identifier" : "user [id: {}] has no rights to read/write study [id: {}]"),
 			    () -> user.getId(), () -> (studyId != null && studyId.isPresent() ? studyId.get() : 0));
 			redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
 			ret = !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
@@ -131,9 +127,9 @@ public class ProjectService {
 	 * @return String with redirect entry if role is non-existent, and null if existent
 	 */
 	public String checkProjectAdmin(final RedirectAttributes redirectAttributes, final long projectId, final UserDTO admin) {
-		log.trace("Entering checkProjectAdmin(SuperController) for project [id: {}] and user [mail: {}] ", () -> projectId, () -> admin.getEmail());
+		log.trace("Entering checkProjectAdmin for project [id: {}] and user [mail: {}] ", () -> projectId, () -> admin.getEmail());
 		if (admin == null) {
-			log.warn("Auth User Object == null - redirect to login");
+			log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
 			return "redirect:/login";
 		}
 		String ret = null;
@@ -148,7 +144,7 @@ public class ProjectService {
 			log.error("ERROR: Database Error while getting roles - Exception:", e);
 			ret = "redirect:/access/" + projectId;
 		}
-		log.trace("Method checkProjectAdmin(SuperController) completed");
+		log.trace("Method checkProjectAdmin completed");
 		return ret;
 	}
 
@@ -183,8 +179,7 @@ public class ProjectService {
 			}
 			final ProjectDTO pdto = projectDAO.findById(pid);
 			if (pdto == null || pdto.getId() <= 0) {
-				throw new DataWizSystemException("Project is empty for user=" + user.getEmail() + " and project=" + pid,
-				    DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+				throw new DataWizSystemException("Project is empty for user=" + user.getEmail() + " and project=" + pid, DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
 			}
 			pForm.setProject(pdto);
 			// load all data if user has full project rights
@@ -242,14 +237,6 @@ public class ProjectService {
 				dmp.setUsedDataTypes(formTypeDAO.findSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.DATATYPE, false));
 				dmp.setUsedCollectionModes(formTypeDAO.findSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.COLLECTIONMODE, false));
 				dmp.setSelectedMetaPurposes(formTypeDAO.findSelectedFormTypesByIdAndType(dmp.getId(), DWFieldTypes.METAPORPOSE, false));
-				dmp.setAdminChanged(false);
-				dmp.setResearchChanged(false);
-				dmp.setMetaChanged(false);
-				dmp.setSharingChanged(false);
-				dmp.setStorageChanged(false);
-				dmp.setOrganizationChanged(false);
-				dmp.setEthicalChanged(false);
-				dmp.setCostsChanged(false);
 			}
 			if (dmp == null || dmp.getId() <= 0) {
 				dmp = (DmpDTO) applicationContext.getBean("DmpDTO");
@@ -295,8 +282,29 @@ public class ProjectService {
 					pForm.getProject().setLastUserId(user.getId());
 					projectDAO.updateProject(pForm.getProject());
 				}
+				List<ContributorDTO> contriDBList = contributorDAO.findByProject(pForm.getProject(), false, false);
+				if (pForm.getContributors() != null && !pForm.getContributors().isEmpty() && contriDBList != null && !contriDBList.isEmpty()) {
+					Iterator<ContributorDTO> itt = contriDBList.iterator();
+					while (itt.hasNext()) {
+						ContributorDTO contriDB = itt.next();
+						for (ContributorDTO contri : pForm.getContributors()) {
+							if (contri.getId() == contriDB.getId()) {
+								itt.remove();
+								break;
+							}
+						}
+					}
+				}
+				for (ContributorDTO contri : contriDBList) {
+					contributorDAO.deleteContributor(contri);
+				}
+				int sort = 1;
 				for (ContributorDTO contri : pForm.getContributors()) {
 					contri.setProjectId(pForm.getProject().getId());
+					if (contri.getPrimaryContributor() == null || !contri.getPrimaryContributor())
+						contri.setSort(sort++);
+					else
+						contri.setSort(0);
 					if (contri.getId() <= 0) {
 						contributorDAO.insertContributor(contri);
 						contributorDAO.insertProjectRelation(contri);
@@ -363,8 +371,7 @@ public class ProjectService {
 			log.error("checkProjectRoles not sucessful -> return null! error:", e);
 			return null;
 		}
-		log.debug("Method gcheckProjectRoles(SuperController) ended without result for user [id: {}] and project [id: {}]", () -> user.getId(),
-		    () -> pid);
+		log.debug("Method gcheckProjectRoles ended without result for user [id: {}] and project [id: {}]", () -> user.getId(), () -> pid);
 		return null;
 	}
 
@@ -372,23 +379,32 @@ public class ProjectService {
 	 * @param pForm
 	 * @param bindingResult
 	 */
-	public List<ContributorDTO> validateContributors(ProjectForm pForm, BindingResult bindingResult) {
+	public List<ContributorDTO> validateContributors(ProjectForm pForm, BindingResult bindingResult) throws Exception {
 		List<ContributorDTO> cContri = new ArrayList<ContributorDTO>();
 		AtomicInteger contriCount = new AtomicInteger(0);
-		if (pForm.getContributors() != null)
-			pForm.getContributors().forEach(contri -> {
-				if (contri != null && (!contri.getTitle().trim().equals("") || !contri.getOrcid().trim().equals("")
-				    || !contri.getInstitution().trim().equals("") || !contri.getDepartment().trim().equals("") || !contri.getFirstName().trim().equals("")
-				    || !contri.getLastName().trim().equals(""))) {
+		if (pForm.getContributors() != null) {
+			Iterator<ContributorDTO> itt = pForm.getContributors().iterator();
+			while (itt.hasNext()) {
+				ContributorDTO contri = itt.next();
+				if (contri != null && (contri.getFirstName() == null || contri.getLastName() == null)) {
+					itt.remove();
+				} else if (contri != null && (!contri.getTitle().trim().equals("") || !contri.getOrcid().trim().equals("") || !contri.getInstitution().trim().equals("")
+				    || !contri.getDepartment().trim().equals("") || !contri.getFirstName().trim().equals("") || !contri.getLastName().trim().equals(""))) {
 					if (contri.getFirstName().trim().equals("")) {
 						bindingResult.rejectValue("contributors[" + contriCount.get() + "].firstName", "error.contributor.lastName.firstname");
 					}
 					if (contri.getLastName().trim().equals("")) {
-						bindingResult.rejectValue("contributors[" + contriCount.getAndIncrement() + "].lastName", "error.contributor.lastName.firstname");
+						bindingResult.rejectValue("contributors[" + contriCount.get() + "].lastName", "error.contributor.lastName.firstname");
 					}
 					cContri.add(contri);
+					contriCount.incrementAndGet();
 				}
+			}
+
+			pForm.getContributors().forEach(contri -> {
+
 			});
+		}
 		if (pForm.getPrimaryContributor() != null
 		    && (!pForm.getPrimaryContributor().getTitle().trim().equals("") || !pForm.getPrimaryContributor().getOrcid().trim().equals("")
 		        || !pForm.getPrimaryContributor().getInstitution().trim().equals("") || !pForm.getPrimaryContributor().getDepartment().trim().equals("")
@@ -411,29 +427,21 @@ public class ProjectService {
 	 * @param user
 	 * @param pForm
 	 * @return
+	 * @throws Exception
 	 */
-	public Boolean setMaterialForm(Optional<Long> pid, Optional<Long> studyId, ModelMap model, RedirectAttributes redirectAttributes, UserDTO user,
-	    ProjectForm pForm) {
-		Boolean success = true;
-		try {
-			Roles role = checkProjectRoles(user, pid.get(), 0, false, true);
-			getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
-			if (!studyId.isPresent()) {
-				model.put("breadcrumpList",
-				    BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
-				model.put("studyId", -1);
-			} else {
-				StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
-				studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid.get(), model);
-				pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
-				model.put("studySubMenu", true);
-			}
-		} catch (Exception e) {
-			log.warn("Error in setMaterialForm Message: ", () -> e);
-			exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "projectService.setMaterialForm");
-			success = false;
+	public void setMaterialForm(Optional<Long> pid, Optional<Long> studyId, ModelMap model, RedirectAttributes redirectAttributes, UserDTO user,
+	    ProjectForm pForm) throws Exception {
+		Roles role = checkProjectRoles(user, pid.get(), 0, false, true);
+		getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
+		if (!studyId.isPresent()) {
+			model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
+			model.put("studyId", -1);
+		} else {
+			StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
+			studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid.get(), model);
+			pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
+			model.put("studySubMenu", true);
 		}
-		return success;
 	}
 
 	/**
@@ -444,8 +452,7 @@ public class ProjectService {
 	 * @throws Exception
 	 * @throws IOException
 	 */
-	public void scaleAndSetThumbnail(long imgId, HttpServletResponse response, final int thumbHeight, final int maxWidth)
-	    throws Exception, IOException {
+	public void scaleAndSetThumbnail(long imgId, HttpServletResponse response, final int thumbHeight, final int maxWidth) throws Exception, IOException {
 		FileDTO file = fileDAO.findById(imgId);
 		// fileUtil.setFileBytes(file);
 		if (minioUtil.getFile(file, false).equals(MinioResult.OK)) {
@@ -563,8 +570,7 @@ public class ProjectService {
 		TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
 		if (!pid.isPresent()) {
 			log.warn("ProjectId emtpy - project delete aborted");
-			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH),
-			    DataWizErrorCodes.MISSING_PID_ERROR);
+			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		}
 		try {
 			ProjectDTO project = projectDAO.findById(pid.get());

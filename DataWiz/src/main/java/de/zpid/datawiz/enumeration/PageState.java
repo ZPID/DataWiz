@@ -1,6 +1,9 @@
 package de.zpid.datawiz.enumeration;
 
 public enum PageState {
+	INDEX,
+	LOGIN,
+	REGISTER,
   PANEL,
   PROJECT,
   DMP,

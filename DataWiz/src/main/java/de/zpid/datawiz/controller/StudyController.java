@@ -250,6 +250,10 @@ public class StudyController {
 						log.warn("Unexpected event: Internal Error saveStudyForm - Transaction was rolled back [Message: {}; Code: {}]", () -> e.getMessage(),
 						    () -> e.getErrorCode());
 						model.put("errorMSG", messageSource.getMessage("error.study.save.unavailable", null, LocaleContextHolder.getLocale()));
+					} else if (e.getErrorCode().equals(DataWizErrorCodes.SESSION_ERROR)) {
+						log.warn("Unexpected event: Internal Error saveStudyForm - Transaction was rolled back [Message: {}; Code: {}]", () -> e.getMessage(),
+						    () -> e.getErrorCode());
+						model.put("errorMSG", messageSource.getMessage("error.study.save.session", null, LocaleContextHolder.getLocale()));
 					} else {
 						log.warn("Unexpected event: Database Error During saveStudyForm - Transaction was rolled back cause: {}", () -> e.getCause());
 						model.put("errorMSG", messageSource.getMessage("error.study.duplicate.dbs", null, LocaleContextHolder.getLocale()));
@@ -283,23 +287,17 @@ public class StudyController {
 	 * @return the string
 	 */
 	@RequestMapping(value = { "/{studyId}/switchEditMode" })
-	public String switchEditMode(@ModelAttribute("StudyForm") StudyForm sForm, ModelMap model, RedirectAttributes redirectAttributes,
-	    @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId) {
+	public String switchEditMode(final ModelMap model, final RedirectAttributes redirectAttributes, @PathVariable final Optional<Long> pid,
+	    @PathVariable final Optional<Long> studyId) {
 		log.trace("Entering switchEditMode for Study [id: {}]", () -> studyId);
 		UserDTO user = UserUtil.getCurrentUser();
 		String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
 		if (ret != null)
 			log.warn("Unexpected event: User [email: {}] tries to switchEditMode for Study [id: {}] without permissions", () -> user.getEmail(), () -> studyId);
-		if ((sForm == null || sForm.getStudy() == null || sForm.getProject() == null || sForm.getProject().getId() == 0) && ret == null) {
-			log.warn("Unexpected event: StudyForm is emtpy - Maybe Session Timeout");
-			ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();
-		}
 		if (ret == null) {
-			ret = "study";
+			ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();
 			try {
-				model.put("disStudyContent", studyService.checkActualLock(pid, studyId, user, (String) model.get("disStudyContent"), model));
-				model.put("studySubMenu", true);
-				model.put("subnaviActive", PageState.STUDY.name());
+				studyService.checkActualLock(pid, studyId, user, (String) model.get("disStudyContent"), model);
 			} catch (Exception e) {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.checkActualLock");
 			}

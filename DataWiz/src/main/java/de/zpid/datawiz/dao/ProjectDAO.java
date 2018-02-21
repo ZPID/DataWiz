@@ -26,6 +26,23 @@ import org.springframework.stereotype.Repository;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 
+/**
+ * This file is part of Datawiz
+ * 
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>. <br />
+ * <br />
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ */
 @Repository
 @Scope("singleton")
 public class ProjectDAO {
@@ -42,8 +59,17 @@ public class ProjectDAO {
 		log.info("Loading ProjectDAO as Singleton and Service");
 	}
 
+	/**
+	 * This function returns a list of all matching ProjectDTO entities from table dw_project for which the passed user object is linked by one of the different
+	 * roles.
+	 * 
+	 * @param user
+	 *          User
+	 * @return List of Projects
+	 * @throws Exception
+	 */
 	public List<ProjectDTO> findAllByUserID(final UserDTO user) throws Exception {
-		log.trace("execute findAllByUserID for user [email: {}]", () -> user.getEmail());
+		log.trace("Entering findAllByUserID for user [id: {}; email: {}]", () -> user.getId(), () -> user.getEmail());
 		String sql = "SELECT dw_project.* FROM dw_user_roles " + "LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
 		    + "LEFT JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id " + "WHERE dw_user_roles.user_id = ? AND dw_user_roles.project_id > 0 "
 		    + "GROUP BY dw_project.id";
@@ -52,24 +78,38 @@ public class ProjectDAO {
 				return setProjectDTO(rs);
 			}
 		});
-		log.trace("Transaction for findAllByUserID returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
+		log.debug("Transaction \"findAllByUserID\" terminates with result: [lenght: {}]", () -> ret != null ? ret.size() : "null");
 		return ret;
 	}
 
+	/**
+	 * This function returns a List of all ProjectDTO entities from the table dw_project
+	 * 
+	 * @return List of ProjectDTO
+	 * @throws Exception
+	 */
 	public List<ProjectDTO> findAll() throws Exception {
-		log.trace("execute findAll");
+		log.trace("Entering findAll");
 		String sql = "SELECT * FROM dw_project ORDER BY dw_project.owner_id";
 		List<ProjectDTO> ret = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<ProjectDTO>() {
 			public ProjectDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return setProjectDTO(rs);
 			}
 		});
-		log.trace("Transaction for findAll returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
+		log.debug("Transaction \"findAll\" terminates with result: [lenght: {}]", () -> ret != null ? ret.size() : "null");
 		return ret;
 	}
 
+	/**
+	 * This function returns a List of all matching ProjectDTO entities from the table dw_project, for which the passed user object has the role "PROJECT_ADMIN"
+	 * 
+	 * @param user
+	 *          User
+	 * @return List of Projects
+	 * @throws Exception
+	 */
 	public List<ProjectDTO> findAllByAdminRole(final long userID) throws Exception {
-		log.trace("execute findAllOwned");
+		log.trace("Entering findAllByAdminRole for user [id: {}]", () -> userID);
 		String sql = "SELECT dw_project.* FROM dw_user_roles LEFT JOIN dw_project ON dw_user_roles.project_id = dw_project.id "
 		    + "LEFT JOIN dw_roles ON dw_user_roles.role_id = dw_roles.id WHERE dw_user_roles.user_id = ? "
 		    + "AND dw_user_roles.project_id > 0 AND dw_roles.type = \"PROJECT_ADMIN\" GROUP BY dw_project.id";
@@ -78,22 +118,20 @@ public class ProjectDAO {
 				return setProjectDTO(rs);
 			}
 		});
-		log.trace("Transaction for findAllOwned returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
+		log.debug("Transaction \"findAllByAdminRole\" terminates with result: [lenght: {}]", () -> ret != null ? ret.size() : "null");
 		return ret;
 	}
 
 	/**
-	 * Returns the project and the UserRole in one turn. For that, UserID and ProjectID is important, because projects and users have an mxn
-	 * relationship!
+	 * This function returns a ProjectDTO entity from the table dw_project, depending on the passed identifier. If no project was found, null is returned.
 	 * 
 	 * @param projectId
-	 * @param userId
-	 * @return
-	 * @throws SQLException
-	 * @throws DataAccessException
+	 *          Project identifier
+	 * @return Project, if found - otherwise null
+	 * @throws Exception
 	 */
 	public ProjectDTO findById(final long projectId) throws Exception {
-		log.trace("execute findById for project [id: " + projectId + "]");
+		log.trace("Entering findById for project [id: {}]", () -> projectId);
 		ProjectDTO project = jdbcTemplate.query("SELECT dw_project.* FROM dw_project WHERE  dw_project.id = ?", new Object[] { projectId },
 		    new ResultSetExtractor<ProjectDTO>() {
 			    @Override
@@ -104,20 +142,28 @@ public class ProjectDAO {
 				    return null;
 			    }
 		    });
-		log.trace("Transaction for findById returned [id: {}]", () -> ((project != null) ? project.getTitle() : "null"));
+		log.debug("Transaction \"findById\" terminates with result: [Title: {}]", () -> ((project != null) ? project.getTitle() : "null"));
 		return project;
 	}
 
+	/**
+	 * 
+	 * @param email
+	 * @param projectId
+	 * @param val
+	 * @return
+	 * @throws Exception
+	 */
 	public String findValFromInviteData(final String email, final long projectId, final String val) throws Exception {
-		log.trace("execute getValFromInviteData for project [id: {}], user [id: {}] and [val: {}]", () -> projectId, () -> email, () -> val);
+		log.trace("Entering getValFromInviteData for [email: {}], [pid: {}] and [val: {}]", () -> email, () -> projectId, () -> val);
 		final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND project_id = ?";
 		String ret = jdbcTemplate.queryForObject(sql, new Object[] { email, projectId }, String.class);
-		log.trace("Transaction for getValFromInviteData returned [{}: {}]", () -> val, () -> ret);
+		log.debug("Transaction \"findValFromInviteData\" terminates with result: [value:{}; resul: {}]", () -> val, () -> ret);
 		return ret;
 	}
 
 	public String findValFromInviteData(final String email, final String linkhash, final String val) throws Exception {
-		log.trace("execute getValFromInviteData for project [email: {}], [linkhash : {}] and [val: {}]", () -> email, () -> linkhash, () -> val);
+		log.trace("Entering getValFromInviteData for [email: {}], [linkhash : {}] and [val: {}]", () -> email, () -> linkhash, () -> val);
 		final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND linkhash = ?";
 		String ret;
 		try {
@@ -125,52 +171,24 @@ public class ProjectDAO {
 		} catch (Exception e) {
 			ret = "0";
 		}
-		if (log.isDebugEnabled())
-			log.trace("Transaction for getValFromInviteData returned [{}: {}]", val, ret);
+		log.debug("Transaction \"getValFromInviteData\" terminates with result: [value:{}; resul: {}]", val, ret);
 		return ret;
 	}
 
 	public List<String> findPendingInvitesByProjectID(final long pid) throws Exception {
-		log.trace("execute findPendingInvitesByProjectID for project [id: {}]", () -> pid);
+		log.trace("Entering findPendingInvitesByProjectID for project [id: {}]", () -> pid);
 		final String sql = "SELECT user_email from dw_project_invite WHERE project_id = ?";
 		List<String> ret = jdbcTemplate.query(sql, new Object[] { pid }, new RowMapper<String>() {
 			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return rs.getString("user_email");
 			}
 		});
-		log.trace("Transaction for findPendingInvitesByProjectID returned [lenght: {}]", () -> ret != null ? ret.size() : "null");
+		log.debug("Transaction \"findPendingInvitesByProjectID\" terminates with result: [lenght: {}]", () -> ret != null ? ret.size() : "null");
 		return ret;
 	}
 
-	public int deleteInvitationEntree(final long projectId, final String userMail) {
-		log.trace("execute deleteInvitationEntree for project [id: {}] and User [id: {}]", () -> projectId, () -> userMail);
-		int chk = this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?", userMail, projectId);
-		log.trace("Transaction for deleteInvitationEntree returned [success: {}]", () -> chk);
-		return chk;
-	}
-
-	public int updateInvitationEntree(long projectId, String userMailOld, String userEmailNew) {
-		log.trace("execute updateInvitationEntree for project [id: {}] and User [old email: {}; new email: {}]", () -> projectId, () -> userMailOld,
-		    () -> userEmailNew);
-		int chk = this.jdbcTemplate.update("UPDATE dw_project_invite SET user_email = ? WHERE user_email = ? AND project_id = ?", userEmailNew,
-		    userMailOld, projectId);
-		log.trace("Transaction for updateInvitationEntree returned [success: {}]", () -> chk);
-		return chk;
-	}
-
-	public int updateProject(final ProjectDTO project) throws Exception {
-		log.trace("execute updateProject for project [id: {}]", () -> project.getId());
-		int chk = this.jdbcTemplate.update(
-		    "UPDATE dw_project SET last_user_id = ?, last_edit = ?, title = ?, "
-		        + "project_ident = ?, funding = ?, grant_number = ?, description = ? WHERE id = ?",
-		    project.getLastUserId(), LocalDateTime.now().toString(), project.getTitle(), project.getProjectIdent(), project.getFunding(),
-		    project.getGrantNumber(), project.getDescription(), project.getId());
-		log.trace("Transaction for updateProject returned [success: {}]", () -> chk);
-		return chk;
-	}
-
 	public int insertProject(final ProjectDTO project) throws Exception {
-		log.trace("execute insertProject [title: {}]", () -> project.getTitle());
+		log.trace("Entering insertProject [title: {}]", () -> project.getTitle());
 		KeyHolder holder = new GeneratedKeyHolder();
 		final String stmt = "INSERT INTO dw_project (owner_id, created, last_user_id, last_edit, title, project_ident, funding, "
 		    + "grant_number, description) VALUES (?,?,?,?,?,?,?,?,?)";
@@ -191,16 +209,54 @@ public class ProjectDAO {
 			}
 		}, holder);
 		final int key = (holder.getKey().intValue() > 0) ? holder.getKey().intValue() : -1;
-		log.trace("Transaction for insertProject returned [key: {}]", () -> key);
+		log.debug("Transaction \"insertProject\" terminates with result: [key: {}]", () -> key);
 		return key;
 	}
 
-	public int insertInviteEntree(final long projectId, final String userMail, final String adminMail) {
-		log.trace("execute instertUsertoProject for project [id: {}], User [id: {}] by Admin [email: {}]", () -> projectId, () -> userMail,
-		    () -> adminMail);
-		int chk = this.jdbcTemplate.update("INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)",
-		    userMail, adminMail, projectId, UUID.randomUUID().toString(), LocalDateTime.now().toString());
-		log.trace("Transaction for insertInviteEntree returned [success: {}]", () -> chk);
+	public int insertInviteEntity(final long projectId, final String userMail, final String adminMail) {
+		log.trace("Entering insertInviteEntity for project [id: {}], User [id: {}] by Admin [email: {}]", () -> projectId, () -> userMail, () -> adminMail);
+		int chk = this.jdbcTemplate.update("INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)", userMail,
+		    adminMail, projectId, UUID.randomUUID().toString(), LocalDateTime.now().toString());
+		log.debug("Transaction \"insertInviteEntity\" terminates with result: [success: {}]", () -> chk);
+		return chk;
+	}
+
+	public int updateInvitationEntity(long projectId, String userMailOld, String userEmailNew) {
+		log.trace("Entering updateInvitationEntity for project [id: {}] and User [old email: {}; new email: {}]", () -> projectId, () -> userMailOld,
+		    () -> userEmailNew);
+		int chk = this.jdbcTemplate.update("UPDATE dw_project_invite SET user_email = ? WHERE user_email = ? AND project_id = ?", userEmailNew, userMailOld,
+		    projectId);
+		log.debug("Transaction \"updateInvitationEntity\" terminates with result: [result: {}]", () -> chk);
+		return chk;
+	}
+
+	public int updateProject(final ProjectDTO project) throws Exception {
+		log.trace("Entering updateProject for project [id: {}]", () -> project.getId());
+		int chk = this.jdbcTemplate.update(
+		    "UPDATE dw_project SET last_user_id = ?, last_edit = ?, title = ?, " + "project_ident = ?, funding = ?, grant_number = ?, description = ? WHERE id = ?",
+		    project.getLastUserId(), LocalDateTime.now().toString(), project.getTitle(), project.getProjectIdent(), project.getFunding(), project.getGrantNumber(),
+		    project.getDescription(), project.getId());
+		log.debug("Transaction \"updateProject\" terminates with result:  [result: {}]", () -> chk);
+		return chk;
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
+	public int deleteProject(final long id) throws Exception {
+		log.trace("Entering deleteProject for project [id: {}]", () -> id);
+		int chk = this.jdbcTemplate.update("DELETE FROM dw_project WHERE id = ? ", id);
+		log.debug("Transaction \"deleteProject\" terminates with result:  [result: {}]", () -> chk);
+		return chk;
+	}
+
+	public int deleteInvitationEntity(final long projectId, final String userMail) {
+		log.trace("Entering deleteInvitationEntity for project [id: {}] and User [id: {}]", () -> projectId, () -> userMail);
+		int chk = this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?", userMail, projectId);
+		log.debug("Transaction \"deleteInvitationEntity\" terminates with result:  [result: {}]", () -> chk);
 		return chk;
 	}
 
@@ -224,14 +280,4 @@ public class ProjectDAO {
 		return project;
 	}
 
-	/**
-	 * 
-	 * @param id
-	 * @return
-	 * @throws Exception
-	 */
-	public int deleteProject(final long id) throws Exception {
-		log.trace("execute deleteProject id: {}", () -> id);
-		return this.jdbcTemplate.update("DELETE FROM dw_project WHERE id = ? ", id);
-	}
 }

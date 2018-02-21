@@ -100,7 +100,7 @@ public class StudyService {
 	 * @throws Exception
 	 */
 	public String setStudyForm(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, final UserDTO user,
-	    StudyForm sForm) throws DataWizSystemException {
+	    final StudyForm sForm) throws DataWizSystemException {
 		if (!pid.isPresent())
 			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		String accessState = "disabled";
@@ -156,7 +156,7 @@ public class StudyService {
 	 * @param sForm
 	 * @throws DataWizSystemException
 	 */
-	public void setRecordList(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, StudyForm sForm)
+	public void setRecordList(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, final StudyForm sForm)
 	    throws DataWizSystemException {
 		if (!pid.isPresent())
 			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
@@ -249,8 +249,10 @@ public class StudyService {
 		if (study != null && pid.isPresent()) {
 			try {
 				study.setLastUserId(user.getId());
-				if (studyId.isPresent() && study.getId() > 0) {
-					// update Study
+				if (studyId != null && studyId.isPresent()) {
+					if (study.getId() != studyId.get())
+						throw new DataWizSystemException(messageSource.getMessage("logging.session.error", new Object[] {}, LocaleContextHolder.getLocale()),
+						    DataWizErrorCodes.SESSION_ERROR);
 					studyDAO.update(study, false);
 				} else {
 					study.setProjectId(pid.get());
@@ -661,15 +663,16 @@ public class StudyService {
 			throw new DataWizSystemException(messageSource.getMessage("logging.user.permitted", new Object[] { user != null ? user.getId() : null, "study", studyId },
 			    LocaleContextHolder.getLocale()), DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
 		}
-		StudyDTO study;
-		study = studyDAO.findById(studyId.get(), pid.get(), false, false);
-		setStudyDTOExport(study);
-		study.setTitle(messageSource.getMessage("study.duplicate.prefix", null, LocaleContextHolder.getLocale()) + study.getTitle());
-		StudyForm sForm = new StudyForm();
-		study.setId(0);
-		study.setProjectId(selected.get());
-		sForm.setStudy(study);
-		study = saveStudyForm(sForm, Optional.empty(), selected, user, true);
+		StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), false, false);
+		if (study != null) {
+			setStudyDTOExport(study);
+			study.setTitle(messageSource.getMessage("study.duplicate.prefix", null, LocaleContextHolder.getLocale()) + study.getTitle());
+			StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
+			study.setId(0);
+			study.setProjectId(selected.get());
+			sForm.setStudy(study);
+			study = saveStudyForm(sForm, Optional.empty(), selected, user, true);
+		}
 		return study;
 	}
 

@@ -5,7 +5,7 @@
     <div id="loadstateloading" style="display: none;">
       <s:message code="material.upload.loading" />
     </div>
-    <div id="loadstateworking" >
+    <div id="loadstateworking">
       <s:message code="material.upload.pending" />
     </div>
     <div class="progress">
@@ -19,12 +19,9 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <h4>
-          <s:message code="project.material.headline" />
-        </h4>
-        <div>
-          <s:message code="project.material.info" />
-        </div>
+        <s:message code="project.material.headline" var="headline_head" />
+        <s:message code="project.material.info" var="headline_info" />
+        <%@ include file="templates/pages_headline.jsp"%>
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>

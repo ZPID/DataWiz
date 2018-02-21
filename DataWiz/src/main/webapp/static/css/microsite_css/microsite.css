@@ -1,0 +1,300 @@
+/* Using awesome CSS Variables :D */
+:root {
+  /* main violet */
+  --lg_ms_color_violet: #352071;
+  /* standard text font size */ 
+  --lg_ms_font_size: 1.2em;
+  /* standard h3 font size */ 
+  --lg_ms_h3_font_size: 1.6em;
+  /* standard line height */ 
+  --lg_ms_line_height: 1.6em;
+  /* content width for resolution > 1170px */ 
+  --lg_ms_lg_width: 80%;
+  /* content width for resolution > 970px */ 
+  --lg_ms_md_width: 90%;
+  /* content width for resolution > 750px */ 
+  --lg_ms_sd_width: 100%;
+  /* content width for resolution < 750px */ 
+  --lg_ms_xs_width: 100%;
+  /* header zpid logo image */ 
+  --lg_ms_header_zpid_logo_image: url('../../images/microsite_img/leibniz-psychology.png');
+   /* header background image */ 
+  --lg_ms_header_background_image: url('../../images/microsite_img/header_cyan.jpg');
+  /* header background color */ 
+  --lg_ms_header_background_color: #0097c6;  
+}
+
+#lp_ms_header ul li{
+  display: inline;
+  padding: 0px 0px 0px 5px;
+}
+
+#lp_ms_header ul{
+  margin-top: 20px
+}
+
+#lp_ms_header_1_contact{
+  margin-right: 50px;
+}
+
+.lp_ms_header_row {
+  margin: auto;
+}
+
+#lp_ms_header_1{
+  background-color: white;
+  padding: 20px 0px 20px 0px;
+}
+
+#lp_ms_header_1_col_right{
+  text-align: right;
+}
+
+#lp_ms_header_1_lp_logo{
+  background-image: var(--lg_ms_header_zpid_logo_image);
+  height: 56px;
+  width: 240px;
+  cursor: pointer;
+}
+
+#lp_ms_header_2{
+  width: 100%;
+  background: #240d46; /* Old browsers */
+  background: -moz-linear-gradient(left, #240d46 0%, #2b2171 100%);
+  background: -webkit-linear-gradient(left, #240d46 0%,#2b2171 100%);
+  background: linear-gradient(to right, #240d46 0%,#2b2171 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#240d46', endColorstr='#2b2171',GradientType=1 );
+}
+
+#lp_ms_header_2_image{
+  background-color: var(--lg_ms_header_background_color);
+  background-image: var(--lg_ms_header_background_image);
+  background-position: right; 
+  background-repeat: no-repeat;
+  height: 150px;
+  width: 100%;
+}
+
+#lp_ms_header_2_logo{
+  position: relative;
+  top: 63px;
+  left: 50px;
+}
+
+#lp_ms_header_2_logo_bold{
+  font-weight: 600;
+  color: white;
+}
+
+#lp_ms_header_2_logo_thin{
+  font-weight: 100;
+  color: white;
+}
+
+#lp_ms_header_2_logo a,
+#lp_ms_header_2_logo a:hover,
+#lp_ms_header_2_logo a:active,
+#lp_ms_header_2_logo a:visited{
+  font-size: 3em;
+  font-family: 'Zilla Slab', serif;
+  color: white;
+  text-decoration: none;  
+}
+
+#lp_ms_footer, 
+#lp_ms_header {
+  color: var(--lg_ms_color_violet);
+  font-size: var(--lg_ms_font_size);
+  line-height: var(--lg_ms_line_height);
+  font-family: 'Montserrat', sans-serif;
+}
+
+#lp_ms_footer ul a,
+#lp_ms_header ul a,
+#lp_ms_header a{
+  text-decoration: none;
+  color: var(--lg_ms_color_violet);
+}
+
+#lp_ms_header a.active{
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+#lp_ms_footer ul a:hover, a:active{
+  text-decoration: none;
+  color: #af33a1;
+}
+
+#lp_ms_footer ul {
+  text-decoration: none;
+  font-size: 1em;
+  line-height: var(--lg_ms_line_height);
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+#lp_ms_footer h3 {
+  font-size: var(--lg_ms_h3_font_size);
+  margin-top: 0px;
+  font-family: 'Zilla Slab', serif;
+}
+
+#lp_ms_footer_1 {
+  background-color: #e6ecf0;
+  border-bottom: 1px solid #FFFFFF;
+  box-shadow: 0 -11px 14px -6px #b8bdc0;
+  min-width: 100%;
+}
+
+#lp_ms_footer_2 {
+  background-color: #f2f5f7;
+  min-width: 100%;
+}
+
+#lp_ms_footer_3 {
+  background-color: #e6ecf0;
+  min-width: 100%;
+  text-align: right;
+}
+
+#lp_ms_footer_3 ul li{
+  display: inline-block;
+  padding: 20px 0px 20px 10px;
+}
+
+.lp_ms_footer_row {
+  margin: auto;
+}
+
+.lp_ms_footer_split_four {
+  padding: 60px 0px 50px 0px;
+}
+
+/* START MEDIA */
+
+@media ( max-width : 749px) {
+  .lp_ms_footer_row, 
+  .lp_ms_header_row {
+    width: var(--lg_ms_xs_width);
+  }
+  .lp_ms_footer_row_right,
+  .lp_ms_footer_row_left, 
+  .lp_ms_footer_split_four {
+    border-left: none;
+    padding: 60px 10px 50px 10px;
+    margin-left: 0px;
+  }
+  #lp_ms_footer_contact{
+    text-align: right;
+  }
+  #lp_ms_header_2_image{
+    background-size: cover;
+    background-position: left; 
+    height: 100px;
+  }
+  #lp_ms_header_1_col_left{
+    padding-left: 0px;
+  }
+  #lp_ms_header_2_logo{
+    top: 38px;
+    left: 25px;
+  }
+}
+
+@media ( min-width : 750px) {
+  .lp_ms_footer_row,
+   .lp_ms_header_row {
+    width: var(--lg_ms_sd_width);
+  }
+  .lp_ms_footer_row_right,
+  .lp_ms_footer_row_left, 
+  .lp_ms_footer_split_four {
+    border-left: none;
+    padding: 60px 10px 50px 10px;
+    margin-left: 0px;
+  }
+  #lp_ms_footer_contact{
+    text-align: right;
+  }
+  #lp_ms_header_2_image{
+    background-size: cover;
+    background-position: left; 
+    height: 120px;
+  }
+  #lp_ms_header_1_col_left{
+    padding-left: 0px;
+  }
+  #lp_ms_header_2_logo{
+    top: 48px;
+    left: 25px;
+  }
+}
+
+@media ( min-width : 970px) {
+  .lp_ms_footer_row,
+  .lp_ms_header_row {
+    width: var(--lg_ms_md_width);
+  }
+  .lp_ms_footer_row_left {
+    border: none;
+    padding: 60px 0px 50px 0px;
+  }
+  .lp_ms_footer_row_right {
+    border: none;
+    padding: 60px 0px 50px 0px;
+    margin-left: 0px;
+  }
+  #lp_ms_footer_contact{
+    text-align: right;
+  }
+  #lp_ms_header_2_image{
+    background-size: cover;
+    background-position: left; 
+    height: 130px;
+  }
+  #lp_ms_header_1_col_left{
+    padding-left: 25px;
+  }
+  #lp_ms_header_2_logo{
+    top: 53px;
+    left: 25px;
+  }
+}
+
+@media ( min-width : 1170px) {
+  .lp_ms_footer_row,
+  .lp_ms_header_row {
+    width: var(--lg_ms_lg_width);
+  }
+  .lp_ms_footer_row_left {
+    border-right: 1px white solid;
+    padding: 60px 0px 50px 0px;
+  }
+  .lp_ms_footer_row_right {
+    border-left: 1px white solid;
+    padding: 60px 0px 50px 0px;
+    margin-left: -1px;
+  }
+  .lp_ms_footer_split_four{
+    padding: 60px 0px 50px 0px;
+  }
+  #lp_ms_footer_contact{
+    text-align: center;
+  }
+  #lp_ms_header_2_image{
+    background-size: inherit;
+    background-position: right; 
+    height: 150px;
+  }
+  #lp_ms_header_1_col_left{
+    padding-left: 50px;
+  }
+  #lp_ms_header_2_logo{
+    top: 63px;
+    left: 50px;
+  }
+}
+
+/* END MEDIA */

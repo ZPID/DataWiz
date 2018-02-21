@@ -148,7 +148,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.software"><s:message code="study.software" /></label>
-      <div class="panel panel-default panel-body margin-bottom-0">
+      <div id="study_software" class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.software}" varStatus="loop">
           <s:bind path="study.software[${loop.index}].text">
             <c:choose>
@@ -164,9 +164,9 @@
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">
-            <sf:button class="btn btn-sm btn-success" name="addSoftware" onclick="setScrollPosition();">
+            <div class="btn btn-sm btn-success" onclick="addField('study_software', 'study.software');">
               <s:message code="gen.add" />
-            </sf:button>
+            </div>
           </div>
         </div>
       </div>
@@ -185,7 +185,7 @@
           <img src="/DataWiz/static/images/${valimag1}" class="infoImages" />
         </div>
       </div>
-      <div class="panel panel-default panel-body margin-bottom-0">
+      <div id="study_pubOnData" class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.pubOnData}" varStatus="loop">
           <s:bind path="study.pubOnData[${loop.index}].text">
             <c:choose>
@@ -201,9 +201,9 @@
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">
-            <sf:button class="btn btn-sm btn-success" name="addPubOnData" onclick="setScrollPosition();">
+            <div class="btn btn-sm btn-success" onclick="addField('study_pubOnData', 'study.pubOnData');">
               <s:message code="gen.add" />
-            </sf:button>
+            </div>
           </div>
         </div>
       </div>
@@ -215,7 +215,7 @@
   <div class="form-group">
     <div class="col-sm-12">
       <label class="control-label " for="study.conflInterests"><s:message code="study.conflInterests" /></label>
-      <div class="panel panel-default panel-body margin-bottom-0">
+      <div id="study_conflInterests" class="panel panel-default panel-body margin-bottom-0">
         <c:forEach items="${StudyForm.study.conflInterests}" varStatus="loop">
           <s:bind path="study.conflInterests[${loop.index}].text">
             <c:choose>
@@ -232,9 +232,10 @@
         </c:forEach>
         <div class="row text-align-right">
           <div class="col-sm-12">
-            <sf:button class="btn btn-sm btn-success" name="addConflInterests" onclick="setScrollPosition();">
+            <div class="btn btn-sm btn-success" name="addConflInterests"
+              onclick="addField('study_conflInterests', 'study.conflInterests');">
               <s:message code="gen.add" />
-            </sf:button>
+            </div>
           </div>
         </div>
       </div>

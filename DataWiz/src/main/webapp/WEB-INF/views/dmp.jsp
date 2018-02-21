@@ -8,80 +8,78 @@
     <%@ include file="templates/breadcrump.jsp"%>
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
-      <div class="page-header">
-        <c:choose>
-          <c:when test="${empty ProjectForm.project.id}">
-            <c:set var="allowEdit" value="true" />
-            <h4>
-              <s:message code="dmp.create.headline" />
-            </h4>
-            <div>
-              <s:message code="dmp.create.info" />
-            </div>
-          </c:when>
-          <c:otherwise>
-            <c:set var="allowEdit" value="false" />
-            <c:choose>
-              <c:when
-                test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
+      <div class="row text-align-right btn-line">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <div class="dropdown">
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="dropdown" role="button"
+              aria-haspopup="true" aria-expanded="false">
+              <s:message code="dmp.export.btn.txt" />
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank"><s:message
+                    code="dmp.export.btn.bmbf" /></a></li>
+              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank"><s:message
+                    code="dmp.export.btn.h2020" /></a></li>
+              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank"><s:message
+                    code="dmp.export.btn.dfg" /></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <c:choose>
+        <c:when test="${empty ProjectForm.project.id}">
+          <c:set var="allowEdit" value="true" />
+          <s:message code="dmp.create.headline" var="headline_head" />
+          <s:message code="dmp.create.info" var="headline_info" />
+          <%@ include file="templates/pages_headline.jsp"%>
+        </c:when>
+        <c:otherwise>
+          <c:set var="allowEdit" value="false" />
+          <c:choose>
+            <c:when
+              test="${principal.user.hasRole('PROJECT_ADMIN', ProjectForm.project.id, false) or
                         principal.user.hasRole('PROJECT_WRITER', ProjectForm.project.id, false) or 
                         principal.user.hasRole('ADMIN')}">
-                <c:set var="allowEdit" value="true" />
-              </c:when>
-              <c:otherwise>
-                <input type="hidden" value="disabled" id="disProjectContent" />
-              </c:otherwise>
-            </c:choose>
-            <div class="row">
-              <div class="col-xs-4">
-                <h4>
-                  <s:message code="dmp.edit.headline" />
-                </h4>
-              </div>
-              <div class="col-xs-8 text-align-right">
-                (Export currently in work)
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm"
-                    href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank">BMBF</a>
-                </div>
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm"
-                    href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank">H2020</a>
-                </div>
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm"
-                    href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank">DFG</a>
-                </div>
-              </div>
-            </div>
-            <div>
-              <s:message code="dmp.edit.info" />
-            </div>
-          </c:otherwise>
-        </c:choose>
+              <c:set var="allowEdit" value="true" />
+            </c:when>
+            <c:otherwise>
+              <input type="hidden" value="disabled" id="disProjectContent" />
+            </c:otherwise>
+          </c:choose>
+          <s:message code="dmp.edit.headline" var="headline_head" />
+          <s:message code="dmp.edit.info" var="headline_info" />
+          <%@ include file="templates/pages_headline.jsp"%>
+        </c:otherwise>
+      </c:choose>
+      <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+          <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
+            <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.administrative" /></a></li>
+            <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message
+                  code="dmp.submenu.research" /></a></li>
+            <li role="presentation" id="metadataActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.metadata" /></a></li>
+            <li role="presentation" id="accessActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.access" /></a></li>
+            <li role="presentation" id="storageActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.storage" /></a></li>
+            <li role="presentation" id="organizationActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.organization" /></a></li>
+            <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.ethical" /></a></li>
+            <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message
+                  code="dmp.submenu.costs" /></a></li>
+          </ul>
+        </div>
       </div>
-      <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">
-        <li role="presentation" id="administratriveActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.administrative" /></a></li>
-        <li role="presentation" id="researchActiveClick" class="projectContentClick "><a><s:message
-              code="dmp.submenu.research" /></a></li>
-        <li role="presentation" id="metadataActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.metadata" /></a></li>
-        <li role="presentation" id="accessActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.access" /></a></li>
-        <li role="presentation" id="storageActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.storage" /></a></li>
-        <li role="presentation" id="organizationActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.organization" /></a></li>
-        <li role="presentation" id="ethicalActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.ethical" /></a></li>
-        <li role="presentation" id="costsActiveClick" class="projectContentClick"><a><s:message
-              code="dmp.submenu.costs" /></a></li>
-      </ul>
       <c:url var="dmpUrl" value="/dmp/${ProjectForm.project.id}" />
       <sf:form action="${dmpUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form" id="dmpForm"
         onsubmit="checkOnSubmit();">
         <sf:hidden path="pagePosi" id="pagePosi" />
+        <sf:hidden path="dmp.id" />
+        <sf:hidden path="project.id" />
         <input type="hidden" id="jQueryMap" name="jQueryMap" value="${jQueryMap}" />
         <!-- Messages -->
         <%@ include file="templates/message.jsp"%>

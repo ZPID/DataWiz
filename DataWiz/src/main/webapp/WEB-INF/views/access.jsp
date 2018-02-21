@@ -6,12 +6,9 @@
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
       <div class="page-header">
-        <h4>
-          <s:message code="project.access.headline" />
-        </h4>
-        <div>
-          <s:message code="project.access.info" />
-        </div>
+        <s:message code="project.access.headline" var="headline_head" />
+        <s:message code="project.access.info" var="headline_info" />
+        <%@ include file="templates/pages_headline.jsp"%>
       </div>
       <c:url var="accessUrl" value="/access/${ProjectForm.project.id}" />
       <sf:form action="${accessUrl}" modelAttribute="ProjectForm" class="form-horizontal" role="form">
