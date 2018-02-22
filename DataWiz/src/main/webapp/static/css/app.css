@@ -32,6 +32,12 @@ body, #mainWrapper {
   background-color: #fff;
 }
 
+.input-group-addon.info {
+    color: rgb(255, 255, 255);
+    background-color: #0097c6;
+    border-color: #0097c6;
+}
+
 /**************** END DOC SETTINGS ****************/
 /**************** START HEADER ****************/
 #logo2 {
@@ -65,19 +71,19 @@ body, #mainWrapper {
   border-style: solid;
 }
 
-.page_headline_h{
+.page_headline_h {
   font-size: 1.65em;
   font-weight: 400;
   color: #352071;
   font-family: 'Zilla Slab', serif;
 }
 
-.btn-line{
+.btn-line {
   margin: 10px 0px 10px 0px;
   min-height: 30px;
 }
 
-.page_headline_p{
+.page_headline_p {
   text-align: justify;
 }
 
@@ -288,11 +294,24 @@ label.btn::after {
   color: rgb(43, 33, 113);
 }
 
+
+.navbar-default .navbar-nav > li > a,
+.navbar-default .navbar-nav > li > a:visited,
+.navbar-default .navbar-nav > li > a:active {
+  color: rgb(43, 33, 113);
+}
+
+.navbar-default .navbar-nav > li > a:hover {
+  color: #af33a1;
+}
+
 .breadcrumb li {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+
 
 .breadcrumb>*:nth-child(n+2) {
   display: none;
@@ -345,15 +364,8 @@ label.btn::after {
 /**************** START RESPONSIVE ****************/
 /* Breite bis 765 pixel */
 @media ( max-width : 749px) {
-  .login-card {
-    width: 90%;
-    margin: auto;
-  }
-  .login-form {
-    padding: 3%;
-  }
   /* Content */
-  .content-container{
+  .content-container {
     background-color: white;
     width: 100%;
     margin: auto;
@@ -394,18 +406,6 @@ label.btn::after {
 }
 /* Breite ab 980 pixel */
 @media ( min-width : 750px) {
-  .login_container {
-    background-color: white;
-    width: 100%;
-    margin: auto;
-  }
-  .login-card {
-    width: 80%;
-    margin: auto;
-  }
-  .login-form {
-    padding: 6%;
-  }
   /* Content */
   .content-container {
     background-color: white;
@@ -474,15 +474,6 @@ label.btn::after {
 }
 /* Breite ab 1600 pixel */
 @media ( min-width : 1170px) {
-  .login_container {
-    background-color: white;
-    width: 40%;
-    margin: auto;
-  }
-  .login-card {
-    width: 80%;
-    margin: auto;
-  }
   .content-padding {
     padding: 5px 3%;
   }

@@ -38,6 +38,23 @@ import de.zpid.spss.util.SPSSPageEncoding;
 import de.zpid.spss.util.SPSSRoleCodes;
 import de.zpid.spss.util.SPSSVarTypes;
 
+/**
+ * This file is part of Datawiz
+ * 
+ * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <br />
+ * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
+ * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
+ * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
+ * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
+ * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
+ * Attribution-NonCommercial-ShareAlike 4.0 International License</a>. <br />
+ * <br />
+ * 
+ * @author Ronny Boelter
+ * @version 1.0
+ *
+ */
 @Repository
 @Scope("singleton")
 public class RecordDAO {
@@ -49,12 +66,22 @@ public class RecordDAO {
 
 	private static Logger log = LogManager.getLogger(RecordDAO.class);
 
+	/**
+	 * Instantiates a new record DAO.
+	 */
 	public RecordDAO() {
 		super();
-		if (log.isInfoEnabled())
-			log.info("Loading RecordDAO as Singleton and Service");
+		log.info("Loading RecordDAO as Singleton and Service");
 	}
 
+	/**
+	 * This function returns a List of RecordDTO entities from the table ddw_record, depending on the passed study identifier.
+	 * 
+	 * @param studyId
+	 *          Study identifier
+	 * @return List of RecordDTO objects
+	 * @throws Exception
+	 */
 	public List<RecordDTO> findRecordsWithStudyID(final long studyId) throws Exception {
 		log.trace("Entering findRecordsWithStudyID [studyId: {}]", () -> studyId);
 		String sql = "SELECT * FROM dw_record WHERE dw_record.study_id  = ?";
@@ -90,10 +117,21 @@ public class RecordDAO {
 				return record;
 			}
 		});
-		log.debug("leaving findRecordsWithStudyID with size: {}", () -> cRecords.size());
+		log.debug("Transaction \"findRecordsWithStudyID\" terminates with result: [lenght: {}]", () -> cRecords.size());
 		return cRecords;
 	}
 
+	/**
+	 * This function returns a RecordDTO entity from the table dw_record, depending on the passed record and version identifiers. If the version identifier == 0,
+	 * the last version of the record is returned. If no record was found, null is returned.
+	 * 
+	 * @param recordId
+	 *          Record identifier
+	 * @param versionId
+	 *          Version identifier
+	 * @return Record, if found - otherwise null
+	 * @throws Exception
+	 */
 	public RecordDTO findRecordWithID(final long recordId, final long versionId) throws Exception {
 		log.trace("Entering findRecordWithID [recordId: {}; version: {}]", () -> recordId, () -> versionId);
 		final RecordDTO record = jdbcTemplate.query("SELECT * FROM dw_record WHERE dw_record.id  = ?", new Object[] { recordId },
@@ -152,10 +190,18 @@ public class RecordDAO {
 				    return null;
 			    }
 		    });
-		log.debug("leaving findRecordWithID with id: {}", () -> (record != null ? record.getId() : null));
+		log.debug("Transaction \"findRecordWithID\" terminates with result: Record[id: {}]", () -> (record != null ? record.getId() : null));
 		return record;
 	}
 
+	/**
+	 * This function returns all versions of a record as List, depending on the passed record identifier.
+	 * 
+	 * @param recordId
+	 *          Record identifier
+	 * @return List of all record versions
+	 * @throws Exception
+	 */
 	public List<RecordDTO> findRecordVersionList(final long recordId) throws Exception {
 		log.trace("Entering findRecordVersionList [recordId: {}]", () -> recordId);
 		String sql = "SELECT dw_record_metadata.version_id, dw_record_metadata.record_id, dw_record_metadata.changeLog, "
@@ -183,14 +229,22 @@ public class RecordDAO {
 				return rectmp;
 			}
 		});
-		log.debug("leaving findRecordVersionList with size: {}", record != null ? record.size() : null);
+		log.debug("Transaction \"findRecordVersionList\" terminates with result: [lenght: {}]", record != null ? record.size() : null);
 		return record;
 	}
 
+	/**
+	 * This function returns all variable entities, of a specific record version, as a List from the table dw_record_variables, depending on the passed version
+	 * identifier.
+	 * 
+	 * @param versionId
+	 *          Version identifier
+	 * @return List of all variables that belong to a record version
+	 * @throws Exception
+	 */
 	public List<SPSSVarDTO> findVariablesByVersionID(final long versionId) throws Exception {
 		log.trace("Entering findVariablesByVersionID [versionId: {}]", () -> versionId);
-		String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables "
-		    + "ON dw_record_version_variables.var_id = dw_record_variables.id "
+		String sql = "SELECT * FROM dw_record_version_variables JOIN dw_record_variables " + "ON dw_record_version_variables.var_id = dw_record_variables.id "
 		    + "WHERE dw_record_version_variables.version_id = ? ORDER BY dw_record_version_variables.position ASC";
 		final List<SPSSVarDTO> cVars = this.jdbcTemplate.query(sql, new Object[] { versionId }, new RowMapper<SPSSVarDTO>() {
 			public SPSSVarDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -215,10 +269,21 @@ public class RecordDAO {
 				return var;
 			}
 		});
-		log.debug("leaving findVariablesByVersionID with size: {}", () -> cVars.size());
+		log.debug("Transaction \"findVariablesByVersionID\" terminates with result: [lenght: {}]", () -> cVars.size());
 		return cVars;
 	}
 
+	/**
+	 * This function returns all Value-Label entities from the table dw_record_var_vallabel that belongs to a specific variable, depending on the passed variable
+	 * identifier.
+	 * 
+	 * @param varId
+	 *          Variable identifier
+	 * @param withId
+	 *          true if the Value-Label identifier is required, otherwise false
+	 * @return List of all Value-Label that belong to a variable
+	 * @throws Exception
+	 */
 	public List<SPSSValueLabelDTO> findVariableValues(final long varId, final boolean withId) throws Exception {
 		log.trace("Entering findVariablesValues [varId: {}]", () -> varId);
 		String sql = "SELECT * FROM dw_record_var_vallabel WHERE record_var_id = ?";
@@ -232,10 +297,21 @@ public class RecordDAO {
 				return var;
 			}
 		});
-		log.debug("leaving findVariablesValues with size: {}", () -> cVars.size());
+		log.debug("Transaction \"findVariableValues\" terminates with result: [lenght: {}]", () -> cVars.size());
 		return cVars;
 	}
 
+	/**
+	 * This function returns all Attributes entities from the table dw_record_attributes that belongs to a specific variable, depending on the passed variable
+	 * identifier.
+	 * 
+	 * @param varId
+	 *          Variable identifier
+	 * @param withId
+	 *          true if the Attributes identifier is required, otherwise false
+	 * @return List of all Attributes that belong to a variable
+	 * @throws Exception
+	 */
 	public List<SPSSValueLabelDTO> findVariableAttributes(final long varId, final boolean withId) throws Exception {
 		log.trace("Entering findVariablesAttributes [varId: {}]", () -> varId);
 		String sql = "SELECT * FROM dw_record_attributes WHERE var_id = ?";
@@ -249,10 +325,21 @@ public class RecordDAO {
 				return var;
 			}
 		});
-		log.debug("leaving findVariablesAttributes with size: {}", () -> cVars.size());
+		log.debug("Transaction \"findVariableAttributes\" terminates with result: [lenght: {}]", () -> cVars.size());
 		return cVars;
 	}
 
+	/**
+	 * This function returns all Attributes entities from the table dw_record_attributes that belongs to a specific record, depending on the passed record
+	 * identifier. User attributes are stored in SPSS with an @ character prefix. Other attributes are DataWiz-specific attributes that have a dw_ prefix.
+	 * 
+	 * @param varId
+	 *          Variable identifier
+	 * @param onlyUserAttributes
+	 *          true, if only SPSS user attributes are required, otherwise false
+	 * @return List of all Attributes that belong to a record
+	 * @throws Exception
+	 */
 	public List<SPSSValueLabelDTO> findRecordAttributes(final long versionId, boolean onlyUserAttributes) throws Exception {
 		log.trace("Entering findRecordAttributes [version: {}]", () -> versionId);
 		String sql = "SELECT * FROM dw_record_attributes WHERE version_id = ? AND var_id IS NULL " + (onlyUserAttributes ? "AND text LIKE '@%'" : "");
@@ -265,32 +352,38 @@ public class RecordDAO {
 				return var;
 			}
 		});
-		log.debug("leaving findRecordAttributes with size: {}", () -> cVars.size());
+		log.debug("Transaction \"findRecordAttributes\" terminates with result: [lenght: {}]", () -> cVars.size());
 		return cVars;
 	}
 
 	/**
+	 * This function deletes a variable entity from the table dw_record_variables.
 	 * 
 	 * @param id
-	 * @return
+	 *          Variable identifier
+	 * @return 1 if changes have happened, otherwise 0
 	 * @throws Exception
 	 */
 	public int deleteVariable(final long id) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute deleteVariable id: " + id);
-		return this.jdbcTemplate.update("DELETE FROM dw_record_variables WHERE id = ? ", id);
+		log.trace("Entering deleteVariable for Variable [id: {}]: ", () -> id);
+		int chk = this.jdbcTemplate.update("DELETE FROM dw_record_variables WHERE id = ? ", id);
+		log.debug("Transaction \"deleteVariable\" terminates with result:  [result: {}]", () -> chk);
+		return chk;
 	}
 
 	/**
+	 * This function deletes a record entity from the table dw_record.
 	 * 
 	 * @param id
-	 * @return
+	 *          Record identifier
+	 * @return 1 if changes have happened, otherwise 0
 	 * @throws Exception
 	 */
 	public int deleteRecord(final long id) throws Exception {
-		if (log.isDebugEnabled())
-			log.debug("execute deleteRecord id: " + id);
-		return this.jdbcTemplate.update("DELETE FROM dw_record WHERE id = ? ", id);
+		log.trace("Entering deleteRecord for Record [id: {}]: ", () -> id);
+		int chk = this.jdbcTemplate.update("DELETE FROM dw_record WHERE id = ? ", id);
+		log.debug("Transaction \"deleteVariable\" terminates with result:  [result: {}]", () -> chk);
+		return chk;
 	}
 
 	/**
@@ -301,7 +394,7 @@ public class RecordDAO {
 	 * @throws Exception
 	 */
 	public int insertCodeBookMetaData(final RecordDTO record) throws Exception {
-		log.trace("Entering insertCodeBookMetaData [recordId: {}]", () -> record.getId());
+		log.trace("Entering insertCodeBookMetaData for Record[id: {}]", () -> record.getId());
 		KeyHolder holder = new GeneratedKeyHolder();
 		final String stmt = "INSERT INTO dw_record_metadata (record_id, changeLog, changed, changedBy, masterRec, password, "
 		    + "numberOfVariables, numberOfFileAttributes, numberOfCases, estimatedNofCases, caseSize, caseWeightVar,  compression, "
@@ -338,7 +431,7 @@ public class RecordDAO {
 		}, holder);
 		final long key = (holder.getKey().intValue() > 0) ? holder.getKey().longValue() : -1;
 		record.setVersionId(key);
-		log.debug("Transaction for insertMetaData returned [res: {}, key: {}]", () -> res, () -> key);
+		log.debug("Transaction \"insertCodeBookMetaData\" terminates with result:   [res: {}, key: {}]", () -> res, () -> key);
 		return res;
 	}
 
@@ -348,23 +441,20 @@ public class RecordDAO {
 	 * @return
 	 * @throws Exception
 	 */
-	@Deprecated
-	public int insertMatrix(final RecordDTO record) throws Exception {
-		log.trace("Entering insertRecordMatrix [recordId: {}, versionId: {}]", () -> record.getId(), () -> record.getVersionId());
-		final int ret = this.jdbcTemplate.update("INSERT INTO dw_record_matrix (version_id, datamatrix) VALUES (?,?)", record.getVersionId(),
-		    record.getDataMatrixJson());
-		log.debug("Transaction for insertMatrix returned [{}]", () -> ret);
-		return ret;
-	}
-
 	public int updateRecordMetaData(final RecordDTO record) throws Exception {
 		log.trace("Entering updateRecordMetaData [recordId: {}]", () -> record.getId());
-		final int ret = this.jdbcTemplate.update("UPDATE dw_record SET name= ?, description = ? WHERE id = ?", record.getRecordName(),
-		    record.getDescription(), record.getId());
+		final int ret = this.jdbcTemplate.update("UPDATE dw_record SET name= ?, description = ? WHERE id = ?", record.getRecordName(), record.getDescription(),
+		    record.getId());
 		log.debug("Transaction for updateRecordMetaData returned [{}]", () -> ret);
 		return ret;
 	}
 
+	/**
+	 * 
+	 * @param record
+	 * @return
+	 * @throws Exception
+	 */
 	public int insertRecordMetaData(final RecordDTO record) throws Exception {
 		log.trace("Entering insertRecordMetaData [studyid: {}]", () -> record.getStudyId());
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -386,23 +476,6 @@ public class RecordDAO {
 		record.setId(key);
 		log.debug("Transaction for insertRecordMetaData returned [res: {}, key: {}]", () -> res, () -> key);
 		return res;
-	}
-
-	@Deprecated
-	public String findMatrixByVersionId(final long versionId) throws Exception {
-		log.trace("Entering findMatrixByVersionId [versionId: {}]", () -> versionId);
-		String sql = "SELECT datamatrix FROM dw_record_matrix WHERE version_id = ?";
-		String matrixJSON = jdbcTemplate.query(sql, new Object[] { versionId }, new ResultSetExtractor<String>() {
-			@Override
-			public String extractData(ResultSet rs) throws SQLException, DataAccessException {
-				if (rs.next()) {
-					return new String(rs.getBytes("datamatrix"), Charset.forName("UTF-8"));
-				}
-				return null;
-			}
-		});
-		log.debug("leaving findMatrixByVersionId with size: {}", () -> (matrixJSON != null ? matrixJSON.length() : "null"));
-		return matrixJSON;
 	}
 
 	/**
@@ -448,8 +521,7 @@ public class RecordDAO {
 		log.trace("Entering insertVariable [varName: {}, versionId: {}]", () -> var.getName());
 		KeyHolder holder = new GeneratedKeyHolder();
 		final String stmt = "INSERT INTO dw_record_variables (name, type, varType, decimals, width, label, missingFormat, "
-		    + "missingVal1, missingVal2, missingVal3, columns, aligment, measureLevel, role, numOfAttributes) "
-		    + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		    + "missingVal1, missingVal2, missingVal3, columns, aligment, measureLevel, role, numOfAttributes) " + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		int res = this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override
 			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
@@ -478,10 +550,10 @@ public class RecordDAO {
 	}
 
 	public long insertVariableVersionRelation(final long varId, final long versionId, final int position, final String changelog) throws Exception {
-		log.trace("Entering insertVariableVersionRelation[versionId: {}, varid: {}, position: {}, changelog: {}]", () -> versionId, () -> varId,
-		    () -> position, () -> changelog);
-		final int ret = this.jdbcTemplate.update("INSERT INTO dw_record_version_variables (version_id, var_id, position, changelog) VALUES (?,?,?,?)",
-		    versionId, varId, position, changelog);
+		log.trace("Entering insertVariableVersionRelation[versionId: {}, varid: {}, position: {}, changelog: {}]", () -> versionId, () -> varId, () -> position,
+		    () -> changelog);
+		final int ret = this.jdbcTemplate.update("INSERT INTO dw_record_version_variables (version_id, var_id, position, changelog) VALUES (?,?,?,?)", versionId,
+		    varId, position, changelog);
 		log.debug("Transaction for insertVariableVersionRelation returned [{}]", () -> ret);
 		return ret;
 	}
@@ -511,6 +583,44 @@ public class RecordDAO {
 		int sum = Arrays.stream(ret).sum();
 		log.debug("leaving insertVarLabels with result: {}", () -> (sum == valLabel.size() ? 1 : 0));
 		return (sum == valLabel.size() ? 1 : 0);
+	}
+
+	/**
+	 * 
+	 * @param versionId
+	 * @return
+	 * @throws Exception
+	 */
+	@Deprecated
+	public String findMatrixByVersionId(final long versionId) throws Exception {
+		log.trace("Entering findMatrixByVersionId [versionId: {}]", () -> versionId);
+		String sql = "SELECT datamatrix FROM dw_record_matrix WHERE version_id = ?";
+		String matrixJSON = jdbcTemplate.query(sql, new Object[] { versionId }, new ResultSetExtractor<String>() {
+			@Override
+			public String extractData(ResultSet rs) throws SQLException, DataAccessException {
+				if (rs.next()) {
+					return new String(rs.getBytes("datamatrix"), Charset.forName("UTF-8"));
+				}
+				return null;
+			}
+		});
+		log.debug("leaving findMatrixByVersionId with size: {}", () -> (matrixJSON != null ? matrixJSON.length() : "null"));
+		return matrixJSON;
+	}
+
+	/**
+	 * 
+	 * @param record
+	 * @return
+	 * @throws Exception
+	 */
+	@Deprecated
+	public int insertMatrix(final RecordDTO record) throws Exception {
+		log.trace("Entering insertRecordMatrix [recordId: {}, versionId: {}]", () -> record.getId(), () -> record.getVersionId());
+		final int ret = this.jdbcTemplate.update("INSERT INTO dw_record_matrix (version_id, datamatrix) VALUES (?,?)", record.getVersionId(),
+		    record.getDataMatrixJson());
+		log.debug("Transaction for insertMatrix returned [{}]", () -> ret);
+		return ret;
 	}
 
 }

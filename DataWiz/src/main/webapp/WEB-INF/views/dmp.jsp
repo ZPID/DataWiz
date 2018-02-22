@@ -11,18 +11,20 @@
       <div class="row text-align-right btn-line">
         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
           <div class="dropdown">
-            <button type="button" class="btn btn-primary btn-sm" data-toggle="dropdown" role="button"
+            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" role="button"
               aria-haspopup="true" aria-expanded="false">
               <s:message code="dmp.export.btn.txt" />
               <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu">
-              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank"><s:message
-                    code="dmp.export.btn.bmbf" /></a></li>
-              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank"><s:message
-                    code="dmp.export.btn.h2020" /></a></li>
-              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank"><s:message
-                    code="dmp.export.btn.dfg" /></a></li>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/BMBF" />" target="_blank"><span
+                  class="glyphicon glyphicon-download" aria-hidden="true"></span> <s:message code="dmp.export.btn.bmbf" /></a></li>
+              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/H2020" />" target="_blank"><span
+                  class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                <s:message code="dmp.export.btn.h2020" /></a></li>
+              <li><a href="<c:url value="/dmp/${ProjectForm.project.id}/exportDMP/DFG" />" target="_blank"><span
+                  class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                <s:message code="dmp.export.btn.dfg" /></a></li>
             </ul>
           </div>
         </div>

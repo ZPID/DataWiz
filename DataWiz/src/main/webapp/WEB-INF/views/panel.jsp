@@ -6,19 +6,14 @@
     <div class="content-padding">
       <div class="page-header">
         <c:url var="projectUrl" value="/project" />
-        <div class="row">
-          <div class="col-xs-8 col-sm-10">
-            <h4>
-              <s:message code="projects.overview.headline" />
-            </h4>
-          </div>
-          <div class="col-xs-4 col-sm-2 text-align-right">
+        <div class="row text-align-right btn-line">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
             <a href="${projectUrl}" class="btn btn-info btn-sm"><s:message code="project.create.button" /></a>
           </div>
         </div>
-        <div>
-          <s:message code="projects.overview.info" />
-        </div>
+        <s:message code="projects.overview.headline" var="headline_head" />
+        <s:message code="projects.overview.info" var="headline_info" />
+        <%@ include file="templates/pages_headline.jsp"%>
       </div>
       <!-- Messages -->
       <%@ include file="templates/message.jsp"%>
@@ -217,7 +212,7 @@
                         </div>
                       </c:when>
                       <c:otherwise>
-                        <div class="panel panel-default" >
+                        <div class="panel panel-default">
                           <div class="panel-heading" data-toggle="collapse" data-target="#panel_user_${loop.count}"
                             style="cursor: pointer;">
                             <strong><s:message code="project.panel.project.shared.showhide" /></strong>

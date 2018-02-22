@@ -54,6 +54,9 @@ public class ProjectDAO {
 
 	private static Logger log = LogManager.getLogger(ProjectDAO.class);
 
+	/**
+	 * Instantiates a new project DAO.
+	 */
 	public ProjectDAO() {
 		super();
 		log.info("Loading ProjectDAO as Singleton and Service");
@@ -147,11 +150,15 @@ public class ProjectDAO {
 	}
 
 	/**
+	 * This function returns a single value from the table dw_project_invite, depending on the passed parameters.
 	 * 
 	 * @param email
+	 *          Mail of the invited user
 	 * @param projectId
+	 *          Project identifier
 	 * @param val
-	 * @return
+	 *          Value to be searched and returned
+	 * @return String with the searched value
 	 * @throws Exception
 	 */
 	public String findValFromInviteData(final String email, final long projectId, final String val) throws Exception {
@@ -162,6 +169,18 @@ public class ProjectDAO {
 		return ret;
 	}
 
+	/**
+	 * This function returns a single value from the table dw_project_invite, depending on the passed parameters.
+	 * 
+	 * @param email
+	 *          Mail of the invited user
+	 * @param linkhash
+	 *          Invitation linkhash value
+	 * @param val
+	 *          Value to be searched and returned
+	 * @return String with the searched value
+	 * @throws Exception
+	 */
 	public String findValFromInviteData(final String email, final String linkhash, final String val) throws Exception {
 		log.trace("Entering getValFromInviteData for [email: {}], [linkhash : {}] and [val: {}]", () -> email, () -> linkhash, () -> val);
 		final String sql = "SELECT " + val + " from dw_project_invite WHERE user_email = ? AND linkhash = ?";
@@ -175,6 +194,14 @@ public class ProjectDAO {
 		return ret;
 	}
 
+	/**
+	 * This function returns a List of all invitations for a project from the table dw_project, depending on the passed project identifier.
+	 * 
+	 * @param pid
+	 *          Project identifier
+	 * @return List of Invitations (mails as string)
+	 * @throws Exception
+	 */
 	public List<String> findPendingInvitesByProjectID(final long pid) throws Exception {
 		log.trace("Entering findPendingInvitesByProjectID for project [id: {}]", () -> pid);
 		final String sql = "SELECT user_email from dw_project_invite WHERE project_id = ?";
@@ -187,6 +214,14 @@ public class ProjectDAO {
 		return ret;
 	}
 
+	/**
+	 * This function saves a new project entity into the table dw_project.
+	 * 
+	 * @param project
+	 *          Contains all project attributes
+	 * @return 1 if changes have happened, otherwise 0
+	 * @throws Exception
+	 */
 	public int insertProject(final ProjectDTO project) throws Exception {
 		log.trace("Entering insertProject [title: {}]", () -> project.getTitle());
 		KeyHolder holder = new GeneratedKeyHolder();
@@ -213,6 +248,17 @@ public class ProjectDAO {
 		return key;
 	}
 
+	/**
+	 * This function saves a new project - invitation relation entity into the table dw_project_invite.
+	 * 
+	 * @param projectId
+	 *          Project identifier
+	 * @param userMail
+	 *          Mail of the invited user
+	 * @param adminMail
+	 *          Project Administrator Email
+	 * @return 1 if changes have happened, otherwise 0
+	 */
 	public int insertInviteEntity(final long projectId, final String userMail, final String adminMail) {
 		log.trace("Entering insertInviteEntity for project [id: {}], User [id: {}] by Admin [email: {}]", () -> projectId, () -> userMail, () -> adminMail);
 		int chk = this.jdbcTemplate.update("INSERT INTO dw_project_invite (user_email, invited_by, project_id, linkhash, date) VALUES (?,?,?,?, ?)", userMail,
@@ -221,6 +267,17 @@ public class ProjectDAO {
 		return chk;
 	}
 
+	/**
+	 * This function updates the mail address of a project - invitation relation entity from the table dw_project_invite.
+	 * 
+	 * @param projectId
+	 *          Project identifier
+	 * @param userMailOld
+	 *          old mail of the invited user
+	 * @param userEmailNew
+	 *          new mail of the invited user
+	 * @return 1 if changes have happened, otherwise 0
+	 */
 	public int updateInvitationEntity(long projectId, String userMailOld, String userEmailNew) {
 		log.trace("Entering updateInvitationEntity for project [id: {}] and User [old email: {}; new email: {}]", () -> projectId, () -> userMailOld,
 		    () -> userEmailNew);
@@ -230,6 +287,14 @@ public class ProjectDAO {
 		return chk;
 	}
 
+	/**
+	 * This function updates a project entity from the table dw_project.
+	 * 
+	 * @param project
+	 *          Contains all project attributes
+	 * @return 1 if changes have happened, otherwise 0
+	 * @throws Exception
+	 */
 	public int updateProject(final ProjectDTO project) throws Exception {
 		log.trace("Entering updateProject for project [id: {}]", () -> project.getId());
 		int chk = this.jdbcTemplate.update(
@@ -241,9 +306,11 @@ public class ProjectDAO {
 	}
 
 	/**
+	 * This function deletes a project entity from the table dw_project.
 	 * 
 	 * @param id
-	 * @return
+	 *          Project identifier
+	 * @return 1 if changes have happened, otherwise 0
 	 * @throws Exception
 	 */
 	public int deleteProject(final long id) throws Exception {
@@ -253,6 +320,15 @@ public class ProjectDAO {
 		return chk;
 	}
 
+	/**
+	 * This function deletes a project - invitation relation entity from the table dw_project_invite.
+	 * 
+	 * @param projectId
+	 *          Project identifier
+	 * @param userMail
+	 *          Mail of the invited user
+	 * @return 1 if changes have happened, otherwise 0
+	 */
 	public int deleteInvitationEntity(final long projectId, final String userMail) {
 		log.trace("Entering deleteInvitationEntity for project [id: {}] and User [id: {}]", () -> projectId, () -> userMail);
 		int chk = this.jdbcTemplate.update("DELETE FROM dw_project_invite WHERE user_email = ? AND project_id = ?", userMail, projectId);
@@ -261,8 +337,11 @@ public class ProjectDAO {
 	}
 
 	/**
+	 * This function transfers the values from the ResultSet to a ProjectDTO
+	 * 
 	 * @param rs
-	 * @return
+	 *          ResultSet
+	 * @return Project object
 	 * @throws SQLException
 	 */
 	private ProjectDTO setProjectDTO(ResultSet rs) throws SQLException {
