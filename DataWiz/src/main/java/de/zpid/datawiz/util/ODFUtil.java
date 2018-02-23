@@ -1917,13 +1917,17 @@ public class ODFUtil {
 			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu2", null, locale)).setFont(regular);
 			doc.addColumnBreak();
 
-			Table table = doc.addTable(60, 3);
+			Table table = doc.addTable(57, 3);
 			// merge
 			table.getCellRangeByPosition(0, 0, 0, 1).merge();
 			table.getCellRangeByPosition(1, 0, 2, 0).merge();
 			table.getCellRangeByPosition(0, 2, 0, 7).merge();
 			table.getCellRangeByPosition(0, 8, 0, 9).merge();
 			table.getCellRangeByPosition(0, 10, 0, 17).merge();
+			table.getCellRangeByPosition(0, 18, 0, 28).merge();
+			table.getCellRangeByPosition(0, 29, 0, 30).merge();
+			table.getCellRangeByPosition(0, 31, 0, 54).merge();
+			table.getCellRangeByPosition(0, 55, 0, 56).merge();
 			// inhalt
 			createCell(table, 0, 0, messageSource.getMessage("export.odt.Pre.th1", null, locale), regular_bold,
 					new Color(190, 190, 190), locale);
@@ -1962,13 +1966,13 @@ public class ODFUtil {
 					locale);
 			createCell(table, 1, 11, messageSource.getMessage("study.intervention.experimental", null, locale), regular,
 					null, locale);
-			createCell(table, 2, 11, study.getInterTypeExp(), regular, null, locale);
+			createCell(table, 2, 11, study.isExperimentalIntervention(), regular, null, locale);
 			createCell(table, 1, 12, messageSource.getMessage("study.intervention.survey", null, locale), regular, null,
 					locale);
-			createCell(table, 2, 12, study.getInterTypeDes(), regular, null, locale);
+			createCell(table, 2, 12, study.isSurveyIntervention(), regular, null, locale);
 			createCell(table, 1, 13, messageSource.getMessage("study.intervention.test", null, locale), regular, null,
 					locale);
-			createCell(table, 2, 13, study.getInterTypeLab(), regular, null, locale);
+			createCell(table, 2, 13, study.isTestIntervention(), regular, null, locale);
 			String constructnames = "";
 			String constructtypes = "";
 			String constructothers = "";
@@ -1990,6 +1994,148 @@ public class ODFUtil {
 			createCell(table, 1, 17, messageSource.getMessage("study.constructs.other", null, locale), regular, null,
 					locale);
 			createCell(table, 2, 17, constructothers, regular, null, locale);
+			createCell(table, 0, 18, messageSource.getMessage("export.odt.Pre.td4", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 18, messageSource.getMessage("study.eligibilities", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 18, study.getEligibilities(), regular, null, locale);
+			createCell(table, 1, 19, messageSource.getMessage("study.population", null, locale), regular, null, locale);
+			createCell(table, 2, 19, study.getPopulation(), regular, null, locale);
+			createCell(table, 1, 20, messageSource.getMessage("study.powerAnalysis", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 20, study.getPowerAnalysis(), regular, null, locale);
+			createCell(table, 1, 21, messageSource.getMessage("study.intSampleSize", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 21, study.getIntSampleSize(), regular, null, locale);
+			createCell(table, 1, 22, messageSource.getMessage("study.obsUnit", null, locale), regular, null, locale);
+			createCell(table, 2, 22, study.getObsUnit(), regular, null, locale);
+			createCell(table, 1, 23, messageSource.getMessage("study.multilevel", null, locale), regular, null, locale);
+			createCell(table, 2, 23, study.getMultilevel(), regular, null, locale);
+			createCell(table, 1, 24, messageSource.getMessage("study.country", null, locale), regular, null, locale);
+			createCell(table, 2, 24, study.getCountry(), regular, null, locale);
+			createCell(table, 1, 25, messageSource.getMessage("study.city", null, locale), regular, null, locale);
+			createCell(table, 2, 25, study.getCity(), regular, null, locale);
+			createCell(table, 1, 26, messageSource.getMessage("study.region", null, locale), regular, null, locale);
+			createCell(table, 2, 26, study.getRegion(), regular, null, locale);
+			createCell(table, 1, 27, messageSource.getMessage("study.usedCollectionModes", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 27, study.getUsedCollectionModes(), regular, null, locale);
+			createCell(table, 1, 28, messageSource.getMessage("study.recruiting", null, locale), regular, null, locale);
+			createCell(table, 2, 28, study.getRecruiting(), regular, null, locale);
+			createCell(table, 0, 29, messageSource.getMessage("export.odt.Pre.td5", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 29, messageSource.getMessage("study.missings", null, locale), regular, null, locale);
+			createCell(table, 2, 29, study.getMissings(), regular, null, locale);
+			createCell(table, 1, 30, messageSource.getMessage("study.dataRerun", null, locale), regular, null, locale);
+			createCell(table, 2, 30, study.getDataRerun(), regular, null, locale);
+			createCell(table, 0, 31, messageSource.getMessage("export.odt.Pre.td6", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 31, messageSource.getMessage("study.repMeasures", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 31, study.getRepMeasures(), regular, null, locale);
+			createCell(table, 1, 32, messageSource.getMessage("study.timeDim", null, locale), regular, null, locale);
+			createCell(table, 2, 32, study.getTimeDim(), regular, null, locale);
+			createCell(table, 1, 33, messageSource.getMessage("study.interTypeExp", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 33, study.getInterTypeExp(), regular, null, locale);
+			createCell(table, 1, 34, messageSource.getMessage("study.interTypeDes", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 34, study.getInterTypeDes(), regular, null, locale);
+			createCell(table, 1, 35, messageSource.getMessage("study.interTypeLab", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 35, study.getInterTypeLab(), regular, null, locale);
+			createCell(table, 1, 36, messageSource.getMessage("study.randomization", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 36, study.getRandomization(), regular, null, locale);
+			createCell(table, 1, 37, messageSource.getMessage("study.interArms", null, locale), regular, null, locale);
+			createCell(table, 2, 37, study.getInterArms(), regular, null, locale);
+			createCell(table, 1, 38, messageSource.getMessage("study.measOcc", null, locale), regular, null, locale);
+			createCell(table, 2, 38, study.getMeasOcc(), regular, null, locale);
+			createCell(table, 1, 39, messageSource.getMessage("study.surveyType", null, locale), regular, null, locale);
+			createCell(table, 2, 39, study.getSurveyType(), regular, null, locale);
+			createCell(table, 1, 40, messageSource.getMessage("study.instruments", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 40, study.getInstruments(), regular, null, locale);
+			String inids = "";
+			String intitles = "";
+			String inauthors = "";
+			String incitations = "";
+			String insummaries = "";
+			String intheohints = "";
+			String instructures = "";
+			String inconstructions = "";
+			String inobjectivities = "";
+			String inreliabilities = "";
+			String invalidities = "";
+			String innorms = "";
+			index = 1;
+			for (StudyInstrumentDTO instrument : study.getInstruments()) {
+				inids = inids + index + ": " + instrument.getId() + ". ";
+				intitles = intitles + index + ": " + instrument.getTitle() + ". ";
+				inauthors = inauthors + index + ": " + instrument.getAuthor() + ". ";
+				incitations = incitations + index + ": " + instrument.getCitation() + ". ";
+				insummaries = insummaries + index + ": " + instrument.getSummary() + ". ";
+				intheohints = intheohints + index + ": " + instrument.getTheoHint() + ". ";
+				instructures = instructures + index + ": " + instrument.getStructure() + ". ";
+				inconstructions = inconstructions + index + ": " + instrument.getConstruction() + ". ";
+				inobjectivities = inobjectivities + index + ": " + instrument.getObjectivity() + ". ";
+				inreliabilities = inreliabilities + index + ": " + instrument.getReliability() + ". ";
+				invalidities = invalidities + index + ": " + instrument.getValidity() + ". ";
+				innorms = innorms + index + ": " + instrument.getNorm() + ". ";
+				index = index + 1;
+			}
+			createCell(table, 1, 41, messageSource.getMessage("study.instrument", null, locale), regular, null, locale);
+			createCell(table, 2, 41, inids, regular, null, locale);
+			createCell(table, 1, 42, messageSource.getMessage("study.instruments.title", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 42, intitles, regular, null, locale);
+			createCell(table, 1, 43, messageSource.getMessage("study.instruments.author", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 43, inauthors, regular, null, locale);
+			createCell(table, 1, 44, messageSource.getMessage("study.instruments.citation", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 44, incitations, regular, null, locale);
+			createCell(table, 1, 45, messageSource.getMessage("study.instruments.summary", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 45, insummaries, regular, null, locale);
+			createCell(table, 1, 46, messageSource.getMessage("study.instruments.theoHint", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 46, intheohints, regular, null, locale);
+			createCell(table, 1, 47, messageSource.getMessage("study.instruments.structure", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 47, instructures, regular, null, locale);
+			createCell(table, 1, 48, messageSource.getMessage("study.instruments.construction", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 48, inconstructions, regular, null, locale);
+			createCell(table, 1, 49, messageSource.getMessage("study.instruments.objectivity", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 49, inobjectivities, regular, null, locale);
+			createCell(table, 1, 50, messageSource.getMessage("study.instruments.reliability", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 50, inreliabilities, regular, null, locale);
+			createCell(table, 1, 51, messageSource.getMessage("study.instruments.validity", null, locale), regular,
+					null, locale);
+			createCell(table, 2, 51, invalidities, regular, null, locale);
+			createCell(table, 1, 52, messageSource.getMessage("study.instruments.norm", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 52, innorms, regular, null, locale);
+			createCell(table, 1, 53, messageSource.getMessage("study.description", null, locale), regular, null,
+					locale);
+			createCell(table, 2, 53, study.getDescription(), regular, null, locale);
+			createCell(table, 1, 54, messageSource.getMessage("study.sampMethod", null, locale), regular, null, locale);
+			createCell(table, 2, 54, study.getSampMethod(), regular, null, locale);
+			createCell(table, 0, 55, messageSource.getMessage("export.odt.Pre.td7", null, locale), regular, null,
+					locale);
+			createCell(table, 1, 55, messageSource.getMessage("study.sourTrans", null, locale), regular, null, locale);
+			createCell(table, 2, 55, study.getSourTrans(), regular, null, locale);
+			createCell(table, 1, 56, messageSource.getMessage("study.transDescr", null, locale), regular, null, locale);
+			createCell(table, 2, 56, study.getTransDescr(), regular, null, locale);
+
+			doc.addColumnBreak();
+
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.ft1h", null, locale)).setFont(blue_large);
+			doc.addColumnBreak();
+			doc.addParagraph(messageSource.getMessage("export.odt.Pre.ft1", null, locale));
 
 			doc.save(baos);
 			doc.close();
