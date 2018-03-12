@@ -57,7 +57,7 @@
   cursor: pointer;
 }
 
-#lp_ms_header_2{
+.lp_ms_header_2{
   width: 100%;
   background: #240d46; /* Old browsers */
   background: -moz-linear-gradient(left, #240d46 0%, #2b2171 100%);

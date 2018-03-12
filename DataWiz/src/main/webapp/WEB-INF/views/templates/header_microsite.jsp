@@ -23,14 +23,12 @@
       </ul>
     </div>
   </div>
-  <div id="lp_ms_header_2">
+  <div class="lp_ms_header_2">
     <div class="row lp_ms_header_row">
-      <div id="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div id="lp_ms_header_2_image">
-          <div id="lp_ms_header_2_logo">
-            <!-- <a href=" title="DataPsych"><img src="img/datapsych.png" alt="DataPsych"></a> -->
-            <a href="/DataWiz/"><span id="lp_ms_header_2_logo_bold">Data</span><span id="lp_ms_header_2_logo_thin">Wiz</span></a>
-          </div>
+      <div id="lp_ms_header_2_image">
+        <div id="lp_ms_header_2_logo">
+          <!-- <a href=" title="DataPsych"><img src="img/datapsych.png" alt="DataPsych"></a> -->
+          <a href="/DataWiz/"><span id="lp_ms_header_2_logo_bold">Data</span><span id="lp_ms_header_2_logo_thin">Wiz</span></a>
         </div>
       </div>
     </div>

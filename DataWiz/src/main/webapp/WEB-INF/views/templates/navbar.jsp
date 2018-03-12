@@ -1,4 +1,4 @@
-<div id="lp_ms_header_2">
+<div class="lp_ms_header_2">
   <div class="nav-wrapper">
     <nav class="navbar navbar-default mainnavtop" data-spy="affix" data-offset-top="300" style="z-index: 10;"
       id="dwmainnavbar">

@@ -7,24 +7,16 @@
     <%@ include file="templates/breadcrump.jsp"%>
     <%@ include file="templates/submenu.jsp"%>
     <div class="content-padding">
-      <div class="page-header">
-        <c:choose>
-          <c:when test="${empty StudyForm.study.id}">
-            <c:set var="allowEdit" value="true" />
-            <h4>
-              <s:message code="study.create.basis.headline" />
-            </h4>
-            <div>
-              <s:message code="study.create.basis.info" />
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div class="row">
-              <div class="col-xs-6 col-sm-7">
-                <h4>
-                  <s:message code="study.edit.basis.headline" arguments="${StudyForm.study.title}" />
-                </h4>
-              </div>
+      <c:choose>
+        <c:when test="${empty StudyForm.study.id}">
+          <c:set var="allowEdit" value="true" />
+          <s:message code="study.create.basis.headline" var="headline_head" />
+          <s:message code="study.create.basis.info" var="headline_info" />
+          <%@ include file="templates/pages_headline.jsp"%>
+        </c:when>
+        <c:otherwise>
+          <div class="row text-align-right btn-line">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
               <c:set var="allowEdit" value="false" />
               <c:if
                 test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
@@ -32,48 +24,48 @@
                         principal.user.hasRole('ADMIN') or 
                         principal.user.hasRole('DS_WRITER', StudyForm.study.id, true)}">
                 <c:set var="allowEdit" value="true" />
-                <div class="col-xs-6 col-sm-5 text-align-right">
-                  <c:url var="accessUrl"
-                    value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
-                  <c:choose>
-                    <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
-                      <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
-                    </c:when>
-                    <c:otherwise>
-                      <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
-                    </c:otherwise>
-                  </c:choose>
-                  <c:if
-                    test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
+                <c:url var="accessUrl"
+                  value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/switchEditMode" />
+                <c:choose>
+                  <c:when test="${empty disStudyContent || disStudyContent eq 'disabled' }">
+                    <a href="${accessUrl}" class="btn btn-success btn-sm"><s:message code="study.button.check.in" /></a>
+                  </c:when>
+                  <c:otherwise>
+                    <a href="${accessUrl}" class="btn btn-warning btn-sm"><s:message code="study.button.check.out" /></a>
+                  </c:otherwise>
+                </c:choose>
+                <c:if
+                  test="${principal.user.hasRole('PROJECT_ADMIN', StudyForm.project.id, false) or
                         principal.user.hasRole('ADMIN')}">
-                    <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#duplicateModal">
-                      <s:message code="study.duplicate.btn" />
-                    </button>
-                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
-                      <s:message code="study.button.delete.study" />
-                    </button>
-                  </c:if>
-                </div>
+                  <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#duplicateModal">
+                    <s:message code="study.duplicate.btn" />
+                  </button>
+                  <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">
+                    <s:message code="study.button.delete.study" />
+                  </button>
+                </c:if>
               </c:if>
-            </div>
-            <div class="row">
-              <div class="col-xs-12 col-sm-9">
-                <s:message code="study.edit.basis.info" />
-              </div>
-              <div class="col-xs-12 col-sm-3 text-align-right">
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="${StudyForm.study.id}/exportStudy/PsychData" />"
-                    target="_blank">PsychData</a>
-                </div>
-                <div style="display: inline-block;">
-                  <a class="btn btn-primary btn-sm" href="<c:url value="${StudyForm.study.id}/exportStudy/PreReg" />"
-                    target="_blank">Präregistrierung</a>
-                </div>
+              <div class="dropdown" style="display: inline-block">
+                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"
+                  role="button" aria-haspopup="true" aria-expanded="false">
+                  <s:message code="dmp.export.btn.txt" />
+                  <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right">
+                  <li><a href="<c:url value="${StudyForm.study.id}/exportStudy/PsychData" />" target="_blank"><span
+                      class="glyphicon glyphicon-download" aria-hidden="true"></span> PD</a></li>
+                  <li><a href="<c:url value="${StudyForm.study.id}/exportStudy/PreReg" />" target="_blank"><span
+                      class="glyphicon glyphicon-download" aria-hidden="true"></span> Prä</a></li>
+                </ul>
               </div>
             </div>
-          </c:otherwise>
-        </c:choose>
-      </div>
+          </div>
+          <s:message code="study.edit.basis.headline" var="headline_head" arguments="${StudyForm.study.title}" />
+          <s:message code="study.edit.basis.info" var="headline_info" />
+          <%@ include file="templates/pages_headline.jsp"%>         
+        </c:otherwise>
+      </c:choose>
+
       <!-- Submenu -->
       <c:if test="${!hideMenu}">
         <ul class="nav nav-tabs subnavtop" data-spy="affix" data-offset-top="400">

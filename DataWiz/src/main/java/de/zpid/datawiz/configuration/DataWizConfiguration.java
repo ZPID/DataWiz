@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PreDestroy;
 
@@ -24,6 +25,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.CacheControl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -53,6 +55,7 @@ import de.zpid.spss.SPSSIO;
 @ComponentScan(basePackages = "de.zpid.datawiz")
 @PropertySource("classpath:datawiz.properties")
 public class DataWizConfiguration implements WebMvcConfigurer {
+	
 
 	private static Logger log = LogManager.getLogger(DataWizConfiguration.class);
 
@@ -192,7 +195,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/static/**").addResourceLocations("/static/");
+		registry.addResourceHandler("/static/**").addResourceLocations("/static/").setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
 	}
 
 	@Override
