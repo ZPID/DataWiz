@@ -1,8 +1,8 @@
 # Datawiz
 
-## Code documentation and cleaning still in progress!
+### Dokumentation und Bereinigung des Quelltextes sind noch in Arbeit.
 
 
-DataWiz is an assistant system designed to help researchers to competently prepare and document their data right from the beginning of the research process. The tool assists in creating data management plans and managing one’s own research data as well as sharing data in teams and later making it available to the scientific community for future use. DataWiz is a free open science web application.
+DataWiz ist ein Assistenzsystem, das Wissenschaftlern und Wissenschaftlerinnen helfen soll, ihre Daten von Forschungsbeginn an fachgerecht aufzubereiten und zu dokumentieren. Das Tool hilft dabei, Datenmanagementpläne zu erstellen, eigene Forschungsdaten zu verwalten und es ermöglicht auch, Daten im Team zu teilen und später der Fachgemeinschaft zur Nachnutzung zur Verfügung zu stellen. DataWiz ist eine kostenfreie Open-Science-Webanwendung.
 
-[Documentation and installation instructions for this project](README.pdf)
+[Die ausführliche Projektdokumentation und Installationsanweisungen für den Serverbetrieb und die Entwicklungsumgebung finden Sie hier](README.pdf)
