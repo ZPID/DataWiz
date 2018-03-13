@@ -19,14 +19,15 @@
         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
           <ul class="list-group" style="border: 1px solid #352071" id="lp_mp_sub_menu">
             <c:url var="panelUrl" value="/panel" />
-            <li class="list-group-item" style="border: 1px solid #352071"><a href="${panelUrl}" style="font-size: 15px;"><span
-                class="glyphicon glyphicon-chevron-right" aria-hidden="true"
+            <li class="list-group-item" style="border: 1px solid #352071"><a href="${panelUrl}"
+              style="font-size: 15px;"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
                 Projektübersicht</a>
               <div style="margin-top: 5px">Setzen Sie Ihre Arbeit an einem bestehenden Projekt fort oder legen Sie
                 ein neues Projekt an.</div></li>
-            <li class="list-group-item" style="border: 1px solid #352071"><a href="https://datawiz.zpid.de/" style="font-size: 15px;"
-              target="_blank"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"
+            <li class="list-group-item" style="border: 1px solid #352071"><a href="https://datawiz.zpid.de/"
+              style="font-size: 15px;" target="_blank"><span class="glyphicon glyphicon-chevron-right"
+                aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
                 Wissensbasis</a>
               <div style="margin-top: 5px">Link zur DataWiz Knowledge Base. Bitte beachten Sie, dass die Inhalte
@@ -42,30 +43,34 @@
               </div></li>
 
           </ul>
-          <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
-            <h4>Ansprechpartner</h4>
-            <p>
-              <span class="darkblue">Forschungsdatenzentrum für die Psychologie</span><br> Universitätsring 15,<br>
-              54296 Trier
-            </p>
-            <p>
-              <b>Inhaltlich:</b><br />PD Dr. Erich Weichselgartner<br />Bereichsleiter Archivierungs- und
-              Veröffentlichungsdienste<br /> <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> <a
-                style="color: white; text-decoration: none;" href="callto:+49 (0)651 201-2056">+49 (0) 651 201-2056</a><br />
-            </p>
-            <p>
-              <b>Technisch:</b><br />M.Sc. Ronny B&ouml;lter<br /> <span class="glyphicon glyphicon-earphone"
-                aria-hidden="true"></span> <a style="color: white; text-decoration: none;"
-                href="callto:+49 (0)651 201-2045">+49 (0) 651 201-2045</a><br />
-            </p>
-            <p>
-              <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <a
-                style="color: white; text-decoration: none;" href="mailto:datawiz@leibniz-psychology.de" title="E-Mail">
-                datawiz(at)leibniz-psychology.org</a><br /> <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
-              <a style="color: white; text-decoration: none;" href="http://www.leibniz-psychology.de/" target="blanc"
-                title="www.leibniz-psychology.de"> www.leibniz-psychology.de</a>
-            </p>
-          </div>
+          <c:if test="${loadMicrositeContent}">
+            <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
+              <h4>Ansprechpartner</h4>
+              <p>
+                <span class="darkblue">Forschungsdatenzentrum für die Psychologie</span><br> Universitätsring 15,<br>
+                54296 Trier
+              </p>
+              <p>
+                <b>Inhaltlich:</b><br />PD Dr. Erich Weichselgartner<br />Bereichsleiter Archivierungs- und
+                Veröffentlichungsdienste<br /> <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> <a
+                  style="color: white; text-decoration: none;" href="callto:+49 (0)651 201-2056">+49 (0) 651
+                  201-2056</a><br />
+              </p>
+              <p>
+                <b>Technisch:</b><br />M.Sc. Ronny B&ouml;lter<br /> <span class="glyphicon glyphicon-earphone"
+                  aria-hidden="true"></span> <a style="color: white; text-decoration: none;"
+                  href="callto:+49 (0)651 201-2045">+49 (0) 651 201-2045</a><br />
+              </p>
+              <p>
+                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <a
+                  style="color: white; text-decoration: none;" href="mailto:datawiz@leibniz-psychology.de"
+                  title="E-Mail"> datawiz(at)leibniz-psychology.org</a><br /> <span class="glyphicon glyphicon-home"
+                  aria-hidden="true"></span> <a style="color: white; text-decoration: none;"
+                  href="http://www.leibniz-psychology.de/" target="blanc" title="www.leibniz-psychology.de">
+                  www.leibniz-psychology.de</a>
+              </p>
+            </div>
+          </c:if>
         </div>
       </div>
       <div class="row">

@@ -1,13 +1,10 @@
 <c:choose>
-  <c:when test="${loadMicrositeContent}">
-    <c:catch var="catchException">
-      <c:import url="http://136.199.85.65/footer/?app=datawiz&locale=${localeCode}&iframe=0&bootstrap=0" />
-    </c:catch>
-    <c:if test="${catchException != null}">
-      <%@ include file="footer_microsite.jsp"%>
-    </c:if>
+  <c:when test="${empty ms_footer_content}">
+    <%@ include file="footer_microsite.jsp"%>
   </c:when>
-  <c:otherwise><%@ include file="footer_microsite.jsp"%></c:otherwise>
+  <c:otherwise>
+    ${ms_footer_content}
+  </c:otherwise>
 </c:choose>
 <div class="dwgoup"></div>
 <script src="<c:url value='/static/js/app.js' />" type="text/javascript"></script>

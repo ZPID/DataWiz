@@ -1,14 +1,7 @@
 <%@ include file="includes.jsp"%>
 <!DOCTYPE html>
 <c:set var="localeCode" value="${pageContext.response.locale}" />
-<c:choose>
-  <c:when test="${localeCode eq 'en'}">
-    <html lang="en">
-  </c:when>
-  <c:when test="${localeCode eq 'de'}">
-    <html lang="de">
-  </c:when>
-</c:choose>
+<html lang="${localeCode}">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <sec:csrfMetaTags />
@@ -18,12 +11,26 @@
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/font-awesome.css' />" rel="stylesheet" type="text/css" />
 <link href="<c:url value='/static/css/app.css' />" rel="stylesheet" />
-<%-- <link href="<c:url value='/static/css/microsite_css/fonts.css' />" rel="stylesheet" /> --%>
-<%-- <link href="<c:url value='/static/css/microsite_css/microsite.css' />" rel="stylesheet" /> --%>
-<c:if test="${loadMicrositeContent}">
-  <link href="http://136.199.85.65/css/fonts" rel="stylesheet" type="text/css" />
-  <link href="http://136.199.85.65/css/microsite?app=datawiz&bootstrap=0" rel="stylesheet" type="text/css" />
-</c:if>
+<c:choose>
+  <c:when test="${loadMicrositeContent}">
+    <c:catch var="catchException">
+      <c:import url="http://136.199.85.65/header/?app=datawiz&locale=${localeCode}&iframe=0&bootstrap=0"
+        var="ms_header_content" />
+      <c:import url="http://136.199.85.65/footer/?app=datawiz&locale=${localeCode}&iframe=0&bootstrap=0"
+        var="ms_footer_content" />
+      <link href="http://136.199.85.65/css/fonts" rel="stylesheet" type="text/css" />
+      <link href="http://136.199.85.65/css/microsite?app=datawiz&amp;bootstrap=0" rel="stylesheet" type="text/css" />
+    </c:catch>
+    <c:if test="${catchException != null}">
+      <link href="<c:url value='/static/css/microsite_css/fonts.css' />" rel="stylesheet" />
+      <link href="<c:url value='/static/css/microsite_css/microsite.css' />" rel="stylesheet" />
+    </c:if>
+  </c:when>
+  <c:otherwise>
+    <link href="<c:url value='/static/css/microsite_css/fonts.css' />" rel="stylesheet" />
+    <link href="<c:url value='/static/css/microsite_css/microsite.css' />" rel="stylesheet" />
+  </c:otherwise>
+</c:choose>
 <link href="http://cdn.datatables.net/1.10.16/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css" />
 <link href="<c:url value='/static/js/datepicker/css/bootstrap-datepicker.min.css' />" rel="stylesheet" />
 <s:eval expression="@environment.getProperty('application.favicon.url')" var="faviconUri" />
@@ -55,13 +62,10 @@
   <sec:authentication var="principal" property="principal" />
   <div class="loader"></div>
   <c:choose>
-    <c:when test="${loadMicrositeContent}">
-      <c:catch var="catchException">
-        <c:import url="http://136.199.85.65/header/?app=datawiz&locale=${localeCode}&iframe=0&bootstrap=0" />
-      </c:catch>
-      <c:if test="${catchException != null}">
-        <%@ include file="header_microsite.jsp"%>
-      </c:if>
+    <c:when test="${empty ms_header_content}">
+      <%@ include file="header_microsite.jsp"%>
     </c:when>
-    <c:otherwise><%@ include file="header_microsite.jsp"%></c:otherwise>
+    <c:otherwise>
+    ${ms_header_content}
+  </c:otherwise>
   </c:choose>
