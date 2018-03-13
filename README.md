@@ -1,10 +1,6 @@
 # Datawiz
 
-Code documentation and cleaning still in progress!
+## Code documentation and cleaning still in progress!
 
 
-<object data="https://github.com/ZPID/DataWiz/blob/master/README.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="https://github.com/ZPID/DataWiz/blob/master/README.pdf">
-        This browser does not support PDFs. Please download the PDF to view it: <a href="https://github.com/ZPID/DataWiz/blob/master/README.pdf">Download    PDF</a>.</p>
-    </embed>
-</object>
+DataWiz is an assistant system designed to help researchers to competently prepare and document their data right from the beginning of the research process. The tool assists in creating data management plans and managing one’s own research data as well as sharing data in teams and later making it available to the scientific community for future use. DataWiz is a free open science web application.
