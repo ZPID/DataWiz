@@ -72,6 +72,7 @@ public class ODFUtil {
 	 * @throws Exception
 	 */
 	public byte[] createBMBFDoc(final ProjectForm pForm, final Locale locale) throws Exception {
+		//test
 		log.trace("Entering createBMBFDoc");
 		ProjectDTO project = pForm.getProject();
 		DmpDTO dmp = pForm.getDmp();
