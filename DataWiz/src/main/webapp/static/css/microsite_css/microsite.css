@@ -7,9 +7,9 @@
   /* standard h3 font size */
   --lg_ms_h3_font_size: 20px;
   /* standard logo font size */
-  --lg_ms_logo_font_size: 3em;
+  --lg_ms_logo_font_size: 48px;
   /* standard line height */
-  --lg_ms_line_height: 1.6em;
+  --lg_ms_line_height: 1.4em;
   /* content width for resolution > 1170px */
   --lg_ms_lg_width: 80%;
   /* content width for resolution > 970px */
@@ -19,9 +19,9 @@
   /* content width for resolution < 750px */
   --lg_ms_xs_width: 100%;
   /* header zpid logo image */
-  --lg_ms_header_zpid_logo_image: url('');
+  --lg_ms_header_zpid_logo_image: url(http://localhost/microsite/images/leibniz-psychology.png);
    /* header background image */
-  --lg_ms_header_background_image: url('../../images/microsite_img/header_cyan.jpg');
+  --lg_ms_header_background_image: url(http://localhost/microsite/images/header_cyan.jpg);
   /* header background color */
   --lg_ms_header_background_color: #0097c6;
 }
@@ -85,6 +85,7 @@
     background-image: var(--lg_ms_header_zpid_logo_image);
     height: 56px;
     width: 240px;
+    cursor: pointer;
 }
 
 #lp_ms_header_2_logo_img {

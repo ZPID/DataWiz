@@ -20,7 +20,7 @@
         </div>
       </div>
       <c:choose>
-        <c:when test="${empty ProjectForm.project.id}">
+        <c:when test="${empty ProjectForm.project.id || ProjectForm.project.id == 0}">
           <c:set var="allowEdit" value="true" />
           <s:message code="project.create.headline" var="headline_head" />
           <s:message code="project.create.info" var="headline_info" />

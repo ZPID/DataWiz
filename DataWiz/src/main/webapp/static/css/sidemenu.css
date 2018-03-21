@@ -1,0 +1,99 @@
+#dwSidenavBTN {
+  display: none;
+  transform: rotate(-90deg);
+  position: fixed;
+  z-index: 10;
+  top: 48%;
+  width: 140px;
+  left: -50px;
+  background-color: rgba(36, 13, 70, 1);
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  color: white;
+  border-radius: 10px;
+  font-weight: 400;
+}
+
+#dwSidenav {
+  display: none;
+  min-height: 100%;
+  width: 100%;
+  position: absolute;
+  z-index: 100;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  padding: 50px 3% 50px 3%;
+  overflow-x: hidden;
+}
+
+
+#dwSidenav ul {
+  list-style: none;
+  font-family: 'Montserrat', sans-serif;
+}
+
+#dwSidenavProjects{
+  padding-left: 0px;
+}
+
+#dwSidenavProjects a:hover {
+  color: #af33a1;
+}
+
+.dwSidenavProjectsSub {
+  color: white;
+  margin: 5px 0px 10px 0px;
+  font-size: 14px;
+  word-wrap: break-word;
+}
+
+.dwSidenavProjectsSub a {
+  color: #0097c6;
+  text-decoration: none;
+  font-weight: 400;
+}
+
+#dwSidenav li {
+  margin-top: 20px;
+}
+
+#dwSidenavProjects>li>a {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+}
+
+#dwSidenavProjects>li {
+  border-left: 2px solid #8d2c82;
+  padding-left: 10px;
+}
+
+.dwSidenavStudies>li {
+  border-left: 2px solid #0097c6;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  padding-left: 10px;
+}
+
+.dwSidenavRecords>li {
+  border-left: 2px solid #a0b01e;
+  font-size: 14px;
+  font-weight: 400;
+  color: white;
+  padding-left: 10px;
+}
+
+#dwSideNavClose {
+  float: right;
+  color: white;
+  font-size: 45px;
+  cursor: pointer;
+}
+
+#dwSideNavClose:after {
+  clear: both;
+}

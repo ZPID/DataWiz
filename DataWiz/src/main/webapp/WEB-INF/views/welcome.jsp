@@ -25,6 +25,12 @@
                 Projektübersicht</a>
               <div style="margin-top: 5px">Setzen Sie Ihre Arbeit an einem bestehenden Projekt fort oder legen Sie
                 ein neues Projekt an.</div></li>
+                <li class="list-group-item" style="border: 1px solid #352071"><a href="https://datawiz.zpid.de/"
+              style="font-size: 15px;" target="_blank"><span class="glyphicon glyphicon-chevron-right"
+                aria-hidden="true"
+                style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
+                User Guide</a>
+              <div style="margin-top: 5px"></div></li>
             <li class="list-group-item" style="border: 1px solid #352071"><a href="https://datawiz.zpid.de/"
               style="font-size: 15px;" target="_blank"><span class="glyphicon glyphicon-chevron-right"
                 aria-hidden="true"

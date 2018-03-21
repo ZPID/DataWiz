@@ -11,6 +11,7 @@
 <link href="<c:url value='/static/css/dropzone.css' />" rel="stylesheet" />
 <link href="<c:url value='/static/css/font-awesome.css' />" rel="stylesheet" type="text/css" />
 <link href="<c:url value='/static/css/app.css' />" rel="stylesheet" />
+<link href="<c:url value='/static/css/sidemenu.css' />" rel="stylesheet" />
 <c:choose>
   <c:when test="${loadMicrositeContent}">
     <c:catch var="catchException">
@@ -18,8 +19,8 @@
         var="ms_header_content" />
       <c:import url="http://136.199.85.65/footer/?app=datawiz&locale=${localeCode}&iframe=0&bootstrap=0"
         var="ms_footer_content" />
-      <link href="http://136.199.85.65/css/fonts" rel="stylesheet" type="text/css" />
-      <link href="http://136.199.85.65/css/microsite?app=datawiz&amp;bootstrap=0" rel="stylesheet" type="text/css" />
+      <link href="http://136.199.85.65/css/fonts" rel="stylesheet" />
+      <link href="http://136.199.85.65/css/microsite?app=datawiz&amp;bootstrap=0" rel="stylesheet" />
     </c:catch>
     <c:if test="${catchException != null}">
       <link href="<c:url value='/static/css/microsite_css/fonts.css' />" rel="stylesheet" />
@@ -47,6 +48,7 @@
 <script src="<c:url value='/static/js/app.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/modalform.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/dwfilter.js' />" type="text/javascript"></script>
+<script src="<c:url value='/static/js/sidemenu.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/jquery.dataTables.min.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/dataTables.bootstrap.min.js' />" type="text/javascript"></script>
 </head>

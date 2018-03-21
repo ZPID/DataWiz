@@ -88,3 +88,4 @@
     </nav>
   </div>
 </div>
+<%@ include file="sidenav.jsp" %>
