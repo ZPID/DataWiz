@@ -1,4 +1,4 @@
-<div id="dwSidenavBTN">Übersicht</div>
+<div id="dwSidenavBTN"><s:message code="sidemenu.icon.txt" /></div>
 <div id="dwSidenav" class="container-fluid">
   <div class="row">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
