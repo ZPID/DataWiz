@@ -360,16 +360,16 @@ public class ODFUtil {
 			createCell(table, 2, 3, messageSource.getMessage("project.edit.grantNumber", null, locale), regular, null,
 					locale);
 			createCell(table, 3, 3, project.getGrantNumber(), regular, null, locale);
-			createCell(table, 0, 4, messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale), regular, null,
+			createCell(table, 0, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 4, messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale), regular, null,
+			createCell(table, 1, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 4, messageSource.getMessage("project.edit.funding", null, locale), regular, null,
 					locale);
 			createCell(table, 3, 4, project.getFunding(), regular, null, locale);
 			createCell(table, 0, 5, messageSource.getMessage("export.odt.BMBF.bifo.td6", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 5, messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale), regular, null,
+			createCell(table, 1, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 5, messageSource.getMessage("project.edit.title", null, locale), regular, null,
 					locale);
@@ -386,7 +386,7 @@ public class ODFUtil {
 			createCell(table, 3, 7, dmp.getExistingDataRelevance(), regular, null, locale);
 			createCell(table, 0, 8, messageSource.getMessage("export.odt.BMBF.bifo.td10", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 8, messageSource.getMessage("export.odt.BMBF.bifo.td11", null, locale), regular, null,
+			createCell(table, 1, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td11", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 8, messageSource.getMessage("dmp.edit.leader", null, locale), regular, null, locale);
 			StringBuilder primName = new StringBuilder();
@@ -407,7 +407,7 @@ public class ODFUtil {
 			}
 			createCell(table, 0, 9, messageSource.getMessage("export.odt.BMBF.bifo.td12", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 9, messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale), regular, null,
+			createCell(table, 1, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 9, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
@@ -417,15 +417,15 @@ public class ODFUtil {
 					locale);
 			createCell(table, 2, 10, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 11, messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale), regular, null,
+			createCell(table, 0, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 11, messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale), regular, null,
+			createCell(table, 1, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 11, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
 			createCell(table, 0, 12, messageSource.getMessage("export.odt.BMBF.bifo.td18", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 12, messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale), regular, null,
+			createCell(table, 1, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 12, messageSource.getMessage("dmp.edit.funderRequirements", null, locale), regular,
 					null, locale);
@@ -441,7 +441,7 @@ public class ODFUtil {
 			createCell(table, 3, 14, dmp.getUsedDataTypes(), regular, null, locale);
 			createCell(table, 0, 15, messageSource.getMessage("export.odt.BMBF.bifo.td23", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 15, messageSource.getMessage("export.odt.BMBF.bifo.td24", null, locale), regular, null,
+			createCell(table, 1, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td24", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 15, messageSource.getMessage("dmp.edit.existingData", null, locale), regular, null,
 					locale);
@@ -455,9 +455,9 @@ public class ODFUtil {
 			createCell(table, 2, 18, messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale),
 					regular, null, locale);
 			createCell(table, 3, 18, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 0, 19, messageSource.getMessage("export.odt.BMBF.bifo.td25", null, locale), regular, null,
+			createCell(table, 0, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td25", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 19, messageSource.getMessage("export.odt.BMBF.bifo.td26", null, locale), regular, null,
+			createCell(table, 1, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td26", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 19, messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale), regular,
 					null, locale);
@@ -470,21 +470,21 @@ public class ODFUtil {
 			createCell(table, 3, 21, dmp.getQualitityOther(), regular, null, locale);
 			createCell(table, 0, 22, messageSource.getMessage("export.odt.BMBF.bifo.td27", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 22, messageSource.getMessage("export.odt.BMBF.bifo.td28", null, locale), regular, null,
+			createCell(table, 1, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td28", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 22, messageSource.getMessage("export.odt.no.equivalent1", null, locale), regular,
+			createCell(table, 2, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent1", null, locale)), regular,
 					new Color(210, 210, 210), locale);
 			createCell(table, 0, 23, messageSource.getMessage("export.odt.BMBF.bifo.td29", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 23, messageSource.getMessage("export.odt.BMBF.bifo.td30", null, locale), regular, null,
+			createCell(table, 1, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td30", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 23, messageSource.getMessage("export.odt.no.equivalent2", null, locale), regular,
+			createCell(table, 2, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent2", null, locale)), regular,
 					new Color(210, 210, 210), locale);
 			createCell(table, 0, 24, messageSource.getMessage("export.odt.BMBF.bifo.td31", null, locale), regular_bold,
 					null, locale);
 			createCell(table, 0, 25, messageSource.getMessage("export.odt.BMBF.bifo.td32", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 25, messageSource.getMessage("export.odt.BMBF.bifo.td33", null, locale), regular, null,
+			createCell(table, 1, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td33", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 25, messageSource.getMessage("dmp.edit.storageResponsible", null, locale), regular,
 					null, locale);
@@ -510,7 +510,7 @@ public class ODFUtil {
 			createCell(table, 3, 30, dmp.getManagementWorkflowTxt(), regular, null, locale);
 			createCell(table, 0, 31, messageSource.getMessage("export.odt.BMBF.bifo.td36", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 31, messageSource.getMessage("export.odt.BMBF.bifo.td37", null, locale), regular, null,
+			createCell(table, 1, 31, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td37", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 31, messageSource.getMessage("dmp.edit.fileFormat", null, locale), regular, null,
 					locale);
@@ -523,7 +523,7 @@ public class ODFUtil {
 			createCell(table, 3, 33, dmp.getStorageRequirementsTxt(), regular, null, locale);
 			createCell(table, 0, 34, messageSource.getMessage("export.odt.BMBF.bifo.td38", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 34, messageSource.getMessage("export.odt.BMBF.bifo.td39", null, locale), regular, null,
+			createCell(table, 1, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td39", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 34, messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale), regular,
 					null, locale);
@@ -535,14 +535,14 @@ public class ODFUtil {
 					null, locale);
 			createCell(table, 0, 37, messageSource.getMessage("export.odt.BMBF.bifo.td41", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 37, messageSource.getMessage("export.odt.BMBF.bifo.td42", null, locale), regular, null,
+			createCell(table, 1, 37, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td42", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 37, messageSource.getMessage("dmp.edit.metaDescription", null, locale), regular, null,
 					locale);
 			createCell(table, 3, 37, dmp.getMetaDescription(), regular, null, locale);
 			createCell(table, 0, 38, messageSource.getMessage("export.odt.BMBF.bifo.td43", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 38, messageSource.getMessage("export.odt.BMBF.bifo.td44", null, locale), regular, null,
+			createCell(table, 1, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td44", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 38, messageSource.getMessage("dmp.edit.metaFramework", null, locale), regular, null,
 					locale);
@@ -550,11 +550,11 @@ public class ODFUtil {
 			createCell(table, 2, 39, messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale), regular,
 					null, locale);
 			createCell(table, 3, 39, dmp.getSelectedMetaPurposes(), regular, null, locale);
-			createCell(table, 0, 40, messageSource.getMessage("export.odt.BMBF.bifo.td45", null, locale), regular_bold,
+			createCell(table, 0, 40, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td45", null, locale)), regular_bold,
 					null, locale);
 			createCell(table, 0, 41, messageSource.getMessage("export.odt.BMBF.bifo.td46", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 41, messageSource.getMessage("export.odt.BMBF.bifo.td47", null, locale), regular, null,
+			createCell(table, 1, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td47", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 41, messageSource.getMessage("dmp.edit.frameworkNationality", null, locale), regular,
 					null, locale);
@@ -574,9 +574,9 @@ public class ODFUtil {
 			createCell(table, 2, 46, messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale), regular,
 					null, locale);
 			createCell(table, 3, 46, dmp.getInternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 0, 47, messageSource.getMessage("export.odt.BMBF.bifo.td48", null, locale), regular, null,
+			createCell(table, 0, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td48", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 47, messageSource.getMessage("export.odt.BMBF.bifo.td49", null, locale), regular, null,
+			createCell(table, 1, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td49", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 47, messageSource.getMessage("dmp.edit.sensitiveData", null, locale), regular, null,
 					locale);
@@ -602,17 +602,17 @@ public class ODFUtil {
 			createCell(table, 2, 54, messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale), regular, null,
 					locale);
 			createCell(table, 3, 54, dmp.getIrbApprovalTxt(), regular, null, locale);
-			createCell(table, 0, 55, messageSource.getMessage("export.odt.BMBF.bifo.td50", null, locale), regular, null,
+			createCell(table, 0, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td50", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 55, messageSource.getMessage("export.odt.BMBF.bifo.td51", null, locale), regular, null,
+			createCell(table, 1, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td51", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 55, messageSource.getMessage("export.odt.no.equivalent", null, locale), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 56, messageSource.getMessage("export.odt.BMBF.bifo.td52", null, locale), regular, null,
+			createCell(table, 0, 56, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td52", null, locale)), regular, null,
 					locale);
-			createCell(table, 0, 57, messageSource.getMessage("export.odt.BMBF.bifo.td53", null, locale), regular, null,
+			createCell(table, 0, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td53", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 57, messageSource.getMessage("export.odt.BMBF.bifo.td54", null, locale), regular, null,
+			createCell(table, 1, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td54", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 57, messageSource.getMessage("dmp.edit.publStrategy", null, locale), regular, null,
 					locale);
@@ -645,16 +645,16 @@ public class ODFUtil {
 			createCell(table, 3, 66, dmp.getUsedPID(), regular, null, locale);
 			createCell(table, 0, 67, messageSource.getMessage("export.odt.BMBF.bifo.td55", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 67, messageSource.getMessage("export.odt.BMBF.bifo.td56", null, locale), regular, null,
+			createCell(table, 1, 67, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td56", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 67, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null,
 					locale);
 			createCell(table, 3, 67, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 0, 68, messageSource.getMessage("export.odt.BMBF.bifo.td57", null, locale), regular_bold,
+			createCell(table, 0, 68, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td57", null, locale)), regular_bold,
 					null, locale);
 			createCell(table, 0, 69, messageSource.getMessage("export.odt.BMBF.bifo.td58", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 69, messageSource.getMessage("export.odt.BMBF.bifo.td59", null, locale), regular, null,
+			createCell(table, 1, 69, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td59", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 69, messageSource.getMessage("dmp.edit.dataSelection", null, locale), regular, null,
 					locale);
@@ -667,7 +667,7 @@ public class ODFUtil {
 			createCell(table, 3, 71, dmp.getSelectionResp(), regular, null, locale);
 			createCell(table, 0, 72, messageSource.getMessage("export.odt.BMBF.bifo.td60", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 72, messageSource.getMessage("export.odt.BMBF.bifo.td61", null, locale), regular, null,
+			createCell(table, 1, 72, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td61", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 72, messageSource.getMessage("dmp.edit.storageDuration", null, locale), regular, null,
 					locale);
@@ -682,7 +682,7 @@ public class ODFUtil {
 					null, locale);
 			createCell(table, 0, 76, messageSource.getMessage("export.odt.BMBF.bifo.td63", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 76, messageSource.getMessage("export.odt.BMBF.bifo.td64", null, locale), regular, null,
+			createCell(table, 1, 76, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td64", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 76, messageSource.getMessage("dmp.edit.responsibleUnit", null, locale), regular, null,
 					locale);
@@ -701,7 +701,7 @@ public class ODFUtil {
 			createCell(table, 3, 80, dmp.getContributionsDefinedTxt(), regular, null, locale);
 			createCell(table, 0, 81, messageSource.getMessage("export.odt.BMBF.bifo.td65", null, locale), regular, null,
 					locale);
-			createCell(table, 1, 81, messageSource.getMessage("export.odt.BMBF.bifo.td66", null, locale), regular, null,
+			createCell(table, 1, 81, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td66", null, locale)), regular, null,
 					locale);
 			createCell(table, 2, 81, messageSource.getMessage("dmp.edit.staffDescription", null, locale), regular, null,
 					locale);
@@ -769,7 +769,7 @@ public class ODFUtil {
 			master.setMargins(15, 15, 15, 15);
 			doc.addPageBreak(par, master);
 			// Zweite Seite
-			doc.addParagraph(messageSource.getMessage("export.odt.H2020.zu1", null, locale)).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zu1", null, locale))).setFont(regular);
 			doc.addColumnBreak();
 			par = doc.addParagraph(messageSource.getMessage("export.odt.H2020.zu2", null, locale));
 			par.setFont(regular_it);
@@ -1129,7 +1129,7 @@ public class ODFUtil {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			TextDocument doc = TextDocument.newTextDocument();
 			// Erste Seite
-			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zpid", null, locale)).setFont(blue_reg);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zpid", null, locale))).setFont(blue_reg);
 			doc.addColumnBreak();
 			Paragraph par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.headline", null, locale));
 			par.setFont(headline);
@@ -1140,7 +1140,7 @@ public class ODFUtil {
 			// master.setMargins(15, 15, 15, 15);
 			doc.addPageBreak(par, master);
 			// Zweite Seite
-			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zu1", null, locale)).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zu1", null, locale))).setFont(regular);
 			doc.addColumnBreak();
 			par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.zu2", null, locale));
 			par.setFont(regular_it);
@@ -1179,7 +1179,7 @@ public class ODFUtil {
 					new Color(210, 210, 210), locale);
 			createCell(table, 2, 1, messageSource.getMessage("export.odt.DFG.th4", null, locale), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.DFG.td1", null, locale), regular, null,
+			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td1", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 2, messageSource.getMessage("dmp.edit.dataReproducibility", null, locale), regular,
 					null, locale);
@@ -1187,7 +1187,7 @@ public class ODFUtil {
 			createCell(table, 1, 4, messageSource.getMessage("dmp.edit.expectedUsage", null, locale), regular, null,
 					locale);
 			createCell(table, 2, 4, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 0, 5, messageSource.getMessage("export.odt.DFG.td2", null, locale), regular, null,
+			createCell(table, 0, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td2", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 5, messageSource.getMessage("dmp.edit.publStrategy", null, locale), regular, null,
 					locale);
@@ -1229,7 +1229,7 @@ public class ODFUtil {
 			createCell(table, 1, 17, messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale), regular,
 					null, locale);
 			createCell(table, 2, 17, dmp.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 0, 18, messageSource.getMessage("export.odt.DFG.td4", null, locale), regular, null,
+			createCell(table, 0, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td4", null, locale)), regular, null,
 					locale);
 			// createCell(table, 1, 18,
 			// messageSource.getMessage("dmp.edit.qualityAssurance", null, locale), regular,
@@ -1353,14 +1353,14 @@ public class ODFUtil {
 			createCell(table, 1, 54, messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale), regular,
 					null, locale);
 			createCell(table, 2, 54, dmp.getInternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 0, 55, messageSource.getMessage("export.odt.DFG.td11", null, locale), regular, null,
+			createCell(table, 0, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td11", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 55, messageSource.getMessage("dmp.edit.transferTime", null, locale), regular, null,
 					locale);
 			createCell(table, 2, 55, dmp.getTransferTime(), regular, null, locale);
 
 			doc.addColumnBreak();
-			doc.addParagraph(messageSource.getMessage("export.odt.DFG.zu3", null, locale)).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zu3", null, locale))).setFont(regular);
 			doc.addColumnBreak();
 			table = doc.addTable(3, 3);
 
@@ -1376,7 +1376,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 2, 1, messageSource.getMessage("export.odt.DFG.th6", null, locale), regular_bold, null,
 					locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.DFG.td12", null, locale), regular, null,
+			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td12", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 2, messageSource.getMessage("dmp.edit.specificCosts", null, locale), regular, null,
 					locale);
@@ -1384,14 +1384,14 @@ public class ODFUtil {
 
 			doc.addColumnBreak();
 
-			par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.ft1", null, locale));
+			par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.ft1", null, locale)));
 			par.setFont(regular);
 			par.appendHyperlink(messageSource.getMessage("export.odt.DFG.ft2", null, locale),
 					new URI(messageSource.getMessage("export.odt.DFG.ft2l", null, locale)));
 			doc.addColumnBreak();
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.src", null, locale)).setFont(regular_bold);
 			doc.addColumnBreak();
-			par = doc.addParagraph(messageSource.getMessage("export.odt.DFG.src1", null, locale));
+			par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.src1", null, locale)));
 			par.setFont(regular_it);
 			par.appendHyperlink(messageSource.getMessage("export.odt.DFG.src1l", null, locale),
 					new URI(messageSource.getMessage("export.odt.DFG.src1l", null, locale)));
@@ -1439,9 +1439,9 @@ public class ODFUtil {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			TextDocument doc = TextDocument.newTextDocument();
 			// Erste Seite
-			doc.addParagraph(messageSource.getMessage("export.odt.PsychData.zpid", null, locale)).setFont(blue_reg);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.zpid", null, locale))).setFont(blue_reg);
 			doc.addColumnBreak();
-			Paragraph par = doc.addParagraph(messageSource.getMessage("export.odt.PsychData.headline", null, locale));
+			Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.headline", null, locale)));
 			par.setFont(headline);
 			doc.addColumnBreak();
 			// Masterpage
@@ -1452,7 +1452,7 @@ public class ODFUtil {
 			// Zweite Seite
 			doc.addParagraph(messageSource.getMessage("export.odt.PsychData.zu1h", null, locale)).setFont(blue_large);
 			doc.addColumnBreak();
-			doc.addParagraph(messageSource.getMessage("export.odt.PsychData.zu1", null, locale)).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.zu1", null, locale))).setFont(regular);
 			doc.addColumnBreak();
 
 			Table table = doc.addTable(69, 4);
@@ -1532,7 +1532,7 @@ public class ODFUtil {
 			createCell(table, 3, 7, study.getCompleteSel(), regular, null, locale);
 			createCell(table, 2, 8, messageSource.getMessage("study.excerpt", null, locale), regular, null, locale);
 			createCell(table, 3, 8, study.getExcerpt(), regular, null, locale);
-			createCell(table, 0, 9, messageSource.getMessage("export.odt.PsychData.td13", null, locale), regular, null,
+			createCell(table, 0, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td13", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 9, messageSource.getMessage("export.odt.PsychData.td14", null, locale), regular, null,
 					locale);
@@ -1544,14 +1544,14 @@ public class ODFUtil {
 					locale);
 			createCell(table, 2, 10, messageSource.getMessage("study.objectives", null, locale), regular, null, locale);
 			createCell(table, 3, 10, study.getObjectives(), regular, null, locale);
-			createCell(table, 0, 11, messageSource.getMessage("export.odt.PsychData.td17", null, locale), regular, null,
+			createCell(table, 0, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td17", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 11, messageSource.getMessage("export.odt.PsychData.td18", null, locale), regular, null,
 					locale);
 			createCell(table, 2, 11, messageSource.getMessage("study.repMeasures", null, locale), regular, null,
 					locale);
 			createCell(table, 3, 11, study.getRepMeasures(), regular, null, locale);
-			createCell(table, 0, 12, messageSource.getMessage("export.odt.PsychData.td19", null, locale), regular, null,
+			createCell(table, 0, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td19", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 12, messageSource.getMessage("export.odt.PsychData.td20", null, locale), regular, null,
 					locale);
@@ -1563,7 +1563,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 2, 13, messageSource.getMessage("study.intervention", null, locale), regular, null,
 					locale);
-			createCell(table, 3, 13, messageSource.getMessage("export.odt.PsychData.td22.5", null, locale), regular,
+			createCell(table, 3, 13, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td22.5", null, locale)), regular,
 					null, locale);
 			createCell(table, 2, 14, messageSource.getMessage("study.intervention.survey", null, locale), regular, null,
 					locale);
@@ -1706,7 +1706,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 3, 41, study.getEligibilities(), regular, null, locale);
 			createCell(table, 2, 42, messageSource.getMessage("study.population", null, locale), regular, null, locale);
-			createCell(table, 0, 43, messageSource.getMessage("export.odt.PsychData.td32", null, locale), regular, null,
+			createCell(table, 0, 43, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td32", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 43, messageSource.getMessage("export.odt.PsychData.td33", null, locale), regular, null,
 					locale);
@@ -1754,7 +1754,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 2, 50, messageSource.getMessage("study.region", null, locale), regular, null, locale);
 			createCell(table, 3, 50, study.getRegion(), regular, null, locale);
-			createCell(table, 0, 51, messageSource.getMessage("export.odt.PsychData.td48", null, locale), regular, null,
+			createCell(table, 0, 51, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td48", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 51, messageSource.getMessage("export.odt.PsychData.td49", null, locale), regular, null,
 					locale);
@@ -1823,7 +1823,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 2, 61, messageSource.getMessage("study.transDescr", null, locale), regular, null, locale);
 			createCell(table, 3, 61, study.getTransDescr(), regular, null, locale);
-			createCell(table, 0, 62, messageSource.getMessage("export.odt.PsychData.td70", null, locale), regular, null,
+			createCell(table, 0, 62, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td70", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 62, messageSource.getMessage("export.odt.PsychData.td71", null, locale), regular, null,
 					locale);
@@ -1857,7 +1857,7 @@ public class ODFUtil {
 
 			doc.addParagraph(messageSource.getMessage("export.odt.PsychData.ft1h", null, locale)).setFont(blue_large);
 			doc.addColumnBreak();
-			par = doc.addParagraph(messageSource.getMessage("export.odt.PsychData.ft1", null, locale));
+			par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.ft1", null, locale)));
 			par.setFont(regular);
 			par.appendHyperlink(messageSource.getMessage("export.odt.PsychData.ft1li", null, locale),
 					new URI(messageSource.getMessage("export.odt.PsychData.ft1li", null, locale)));
@@ -1896,11 +1896,11 @@ public class ODFUtil {
 			TextDocument doc = TextDocument.newTextDocument();
 
 			// Erste Seite
-			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zpid", null, locale)).setFont(blue_reg);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zpid", null, locale))).setFont(blue_reg);
 			doc.addColumnBreak();
-			doc.addParagraph(messageSource.getMessage("export.odt.Pre.headline", null, locale)).setFont(headline);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.headline", null, locale))).setFont(headline);
 			doc.addColumnBreak();
-			Paragraph par = doc.addParagraph(messageSource.getMessage("export.odt.Pre.subline", null, locale));
+			Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.subline", null, locale)));
 			par.setFont(blue_reg);
 			// Masterpage
 			MasterPage master = MasterPage.getOrCreateMasterPage(doc, "Preregistration");
@@ -1908,13 +1908,13 @@ public class ODFUtil {
 			// master.setMargins(15, 15, 15, 15);
 			doc.addPageBreak(par, master);
 			// Zweite Seite
-			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu1h", null, locale)).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu1h", null, locale))).setFont(blue_large);
 			doc.addColumnBreak();
 			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu1", null, locale)).setFont(regular);
 			doc.addColumnBreak();
-			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu2", null, locale)).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu2", null, locale))).setFont(regular);
 			doc.addColumnBreak();
-			doc.addParagraph(messageSource.getMessage("export.odt.Pre.zu2", null, locale)).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu3", null, locale))).setFont(regular);
 			doc.addColumnBreak();
 
 			Table table = doc.addTable(57, 3);
@@ -1937,7 +1937,7 @@ public class ODFUtil {
 					new Color(210, 210, 210), locale);
 			createCell(table, 2, 1, messageSource.getMessage("export.odt.Pre.th2", null, locale), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, messageSource.getMessage("export.odt.Pre.td1", null, locale), regular, null,
+			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.td1", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 2, messageSource.getMessage("study.title", null, locale), regular, null, locale);
 			createCell(table, 2, 2, study.getTitle(), regular, null, locale);
@@ -1962,7 +1962,7 @@ public class ODFUtil {
 					locale);
 			createCell(table, 1, 10, messageSource.getMessage("study.intervention", null, locale), regular, null,
 					locale);
-			createCell(table, 2, 10, messageSource.getMessage("export.odt.Pre.tdh", null, locale), regular, null,
+			createCell(table, 2, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.tdh", null, locale)), regular, null,
 					locale);
 			createCell(table, 1, 11, messageSource.getMessage("study.intervention.experimental", null, locale), regular,
 					null, locale);
