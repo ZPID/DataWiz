@@ -5,16 +5,8 @@
     <div class="content-padding">
       <div class="row">
         <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12"
-          style="font-size: 20px; line-height: normal; text-align: justify;">
-          <p>DataWiz ist ein Assistenzsystem, das Wissenschaftlern und Wissenschaftlerinnen helfen soll, ihre Daten
-            von Forschungsbeginn an fachgerecht aufzubereiten und zu dokumentieren. Das Tool hilft dabei,
-            Datenmanagementpläne zu erstellen, eigene Forschungsdaten zu verwalten und es ermöglicht auch, Daten im Team
-            zu teilen und später der Fachgemeinschaft zur Nachnutzung zur Verfügung zu stellen. DataWiz ist eine
-            kostenfreie Open-Science-Webanwendung.</p>
-          <div style="width: 100%; text-align: center; margin-top: 90px" class="col-lg-12">
-            <c:url value="/static/images/microsite_img/" var="img_psych" />
-            <img alt="Forschungskreis" src="${img_psych}Kreisgrafik.png" style="width: 100%; max-width: 531px">
-          </div>
+          style="font-size: 16px; line-height: normal; text-align: justify;">
+          <s:message code="welcome.text.main" />
         </div>
         <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
           <ul class="list-group" style="border: 1px solid #352071" id="lp_mp_sub_menu">
@@ -22,30 +14,33 @@
             <li class="list-group-item" style="border: 1px solid #352071"><a href="${panelUrl}"
               style="font-size: 15px;"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
-                Projektübersicht</a>
-              <div style="margin-top: 5px">Setzen Sie Ihre Arbeit an einem bestehenden Projekt fort oder legen Sie
-                ein neues Projekt an.</div></li>
+                <s:message code="welcome.sidemenu.first.link.text" /></a>
+              <div style="margin-top: 5px">
+                <s:message code="welcome.sidemenu.first.link.desc" />
+              </div></li>
             <li class="list-group-item" style="border: 1px solid #352071"><a
               href="https://datawizkb.leibniz-psychology.org/index.php/project-start/" style="font-size: 15px;"
               target="_blank"><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
-                User Guide</a>
-              <div style="margin-top: 5px"></div></li>
+                <s:message code="welcome.sidemenu.second.link.text" /></a>
+              <div style="margin-top: 5px">
+                <s:message code="welcome.sidemenu.second.link.desc" />
+              </div></li>
             <li class="list-group-item" style="border: 1px solid #352071"><a
               href="https://datawizkb.leibniz-psychology.org/" style="font-size: 15px;" target="_blank"><span
                 class="glyphicon glyphicon-chevron-right" aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
-                Wissensbasis</a>
-              <div style="margin-top: 5px">Link zur DataWiz Knowledge Base. Bitte beachten Sie, dass die Inhalte
-                ständig erweitert und aktualisiert werden.</div></li>
+                <s:message code="welcome.sidemenu.third.link.text" /></a>
+              <div style="margin-top: 5px">
+                <s:message code="welcome.sidemenu.third.link.desc" />
+              </div></li>
             <li class="list-group-item" style="border: 1px solid #352071"><a
               href="https://github.com/Leibniz-Psychology/DataWiz/" style="font-size: 15px;" target="_blank"><span
                 class="glyphicon glyphicon-chevron-right" aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
-                DataWiz GitHub Repositorium</a>
+                <s:message code="welcome.sidemenu.fourth.link.text" /></a>
               <div style="margin-top: 5px">
-                <b>(In Arbeit)</b> Link zum Quellcode von DataWiz. Dieser steht zur Einsicht, oder eigenen
-                Verwendung/Erweiterung frei zur Verfügung.
+                <s:message code="welcome.sidemenu.fourth.link.desc" />
               </div></li>
 
           </ul>
@@ -53,8 +48,7 @@
             <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
               <h4>Ansprechpartner</h4>
               <p>
-                <span class="darkblue">Forschungsdatenzentrum für die Psychologie</span><br> Universitätsring 15,<br>
-                54296 Trier
+                Forschungsdatenzentrum für die Psychologie<br />Universitätsring 15,<br />54296 Trier
               </p>
               <p>
                 <b>Inhaltlich:</b><br />PD Dr. Erich Weichselgartner<br />Bereichsleiter Archivierungs- und
@@ -70,10 +64,10 @@
               <p>
                 <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <a
                   style="color: white; text-decoration: none;" href="mailto:datawiz@leibniz-psychology.de"
-                  title="E-Mail"> datawiz(at)leibniz-psychology.org</a><br /> <span class="glyphicon glyphicon-home"
+                  title="E-Mail">datawiz(at)leibniz-psychology.org</a><br /> <span class="glyphicon glyphicon-home"
                   aria-hidden="true"></span> <a style="color: white; text-decoration: none;"
-                  href="http://www.leibniz-psychology.de/" target="blanc" title="www.leibniz-psychology.de">
-                  www.leibniz-psychology.de</a>
+                  href="http://www.leibniz-psychology.org/" target="blanc" title="www.leibniz-psychology.org">
+                  www.leibniz-psychology.org</a>
               </p>
             </div>
           </c:if>
