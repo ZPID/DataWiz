@@ -40,56 +40,58 @@ public class RESTController {
 		log.trace("execute loadSideMenu()");
 		UserDTO user = UserUtil.getCurrentUser();
 		SideMenuForm sdForm = new SideMenuForm();
-		try {
-			List<SideMenuDTO> cpdto = null;
-			cpdto = sideMenuDAO.findProjectsByUser(user);
-			for (SideMenuDTO project : cpdto) {
-				if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, project.getId(), false) || user.hasRole(Roles.PROJECT_READER, project.getId(), false)
-				    || user.hasRole(Roles.PROJECT_WRITER, project.getId(), false)) {
-					List<SideMenuDTO> cStud = sideMenuDAO.findAllStudiesByProjectId(project.getId());
-					cStud.parallelStream().forEach(study -> {
-						try {
-							study.setSublist(sideMenuDAO.findRecordsWithStudyID(study.getId()));
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					});
-					project.setSublist(cStud);
-				} else if (user.hasRole(Roles.DS_READER, project.getId(), false) || user.hasRole(Roles.DS_WRITER, project.getId(), false)) {
-					List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), project.getId());
-					List<SideMenuDTO> cStud = new ArrayList<SideMenuDTO>();
-					userRoles.parallelStream().forEach(role -> {
-						Roles uRole = Roles.valueOf(role.getType());
-						if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
+		if (user != null) {
+			try {
+				List<SideMenuDTO> cpdto = null;
+				cpdto = sideMenuDAO.findProjectsByUser(user);
+				for (SideMenuDTO project : cpdto) {
+					if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, project.getId(), false)
+					    || user.hasRole(Roles.PROJECT_READER, project.getId(), false) || user.hasRole(Roles.PROJECT_WRITER, project.getId(), false)) {
+						List<SideMenuDTO> cStud = sideMenuDAO.findAllStudiesByProjectId(project.getId());
+						cStud.parallelStream().forEach(study -> {
 							try {
-								SideMenuDTO smdto = sideMenuDAO.findById(role.getStudyId(), role.getProjectId());
-								smdto.setSublist(sideMenuDAO.findRecordsWithStudyID(smdto.getId()));
-								cStud.add(smdto);
+								study.setSublist(sideMenuDAO.findRecordsWithStudyID(study.getId()));
 							} catch (Exception e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+								log.debug("Exception during cStud.parallelStream().forEach: ", () -> e);
 							}
-						}
-					});
-					project.setSublist(cStud);
+						});
+						project.setSublist(cStud);
+					} else if (user.hasRole(Roles.DS_READER, project.getId(), false) || user.hasRole(Roles.DS_WRITER, project.getId(), false)) {
+						List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), project.getId());
+						List<SideMenuDTO> cStud = new ArrayList<SideMenuDTO>();
+						userRoles.parallelStream().forEach(role -> {
+							Roles uRole = Roles.valueOf(role.getType());
+							if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
+								try {
+									SideMenuDTO smdto = sideMenuDAO.findById(role.getStudyId(), role.getProjectId());
+									smdto.setSublist(sideMenuDAO.findRecordsWithStudyID(smdto.getId()));
+									cStud.add(smdto);
+								} catch (Exception e) {
+									log.debug("Exception during userRoles.parallelStream().forEach: ", () -> e);
+								}
+							}
+						});
+						project.setSublist(cStud);
+					}
 				}
+				sdForm.setItems(cpdto);
+				sdForm.setLinkProject(messageSource.getMessage("submenu.project", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkDmp(messageSource.getMessage("submenu.dmp", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkStudies(messageSource.getMessage("project.submenu.studies", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkProMat(messageSource.getMessage("project.submenu.material", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkContri(messageSource.getMessage("submenu.sharing", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkExport(messageSource.getMessage("submenu.export", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkStudy(messageSource.getMessage("submenu.studydoc", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkRecords(messageSource.getMessage("submenu.record", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkStudMat(messageSource.getMessage("submenu.studymaterial", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkRecord(messageSource.getMessage("record.submenu.meta", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkCodebook(messageSource.getMessage("record.submenu.var", null, LocaleContextHolder.getLocale()));
+				sdForm.setLinkMatrix(messageSource.getMessage("record.submenu.data", null, LocaleContextHolder.getLocale()));
+			} catch (Exception e) {
+				log.warn("Exception during getProjectList - Sidemenu not loaded: Exception: ", () -> e);
 			}
-			sdForm.setItems(cpdto);
-			sdForm.setLinkProject(messageSource.getMessage("submenu.project", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkDmp(messageSource.getMessage("submenu.dmp", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkStudies(messageSource.getMessage("project.submenu.studies", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkProMat(messageSource.getMessage("project.submenu.material", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkContri(messageSource.getMessage("submenu.sharing", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkExport(messageSource.getMessage("submenu.export", null, LocaleContextHolder.getLocale()));			
-			sdForm.setLinkStudy(messageSource.getMessage("submenu.studydoc", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkRecords(messageSource.getMessage("submenu.record", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkStudMat(messageSource.getMessage("submenu.studymaterial", null, LocaleContextHolder.getLocale()));			
-			sdForm.setLinkRecord(messageSource.getMessage("record.submenu.meta", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkCodebook(messageSource.getMessage("record.submenu.var", null, LocaleContextHolder.getLocale()));
-			sdForm.setLinkMatrix(messageSource.getMessage("record.submenu.data", null, LocaleContextHolder.getLocale()));			
-		} catch (Exception e) {
-			log.error(e);
+		} else {
+			log.debug("No active user found - Sidemenu is loaded after sucessful login");
 		}
 		return new Gson().toJson(sdForm);
 	}

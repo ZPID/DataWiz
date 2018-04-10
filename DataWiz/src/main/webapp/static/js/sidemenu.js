@@ -6,9 +6,10 @@ $(document).ready(function() {
 		createSideMenu(data);
 	});
 
-	$("#dwSidenavBTN").on("click", function() {
+	$("#dwSidenavBTN").on("click", function() {		
 		$('#dwSidenav').fadeIn('fast');
 		$('#dwSidenavBTN').fadeOut('fast');
+		$("html, body").animate({ scrollTop: 0 }, "fast");
 
 	});
 	$("#dwSideNavClose").on("click", function() {
@@ -48,7 +49,7 @@ function createSideMenu(data) {
 			li_project.append(li_div)
 			ul_projects.append(li_project);
 		});
-		$('#dwSideNavListContent').append(ul_projects);
+		$('#dwSideNavListContent').append(ul_projects);		
 	}
 }
 

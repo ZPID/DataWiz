@@ -35,14 +35,13 @@
                 <s:message code="welcome.sidemenu.third.link.desc" />
               </div></li>
             <li class="list-group-item" style="border: 1px solid #352071"><a
-              href="https://github.com/Leibniz-Psychology/DataWiz/" style="font-size: 15px;" target="_blank"><span
+              href="https://github.com/ZPID/DataWiz/" style="font-size: 15px;" target="_blank"><span
                 class="glyphicon glyphicon-chevron-right" aria-hidden="true"
                 style="font-size: 10px; background-color: #352071; border-radius: 10px; color: white; padding: 3px; top: -1px"></span>
                 <s:message code="welcome.sidemenu.fourth.link.text" /></a>
               <div style="margin-top: 5px">
                 <s:message code="welcome.sidemenu.fourth.link.desc" />
               </div></li>
-
           </ul>
           <c:if test="${loadMicrositeContent}">
             <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
