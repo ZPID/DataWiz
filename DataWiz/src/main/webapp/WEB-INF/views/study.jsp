@@ -48,21 +48,23 @@
               <div class="dropdown" style="display: inline-block">
                 <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown"
                   role="button" aria-haspopup="true" aria-expanded="false">
-                  <s:message code="dmp.export.btn.txt" />
+                  <s:message code="study.export.btn.txt" />
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right">
                   <li><a href="<c:url value="${StudyForm.study.id}/exportStudy/PsychData" />" target="_blank"><span
-                      class="glyphicon glyphicon-download" aria-hidden="true"></span> PD</a></li>
+                      class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                    <s:message code="study.export.pd.txt" /></a></li>
                   <li><a href="<c:url value="${StudyForm.study.id}/exportStudy/PreReg" />" target="_blank"><span
-                      class="glyphicon glyphicon-download" aria-hidden="true"></span> Prä</a></li>
+                      class="glyphicon glyphicon-download" aria-hidden="true"></span>
+                    <s:message code="study.export.rr.txt" /></a></li>
                 </ul>
               </div>
             </div>
           </div>
           <s:message code="study.edit.basis.headline" var="headline_head" arguments="${StudyForm.study.title}" />
           <s:message code="study.edit.basis.info" var="headline_info" />
-          <%@ include file="templates/pages_headline.jsp"%>         
+          <%@ include file="templates/pages_headline.jsp"%>
         </c:otherwise>
       </c:choose>
 

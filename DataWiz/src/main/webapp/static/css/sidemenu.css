@@ -28,6 +28,14 @@
   overflow-x: hidden;
 }
 
+.dwSideNavListHead{
+  color: white;
+}
+
+#dwSideNavListContent{
+  margin-top: 50px;
+}
+
 
 #dwSidenav ul {
   list-style: none;

@@ -45,29 +45,7 @@
           </ul>
           <c:if test="${loadMicrositeContent}">
             <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
-              <h4>Ansprechpartner</h4>
-              <p>
-                Forschungsdatenzentrum für die Psychologie<br />Universitätsring 15,<br />54296 Trier
-              </p>
-              <p>
-                <b>Inhaltlich:</b><br />PD Dr. Erich Weichselgartner<br />Bereichsleiter Archivierungs- und
-                Veröffentlichungsdienste<br /> <span class="glyphicon glyphicon-earphone" aria-hidden="true"></span> <a
-                  style="color: white; text-decoration: none;" href="callto:+49 (0)651 201-2056">+49 (0) 651
-                  201-2056</a><br />
-              </p>
-              <p>
-                <b>Technisch:</b><br />M.Sc. Ronny B&ouml;lter<br /> <span class="glyphicon glyphicon-earphone"
-                  aria-hidden="true"></span> <a style="color: white; text-decoration: none;"
-                  href="callto:+49 (0)651 201-2045">+49 (0) 651 201-2045</a><br />
-              </p>
-              <p>
-                <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> <a
-                  style="color: white; text-decoration: none;" href="mailto:datawiz@leibniz-psychology.de"
-                  title="E-Mail">datawiz(at)leibniz-psychology.org</a><br /> <span class="glyphicon glyphicon-home"
-                  aria-hidden="true"></span> <a style="color: white; text-decoration: none;"
-                  href="http://www.leibniz-psychology.org/" target="blanc" title="www.leibniz-psychology.org">
-                  www.leibniz-psychology.org</a>
-              </p>
+              <s:message code="welcome.contact.html" />
             </div>
           </c:if>
         </div>
