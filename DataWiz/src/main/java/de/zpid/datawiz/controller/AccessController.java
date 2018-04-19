@@ -40,6 +40,7 @@ import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.EmailUtil;
+import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
@@ -77,6 +78,8 @@ public class AccessController {
 	private HttpServletRequest request;
 	@Autowired
 	private Environment env;
+	@Autowired
+	private StringUtil stringUtil;
 
 	// TODO SERVICE CLASS
 	@Autowired
@@ -270,7 +273,7 @@ public class AccessController {
 		if (check != null) {
 			return check;
 		}
-		String adminName = createAdminName(admin);
+		String adminName = stringUtil.createUserNameString(admin);
 		UserDTO user = null;
 		String linkhash = null;
 		try {
@@ -546,23 +549,7 @@ public class AccessController {
 		return "redirect:/access/" + projectId;
 	}
 
-	/**
-	 * This function tries to set the name of an admin if the needed fiels are set, otherwise it return the email of the admin
-	 * 
-	 * @param admin
-	 * @return
-	 */
-	private String createAdminName(final UserDTO admin) {
-		String adminName = (admin.getLastName() != null && !admin.getLastName().isEmpty() ? admin.getLastName() : "");
-		if (!adminName.isEmpty())
-			adminName = (admin.getTitle() != null && !admin.getTitle().isEmpty() ? admin.getTitle() + " " : "")
-			    + (admin.getFirstName() != null && !admin.getFirstName().isEmpty() ? admin.getFirstName() + " " : "") + adminName;
-		if (!adminName.isEmpty())
-			adminName = adminName + "( " + admin.getEmail() + " )";
-		else
-			adminName = admin.getEmail();
-		return adminName;
-	}
+
 
 	/**
 	 * Checks if the new role has a higher priority as roles which are already set, because it is not useful to have global rights and additional study rights for

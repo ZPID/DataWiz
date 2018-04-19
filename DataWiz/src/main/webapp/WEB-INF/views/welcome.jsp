@@ -43,11 +43,9 @@
                 <s:message code="welcome.sidemenu.fourth.link.desc" />
               </div></li>
           </ul>
-          <c:if test="${loadMicrositeContent}">
-            <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
-              <s:message code="welcome.contact.html" />
-            </div>
-          </c:if>
+          <div style="background-color: #0093be; padding: 30px 40px 30px 40px; color: white">
+            <s:message code="welcome.contact.html" />
+          </div>
         </div>
       </div>
       <div class="row">

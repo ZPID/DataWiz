@@ -28,6 +28,7 @@ import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ExportService;
 import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
@@ -62,13 +63,19 @@ public class ExportController {
 	private ExceptionService exceptionService;
 	@Autowired
 	private ProjectService projectService;
+	@Autowired
+	private StringUtil stringUtil;
 
 	/**
+	 * This function prepares the export data set. Therefore, it loads all studies and records of the project which wants to be exported.
 	 * 
-	 * @param pid
+	 * @param pidpid
+	 *          Project Identifier as {@link Optional}&lt;{@link Long}&gt;
 	 * @param model
+	 *          {@link ModelMap}
 	 * @param redirectAttributes
-	 * @return
+	 *          {@link RedirectAttributes}
+	 * @return Mapping to export.jsp on success, otherwise error mapping via {@link ExceptionService}
 	 */
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.GET)
 	public String showExportPage(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
@@ -92,15 +99,20 @@ public class ExportController {
 		return ret;
 	}
 
+	/**
+	 * 
+	 * @param exportForm
+	 * @param pid
+	 * @param model
+	 * @param response
+	 * @param redirectAttributes
+	 * @throws Exception
+	 */
 	@RequestMapping(value = { "", "/{pid}" }, method = RequestMethod.POST, produces = "application/zip")
 	public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid, final ModelMap model,
 	    HttpServletResponse response, final RedirectAttributes redirectAttributes) throws Exception {
-
 		final UserDTO user = UserUtil.getCurrentUser();
-
 		List<Entry<String, byte[]>> files = null;
-
-		// TODO CHECK RIGHTS
 		if (exportForm != null && exportForm.getProjectId() > 0) {
 			try {
 				files = exportService.createExportFileList(exportForm, pid, user);
@@ -123,7 +135,7 @@ public class ExportController {
 			if (export != null) {
 				try {
 					response.setContentType("application/zip");
-					response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
+					response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(exportForm.getProjectTitle()) + ".zip\"");
 					response.getOutputStream().write(export);
 					response.flushBuffer();
 				} catch (Exception e) {

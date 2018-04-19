@@ -51,6 +51,7 @@ import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ObjectCloner;
+import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -100,6 +101,8 @@ public class RecordController {
 	private ProjectService projectService;
 	@Autowired
 	private SPSSIO spss;
+	@Autowired
+	private StringUtil stringUtil;
 
 	/**
 	 * Instantiates a new record controller.
@@ -174,7 +177,7 @@ public class RecordController {
 				model.put("subnaviActive", PageState.RECORDVAR.name());
 				model.put("errorCodeBookMSG", recordService.validateCodeBook(sForm));
 				if (sForm.getPageLoadMax() == 0) {
-					sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables() < 100 ? sForm.getRecord().getNumberOfVariables() : 100);
+					sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables() < 5 ? sForm.getRecord().getNumberOfVariables() : 5);
 				}
 				ret = "codebook";
 				model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
@@ -724,27 +727,27 @@ public class RecordController {
 			switch (exportType) {
 			case "CSVMatrix":
 				response.setContentType("text/csv");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Matrix.csv\"");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(record.getRecordName()) + "_Matrix.csv\"");
 				break;
 			case "CSVCodebook":
 				response.setContentType("text/csv");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + "_Codebook.csv\"");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(record.getRecordName()) + "_Codebook.csv\"");
 				break;
 			case "JSON":
 				response.setContentType("application/json");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".json\"");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(record.getRecordName()) + ".json\"");
 				break;
 			case "SPSS":
 				response.setContentType("application/sav");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".sav\"");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(record.getRecordName()) + ".sav\"");
 				break;
 			case "PDF":
 				response.setContentType("application/pdf");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".pdf\"");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(record.getRecordName()) + ".pdf\"");
 				break;
 			case "CSVZIP":
 				response.setContentType("application/zip");
-				response.setHeader("Content-Disposition", "attachment; filename=\"" + exportService.formatFilename(record.getRecordName()) + ".zip\"");
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + stringUtil.formatFilename(record.getRecordName()) + ".zip\"");
 				break;
 			}
 			response.setContentLength(content.length);

@@ -457,7 +457,7 @@ public class ITextUtil {
 					try {
 						String ent = String.valueOf(col.get(var.getPosition() - 1));
 						if (ent != null && !ent.equals("null") && !ent.isEmpty()) {
-							if (!checkIfValIsMissing(ent, var.getMissingFormat(), var.getMissingVal1(), var.getMissingVal2(), var.getMissingVal3())) {
+							if (!checkIfValIsMissing(ent, var.getMissingFormat(), var.getMissingVal1(), var.getMissingVal2(), var.getMissingVal3(), var.getVarType())) {
 								stats.addValue(Double.parseDouble(ent));
 								uniqueSet.add(ent.trim());
 								countWithoutMissings.incrementAndGet();
@@ -482,12 +482,15 @@ public class ITextUtil {
 				AtomicBoolean bg = new AtomicBoolean(true);
 				createAndAddRow(table, bg.getAndSet(!bg.get()), messageSource.getMessage("export.pdf.line.valid", null, Locale.ENGLISH), "");
 				valueCount.forEach((k, v) -> {
-					if (!checkIfValIsMissing(k.getValue().trim(), var.getMissingFormat(), var.getMissingVal1(), var.getMissingVal2(), var.getMissingVal3()))
+					if (!checkIfValIsMissing(k.getValue().trim(), var.getMissingFormat(), var.getMissingVal1(), var.getMissingVal2(), var.getMissingVal3(),
+					    var.getVarType()))
 						createAndAddRow(table, bg.getAndSet(!bg.get()), k.getLabel(), String.valueOf(v));
 				});
+				AtomicInteger unlabelCC = new AtomicInteger(0);
 				uniqueSet.forEach(key -> {
-					createAndAddRow(table, bg.getAndSet(!bg.get()), key, String.valueOf(freq.getCount(key.trim())));
+					unlabelCC.set(unlabelCC.get() + (int) freq.getCount(key.trim()));
 				});
+				createAndAddRow(table, bg.getAndSet(!bg.get()), "Sum of Unlabelled values:", String.valueOf(unlabelCC.get()));
 				createAndAddRow(table, bg.getAndSet(!bg.get()), messageSource.getMessage("export.pdf.line.valid.sum", null, Locale.ENGLISH),
 				    String.valueOf(countWithoutMissings.get()));
 				createAndAddRow(table, bg.getAndSet(!bg.get()), "\n", "");
@@ -766,7 +769,8 @@ public class ITextUtil {
 	 *          Missing value three.
 	 * @return True, if the value is a missing value, otherwise false
 	 */
-	private boolean checkIfValIsMissing(final String value, final SPSSMissing misstype, final String miss1, final String miss2, final String miss3) {
+	private boolean checkIfValIsMissing(final String value, final SPSSMissing misstype, final String miss1, final String miss2, final String miss3,
+	    final int type) {
 		boolean isMissing = false;
 		// log.trace("Entering checkIfValIsMissing for [value: {}; misstype: {}; miss1: {}; miss2: {}; miss3: {}]", () -> value, () -> misstype, () ->
 		// miss1,
@@ -775,13 +779,24 @@ public class ITextUtil {
 			Double val, min, max;
 			switch (misstype) {
 			case SPSS_ONE_MISSVAL:
-				isMissing = miss1.trim().equals(value.trim());
+				if (type != 0)
+					isMissing = miss1.trim().equals(value.trim());
+				else
+					isMissing = Double.parseDouble(miss1.trim()) == Double.parseDouble(value.trim());
 				break;
 			case SPSS_TWO_MISSVAL:
-				isMissing = (miss1.trim().equals(value.trim()) || miss2.trim().equals(value.trim()));
+				if (type != 0)
+					isMissing = (miss1.trim().equals(value.trim()) || miss2.trim().equals(value.trim()));
+				else
+					isMissing = Double.parseDouble(miss1.trim()) == Double.parseDouble(value.trim())
+					    || Double.parseDouble(miss2.trim()) == Double.parseDouble(value.trim());
 				break;
 			case SPSS_THREE_MISSVAL:
-				isMissing = (miss1.trim().equals(value.trim()) || miss2.trim().equals(value.trim()) || miss3.trim().equals(value.trim()));
+				if (type != 0)
+					isMissing = (miss1.trim().equals(value.trim()) || miss2.trim().equals(value.trim()) || miss3.trim().equals(value.trim()));
+				else
+					isMissing = Double.parseDouble(miss1.trim()) == Double.parseDouble(value.trim())
+					    || Double.parseDouble(miss2.trim()) == Double.parseDouble(value.trim()) || Double.parseDouble(miss3.trim()) == Double.parseDouble(value.trim());
 				break;
 			case SPSS_MISS_RANGE:
 				val = Double.parseDouble(value.trim());
@@ -791,7 +806,10 @@ public class ITextUtil {
 					isMissing = true;
 				break;
 			case SPSS_MISS_RANGEANDVAL:
-				isMissing = miss3.trim().equals(value.trim());
+				if (type != 0)
+					isMissing = miss3.trim().equals(value.trim());
+				else
+					isMissing = Double.parseDouble(miss3.trim()) == Double.parseDouble(value.trim());
 				val = Double.parseDouble(value.trim());
 				min = Double.parseDouble(miss1.trim());
 				max = Double.parseDouble(miss2.trim());

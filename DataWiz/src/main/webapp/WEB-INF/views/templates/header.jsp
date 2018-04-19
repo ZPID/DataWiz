@@ -62,7 +62,7 @@
     </c:otherwise>
   </c:choose>
   <sec:authentication var="principal" property="principal" />
-  <div class="loader"></div>
+  <!-- <div class="loader"></div> -->
   <c:choose>
     <c:when test="${empty ms_header_content}">
       <%@ include file="header_microsite.jsp"%>

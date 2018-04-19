@@ -67,6 +67,7 @@ import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ITextUtil;
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.ObjectCloner;
+import de.zpid.datawiz.util.StringUtil;
 import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSErrorDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
@@ -125,6 +126,8 @@ public class ExportService {
 	private ConsistencyCheckUtil ccUtil;
 	@Autowired
 	private Environment env;
+	@Autowired
+	private StringUtil stringUtil;
 
 	/**
 	 * 
@@ -210,8 +213,7 @@ public class ExportService {
 			createProjectExport(exportForm, files, projectDB, pFiles, pUploader, pForm);
 			// Create Studies
 			if (exportForm.getStudies() != null) {
-				Set<String> studyNames = new HashSet<>();
-				int studyNameDoublette = 0;
+				int studyCount = 1;
 				for (ExportStudyDTO studyEx : exportForm.getStudies()) {
 					StudyForm sForm = (StudyForm) applicationContext.getBean("StudyForm");
 					List<FileDTO> sFiles = null;
@@ -219,10 +221,7 @@ public class ExportService {
 					StudyDTO studyDB = studyDAO.findById(studyEx.getStudyId(), exportForm.getProjectId(), false, false);
 					List<UserDTO> sUploader = new ArrayList<>();
 					if (studyDB != null) {
-						if (!studyNames.add(studyDB.getTitle())) {
-							studyDB.setTitle(studyDB.getTitle() + "_" + ++studyNameDoublette);
-						}
-						String studyFolder = STUDY_FOLDER + formatFilename(studyDB.getTitle()) + "/";
+						String studyFolder = STUDY_FOLDER + "(" + studyCount++ + ") " + stringUtil.formatFilename(studyDB.getTitle()) + "/";
 						studyService.setStudyDTOExport(studyDB);
 						if (studyEx.isExportMetaData() || studyEx.isExportStudyMaterial()) {
 							if (studyEx.isExportMetaData()) {
@@ -291,16 +290,12 @@ public class ExportService {
 	    ProjectForm pForm, ExportStudyDTO studyEx, StudyForm sForm, StudyDTO study, StudyDTO studyDB, String studyFolder)
 	    throws Exception, DataWizSystemException, IOException, ClassNotFoundException, NoSuchAlgorithmException {
 		if (studyEx.getRecords() != null) {
-			Set<String> recordNames = new HashSet<>();
-			int recNameDoublette = 0;
+			int recCount = 1;
 			for (ExportRecordDTO recordEx : studyEx.getRecords()) {
 				if (recordEx.isExportMetaData() || recordEx.isExportCodebook() || recordEx.isExportMatrix()) {
 					RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
 					if (recordDB != null) {
-						if (!recordNames.add(recordDB.getRecordName())) {
-							recordDB.setRecordName(recordDB.getRecordName() + "_" + ++recNameDoublette);
-						}
-						String recordFolder = studyFolder + RECORD_FOLDER + formatFilename(recordDB.getRecordName()) + "/";
+						String recordFolder = studyFolder + RECORD_FOLDER + "(" + recCount++ + ") " + stringUtil.formatFilename(recordDB.getRecordName()) + "/";
 						RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
 						List<String> parsingErrors = new LinkedList<>();
 						recordService.setDataMatrix(parsingErrors, recordDB, false, pid.get());
@@ -709,7 +704,7 @@ public class ExportService {
 		csv.append(
 		    "name,type,label,values,missingformat,missingValue1,missingValue2,missingValue3,width,decimals,measurelevel,role,attributes,dw_konstruct,dw_measocc,dw_instrument,dw_itemtext,dw_filtervariable\n");
 		for (SPSSVarDTO var : record.getVariables()) {
-			csv.append("\"" + cleanString(var.getName()) + "\"");
+			csv.append("\"" + stringUtil.removeLineBreaksAndTabsString(var.getName()) + "\"");
 			csv.append(",");
 			if (var.getType() != null)
 				csv.append("\"" + messageSource.getMessage("spss.type." + var.getType(), null, Locale.ENGLISH) + "\"");
@@ -717,15 +712,15 @@ public class ExportService {
 				csv.append("\"" + messageSource.getMessage("spss.type.SPSS_UNKNOWN", null, Locale.ENGLISH) + "\"");
 			csv.append(",");
 			if (var.getLabel() != null && !var.getLabel().isEmpty())
-				csv.append("\"" + cleanString(var.getLabel()) + "\"");
+				csv.append("\"" + stringUtil.removeLineBreaksAndTabsString(var.getLabel()) + "\"");
 			csv.append(",");
 			if (var.getValues() != null && var.getValues().size() > 0) {
 				csv.append("\"");
 				for (SPSSValueLabelDTO val : var.getValues()) {
 					csv.append("{");
-					csv.append(cleanString(val.getValue()));
+					csv.append(stringUtil.removeLineBreaksAndTabsString(val.getValue()));
 					csv.append("=");
-					csv.append(cleanString(val.getLabel()));
+					csv.append(stringUtil.removeLineBreaksAndTabsString(val.getLabel()));
 					csv.append("}");
 				}
 				csv.append("\"");
@@ -818,33 +813,22 @@ public class ExportService {
 			}
 			csv.append(",");
 			if (!dw_construct.isEmpty())
-				csv.append("\"" + cleanString(dw_construct) + "\"");
+				csv.append("\"" + stringUtil.removeLineBreaksAndTabsString(dw_construct) + "\"");
 			csv.append(",");
 			if (!dw_measocc.isEmpty())
-				csv.append("\"" + cleanString(dw_measocc) + "\"");
+				csv.append("\"" + stringUtil.removeLineBreaksAndTabsString(dw_measocc) + "\"");
 			csv.append(",");
 			if (!dw_instrument.isEmpty())
-				csv.append("\"" + cleanString(dw_instrument) + "\"");
+				csv.append("\"" + stringUtil.removeLineBreaksAndTabsString(dw_instrument) + "\"");
 			csv.append(",");
 			if (!dw_itemtext.isEmpty())
-				csv.append("\"" + cleanString(dw_itemtext) + "\"");
+				csv.append("\"" + stringUtil.removeLineBreaksAndTabsString(dw_itemtext) + "\"");
 			csv.append(",");
 			if (!dw_filtervar.isEmpty())
 				csv.append(dw_filtervar);
 			csv.append("\n");
 		}
 		return csv;
-	}
-
-	/**
-	 * This function removes all line-break and tabulator commands from the passed String.
-	 * 
-	 * @param s
-	 *          String, which has to be cleaned
-	 * @return Cleaned String
-	 */
-	private String cleanString(String s) {
-		return s.replaceAll("(\\r|\\n|\\t)", " ").replaceAll("\"", "'");
 	}
 
 	/**
@@ -864,17 +848,6 @@ public class ExportService {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	public String formatFilename(String s) {
-		if (s != null) {
-			if (s.length() > 50) {
-				s = s.substring(0, 49);
-			}
-			s = s.toLowerCase().trim();
-			return s.replaceAll("[^a-zA-Z0-9]", "_");
-		}
-		return null;
 	}
 
 	private void setAdditionalFilestoExportList(final List<Entry<String, byte[]>> exportList, final List<FileDTO> files, final String folderName)

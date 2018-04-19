@@ -297,7 +297,7 @@ public class StudyController {
 		if (ret == null) {
 			ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get();
 			try {
-				studyService.checkActualLock(pid, studyId, user, (String) model.get("disStudyContent"), model);
+				studyService.checkActualLock(pid, studyId, user, (String) model.get("disStudyContent"), redirectAttributes);				
 			} catch (Exception e) {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "studyService.checkActualLock");
 			}

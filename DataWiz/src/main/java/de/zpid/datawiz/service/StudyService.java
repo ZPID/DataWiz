@@ -1,6 +1,7 @@
 package de.zpid.datawiz.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,7 @@ import de.zpid.datawiz.dao.StudyConstructDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.StudyInstrumentDAO;
 import de.zpid.datawiz.dao.StudyListTypesDAO;
+import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.RecordDTO;
@@ -52,6 +54,7 @@ import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.util.BreadCrumpUtil;
 import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.ODFUtil;
+import de.zpid.datawiz.util.StringUtil;
 
 @Service
 public class StudyService {
@@ -88,6 +91,10 @@ public class StudyService {
 	private ODFUtil odfUtil;
 	@Autowired
 	private ClassPathXmlApplicationContext applicationContext;
+	@Autowired
+	private UserDAO userDAO;
+	@Autowired
+	private StringUtil stringUtil;
 
 	/**
 	 * 
@@ -193,8 +200,8 @@ public class StudyService {
 	 * @throws DataWizSystemException
 	 * @throws NoSuchMessageException
 	 */
-	public String checkActualLock(final Optional<Long> pid, final Optional<Long> studyId, UserDTO user, String actLock, final ModelMap model)
-	    throws DataWizSystemException {
+	public String checkActualLock(final Optional<Long> pid, final Optional<Long> studyId, UserDTO user, String actLock,
+	    final RedirectAttributes redirectAttributes) throws DataWizSystemException {
 		if (!pid.isPresent())
 			throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
 		if (!studyId.isPresent())
@@ -225,8 +232,24 @@ public class StudyService {
 				    DataWizErrorCodes.DATABASE_ERROR);
 			}
 		} else {
-			// TODO extra meldefenster!!!!
-			model.put("errorMSG", "Studie momentan in Bearbeitung durch " + study.getEditUserId() + " since" + study.getEditSince());
+			if (study.getEditUserId() > 0) {
+				UserDTO currUser;
+				try {
+					currUser = userDAO.findById(study.getEditUserId());
+
+					redirectAttributes.addFlashAttribute("errorMSG",
+					    messageSource.getMessage(
+					        "study.access.lock.msg", new Object[] { study.getEditSince().format(DateTimeFormatter.ofPattern("HH:mm")),
+					            stringUtil.createUserNameString(currUser), study.getEditSince().format(DateTimeFormatter.ofPattern("a")) },
+					        LocaleContextHolder.getLocale()));
+				} catch (Exception e) {
+					throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[] { e.getMessage() }, Locale.ENGLISH),
+					    DataWizErrorCodes.DATABASE_ERROR);
+				}
+				if (currUser != null) {
+
+				}
+			}
 		}
 		return actLock;
 	}
@@ -659,7 +682,7 @@ public class StudyService {
 		if (selected == null || !selected.isPresent())
 			throw new DataWizSystemException(messageSource.getMessage("logging.param.not.present", new Object[] { "selected" }, LocaleContextHolder.getLocale()),
 			    DataWizErrorCodes.NO_DATA_ERROR);
-		if (user == null || (!user.hasRole(Roles.ADMIN) && !user.hasRole(Roles.PROJECT_ADMIN, studyId.get(), true))) {
+		if (user == null || (!user.hasRole(Roles.ADMIN) && !user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false))) {
 			throw new DataWizSystemException(messageSource.getMessage("logging.user.permitted", new Object[] { user != null ? user.getId() : null, "study", studyId },
 			    LocaleContextHolder.getLocale()), DataWizErrorCodes.USER_ACCESS_STUDY_PERMITTED);
 		}

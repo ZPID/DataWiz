@@ -11,8 +11,7 @@ import de.zpid.datawiz.dto.UserDTO;
  * <br />
  * This file is part of Datawiz.<br />
  * 
- * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
+ * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
  * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
  * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
@@ -31,16 +30,15 @@ public class UserUtil {
 	private static Logger log = LogManager.getLogger(UserUtil.class);
 
 	/**
-	 * Retrieves the current user object from the session and returns it. This function is called by almost all controller functions to ensure that a
-	 * user is logged in and has the necessary rights to view or edit the data.
+	 * Retrieves the current user object from the session and returns it. This function is called by almost all controller functions to ensure that a user is
+	 * logged in and has the necessary rights to view or edit the data.
 	 * 
 	 * @return UserDTO of the currently logged in user
 	 */
 	public static UserDTO getCurrentUser() {
 		UserDTO user = null;
 		try {
-			if (SecurityContextHolder.getContext().getAuthentication() != null
-			    && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null
+			if (SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null
 			    && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof CustomUserDetails)
 				user = ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUser();
 		} catch (Exception e) {
@@ -51,8 +49,8 @@ public class UserUtil {
 	}
 
 	/**
-	 * This function saves a new UserDTO object into the session. This is necessary if either the user data has changed or new rights to projects or
-	 * studies have been given to the user. The call of this function takes place in the panel and therefore a new login is not necessary.
+	 * This function saves a new UserDTO object into the session. This is necessary if either the user data has changed or new rights to projects or studies have
+	 * been given to the user. The call of this function takes place in the panel and therefore a new login is not necessary.
 	 * 
 	 * @param user
 	 *          UserDTO of the currently logged in user
@@ -62,8 +60,7 @@ public class UserUtil {
 		boolean set = false;
 		if (user != null) {
 			try {
-				if (SecurityContextHolder.getContext().getAuthentication() != null
-				    && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null
+				if (SecurityContextHolder.getContext().getAuthentication() != null && SecurityContextHolder.getContext().getAuthentication().getPrincipal() != null
 				    && SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof CustomUserDetails) {
 					((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).setUser(user);
 					set = true;
