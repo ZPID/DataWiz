@@ -20,13 +20,13 @@
     <level value="info" />
   </logger>
   <logger name="de.zpid">
-    <level value="info" />
+    <level value="trace" />
   </logger>
   <logger name="de.zpid.spss">
-    <level value="info" />
+    <level value="trace" />
   </logger>
   <root>
-    <priority value="info" />
+    <priority value="trace" />
     <appender-ref ref="CONSOLE" />
   </root>
 </log4j:configuration>

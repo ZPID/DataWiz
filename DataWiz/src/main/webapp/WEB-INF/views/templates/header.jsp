@@ -51,6 +51,23 @@
 <script src="<c:url value='/static/js/sidemenu.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/jquery.dataTables.min.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/dataTables.bootstrap.min.js' />" type="text/javascript"></script>
+<script type="text/javascript">
+	var _paq = _paq || [];
+	_paq.push([ "setDoNotTrack", true ]);
+	_paq.push([ 'trackPageView' ]);
+	_paq.push([ 'enableLinkTracking' ]);
+	(function() {
+		var u = "//pwk.clubs-project.eu/";
+		_paq.push([ 'setTrackerUrl', u + 'log.php' ]);
+		_paq.push([ 'setSiteId', '8' ]);
+		var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+		g.type = 'text/javascript';
+		g.async = true;
+		g.defer = true;
+		g.src = u + 'log.js';
+		s.parentNode.insertBefore(g, s);
+	})();
+</script>
 </head>
 <body>
   <c:choose>

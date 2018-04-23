@@ -815,7 +815,8 @@ public class ImportService {
 		List<SPSSVarDTO> delVars = new ArrayList<>();
 		int delcount = 0;
 		for (RecordCompareDTO comp : compList2) {
-			if (comp.getVarStatus().equals(VariableStatus.NEW_VAR) && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
+			if (comp.getVarStatus().equals(VariableStatus.NEW_VAR) && compList.size() > position
+			    && !compList.get(position).getVarStatus().equals(VariableStatus.NEW_VAR)) {
 				SPSSVarDTO del = vars.get(position - delcount++);
 				delVars.add(del);
 				vars.remove(del);
@@ -830,17 +831,18 @@ public class ImportService {
 		});
 		List<SPSSVarDTO> viewVars = Stream.generate(SPSSVarDTO::new).limit(varSize.get()).collect(Collectors.toList());
 		AtomicInteger atint = new AtomicInteger(0);
-		vars.forEach(s -> viewVars.set(atint.getAndIncrement(), s));
+		if (viewVars != null)
+			vars.forEach(s -> {
+				if (atint.get() < viewVars.size())
+					viewVars.set(atint.get(), s);
+				atint.incrementAndGet();
+			});
 		for (RecordCompareDTO rc : compList) {
 			if (rc.getVarStatus().equals(VariableStatus.MOVED) || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED)
 			    || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV) || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
 			    || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
 				SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get((rc.getMovedFrom() - 1));
-				System.err.println(compList2.size() + " - " + compList.size() + " - " + viewVars.size() + "  -  " + (rc.getMovedFrom() - 1) + " - "
-				    + compList2.get(compList2.size() - 1));
 				if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())) {
-					System.err.println("*** " + compList2.size() + " - " + compList.size() + " - " + viewVars.size() + "  -  " + (rc.getMovedFrom() - 1) + " - "
-					    + compList2.get(compList2.size() - 1));
 					if (viewVars.size() > (rc.getMovedFrom() - 1)) {
 						viewVars.set((rc.getMovedFrom() - 1), new SPSSVarDTO());
 						compList.get((rc.getMovedFrom() - 1)).setKeepExpMeta(false);

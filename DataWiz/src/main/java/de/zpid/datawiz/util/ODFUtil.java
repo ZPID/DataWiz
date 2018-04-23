@@ -1897,16 +1897,10 @@ public class ODFUtil {
 
 			// Erste Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zpid", null, locale))).setFont(blue_reg);
-			doc.addColumnBreak();
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.headline", null, locale))).setFont(headline);
-			doc.addColumnBreak();
-			Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.subline", null, locale)));
-			par.setFont(blue_reg);
-			// Masterpage
-			MasterPage master = MasterPage.getOrCreateMasterPage(doc, "Preregistration");
-			master.setNumberFormat(NumberFormat.HINDU_ARABIC_NUMBER.toString());
-			// master.setMargins(15, 15, 15, 15);
-			doc.addPageBreak(par, master);
+
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.subline", null, locale))).setFont(blue_reg);
+
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu1h", null, locale))).setFont(blue_large);
 			doc.addColumnBreak();
