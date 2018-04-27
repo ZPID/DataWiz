@@ -80,23 +80,15 @@ public class ODFUtil {
 			TextDocument doc = TextDocument.newTextDocument();
 			// Erste Seite - blaue Schrift
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.zpid", null, locale))).setFont(blue_reg);
-			doc.addColumnBreak();
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.headline", null, locale))).setFont(headline);
-			doc.addColumnBreak();
-			Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.subline", null, locale)));
-			par.setFont(blue_reg);
-			// Masterpage: Damit die Tabellen etwas mehr Platz haben werden nach der 1 Seite
-			// die Ränder (margin) von 20 (Standard) auf 15 gesetzt.
-			MasterPage master = MasterPage.getOrCreateMasterPage(doc, "BMBF");
-			master.setNumberFormat(NumberFormat.HINDU_ARABIC_NUMBER.toString());
-			master.setMargins(15, 15, 15, 15);
-			doc.addPageBreak(par, master);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.subline", null, locale))).setFont(blue_reg);
+			
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1h", null, locale))).setFont(blue_large);
 			doc.addColumnBreak();
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1", null, locale))).setFont(regular);
 			doc.addColumnBreak();
-			par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1it", null, locale)));
+			Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1it", null, locale)));
 			par.setFont(regular_it);
 			par.appendHyperlink(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale),
 					new URI(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale)));
@@ -122,121 +114,122 @@ public class ODFUtil {
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
 			// Tabelleninhalt
-			createCell(table, 0, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza", null, locale)), regular_bold,
+			Integer i = 0;
+			createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza", null, locale)), regular_bold,
 					new Color(190, 190, 190), locale);
-			createCell(table, 2, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.datawiz", null, locale)), regular_bold,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.datawiz", null, locale)), regular_bold,
 					new Color(190, 190, 190), locale);
-			createCell(table, 0, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th1", null, locale)), regular_bold,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th1", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 2, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale)), regular_bold,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 3, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale)), regular_bold,
+			createCell(table, 3, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td1", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td1", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 3, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td2", null, locale)), regular, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td2", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 3, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 3, project.getDescription(), regular, null, locale);
-			createCell(table, 1, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td3", null, locale)), regular, null,
+			createCell(table, 3, i, project.getDescription(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td3", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 4,
+			createCell(table, 3, i,
 					(dmp.getExistingData() != null && !dmp.getExistingData().isEmpty()
 							? messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale)
 							: ""),
 					regular, null, locale);
-			createCell(table, 2, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 5, dmp.getDataCitation(), regular, null, locale);
-			createCell(table, 2, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
+			createCell(table, 3, i, dmp.getDataCitation(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 6, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 2, 7, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)), regular,
+			createCell(table, 3, i, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 7, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 2, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingDataIntegration(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 8, dmp.isExternalCopyright(), regular, null, locale);
-			createCell(table, 2, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isExternalCopyright(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 9, dmp.isExternalCopyright() ? dmp.getExternalCopyrightTxt() : null, regular, null,
+			createCell(table, 3, i, dmp.isExternalCopyright() ? dmp.getExternalCopyrightTxt() : null, regular, null,
 					locale);
-			createCell(table, 1, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td4", null, locale)), regular, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td4", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.duration", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.duration", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 10, dmp.getDuration(), regular, null, locale);
-			createCell(table, 2, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale)), regular,
+			createCell(table, 3, i, dmp.getDuration(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 11, dmp.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 2, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.measOccasions", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getUsedCollectionModes(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.measOccasions", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 12, dmp.getMeasOccasions(), regular, null, locale);
-			createCell(table, 2, 13, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMeasOccasions(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 13, dmp.getSpecificCosts(), regular, null, locale);
-			createCell(table, 2, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSpecificCosts(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 14, dmp.getSpecificCostsTxt(), regular, null, locale);
-			createCell(table, 2, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.bearCost", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.bearCost", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 15, dmp.getBearCost(), regular, null, locale);
-			createCell(table, 2, 16, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescription", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getBearCost(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescription", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 16, dmp.isStaffDescription(), regular, null, locale);
-			createCell(table, 2, 17, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isStaffDescription(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 17, dmp.isStaffDescription() ? dmp.getStaffDescriptionTxt() : null, regular, null,
+			createCell(table, 3, i, dmp.isStaffDescription() ? dmp.getStaffDescriptionTxt() : null, regular, null,
 					locale);
-			createCell(table, 1, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td5", null, locale)), regular, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td5", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 18, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 1, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td6", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExpectedUsage(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td6", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.organizations", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.organizations", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 19, dmp.getOrganizations(), regular, null, locale);
-			createCell(table, 2, 20, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale)), regular,
+			createCell(table, 3, i, dmp.getOrganizations(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 20, dmp.getInvolvedInstitutions(), regular, null, locale);
-			createCell(table, 2, 21, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInformed", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getInvolvedInstitutions(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInformed", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 21, dmp.isInvolvedInformed(), regular, null, locale);
-			createCell(table, 2, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefined", null, locale)), regular,
+			createCell(table, 3, i, dmp.isInvolvedInformed(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefined", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 22, dmp.isContributionsDefined(), regular, null, locale);
-			createCell(table, 2, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale)),
+			createCell(table, 3, i, dmp.isContributionsDefined(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale)),
 					regular, null, locale);
-			createCell(table, 3, 23, dmp.getContributionsDefinedTxt(), regular, null, locale);
-			createCell(table, 2, 24, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.givenConsent", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getContributionsDefinedTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.givenConsent", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 24, dmp.isGivenConsent(), regular, null, locale);
-			createCell(table, 2, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isGivenConsent(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 25, dmp.getDepositName(), regular, null, locale);
-			createCell(table, 2, 26, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale)), regular,
+			createCell(table, 3, i, dmp.getDepositName(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 26, dmp.isAcquisitionAgreement(), regular, null, locale);
-			createCell(table, 0, 27, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td7", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isAcquisitionAgreement(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td7", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 27, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflow", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflow", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 27, dmp.isManagementWorkflow(), regular, null, locale);
-			createCell(table, 2, 28, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isManagementWorkflow(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 28, dmp.getManagementWorkflowTxt(), regular, null, locale);
-			createCell(table, 0, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td8", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getManagementWorkflowTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td8", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 30, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td9", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.td9", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 30, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
 			doc.addPageBreak();
 			// Neue Seite bildungsforschung
@@ -302,19 +295,20 @@ public class ODFUtil {
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
 
-			createCell(table, 0, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.th1", null, locale)), regular_bold,
+			i = 0;
+			createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.th1", null, locale)), regular_bold,
 					new Color(190, 190, 190), locale);
-			createCell(table, 2, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.datawiz", null, locale)), regular_bold,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.datawiz", null, locale)), regular_bold,
 					new Color(190, 190, 190), locale);
-			createCell(table, 0, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.th2", null, locale)), regular_bold,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.th2", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 1, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.th3", null, locale)), regular_bold,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.th3", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 2, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale)), regular_bold,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th2", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 3, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale)), regular_bold,
+			createCell(table, 3, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.aza.th3", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td1", null, locale)), regular_bold,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td1", null, locale)), regular_bold,
 					null, locale);
 
 			/**
@@ -353,42 +347,42 @@ public class ODFUtil {
 			 * 
 			 */
 
-			createCell(table, 0, 3, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td2", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td2", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 3, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td3", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td3", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 3, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.grantNumber", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.grantNumber", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 3, project.getGrantNumber(), regular, null, locale);
-			createCell(table, 0, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale)), regular, null,
+			createCell(table, 3, i, project.getGrantNumber(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td4", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td5", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.funding", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.funding", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 4, project.getFunding(), regular, null, locale);
-			createCell(table, 0, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td6", null, locale)), regular, null,
+			createCell(table, 3, i, project.getFunding(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td6", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td7", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.title", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.title", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 5, project.getTitle(), regular, null, locale);
-			createCell(table, 0, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td8", null, locale)), regular, null,
+			createCell(table, 3, i, project.getTitle(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td8", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td9", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td9", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.description", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("project.edit.description", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 6, project.getDescription(), regular, null, locale);
-			createCell(table, 2, 7, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
+			createCell(table, 3, i, project.getDescription(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 7, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 0, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td10", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td10", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td11", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td11", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.leader", null, locale)), regular, null, locale);
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.leader", null, locale)), regular, null, locale);
 			StringBuilder primName = new StringBuilder();
 			if (pForm.getPrimaryContributor() != null) {
 				if (pForm.getPrimaryContributor().getTitle() != null
@@ -403,321 +397,321 @@ public class ODFUtil {
 				if (pForm.getPrimaryContributor().getInstitution() != null
 						&& !pForm.getPrimaryContributor().getInstitution().isEmpty())
 					primName.append(" (").append(pForm.getPrimaryContributor().getInstitution()).append(")");
-				createCell(table, 3, 8, primName.toString(), regular, null, locale);
+				createCell(table, 3, i, primName.toString(), regular, null, locale);
 			}
-			createCell(table, 0, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td12", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td12", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td13", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td14", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td14", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td15", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td15", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td16", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td17", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td18", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td18", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td19", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.funderRequirements", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.funderRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 12, dmp.getFunderRequirements(), regular, null, locale);
-			createCell(table, 0, 13, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td20", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getFunderRequirements(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td20", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td21", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td21", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td22", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td22", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedDataTypes", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedDataTypes", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 14, dmp.getUsedDataTypes(), regular, null, locale);
-			createCell(table, 0, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td23", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getUsedDataTypes(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td23", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td24", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td24", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 15, dmp.getExistingData(), regular, null, locale);
-			createCell(table, 2, 16, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingData(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 16, dmp.getDataCitation(), regular, null, locale);
-			createCell(table, 2, 17, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
+			createCell(table, 3, i, dmp.getDataCitation(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 17, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 2, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)),
+			createCell(table, 3, i, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)),
 					regular, null, locale);
-			createCell(table, 3, 18, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 0, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td25", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingDataIntegration(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td25", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td26", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td26", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 19, dmp.getReliabilityTraining(), regular, null, locale);
-			createCell(table, 2, 20, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale)), regular,
+			createCell(table, 3, i, dmp.getReliabilityTraining(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 20, dmp.getMultipleMeasurements(), regular, null, locale);
-			createCell(table, 2, 21, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.qualitityOther", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMultipleMeasurements(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.qualitityOther", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 21, dmp.getQualitityOther(), regular, null, locale);
-			createCell(table, 0, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td27", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getQualitityOther(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td27", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td28", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td28", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent1", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent1", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td29", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td29", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td30", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td30", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent2", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent2", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 24, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td31", null, locale)), regular_bold,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td31", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td32", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td32", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td33", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td33", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageResponsible", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageResponsible", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 25, dmp.getStorageResponsible(), regular, null, locale);
-			createCell(table, 2, 26, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storagePlaces", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageResponsible(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storagePlaces", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 26, dmp.getStoragePlaces(), regular, null, locale);
-			createCell(table, 2, 27, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageBackups", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStoragePlaces(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageBackups", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 27, dmp.getStorageBackups(), regular, null, locale);
-			createCell(table, 2, 28, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale)), regular,
+			createCell(table, 3, i, dmp.getStorageBackups(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 28, dmp.getStorageExpectedSize(), regular, null, locale);
-			createCell(table, 0, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td34", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageExpectedSize(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td34", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td35", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td35", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflow", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflow", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 29, dmp.isManagementWorkflow(), regular, null, locale);
-			createCell(table, 2, 30, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isManagementWorkflow(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 30, dmp.getManagementWorkflowTxt(), regular, null, locale);
-			createCell(table, 0, 31, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td36", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getManagementWorkflowTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td36", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 31, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td37", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td37", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 31, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.fileFormat", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.fileFormat", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 31, dmp.getFileFormat(), regular, null, locale);
-			createCell(table, 2, 32, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirements", null, locale)), regular,
+			createCell(table, 3, i, dmp.getFileFormat(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 32, dmp.isStorageRequirements(), regular, null, locale);
-			createCell(table, 2, 33, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isStorageRequirements(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 33, dmp.getStorageRequirementsTxt(), regular, null, locale);
-			createCell(table, 0, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td38", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageRequirementsTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td38", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td39", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td39", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 34, dmp.isSensitiveDataIncluded(), regular, null, locale);
-			createCell(table, 2, 35, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveDataIncludedTxt", null, locale)),
+			createCell(table, 3, i, dmp.isSensitiveDataIncluded(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveDataIncludedTxt", null, locale)),
 					regular, null, locale);
-			createCell(table, 3, 35, dmp.getSensitiveDataIncludedTxt(), regular, null, locale);
-			createCell(table, 0, 36, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td40", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getSensitiveDataIncludedTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td40", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 37, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td41", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td41", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 37, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td42", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td42", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 37, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaDescription", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaDescription", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 37, dmp.getMetaDescription(), regular, null, locale);
-			createCell(table, 0, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td43", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMetaDescription(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td43", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td44", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td44", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 38, dmp.getMetaFramework(), regular, null, locale);
-			createCell(table, 2, 39, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale)), regular,
+			createCell(table, 3, i, dmp.getMetaFramework(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 39, dmp.getSelectedMetaPurposes(), regular, null, locale);
-			createCell(table, 0, 40, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td45", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getSelectedMetaPurposes(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td45", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td46", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td46", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td47", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td47", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.frameworkNationality", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.frameworkNationality", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 41, dmp.getFrameworkNationality(), regular, null, locale);
-			createCell(table, 2, 42, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.frameworkNationalityTxt", null, locale)),
+			createCell(table, 3, i, dmp.getFrameworkNationality(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.frameworkNationalityTxt", null, locale)),
 					regular, null, locale);
-			createCell(table, 3, 42, dmp.getFrameworkNationalityTxt(), regular, null, locale);
-			createCell(table, 2, 43, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular,
+			createCell(table, 3, i, dmp.getFrameworkNationalityTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 43, dmp.isExternalCopyright(), regular, null, locale);
-			createCell(table, 2, 44, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isExternalCopyright(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 44, dmp.getExternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 2, 45, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyright", null, locale)), regular,
+			createCell(table, 3, i, dmp.getExternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyright", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 45, dmp.isInternalCopyright(), regular, null, locale);
-			createCell(table, 2, 46, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isInternalCopyright(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 46, dmp.getInternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 0, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td48", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getInternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td48", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td49", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td49", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveData", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 47, dmp.getSensitiveData(), regular, null, locale);
-			createCell(table, 2, 48, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataProtection", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSensitiveData(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataProtection", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 48, dmp.isDataProtection(), regular, null, locale);
-			createCell(table, 2, 49, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.protectionRequirements", null, locale)), regular,
+			createCell(table, 3, i, dmp.isDataProtection(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.protectionRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 49, dmp.getProtectionRequirements(), regular, null, locale);
-			createCell(table, 2, 50, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getProtectionRequirements(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 50, dmp.isConsentObtained(), regular, null, locale);
-			createCell(table, 2, 51, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isConsentObtained(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 51, dmp.getConsentObtainedTxt(), regular, null, locale);
-			createCell(table, 2, 52, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sharingConsidered", null, locale)), regular,
+			createCell(table, 3, i, dmp.getConsentObtainedTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sharingConsidered", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 52, dmp.isSharingConsidered(), regular, null, locale);
-			createCell(table, 2, 53, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApproval", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isSharingConsidered(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApproval", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 53, dmp.isIrbApproval(), regular, null, locale);
-			createCell(table, 2, 54, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isIrbApproval(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 54, dmp.getIrbApprovalTxt(), regular, null, locale);
-			createCell(table, 0, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td50", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getIrbApprovalTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td50", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td51", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td51", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 56, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td52", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td52", null, locale)), regular, null,
 					locale);
-			createCell(table, 0, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td53", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td53", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td54", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td54", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 57, dmp.getPublStrategy(), regular, null, locale);
-			createCell(table, 2, 58, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getPublStrategy(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 58, dmp.getDepositName(), regular, null, locale);
-			createCell(table, 2, 59, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getDepositName(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 59, dmp.getSearchableData(), regular, null, locale);
-			createCell(table, 2, 60, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.transferTime", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSearchableData(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.transferTime", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 60, dmp.getTransferTime(), regular, null, locale);
-			createCell(table, 2, 61, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale)), regular,
+			createCell(table, 3, i, dmp.getTransferTime(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 61, dmp.getAccessReasonAuthor(), regular, null, locale);
-			createCell(table, 2, 62, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.noAccessReason", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getAccessReasonAuthor(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.noAccessReason", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 62, dmp.getNoAccessReason(), regular, null, locale);
-			createCell(table, 2, 63, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.initialUsage", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getNoAccessReason(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.initialUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 63, dmp.getInitialUsage(), regular, null, locale);
-			createCell(table, 2, 64, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usageRestriction", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getInitialUsage(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usageRestriction", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 64, dmp.getUsageRestriction(), regular, null, locale);
-			createCell(table, 2, 65, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCosts", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getUsageRestriction(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 65, dmp.isAccessCosts(), regular, null, locale);
-			createCell(table, 2, 66, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedPID", null, locale)), regular, null, locale);
-			createCell(table, 3, 66, dmp.getUsedPID(), regular, null, locale);
-			createCell(table, 0, 67, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td55", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isAccessCosts(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedPID", null, locale)), regular, null, locale);
+			createCell(table, 3, i, dmp.getUsedPID(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td55", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 67, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td56", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td56", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 67, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 67, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 0, 68, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td57", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getExpectedUsage(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td57", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 69, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td58", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td58", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 69, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td59", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td59", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 69, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataSelection", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataSelection", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 69, dmp.isDataSelection(), regular, null, locale);
-			createCell(table, 2, 70, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionTime", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isDataSelection(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionTime", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 70, dmp.getSelectionTime(), regular, null, locale);
-			createCell(table, 2, 71, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionResp", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSelectionTime(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionResp", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 71, dmp.getSelectionResp(), regular, null, locale);
-			createCell(table, 0, 72, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td60", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSelectionResp(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td60", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 72, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td61", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td61", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 72, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageDuration", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageDuration", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 72, dmp.getStorageDuration(), regular, null, locale);
-			createCell(table, 2, 73, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageSuccession", null, locale)), regular,
+			createCell(table, 3, i, dmp.getStorageDuration(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageSuccession", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 73, dmp.isStorageSuccession(), regular, null, locale);
-			createCell(table, 2, 74, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isStorageSuccession(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 74, dmp.getStorageSuccessionTxt(), regular, null, locale);
-			createCell(table, 0, 75, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td62", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getStorageSuccessionTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td62", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 76, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td63", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td63", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 76, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td64", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td64", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 76, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.responsibleUnit", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.responsibleUnit", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 76, dmp.getResponsibleUnit(), regular, null, locale);
-			createCell(table, 2, 77, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale)), regular,
+			createCell(table, 3, i, dmp.getResponsibleUnit(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInstitutions", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 77, dmp.getInvolvedInstitutions(), regular, null, locale);
-			createCell(table, 2, 78, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInformed", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getInvolvedInstitutions(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.involvedInformed", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 78, dmp.isInvolvedInformed(), regular, null, locale);
-			createCell(table, 2, 79, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefined", null, locale)), regular,
+			createCell(table, 3, i, dmp.isInvolvedInformed(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefined", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 79, dmp.isContributionsDefined(), regular, null, locale);
-			createCell(table, 2, 80, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale)),
+			createCell(table, 3, i, dmp.isContributionsDefined(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.contributionsDefinedTxt", null, locale)),
 					regular, null, locale);
-			createCell(table, 3, 80, dmp.getContributionsDefinedTxt(), regular, null, locale);
-			createCell(table, 0, 81, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td65", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getContributionsDefinedTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td65", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 81, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td66", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.bifo.td66", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 81, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescription", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescription", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 81, dmp.isStaffDescription(), regular, null, locale);
-			createCell(table, 2, 82, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isStaffDescription(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.staffDescriptionTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 82, dmp.getStaffDescriptionTxt(), regular, null, locale);
-			createCell(table, 2, 83, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStaffDescriptionTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 83, dmp.getSpecificCosts(), regular, null, locale);
-			createCell(table, 2, 84, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSpecificCosts(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 84, dmp.getSpecificCostsTxt(), regular, null, locale);
-			createCell(table, 2, 85, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.bearCost", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.bearCost", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 85, dmp.getBearCost(), regular, null, locale);
+			createCell(table, 3, i, dmp.getBearCost(), regular, null, locale);
 
 			// write doc to outputstream
 			doc.save(baos);
@@ -814,282 +808,283 @@ public class ODFUtil {
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
 			// Inhalt
-			createCell(table, 0, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.FAIR", null, locale)), regular_bold, null,
+			Integer i = 0;
+			createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.FAIR", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 2, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.datawiz", null, locale)), regular_bold,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.datawiz", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 0, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th1", null, locale)), regular_bold, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th1", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 1, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th2", null, locale)), regular_bold, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th2", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 2, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th3", null, locale)), regular_bold, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th3", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 3, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th3", null, locale)), regular_bold, null,
+			createCell(table, 3, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.th3", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td1", null, locale)), regular_bold, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td1", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 1, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td2", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td2", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 2, project.getDescription(), regular, null, locale);
-			createCell(table, 2, 3, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
+			createCell(table, 3, i, project.getDescription(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 3, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 1, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td3", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td3", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedDataTypes", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedDataTypes", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 4, dmp.getUsedDataTypes(), regular, null, locale);
-			createCell(table, 2, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.fileFormat", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getUsedDataTypes(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.fileFormat", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 5, dmp.getFileFormat(), regular, null, locale);
-			createCell(table, 1, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td4", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getFileFormat(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td4", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 6, dmp.getExistingData(), regular, null, locale);
-			createCell(table, 2, 7, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingData(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 7, dmp.getDataCitation(), regular, null, locale);
-			createCell(table, 2, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)), regular,
+			createCell(table, 3, i, dmp.getDataCitation(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 8, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 1, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td5", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExistingDataIntegration(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td5", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 9, dmp.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 1, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td6", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getUsedCollectionModes(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td6", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageExpectedSize", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 10, dmp.getStorageExpectedSize(), regular, null, locale);
-			createCell(table, 1, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td7", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageExpectedSize(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td7", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 11, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 2, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storage.headline", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExpectedUsage(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storage.headline", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 12, "?", regular, null, locale);
-			createCell(table, 0, 13, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td8", null, locale)), regular_bold, null,
+			createCell(table, 3, i, "?", regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td8", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 0, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td9", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td9", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td10", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td10", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 14, dmp.getSearchableData(), regular, null, locale);
-			createCell(table, 1, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td11", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSearchableData(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td11", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedPID", null, locale)), regular, null, locale);
-			createCell(table, 3, 15, dmp.getUsedPID(), regular, null, locale);
-			createCell(table, 1, 16, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td12", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedPID", null, locale)), regular, null, locale);
+			createCell(table, 3, i, dmp.getUsedPID(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td12", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 16, "dmp.edit.storageTechnologies", regular, null, locale);
-			createCell(table, 3, 16, "?", regular, null, locale);
-			createCell(table, 1, 17, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td13", null, locale)), regular, null,
+			createCell(table, 2, i, "dmp.edit.storageTechnologies", regular, null, locale);
+			createCell(table, 3, i, "?", regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td13", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 17, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 1, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td14", null, locale)), regular, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td14", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageBackups", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageBackups", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 18, dmp.getStorageBackups(), regular, null, locale);
-			createCell(table, 2, 19, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaGeneration", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageBackups(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaGeneration", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 19, dmp.getMetaGeneration(), regular, null, locale);
-			createCell(table, 1, 20, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td15", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMetaGeneration(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td15", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 20, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 20, dmp.getSelectedMetaPurposes(), regular, null, locale);
-			createCell(table, 2, 21, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSelectedMetaPurposes(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 21, dmp.getMetaFramework(), regular, null, locale);
-			createCell(table, 2, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaDescription", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMetaFramework(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaDescription", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 22, dmp.getMetaDescription(), regular, null, locale);
-			createCell(table, 2, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaMonitor", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMetaDescription(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaMonitor", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 23, dmp.getMetaMonitor(), regular, null, locale);
-			createCell(table, 2, 24, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFormat", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMetaMonitor(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFormat", null, locale)), regular, null,
 					locale);
-			createCell(table, 0, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td16", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td16", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td17", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td17", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveData", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveData", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 25, dmp.getSensitiveData(), regular, null, locale);
-			createCell(table, 2, 26, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale)), regular,
+			createCell(table, 3, i, dmp.getSensitiveData(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 26, dmp.getAccessReasonAuthor(), regular, null, locale);
-			createCell(table, 2, 27, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.noAccessReason", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getAccessReasonAuthor(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.noAccessReason", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 27, dmp.getNoAccessReason(), regular, null, locale);
-			createCell(table, 1, 28, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td18", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getNoAccessReason(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td18", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 28, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 28, dmp.getPublStrategy(), regular, null, locale);
-			createCell(table, 2, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getPublStrategy(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 29, dmp.getDepositName(), regular, null, locale);
-			createCell(table, 2, 30, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCosts", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getDepositName(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 30, dmp.isAccessCosts(), regular, null, locale);
-			createCell(table, 2, 31, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.releaseObligation", null, locale)), regular,
+			createCell(table, 3, i, dmp.isAccessCosts(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.releaseObligation", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 31, dmp.isReleaseObligation(), regular, null, locale);
-			createCell(table, 2, 32, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.clarifiedRights", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isReleaseObligation(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.clarifiedRights", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 32, dmp.isClarifiedRights(), regular, null, locale);
-			createCell(table, 2, 33, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale)), regular,
+			createCell(table, 3, i, dmp.isClarifiedRights(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 33, dmp.isAcquisitionAgreement(), regular, null, locale);
-			createCell(table, 1, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td19", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isAcquisitionAgreement(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td19", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirements", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 34, dmp.isStorageRequirements(), regular, null, locale);
-			createCell(table, 2, 35, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isStorageRequirements(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageRequirementsTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 35, dmp.getStorageRequirementsTxt(), regular, null, locale);
-			createCell(table, 1, 36, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td20", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageRequirementsTxt(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td20", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 36, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storagePlaces", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storagePlaces", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 36, dmp.getStoragePlaces(), regular, null, locale);
-			createCell(table, 2, 37, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageDuration", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStoragePlaces(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageDuration", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 37, dmp.getStorageDuration(), regular, null, locale);
-			createCell(table, 1, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td21", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageDuration(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td21", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyright", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyright", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 38, dmp.isInternalCopyright(), regular, null, locale);
-			createCell(table, 2, 39, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isInternalCopyright(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 39, dmp.getInternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 2, 40, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular,
+			createCell(table, 3, i, dmp.getInternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 40, dmp.isExternalCopyright(), regular, null, locale);
-			createCell(table, 2, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isExternalCopyright(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 41, dmp.getExternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 0, 42, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td22", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getExternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td22", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 42, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td23", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td23", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 42, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 1, 43, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td24", null, locale)), regular, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td24", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 43, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 44, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td25", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td25", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 44, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td26", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td26", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 44, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usageRestriction", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usageRestriction", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 44, dmp.getUsageRestriction(), regular, null, locale);
-			createCell(table, 1, 45, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td27", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getUsageRestriction(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td27", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 45, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.transferTime", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.transferTime", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 45, dmp.getTransferTime(), regular, null, locale);
-			createCell(table, 2, 46, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.initialUsage", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getTransferTime(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.initialUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 46, dmp.getInitialUsage(), regular, null, locale);
-			createCell(table, 1, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td28", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getInitialUsage(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td28", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 1, 48, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td29", null, locale)), regular, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td29", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 48, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 48, dmp.getReliabilityTraining(), regular, null, locale);
-			createCell(table, 2, 49, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale)), regular,
+			createCell(table, 3, i, dmp.getReliabilityTraining(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 49, dmp.getMultipleMeasurements(), regular, null, locale);
-			createCell(table, 2, 50, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.qualitityOther", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getMultipleMeasurements(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.qualitityOther", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 50, dmp.getQualitityOther(), regular, null, locale);
-			createCell(table, 1, 51, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td30", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getQualitityOther(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td30", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 51, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageSuccessionTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 51, dmp.getStorageSuccessionTxt(), regular, null, locale);
-			createCell(table, 0, 52, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td31", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getStorageSuccessionTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td31", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 1, 52, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td32", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td32", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 52, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 52, dmp.getSpecificCosts(), regular, null, locale);
-			createCell(table, 2, 53, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSpecificCosts(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 53, dmp.getSpecificCostsTxt(), regular, null, locale);
-			createCell(table, 2, 54, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.bearCost", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.bearCost", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 54, dmp.getBearCost(), regular, null, locale);
-			createCell(table, 1, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td33", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getBearCost(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td33", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.responsibleUnit", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.responsibleUnit", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 55, dmp.getResponsibleUnit(), regular, null, locale);
-			createCell(table, 1, 56, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td34", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getResponsibleUnit(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td34", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 56, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.no.equivalent", null, locale)), regular,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td35", null, locale)), regular_bold,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td35", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 1, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td36", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td36", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 57, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageResponsible", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageResponsible", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 57, dmp.getStorageResponsible(), regular, null, locale);
-			createCell(table, 2, 58, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataProtection", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getStorageResponsible(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataProtection", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 58, dmp.isDataProtection(), regular, null, locale);
-			createCell(table, 2, 59, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.protectionRequirements", null, locale)), regular,
+			createCell(table, 3, i, dmp.isDataProtection(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.protectionRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 59, dmp.getProtectionRequirements(), regular, null, locale);
-			createCell(table, 2, 60, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageTransfer", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.getProtectionRequirements(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageTransfer", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 60, dmp.getStorageTransfer(), regular, null, locale);
-			createCell(table, 0, 61, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td37", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getStorageTransfer(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td37", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 1, 61, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td38", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td38", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 61, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 61, dmp.isConsentObtained(), regular, null, locale);
-			createCell(table, 2, 62, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale)), regular,
+			createCell(table, 3, i, dmp.isConsentObtained(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtainedTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 62, dmp.getConsentObtainedTxt(), regular, null, locale);
-			createCell(table, 2, 63, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sharingConsidered", null, locale)), regular,
+			createCell(table, 3, i, dmp.getConsentObtainedTxt(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sharingConsidered", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 63, dmp.isSharingConsidered(), regular, null, locale);
-			createCell(table, 2, 64, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApproval", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isSharingConsidered(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApproval", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 64, dmp.isIrbApproval(), regular, null, locale);
-			createCell(table, 2, 65, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale)), regular, null,
+			createCell(table, 3, i, dmp.isIrbApproval(), regular, null, locale);
+			createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale)), regular, null,
 					locale);
-			createCell(table, 3, 65, dmp.getIrbApprovalTxt(), regular, null, locale);
-			createCell(table, 0, 66, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td39", null, locale)), regular_bold,
+			createCell(table, 3, i, dmp.getIrbApprovalTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td39", null, locale)), regular_bold,
 					null, locale);
-			createCell(table, 1, 66, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td40", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.td40", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 66, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.funderRequirements", null, locale)), regular,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.funderRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 3, 66, dmp.getFunderRequirements(), regular, null, locale);
+			createCell(table, 3, i, dmp.getFunderRequirements(), regular, null, locale);
 
 			doc.save(baos);
 			doc.close();
@@ -1171,193 +1166,194 @@ public class ODFUtil {
 			table.getColumnByIndex(1).setWidth(30);
 			table.getColumnByIndex(2).setWidth(50);
 
-			createCell(table, 0, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th1", null, locale)), regular_bold,
+			Integer i = 0;
+			createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th1", null, locale)), regular_bold,
 					new Color(190, 190, 190), locale);
-			createCell(table, 1, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th2", null, locale)), regular_bold,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th2", null, locale)), regular_bold,
 					new Color(190, 190, 190), locale);
-			createCell(table, 1, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th3", null, locale)), regular_bold,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th3", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 2, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th4", null, locale)), regular_bold,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th4", null, locale)), regular_bold,
 					new Color(210, 210, 210), locale);
-			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td1", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td1", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataReproducibility", null, locale)), regular,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataReproducibility", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 2, dmp.getDataReproducibility(), regular, null, locale);
-			createCell(table, 1, 4, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
+			createCell(table, 2, i++, dmp.getDataReproducibility(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.expectedUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 4, dmp.getExpectedUsage(), regular, null, locale);
-			createCell(table, 0, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td2", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getExpectedUsage(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td2", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 5, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 5, dmp.getPublStrategy(), regular, null, locale);
-			createCell(table, 1, 6, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getPublStrategy(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 6, dmp.getSearchableData(), regular, null, locale);
-			createCell(table, 1, 7, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.initialUsage", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getSearchableData(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.initialUsage", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 7, dmp.getInitialUsage(), regular, null, locale);
-			createCell(table, 1, 8, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usageRestriction", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getInitialUsage(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usageRestriction", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 8, dmp.getUsageRestriction(), regular, null, locale);
-			createCell(table, 1, 9, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCosts", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getUsageRestriction(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 9, dmp.isAccessCosts(), regular, null, locale);
+			createCell(table, 2, i++, dmp.isAccessCosts(), regular, null, locale);
 			// createCell(table, 1, 10, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessCostsTxt",
 			// null, locale), regular, null, locale);
-			createCell(table, 1, 11, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale)), regular,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.accessReasonAuthor", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 11, dmp.getAccessReasonAuthor(), regular, null, locale);
-			createCell(table, 1, 12, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.noAccessReason", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getAccessReasonAuthor(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.noAccessReason", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 12, dmp.getNoAccessReason(), regular, null, locale);
-			createCell(table, 0, 13, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td3", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getNoAccessReason(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td3", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 13, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 13, project.getDescription(), regular, null, locale);
-			createCell(table, 1, 14, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedDataTypes", null, locale)), regular, null,
+			createCell(table, 2, i, project.getDescription(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedDataTypes", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 14, dmp.getUsedDataTypes(), regular, null, locale);
-			createCell(table, 1, 15, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getUsedDataTypes(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 15, dmp.getExistingData(), regular, null, locale);
-			createCell(table, 1, 16, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getExistingData(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 16, dmp.getDataCitation(), regular, null, locale);
-			createCell(table, 1, 17, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale)), regular,
+			createCell(table, 2, i, dmp.getDataCitation(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedCollectionModes", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 17, dmp.getUsedCollectionModes(), regular, null, locale);
-			createCell(table, 0, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td4", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getUsedCollectionModes(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td4", null, locale)), regular, null,
 					locale);
 			// createCell(table, 1, 18,
 			// messageSource.getMessage("dmp.edit.qualityAssurance", null, locale)), regular,
 			// null, locale);
-			createCell(table, 1, 18, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale)), regular,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.reliabilityTraining", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 18, dmp.getReliabilityTraining(), regular, null, locale);
-			createCell(table, 1, 20, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale)), regular,
+			createCell(table, 2, i++, dmp.getReliabilityTraining(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.multipleMeasurements", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 20, dmp.getMultipleMeasurements(), regular, null, locale);
-			createCell(table, 1, 21, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.qualitityOther", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getMultipleMeasurements(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.qualitityOther", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 21, dmp.getQualitityOther(), regular, null, locale);
-			createCell(table, 1, 22, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.planningAdherence", null, locale)), regular,
+			createCell(table, 2, i, dmp.getQualitityOther(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.planningAdherence", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 22, dmp.getPlanningAdherence(), regular, null, locale);
-			createCell(table, 0, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td5", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getPlanningAdherence(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td5", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 23, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataRelevance", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 23, dmp.getExistingDataRelevance(), regular, null, locale);
-			createCell(table, 1, 24, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)),
+			createCell(table, 2, i, dmp.getExistingDataRelevance(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingDataIntegration", null, locale)),
 					regular, null, locale);
-			createCell(table, 2, 24, dmp.getExistingDataIntegration(), regular, null, locale);
-			createCell(table, 1, 25, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataSelection", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getExistingDataIntegration(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataSelection", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 25, dmp.isDataSelection(), regular, null, locale);
-			createCell(table, 1, 26, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionTime", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.isDataSelection(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionTime", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 26, dmp.getSelectionTime(), regular, null, locale);
-			createCell(table, 1, 27, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionResp", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getSelectionTime(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectionResp", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 27, dmp.getSelectionResp(), regular, null, locale);
-			createCell(table, 1, 28, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.deleteProcedure", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getSelectionResp(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.deleteProcedure", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 28, dmp.getDeleteProcedure(), regular, null, locale);
-			createCell(table, 1, 29, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storagePlaces", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getDeleteProcedure(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storagePlaces", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 29, dmp.getStoragePlaces(), regular, null, locale);
-			createCell(table, 1, 30, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageBackups", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getStoragePlaces(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageBackups", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 30, dmp.getStorageBackups(), regular, null, locale);
-			createCell(table, 1, 31, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflow", null, locale)), regular,
+			createCell(table, 2, i, dmp.getStorageBackups(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflow", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 31, dmp.isManagementWorkflow(), regular, null, locale);
-			createCell(table, 1, 32, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale)), regular,
+			createCell(table, 2, i, dmp.isManagementWorkflow(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.managementWorkflowTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 32, dmp.getManagementWorkflowTxt(), regular, null, locale);
-			createCell(table, 1, 33, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.funderRequirements", null, locale)), regular,
+			createCell(table, 2, i, dmp.getManagementWorkflowTxt(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.funderRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 33, dmp.getFunderRequirements(), regular, null, locale);
-			createCell(table, 0, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td6", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getFunderRequirements(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td6", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 34, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageResponsible", null, locale)), regular,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageResponsible", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 34, dmp.getStorageResponsible(), regular, null, locale);
-			createCell(table, 1, 35, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageDuration", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getStorageResponsible(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.storageDuration", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 35, dmp.getStorageDuration(), regular, null, locale);
-			createCell(table, 1, 36, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveData", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getStorageDuration(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveData", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 36, dmp.getSensitiveData(), regular, null, locale);
-			createCell(table, 1, 37, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.clarifiedRights", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getSensitiveData(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.clarifiedRights", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 37, dmp.isClarifiedRights(), regular, null, locale);
-			createCell(table, 1, 38, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedPID", null, locale)), regular, null, locale);
-			createCell(table, 2, 38, dmp.getUsedPID(), regular, null, locale);
-			createCell(table, 0, 39, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td7", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.isClarifiedRights(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.usedPID", null, locale)), regular, null, locale);
+			createCell(table, 2, i, dmp.getUsedPID(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td7", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 39, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.fileFormat", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.fileFormat", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 39, dmp.getFileFormat(), regular, null, locale);
-			createCell(table, 0, 40, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td8", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getFileFormat(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td8", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 40, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 40, dmp.getMetaFramework(), regular, null, locale);
-			createCell(table, 0, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td9", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getMetaFramework(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td9", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 41, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 41, dmp.getDepositName(), regular, null, locale);
-			createCell(table, 1, 42, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale)), regular,
+			createCell(table, 2, i, dmp.getDepositName(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.acquisitionAgreement", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 42, dmp.isAcquisitionAgreement(), regular, null, locale);
-			createCell(table, 0, 43, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td10", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.isAcquisitionAgreement(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td10", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 43, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataProtection", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataProtection", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 43, dmp.isDataProtection(), regular, null, locale);
-			createCell(table, 1, 44, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.protectionRequirements", null, locale)), regular,
+			createCell(table, 2, i, dmp.isDataProtection(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.protectionRequirements", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 44, dmp.getProtectionRequirements(), regular, null, locale);
-			createCell(table, 1, 45, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getProtectionRequirements(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 45, dmp.isConsentObtained(), regular, null, locale);
-			createCell(table, 1, 46, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.isConsentObtained(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.consentObtained", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 46, dmp.getConsentObtainedTxt(), regular, null, locale);
-			createCell(table, 1, 47, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sharingConsidered", null, locale)), regular,
+			createCell(table, 2, i, dmp.getConsentObtainedTxt(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sharingConsidered", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 47, dmp.isSharingConsidered(), regular, null, locale);
-			createCell(table, 1, 48, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApproval", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.isSharingConsidered(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApproval", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 48, dmp.isIrbApproval(), regular, null, locale);
-			createCell(table, 1, 49, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.isIrbApproval(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.irbApprovalTxt", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 49, dmp.getIrbApprovalTxt(), regular, null, locale);
-			createCell(table, 1, 50, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale)), regular,
+			createCell(table, 2, i, dmp.getIrbApprovalTxt(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.sensitiveDataIncluded", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 50, dmp.isSensitiveDataIncluded(), regular, null, locale);
-			createCell(table, 1, 51, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular,
+			createCell(table, 2, i, dmp.isSensitiveDataIncluded(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyright", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 51, dmp.isExternalCopyright(), regular, null, locale);
-			createCell(table, 1, 52, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
+			createCell(table, 2, i, dmp.isExternalCopyright(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.externalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 52, dmp.getExternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 1, 53, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyright", null, locale)), regular,
+			createCell(table, 2, i, dmp.getExternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyright", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 53, dmp.isInternalCopyright(), regular, null, locale);
-			createCell(table, 1, 54, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale)), regular,
+			createCell(table, 2, i, dmp.isInternalCopyright(), regular, null, locale);
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.internalCopyrightTxt", null, locale)), regular,
 					null, locale);
-			createCell(table, 2, 54, dmp.getInternalCopyrightTxt(), regular, null, locale);
-			createCell(table, 0, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td11", null, locale)), regular, null,
+			createCell(table, 2, i, dmp.getInternalCopyrightTxt(), regular, null, locale);
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td11", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 55, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.transferTime", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.transferTime", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 55, dmp.getTransferTime(), regular, null, locale);
+			createCell(table, 2, i, dmp.getTransferTime(), regular, null, locale);
 
 			doc.addColumnBreak();
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zu3", null, locale))).setFont(regular);
@@ -1368,19 +1364,20 @@ public class ODFUtil {
 			table.getCellRangeByPosition(1, 0, 2, 0).merge();
 
 			// content
-			createCell(table, 0, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th1", null, locale)), regular_bold, null,
+			i = 0;
+			createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th1", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 1, 0, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th2", null, locale)), regular_bold, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th2", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 1, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th5", null, locale)), regular_bold, null,
+			createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th5", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 2, 1, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th6", null, locale)), regular_bold, null,
+			createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.th6", null, locale)), regular_bold, null,
 					locale);
-			createCell(table, 0, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td12", null, locale)), regular, null,
+			createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.td12", null, locale)), regular, null,
 					locale);
-			createCell(table, 1, 2, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
+			createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
 					locale);
-			createCell(table, 2, 2, dmp.getSpecificCosts(), regular, null, locale);
+			createCell(table, 2, i, dmp.getSpecificCosts(), regular, null, locale);
 
 			doc.addColumnBreak();
 
