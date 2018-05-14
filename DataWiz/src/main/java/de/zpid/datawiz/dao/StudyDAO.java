@@ -43,6 +43,19 @@ public class StudyDAO {
 		log.info("Loading StudyDAO as Singleton and Service");
 	}
 
+	public List<StudyDTO> findAll() throws Exception {
+		log.trace("execute findAll ");
+		String sql = "SELECT id, project_id, last_user_id, lastEdit, currentlyEdit, editSince,"
+		    + " editUserId, title, internalID, transTitle, sAbstract, sAbstractTrans" + " FROM dw_study";
+		final List<StudyDTO> res = jdbcTemplate.query(sql, new Object[] {}, new RowMapper<StudyDTO>() {
+			public StudyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return setStudyDTO(rs, true, false);
+			}
+		});
+		log.debug("leaving findAll with size: {}", () -> res.size());
+		return res;
+	}
+
 	public List<StudyDTO> findAllStudiesByProjectId(final ProjectDTO project) throws Exception {
 		log.trace("execute findAllStudiesByProjectId for project [id: {}; name: {}]", () -> project.getId(), () -> project.getTitle());
 		String sql = "SELECT id, project_id, last_user_id, lastEdit, currentlyEdit, editSince,"
@@ -117,8 +130,7 @@ public class StudyDAO {
 		    + " specGroups, country, city, region, missings, dataRerun, responsibility, responsibilityOther,"
 		    + " collStart, collEnd, otherCMIP, otherCMINP, sampMethod, sampMethodOther, recruiting,"
 		    + " otherSourFormat, sourTrans, otherSourTrans, specCirc, transDescr, qualInd, qualLim,"
-		    + " irb, irbName, consent, consentShare, persDataColl, persDataPres, anonymProc, copyright,"
-		    + " copyrightHolder, thirdParty, thirdPartyHolder)"
+		    + " irb, irbName, consent, consentShare, persDataColl, persDataPres, anonymProc, copyright," + " copyrightHolder, thirdParty, thirdPartyHolder)"
 		    + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		int ret = this.jdbcTemplate.update(new PreparedStatementCreator() {
 			@Override

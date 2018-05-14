@@ -34,7 +34,6 @@ import de.zpid.datawiz.dao.FormTypesDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.StudyDAO;
-import de.zpid.datawiz.dao.TagDAO;
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.ContributorDTO;
 import de.zpid.datawiz.dto.DmpDTO;
@@ -67,8 +66,6 @@ public class ProjectService {
 	private RoleDAO roleDAO;
 	@Autowired
 	private StudyDAO studyDAO;
-	@Autowired
-	private TagDAO tagDAO;
 	@Autowired
 	private FileDAO fileDAO;
 	@Autowired
@@ -216,7 +213,6 @@ public class ProjectService {
 	private void setSpecificPageData(final ProjectForm pForm, final PageState call) throws Exception {
 		// load /project data
 		if (call == null || call.equals(PageState.PROJECT)) {
-			pForm.setTags(new ArrayList<String>(tagDAO.findTagsByProjectID(pForm.getProject()).values()));
 			pForm.setContributors(ListUtil.addObject(contributorDAO.findByProject(pForm.getProject(), false, false), new ContributorDTO()));
 			pForm.setPrimaryContributor(contributorDAO.findPrimaryContributorByProject(pForm.getProject()));
 		} // load /project/xx/studies

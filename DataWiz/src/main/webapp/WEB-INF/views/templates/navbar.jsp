@@ -34,6 +34,9 @@
                 <ul class="dropdown-menu">
                   <li><a href="<c:url value="/panel" />"><s:message code="navbar.sub.projects" /></a></li>
                   <li><a href="<c:url value="/usersettings" />"><s:message code="navbar.sub.userdata" /></a></li>
+                  <c:if test="${principal.user.hasRole('ADMIN')}">
+                    <li><a href="<c:url value="/admin" /> ">Administration</a></li>
+                  </c:if>
                   <!-- <li><a href="#">Placeholder</a></li> -->
                   <li role="separator" class="divider"></li>
                   <li><a href="<c:url value="/logout" />"><s:message code="navbar.sub.logout" /></a></li>
@@ -88,4 +91,4 @@
     </nav>
   </div>
 </div>
-<%@ include file="sidenav.jsp" %>
+<%@ include file="sidenav.jsp"%>

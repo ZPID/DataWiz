@@ -41,11 +41,11 @@
           <c:when test="${status.error}">
             <sf:input path="${input_vars[0]}" class="form-control ${input_vars[5]}" style="border: 1px solid red;"
               placeholder="${placeholder_txt}" title="${status.errorMessage}" data-toggle="tooltip"
-              type="${input_vars[6]}" />
+              type="${input_vars[6]}" autocomplete='off' />
           </c:when>
           <c:otherwise>
             <sf:input path="${input_vars[0]}" class="form-control ${input_vars[5]}" placeholder="${placeholder_txt}"
-              type="${input_vars[6]}" />
+              type="${input_vars[6]}" autocomplete='off' />
           </c:otherwise>
         </c:choose>
       </s:bind>

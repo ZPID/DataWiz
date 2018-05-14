@@ -45,8 +45,6 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
-
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.spss.SPSSIO;
 
@@ -55,7 +53,6 @@ import de.zpid.spss.SPSSIO;
 @ComponentScan(basePackages = "de.zpid.datawiz")
 @PropertySource("classpath:datawiz.properties")
 public class DataWizConfiguration implements WebMvcConfigurer {
-	
 
 	private static Logger log = LogManager.getLogger(DataWizConfiguration.class);
 
@@ -85,6 +82,11 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 	 * dataSource.setUsername(env.getRequiredProperty("dataSource.username")); dataSource.setPassword(env.getRequiredProperty("dataSource.password"));
 	 * log.info("dataSource succesfully loaded"); return dataSource; }
 	 */
+
+	/**
+	 * 
+	 * @return
+	 */
 	@Bean
 	public DataSource getDataSource() {
 		PoolProperties poolProperties = new PoolProperties();
@@ -95,6 +97,8 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 		poolProperties.setTestWhileIdle(true);
 		poolProperties.setTestOnBorrow(true);
 		poolProperties.setValidationQuery("SELECT 1");
+		poolProperties.setMinIdle(3);
+		poolProperties.setTimeBetweenEvictionRunsMillis(60000);
 		log.info("dataSource succesfully loaded");
 		return new DataSource(poolProperties);
 	}
@@ -215,11 +219,6 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}
-		try {
-			AbandonedConnectionCleanupThread.shutdown();
-		} catch (InterruptedException e) {
-			log.warn("SEVERE problem cleaning up: ", () -> e);
 		}
 		context.close();
 	}

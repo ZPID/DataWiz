@@ -19,8 +19,8 @@
     <logger name="org.springframework" level="INFO" />
     <logger name="org.hibernate" level="INFO" />
     <logger name="de.zpid" level="trace" />
-    <logger name="de.zpid.spss" level="trace" />
-    <Root level="trace">
+    <logger name="de.zpid.spss" level="info" />
+    <Root level="info">
       <AppenderRef ref="Async" />
     </Root>
   </Loggers>

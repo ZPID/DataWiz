@@ -13,7 +13,7 @@
         </div>
       </div>
       <c:url var="accessUrl" value="/usersettings" />
-      <sf:form action="${accessUrl}" modelAttribute="UserDTO" class="form-horizontal">
+      <sf:form action="${accessUrl}" modelAttribute="UserDTO" class="form-horizontal" autocomplete="off">
         <%@ include file="templates/message.jsp"%>
         <!-- input title -->
         <c:set var="input_vars"

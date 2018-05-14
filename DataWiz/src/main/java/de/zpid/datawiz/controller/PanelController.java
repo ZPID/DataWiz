@@ -120,12 +120,13 @@ public class PanelController {
 			} else {
 				throw new DataWizSystemException("User not found in Session", DataWizErrorCodes.NO_DATA_ERROR);
 			}
-			List<ProjectDTO> cpdto = null;
+			/*List<ProjectDTO> cpdto = null;
 			if (user.hasRole(Roles.ADMIN)) {
 				cpdto = projectDAO.findAll();
 			} else {
 				cpdto = projectDAO.findAllByUserID(user);
-			}
+			}*/
+			List<ProjectDTO> cpdto = projectDAO.findAllByUserID(user);
 			if (cpdto != null) {
 				for (ProjectDTO pdto : cpdto) {
 					ProjectForm pform = createProjectForm();
