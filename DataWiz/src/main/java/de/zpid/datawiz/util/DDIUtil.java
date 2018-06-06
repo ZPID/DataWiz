@@ -46,7 +46,7 @@ public class DDIUtil {
 	private final Namespace xsi = new Namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 	private final String xsi_schemaLocation_ddi = "ddi:codebook:2_5 http://www.ddialliance.org/Specification/DDI-Codebook/2.5/XMLSchema/codebook.xsd";
 	// TODO FIXE URL!!!
-	private final String xsi_schemaLocation_dw = "dw:codebook:1_0 http://localhost:8080/DataWiz/static/xml/datawiz.xsd";
+	private final String xsi_schemaLocation_dw = "dw:codebook:1_0 https://datawiz.leibniz-psychology.org/DataWiz/static/xml/datawiz.xsd";
 	private final String version_ddi = "2.5";
 
 	/**

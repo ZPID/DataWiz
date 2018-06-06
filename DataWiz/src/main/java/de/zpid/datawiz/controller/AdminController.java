@@ -71,13 +71,13 @@ public class AdminController {
 	public @ResponseBody String showDetail(final ModelMap model, @PathVariable final String type, @PathVariable final Optional<Integer> id) {
 		log.trace("execute showDetail");
 		String json = "{}";
-		try {
+		try{
 			if (id.isPresent())
 				json = new Gson().toJson(userDAO.findById(id.get()));
 			else
 				json = "{\"error\":\"\"}";
 		} catch (Exception e) {
-
+			// TODO Auto-generated catch block
 		}
 		return json;
 	}
