@@ -39,7 +39,7 @@ import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
@@ -140,7 +140,7 @@ public class ProjectController {
 			cContri.add(new ContributorDTO());
 			pForm.setContributors(cContri);
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { name }, null, messageSource));
+		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[] { name }, null, messageSource));
 		model.put("subnaviActive", PageState.PROJECT.name());
 		model.put("ProjectForm", pForm);
 		log.trace("Leaving showProjectPage for project [id: {}]", () -> pid.isPresent() ? pid.get() : "null (new project)");
@@ -180,7 +180,7 @@ public class ProjectController {
 				}
 				try {
 					projectService.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
-					model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
+					model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
 					model.put("subnaviActive", PageState.STUDIES.name());
 					model.put("ProjectForm", pForm);
 				} catch (Exception e) {
@@ -306,7 +306,7 @@ public class ProjectController {
 		}
 		if (ret.equals("project")) {
 			model.put("subnaviActive", PageState.PROJECT.name());
-			model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
+			model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[] { pForm.getProject().getTitle() }, null, messageSource));
 		}
 		return ret;
 	}

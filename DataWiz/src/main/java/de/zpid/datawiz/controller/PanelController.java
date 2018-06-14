@@ -31,7 +31,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
@@ -182,7 +182,7 @@ public class PanelController {
 			    LocaleContextHolder.getLocale()));
 			return "error";
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.PANEL, null, null, messageSource));
+		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PANEL, null, null, messageSource));
 		model.put("CProjectForm", cpform);
 		return "panel";
 	}

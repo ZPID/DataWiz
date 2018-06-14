@@ -4,7 +4,6 @@
   <!-- DTO -->
   <bean id="UserDTO" class="de.zpid.datawiz.dto.UserDTO" scope="prototype" />
   <bean id="UserRoleDTO" class="de.zpid.datawiz.dto.UserRoleDTO" scope="prototype" />
-  <bean id="VersionControlDTO" class="de.zpid.datawiz.dto.VersionControlDTO" scope="prototype" />
   <bean id="ProjectDTO" class="de.zpid.datawiz.dto.ProjectDTO" scope="prototype" />
   <bean id="StudyDTO" class="de.zpid.datawiz.dto.StudyDTO" scope="prototype" />
   <bean id="ContributorDTO" class="de.zpid.datawiz.dto.ContributorDTO" scope="prototype" />

@@ -2156,7 +2156,7 @@ public class ODFUtil {
 		if (content != null) {
 			Cell cell = table.getCellByPosition(col, row);
 			if (content instanceof Number) {
-				cell.setDoubleValue((Double) content);
+				cell.setDoubleValue(Double.parseDouble(content.toString()));
 			} else if (content instanceof Boolean) {
 				cell.setStringValue(((boolean) content) ? messageSource.getMessage("gen.yes", null, locale)
 						: messageSource.getMessage("gen.no", null, locale));
@@ -2167,7 +2167,7 @@ public class ODFUtil {
 				List<?> usedTypes = (ArrayList<?>) content;
 				AtomicInteger count = new AtomicInteger(1);
 				usedTypes.forEach(usedType -> {
-					if (FORMTYPES == null || FORMTYPES.isEmpty()) {
+					if (FORMTYPES.isEmpty()) {
 						initFormTpes();
 					}
 					if (usedType instanceof Integer) {

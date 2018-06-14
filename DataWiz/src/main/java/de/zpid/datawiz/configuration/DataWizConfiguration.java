@@ -55,9 +55,12 @@ import de.zpid.spss.SPSSIO;
 public class DataWizConfiguration implements WebMvcConfigurer {
 
 	private static Logger log = LogManager.getLogger(DataWizConfiguration.class);
+	private Environment env;
 
 	@Autowired
-	private Environment env;
+	public DataWizConfiguration(Environment env){
+		this.env = env;
+	}
 
 	@Bean(name = "PropertiesFile")
 	public static PropertyPlaceholderConfigurer properties() {

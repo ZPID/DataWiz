@@ -49,7 +49,7 @@ import de.zpid.datawiz.service.ExportService;
 import de.zpid.datawiz.service.ImportService;
 import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.service.RecordService;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
@@ -161,11 +161,11 @@ public class RecordController {
 				ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e, "recordService.setStudyform");
 			}
 		}
-		if (sForm != null && ret == null) {
+		if (sForm != null) {
 			model.put("StudyForm", sForm);
 			model.put("recordSubMenu", true);
 			model.put("breadcrumpList",
-			    BreadCrumpUtil.generateBC(PageState.RECORDS,
+			    BreadCrumbUtil.generateBC(PageState.RECORDS,
 			        new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
 			            (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
 			                : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
@@ -804,7 +804,7 @@ public class RecordController {
 		}
 		model.put("recordSubMenu", true);
 		model.put("breadcrumpList",
-		    BreadCrumpUtil.generateBC(PageState.RECORDS,
+		    BreadCrumbUtil.generateBC(PageState.RECORDS,
 		        new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
 		            (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
 		                : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale())) },
