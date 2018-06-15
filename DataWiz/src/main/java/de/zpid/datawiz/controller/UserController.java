@@ -27,7 +27,7 @@ import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -112,7 +112,7 @@ public class UserController {
 			log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
 			return "redirect:/login";
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.USERSETTING, null, null, messageSource));
+		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.USERSETTING, null, null, messageSource));
 		model.put("UserDTO", user);
 		log.trace("Method showUserSettingPage successfully completed");
 		return "usersettings";

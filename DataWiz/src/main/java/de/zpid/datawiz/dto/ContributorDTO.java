@@ -21,9 +21,9 @@ public class ContributorDTO implements Serializable {
   private String firstName;
   @Pattern(regexp = RegexUtil.alphabeticWithBlanksAndHypens + RegexUtil.size0to250)
   private String lastName;
-  @Size(min = 0, max = 250)
+  @Size(max = 250)
   private String institution;
-  @Size(min = 0, max = 250)
+  @Size(max = 250)
   private String department;
   @Pattern(regexp = RegexUtil.regexORCID)
   private String orcid;

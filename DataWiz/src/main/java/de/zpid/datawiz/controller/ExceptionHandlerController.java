@@ -18,7 +18,7 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
  * Controller for capturing and processing Exceptions <br />
  * <br />
  * This file is part of Datawiz.<br />
- * 
+ *
  * <b>Copyright 2017, Leibniz Institute for Psychology Information (ZPID),
  * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
  * <br />
@@ -28,50 +28,56 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
  * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
  * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
  * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
- * 
+ *
  * @author Ronny Boelter
  * @version 1.0
  */
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-	@Autowired
-	private MessageSource messageSource;
-	@Autowired
-	private Environment env;
+    private MessageSource messageSource;
+    private Environment env;
 
-	public static final String DEFAULT_ERROR_VIEW = "error";
-	private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);
+    private static final String DEFAULT_ERROR_VIEW = "error";
+    private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);
 
-	/**
-	 * This function captures and processes DWDownloadExceptions and sends a Information about the thrown Exception to the error.jsp
-	 * 
-	 * @param request
-	 * @param e
-	 * @return
-	 */
-	@ExceptionHandler(value = { DWDownloadException.class })
-	public ModelAndView defaultDWDownloadException(HttpServletRequest request, Exception e) {
-		log.warn("DWDownloadException catched from[{}] Exception: {}", () -> request.getRequestURL(), () -> e.getMessage());
-		System.err.println(request.getAttribute("exceptionVal"));
-		ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
-		mav.addObject("errormsg", messageSource.getMessage(e.getMessage(), new Object[] { env.getRequiredProperty("organisation.admin.email") },
-		    LocaleContextHolder.getLocale()));
-		return mav;
-	}
+    @Autowired
+    public ExceptionHandlerController(final MessageSource messageSource, final Environment env) {
+        super();
+        log.info("Loading ExceptionHandlerController for exception mapping");
+        this.messageSource = messageSource;
+        this.env = env;
+    }
 
-	/**
-	 * This function captures and processes all other exceptions and sends a Information about the thrown Exception to the error.jsp
-	 * 
-	 * @param request
-	 * @param e
-	 * @return
-	 */
-	@ExceptionHandler(value = { Exception.class })
-	public ModelAndView defaultDataAccessResourceFailureException(HttpServletRequest request, Exception e) {
-		log.fatal("Exception catched from[{}] Exception: ", () -> request.getRequestURL(), () -> e);
-		ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
-		mav.addObject("errormsg", e.getMessage());
-		return mav;
-	}
+    /**
+     * This function captures and processes DWDownloadExceptions and sends a Information about the thrown Exception to the error.jsp
+     *
+     * @param request {@link HttpServletRequest}
+     * @param e       {@link Exception}
+     * @return Mapping to the DEFAULT_ERROR_VIEW (error.jsp)
+     */
+    @ExceptionHandler(value = {DWDownloadException.class})
+    public ModelAndView defaultDWDownloadException(HttpServletRequest request, Exception e) {
+        log.warn("DWDownloadException catched from[{}] with val[{}] Exception: {}", request::getRequestURL,
+                () -> request.getAttribute("exceptionVal"), e::getMessage);
+        ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
+        mav.addObject("errormsg", messageSource.getMessage(e.getMessage(), new Object[]{env.getRequiredProperty("organisation.admin.email")},
+                LocaleContextHolder.getLocale()));
+        return mav;
+    }
+
+    /**
+     * This function captures and processes all other exceptions and sends a Information about the thrown Exception to the error.jsp
+     *
+     * @param request {@link HttpServletRequest}
+     * @param e       {@link Exception}
+     * @return Mapping to the DEFAULT_ERROR_VIEW (error.jsp)
+     */
+    @ExceptionHandler(value = {Exception.class})
+    public ModelAndView defaultDataAccessResourceFailureException(HttpServletRequest request, Exception e) {
+        log.warn("Exception catched from[{}] Exception: ", request::getRequestURL, () -> e);
+        ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
+        mav.addObject("errormsg", e.getMessage());
+        return mav;
+    }
 }

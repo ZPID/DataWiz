@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
@@ -30,7 +31,8 @@ public class AdminDAO {
 			log.info("Loading TagDAO as Singleton and Service");
 	}
 
-	public int findCountByTableName(final String name) throws Exception {
+	@NonNull
+	public int findCountByTableName(final String name) {
 		log.trace("Entering findCountByTableName [name: {}", () -> name);
 		String sql = "SELECT count(*) FROM " + name;
 		int count = jdbcTemplate.queryForObject(sql, new Object[] {}, Integer.class);
@@ -38,7 +40,7 @@ public class AdminDAO {
 		return count;
 	}
 
-	public int updateUserAccount(final UserDTO user) throws Exception {
+	public int updateUserAccount(final UserDTO user) {
 		log.trace("Entering updateUserAccount for user [id {}]", () -> user.getId());
 		final List<Object> params = new ArrayList<Object>();
 		params.add(user.getTitle());

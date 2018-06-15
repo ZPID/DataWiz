@@ -48,7 +48,7 @@ import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.service.LoginService;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
@@ -108,7 +108,7 @@ public class LoginController {
 		if (log.isDebugEnabled()) {
 			log.debug("execute homePage()");
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.INDEX, null, null, messageSource));
+		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.INDEX, null, null, messageSource));
 		return "welcome";
 	}
 
@@ -127,7 +127,7 @@ public class LoginController {
 		if (error != null) {
 			model.put("error", getErrorMessage("SPRING_SECURITY_LAST_EXCEPTION"));
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.LOGIN, null, null, messageSource));
+		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.LOGIN, null, null, messageSource));
 		return "login";
 	}
 
@@ -157,7 +157,7 @@ public class LoginController {
 		} else {
 			model.put("UserDTO", createUserDTO());
 		}
-		model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.REGISTER, null, null, messageSource));
+		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
 		return "register";
 	}
 
@@ -202,7 +202,7 @@ public class LoginController {
 			// return to registerform if errors
 			if (bindingResult.hasErrors()) {
 				log.trace("UserDTO has Errors - return to register form");
-				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.REGISTER, null, null, messageSource));
+				model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
 				return "register";
 			}
 			// at this point registerform is valid

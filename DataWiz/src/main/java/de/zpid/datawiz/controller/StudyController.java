@@ -42,7 +42,7 @@ import de.zpid.datawiz.service.ExceptionService;
 import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
@@ -182,7 +182,7 @@ public class StudyController {
 			try {
 				StudyForm sForm = createStudyForm();
 				studyService.setRecordList(pid, studyId, redirectAttributes, sForm);
-				model.put("breadcrumpList", BreadCrumpUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() },
+				model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.STUDY, new String[] { sForm.getProject().getTitle(), sForm.getStudy().getTitle() },
 				    new long[] { pid.get() }, messageSource));
 				model.put("studySubMenu", true);
 				model.put("subnaviActive", PageState.RECORDS.name());

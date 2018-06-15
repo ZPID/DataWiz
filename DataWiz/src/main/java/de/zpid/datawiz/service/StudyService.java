@@ -51,7 +51,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
-import de.zpid.datawiz.util.BreadCrumpUtil;
+import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.ODFUtil;
 import de.zpid.datawiz.util.StringUtil;
@@ -520,7 +520,7 @@ public class StudyService {
 	public void createStudyBreadCrump(final String projectName, final String studyName, final long pid, final ModelMap model) {
 		model
 		    .put("breadcrumpList",
-		        BreadCrumpUtil
+		        BreadCrumbUtil
 		            .generateBC(PageState.STUDY,
 		                new String[] { projectName,
 		                    (studyName != null && !studyName.trim().isEmpty() ? studyName

@@ -24,12 +24,16 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	@Autowired
+    @Autowired
 	@Qualifier("LoginService")
-	UserDetailsService userDetailsService;
+	private UserDetailsService userDetailsService;
+
+	protected JdbcTemplate jdbcTemplate;
 
 	@Autowired
-	protected JdbcTemplate jdbcTemplate;
+	public SecurityConfiguration(JdbcTemplate jdbcTemplate){
+		this.jdbcTemplate = jdbcTemplate;
+	}
 
 	@Autowired
 	public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
@@ -65,14 +69,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	public void configure(WebSecurity web) throws Exception {
+	public void configure(WebSecurity web){
 		web.ignoring().antMatchers("/resources/**");
 	}
 
 	@Bean
 	public PersistentTokenRepository persistentTokenRepository() {
 		JdbcTokenRepositoryImpl tokenRepositoryImpl = new JdbcTokenRepositoryImpl();
-		tokenRepositoryImpl.setDataSource(jdbcTemplate.getDataSource());
+		if(jdbcTemplate.getDataSource() != null)
+			tokenRepositoryImpl.setDataSource(jdbcTemplate.getDataSource());
 		return tokenRepositoryImpl;
 	}
 }

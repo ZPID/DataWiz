@@ -9,6 +9,8 @@ import javax.servlet.ServletException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.NonNullApi;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 public class SpringMvcInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -26,12 +28,13 @@ public class SpringMvcInitializer extends AbstractAnnotationConfigDispatcherServ
 	}
 
 	@Override
+	@NonNull
 	protected String[] getServletMappings() {
 		return new String[] { "/" };
 	}
 
 	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
+	public void onStartup(@NonNull ServletContext servletContext) throws ServletException {
 		super.onStartup(servletContext);
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		Properties props = new Properties();
