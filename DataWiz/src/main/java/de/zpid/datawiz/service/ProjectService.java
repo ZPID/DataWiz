@@ -110,6 +110,31 @@ public class ProjectService {
         return ret;
     }
 
+
+    /**
+     * @param pid
+     * @param studyId
+     * @param redirectAttributes
+     * @param onlyWrite
+     * @param user
+     * @return
+     */
+    public String checkUserAccess(final long pid, final long studyId, final RedirectAttributes redirectAttributes, final boolean onlyWrite,
+                                  final UserDTO user) {
+        String ret = null;
+        if (user == null) {
+            log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
+            ret = "redirect:/login";
+        } else if (pid == 0 || checkProjectRoles(user, pid, studyId > 0 ? studyId : -1, onlyWrite, true) == null) {
+            log.warn(
+                    "WARN: access denied because of: " + (pid == 0 ? "missing project identifier" : "user [id: {}] has no rights to read/write study [id: {}]"),
+                    user::getId, () -> (studyId > 0 ? studyId : 0));
+            redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
+            ret = pid == 0 ? "redirect:/panel" : "redirect:/project/" + pid;
+        }
+        return ret;
+    }
+
     /**
      * Checks if the passed UserDTO has the PROJECT_ADMIN role.
      *
@@ -200,7 +225,6 @@ public class ProjectService {
     /**
      * @param pForm
      * @param call
-     * @param pdto
      * @throws Exception
      */
     private void setSpecificPageData(final ProjectForm pForm, final PageState call) throws Exception {

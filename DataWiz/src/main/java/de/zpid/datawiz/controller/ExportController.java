@@ -32,22 +32,26 @@ import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
- * Controller for mapping "/export" <br />
- * <br />
- * This file is part of Datawiz.<br />
+ * This controller handles all calls to /export/*
  *
- * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
- * <br />
- * <a rel="license" href= "http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
- * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
- * <span xmlns:dct="http://purl.org/dc/terms/" property= "dct:title">Datawiz</span> by
- * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property= "cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
- * Information (ZPID)</a> is licensed under a <a rel="license" href= "http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
- * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
  *
  * @author Ronny Boelter
  * @version 1.0
- */
+ **/
 @Controller
 @RequestMapping(value = "/export")
 @SessionAttributes({"breadcrumpList", "ExportProjectForm"})
@@ -79,40 +83,39 @@ public class ExportController {
      * @param model              {@link ModelMap}
      * @param redirectAttributes {@link RedirectAttributes}
      * @return Mapping to export.jsp on success, otherwise error mapping via {@link ExceptionService}
-     */
-    @RequestMapping(value = {"", "/{pid}"}, method = RequestMethod.GET)
+     **/
+    @RequestMapping(value = {"/{pid}"}, method = RequestMethod.GET)
     public String showExportPage(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
         log.trace("Entering showExportPage for project [id: {}]", () -> pid);
         String ret;
         final UserDTO user = UserUtil.getCurrentUser();
         ret = projectService.checkUserAccess(pid, Optional.empty(), redirectAttributes, false, user);
         if (ret == null) {
-            ExportProjectForm exportForm = null;
+            ExportProjectForm exportForm;
             try {
-                exportForm = exportService.getExportForm(pid.get(), user);
+                exportForm = exportService.getExportForm(pid != null && pid.isPresent() ? pid.get() : 0L, user);
+                model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
+                model.put("subnaviActive", PageState.EXPORT.name());
+                model.put("ExportProjectForm", exportForm);
+                ret = "export";
             } catch (Exception e) {
                 ret = exceptionService.setErrorMessagesAndRedirects(pid, Optional.empty(), Optional.empty(), model, redirectAttributes, e, "ExportController->showExportPage");
             }
-            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
-            model.put("subnaviActive", PageState.EXPORT.name());
-            model.put("ExportProjectForm", exportForm);
-            ret = "export";
         }
         log.trace("Leaving showExportPage for project [id: {}]", () -> pid);
         return ret;
     }
 
     /**
-     * @param exportForm         {@link ExportProjectForm}
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param model              {@link ModelMap}
-     * @param response           {@link HttpServletResponse}
-     * @param redirectAttributes {@link RedirectAttributes}
+     * @param exportForm {@link ExportProjectForm}
+     * @param pid        Project Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param model      {@link ModelMap}
+     * @param response   {@link HttpServletResponse}
      * @throws Exception
      */
     @RequestMapping(value = {"", "/{pid}"}, method = RequestMethod.POST, produces = "application/zip")
     public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid, final ModelMap model,
-                              final HttpServletResponse response, final RedirectAttributes redirectAttributes) throws Exception {
+                              final HttpServletResponse response) throws Exception {
         final UserDTO user = UserUtil.getCurrentUser();
         List<Entry<String, byte[]>> files = null;
         if (exportForm != null && exportForm.getProjectId() > 0) {
@@ -139,7 +142,7 @@ public class ExportController {
                     response.getOutputStream().write(export);
                     response.flushBuffer();
                 } catch (Exception e) {
-                    // TODO: handle exception
+                    throw new DWDownloadException("export.error.exception.thown");
                 }
                 model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
                 model.put("subnaviActive", PageState.EXPORT.name());

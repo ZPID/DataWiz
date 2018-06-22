@@ -32,164 +32,160 @@ import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
- * Controller for mapping "/usersettings" <br />
- * <br />
- * This file is part of Datawiz.<br />
- * 
- * <b>Copyright 2016, Leibniz Institute for Psychology Information (ZPID),
- * <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
- * <br />
- * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
- * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
- * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
- * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
- * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
- * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
- * 
+ * This controller handles all calls to /usersettings/*
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+ *
  * @author Ronny Boelter
  * @version 1.0
- *
- *          TODO Missing service layer: to separate the DBS logic from the web logic!
- *
- */
+ * <p>
+ * TODO Missing service layer: to separate the DBS logic from the web logic!
+ **/
 @Controller
-@RequestMapping(value = { "/usersettings" })
-@SessionAttributes({ "UserDTO" })
+@RequestMapping(value = {"/usersettings"})
+@SessionAttributes({"UserDTO"})
 public class UserController {
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
-	@Autowired
-	private MessageSource messageSource;
-	@Autowired
-	private UserDAO userDAO;
-	@Autowired
-	private EmailUtil emailUtil;
-	@Autowired
-	private Environment env;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private MessageSource messageSource;
+    @Autowired
+    private UserDAO userDAO;
+    @Autowired
+    private EmailUtil emailUtil;
+    @Autowired
+    private Environment env;
 
-	private static Logger log = LogManager.getLogger(UserController.class);
+    private static Logger log = LogManager.getLogger(UserController.class);
 
-	/**
-	 * Instantiates a new user controller.
-	 */
-	public UserController() {
-		super();
-		if (log.isInfoEnabled())
-			log.info("Loading DataWizUserController for mapping /usersettings");
-	}
+    /**
+     * Instantiates a new user controller.
+     */
+    public UserController() {
+        super();
+        if (log.isInfoEnabled())
+            log.info("Loading DataWizUserController for mapping /usersettings");
+    }
 
-	/**
-	 * This function loads the user settings via UserDao an forwards them to usersettings.jsp
-	 * 
-	 * @param userId
-	 *          Optional&lt;long&gt;
-	 * @param model
-	 *          ModelMap
-	 * @param reAtt
-	 *          RedirectAttributes
-	 * @return usersetting.jsp on sucess, otherwise redirect:/panel on DB error or redirect:/login on Auth error
-	 */
+    /**
+     * This function loads the user settings via UserDao an forwards them to usersettings.jsp
+     *
+     * @param userId Optional&lt;long&gt;
+     * @param model  ModelMap
+     * @param reAtt  RedirectAttributes
+     * @return usersetting.jsp on sucess, otherwise redirect:/panel on DB error or redirect:/login on Auth error
+     */
 
-	@RequestMapping(value = { "", "/{userId}", }, method = RequestMethod.GET)
-	public String showUserSettingPage(@PathVariable final Optional<Long> userId, final ModelMap model, final RedirectAttributes reAtt) {
-		final UserDTO auth = UserUtil.getCurrentUser();
-		log.trace("Entering showUserSettingPage for user [id: {}]",
-		    () -> userId.isPresent() ? userId.get() : (auth != null && auth.getId() > 0) ? auth.getId() : "null");
-		UserDTO user = null;
-		try {
-			if (userId.isPresent() && auth.hasRole(Roles.ADMIN)) {
-				user = userDAO.findById(userId.get());
-			} else {
-				user = userDAO.findById(auth.getId());
-			}
-		} catch (Exception e) {
-			log.error("ERROR: Database error during database transaction, saveUserSettings aborted - Exception:", e);
-			reAtt.addFlashAttribute("globalErrors", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
-			return "redirect:/panel";
-		}
-		if (user == null) {
-			log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
-			return "redirect:/login";
-		}
-		model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.USERSETTING, null, null, messageSource));
-		model.put("UserDTO", user);
-		log.trace("Method showUserSettingPage successfully completed");
-		return "usersettings";
-	}
+    @RequestMapping(value = {"", "/{userId}",}, method = RequestMethod.GET)
+    public String showUserSettingPage(@PathVariable final Optional<Long> userId, final ModelMap model, final RedirectAttributes reAtt) {
+        final UserDTO auth = UserUtil.getCurrentUser();
+        log.trace("Entering showUserSettingPage for user [id: {}]",
+                () -> userId.isPresent() ? userId.get() : (auth != null && auth.getId() > 0) ? auth.getId() : "null");
+        UserDTO user = null;
+        try {
+            if (userId.isPresent() && auth.hasRole(Roles.ADMIN)) {
+                user = userDAO.findById(userId.get());
+            } else {
+                user = userDAO.findById(auth.getId());
+            }
+        } catch (Exception e) {
+            log.error("ERROR: Database error during database transaction, saveUserSettings aborted - Exception:", e);
+            reAtt.addFlashAttribute("globalErrors", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+            return "redirect:/panel";
+        }
+        if (user == null) {
+            log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
+            return "redirect:/login";
+        }
+        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.USERSETTING, null, null, messageSource));
+        model.put("UserDTO", user);
+        log.trace("Method showUserSettingPage successfully completed");
+        return "usersettings";
+    }
 
-	/**
-	 * This function validates the User Settings before they where send to the UserDAO for saving. If saving is successful, the new settings are stored
-	 * in the Session, to prevent that the user has to log-out and log-in.
-	 * 
-	 * @param user
-	 *          UserDTO
-	 * @param bRes
-	 *          BindingResult
-	 * @param reAtt
-	 *          RedirectAttributes
-	 * @return redirect to /usersettings on success, or usersettings.jsp on error with error messages
-	 */
-	@RequestMapping(method = RequestMethod.POST)
-	public String saveUserSettings(@Valid @ModelAttribute("UserDTO") final UserDTO user, final BindingResult bRes, final RedirectAttributes reAtt) {
-		log.trace("Entering saveUserSettings for user [id: {}]", () -> user != null ? user.getEmail() : null);
-		if (user == null || user.getId() <= 0) {
-			log.warn("UserDTO Object == null or UserID is not present");
-			reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("no.data.exception",
-			    new Object[] { env.getRequiredProperty("organisation.admin.email") }, LocaleContextHolder.getLocale()));
-			return "redirect:/usersettings";
-		}
-		final UserDTO auth = UserUtil.getCurrentUser();
-		if (auth == null || (!auth.hasRole(Roles.ADMIN) && auth.getId() != user.getId())) {
-			log.warn("Auth User Object == null or user [email: {}] do not have the permission to edit user user [email: {}]",
-			    () -> auth != null ? auth.getEmail() : null, () -> user.getEmail());
-			reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("usersettings.error.noaccess", null, LocaleContextHolder.getLocale()));
-			return "redirect:/panel";
-		}
-		try {
-			boolean changePWD = false;
-			if (!user.getPassword().isEmpty()) {
-				if (user.getPassword_old().isEmpty() || user.getPassword_retyped().isEmpty()) {
-					bRes.rejectValue("password", "passwords.not.given");
-					bRes.rejectValue("password_retyped", "passwords.not.given");
-					bRes.rejectValue("password_old", "passwords.not.given");
-				} else if (user.getPassword().length() < 6) {
-					bRes.rejectValue("password", "passwords.too.short");
-				} else if (!user.getPassword().equals(user.getPassword_retyped())) {
-					bRes.rejectValue("password", "passwords.not.equal");
-					bRes.rejectValue("password_retyped", "passwords.not.equal");
-				} else if (!passwordEncoder.matches(user.getPassword_old(), userDAO.findPasswordbyId(user.getId()))) {
-					bRes.rejectValue("password_old", "passwords.old.not.match");
-				} else {
-					user.setPassword(passwordEncoder.encode(user.getPassword()));
-					changePWD = true;
-				}
-			}
-			if (emailUtil.isFakeMail(user.getEmail()))
-				bRes.rejectValue("email", "error.email.fake");
-			if (emailUtil.isFakeMail(user.getSecEmail()))
-				bRes.rejectValue("secEmail", "error.email.fake");
-			UserDTO userdb = userDAO.findByMail(user.getEmail(), false);
-			if (userdb != null && userdb.getId() != user.getId()) {
-				bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error.email", null, LocaleContextHolder.getLocale()));
-			}
+    /**
+     * This function validates the User Settings before they where send to the UserDAO for saving. If saving is successful, the new settings are stored
+     * in the Session, to prevent that the user has to log-out and log-in.
+     *
+     * @param user  UserDTO
+     * @param bRes  BindingResult
+     * @param reAtt RedirectAttributes
+     * @return redirect to /usersettings on success, or usersettings.jsp on error with error messages
+     */
+    @RequestMapping(method = RequestMethod.POST)
+    public String saveUserSettings(@Valid @ModelAttribute("UserDTO") final UserDTO user, final BindingResult bRes, final RedirectAttributes reAtt) {
+        log.trace("Entering saveUserSettings for user [id: {}]", () -> user != null ? user.getEmail() : null);
+        if (user == null || user.getId() <= 0) {
+            log.warn("UserDTO Object == null or UserID is not present");
+            reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("no.data.exception",
+                    new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale()));
+            return "redirect:/usersettings";
+        }
+        final UserDTO auth = UserUtil.getCurrentUser();
+        if (auth == null || (!auth.hasRole(Roles.ADMIN) && auth.getId() != user.getId())) {
+            log.warn("Auth User Object == null or user [email: {}] do not have the permission to edit user user [email: {}]",
+                    () -> auth != null ? auth.getEmail() : null, () -> user.getEmail());
+            reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("usersettings.error.noaccess", null, LocaleContextHolder.getLocale()));
+            return "redirect:/panel";
+        }
+        try {
+            boolean changePWD = false;
+            if (!user.getPassword().isEmpty()) {
+                if (user.getPassword_old().isEmpty() || user.getPassword_retyped().isEmpty()) {
+                    bRes.rejectValue("password", "passwords.not.given");
+                    bRes.rejectValue("password_retyped", "passwords.not.given");
+                    bRes.rejectValue("password_old", "passwords.not.given");
+                } else if (user.getPassword().length() < 6) {
+                    bRes.rejectValue("password", "passwords.too.short");
+                } else if (!user.getPassword().equals(user.getPassword_retyped())) {
+                    bRes.rejectValue("password", "passwords.not.equal");
+                    bRes.rejectValue("password_retyped", "passwords.not.equal");
+                } else if (!passwordEncoder.matches(user.getPassword_old(), userDAO.findPasswordbyId(user.getId()))) {
+                    bRes.rejectValue("password_old", "passwords.old.not.match");
+                } else {
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+                    changePWD = true;
+                }
+            }
+            if (emailUtil.isFakeMail(user.getEmail()))
+                bRes.rejectValue("email", "error.email.fake");
+            if (emailUtil.isFakeMail(user.getSecEmail()))
+                bRes.rejectValue("secEmail", "error.email.fake");
+            UserDTO userdb = userDAO.findByMail(user.getEmail(), false);
+            if (userdb != null && userdb.getId() != user.getId()) {
+                bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error.email", null, LocaleContextHolder.getLocale()));
+            }
 
-			if (bRes.hasErrors()) {
-				bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
-				return "usersettings";
-			}
-			userDAO.saveOrUpdate(user, changePWD);
-			if (UserUtil.getCurrentUser().getId() == user.getId())
-				UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));
-			reAtt.addFlashAttribute("infoMSG",
-			    messageSource.getMessage(changePWD ? "usersettings.save.success.pw" : "usersettings.save.success", null, LocaleContextHolder.getLocale()));
-		} catch (SQLException e) {
-			log.error("ERROR: Database error during database transaction, saveUserSettings aborted - Exception:", e);
-			reAtt.addFlashAttribute("globalErrors", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
-			return "redirect:/panel";
-		}
-		log.trace("Method saveUserSettings successfully completed");
-		return "redirect:/usersettings";
-	}
+            if (bRes.hasErrors()) {
+                bRes.reject("globalErrors", messageSource.getMessage("usersettings.save.error", null, LocaleContextHolder.getLocale()));
+                return "usersettings";
+            }
+            userDAO.saveOrUpdate(user, changePWD);
+            if (UserUtil.getCurrentUser().getId() == user.getId())
+                UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));
+            reAtt.addFlashAttribute("infoMSG",
+                    messageSource.getMessage(changePWD ? "usersettings.save.success.pw" : "usersettings.save.success", null, LocaleContextHolder.getLocale()));
+        } catch (SQLException e) {
+            log.error("ERROR: Database error during database transaction, saveUserSettings aborted - Exception:", e);
+            reAtt.addFlashAttribute("globalErrors", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+            return "redirect:/panel";
+        }
+        log.trace("Method saveUserSettings successfully completed");
+        return "redirect:/usersettings";
+    }
 
 }

@@ -44,20 +44,26 @@ import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
- * This file is part of Datawiz.<br />
+ * This controller handles all calls to /access/*
  *
- * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
- * <br />
- * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
- * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
- * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
- * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
- * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
- * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
  *
  * @author Ronny Boelter
  * @version 1.0
- */
+ **/
 @Controller
 @RequestMapping(value = "/access")
 @SessionAttributes({"ProjectForm", "subnaviActive"})
@@ -535,7 +541,7 @@ public class AccessController {
      * Checks if the new role has a higher priority as roles which are already set, because it is not useful to have global rights and additional study rights for
      * example
      *
-     * @param user User object as {@link UserDTO}
+     * @param user    User object as {@link UserDTO}
      * @param newRole UserRole object as {@link UserRoleDTO}
      * @throws SQLException Database Exception
      */

@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,22 +41,26 @@ import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.UserUtil;
 
 /**
- * Controller for mapping "/dmp" <br />
- * <br />
- * This file is part of Datawiz.<br />
+ * This controller handles all calls to /dmp/*
  *
- * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
- * <br />
- * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
- * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
- * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
- * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
- * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
- * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
  *
  * @author Ronny Boelter
  * @version 1.0
- */
+ **/
 @Controller
 @RequestMapping(value = "/dmp")
 public class DMPController {
@@ -146,7 +149,7 @@ public class DMPController {
                           @PathVariable final Optional<Long> pid) {
         log.trace("Entering saveDMP for DMP [pid: {}]", () -> pid);
         UserDTO user = UserUtil.getCurrentUser();
-        String ret = null;
+        String ret;
         if (!pid.isPresent() || pid.get() <= 0 || pForm == null || pForm.getProject() == null || pForm.getProject().getId() <= 0
                 || pForm.getProject().getId() != pid.get()) {
             bRes.reject("globalErrors", messageSource.getMessage("dmp.save.pid.error", new Object[]{env.getRequiredProperty("organisation.admin.email")},
@@ -185,7 +188,7 @@ public class DMPController {
         }
         if (bRes.hasErrors()) {
             model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT,
-                    new String[]{pForm.getProject().getTitle() != null ? pForm.getProject().getTitle() : ""}, null, messageSource));
+                    new String[]{(pForm != null && pForm.getProject() != null && pForm.getProject().getTitle() != null) ? pForm.getProject().getTitle() : ""}, null, messageSource));
             model.put("subnaviActive", PageState.DMP.name());
         }
         log.trace("Leaving saveDMP for DMP [pid: {}] with result: [error: {}; mapping: {}]", pid, bRes.hasErrors(), ret);
