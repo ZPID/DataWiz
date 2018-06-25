@@ -1,14 +1,16 @@
 package de.zpid.datawiz.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
+import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.dao.RoleDAO;
+import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.service.LoginService;
+import de.zpid.datawiz.util.BreadCrumbUtil;
+import de.zpid.datawiz.util.EmailUtil;
+import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,30 +34,22 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.UserDAO;
-import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.service.LoginService;
-import de.zpid.datawiz.util.BreadCrumbUtil;
-import de.zpid.datawiz.util.EmailUtil;
-import de.zpid.datawiz.util.UserUtil;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
- * This controller handles the user login
- *
+ * This controller handles the user login and registration, and the mapping to the sides that do not require a login.
+ * <p>
  * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
  * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
  * <p>
@@ -73,46 +67,49 @@ import de.zpid.datawiz.util.UserUtil;
  *
  * @author Ronny Boelter
  * @version 1.0
+ * <p>
+ * TODO Service layer: to separate the DBS logic from the web logic!
  **/
 @Controller
 @SessionAttributes("UserDTO")
 public class LoginController {
 
-    @Autowired
-    private PlatformTransactionManager txManager;
-    @Autowired
-    private EmailUtil mail;
-    @Autowired
-    private LoginService loginService;
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    private ClassPathXmlApplicationContext applicationContext;
-    @Autowired
-    private Environment env;
-    @Autowired
-    private HttpServletRequest request;
-    @Autowired
-    private EmailUtil emailUtil;
-
-    // TODO SERVICE CLASS
-    @Autowired
-    private ProjectDAO projectDAO;
-    @Autowired
-    private RoleDAO roleDAO;
-    @Autowired
-    private UserDAO userDAO;
-
     private static Logger log = LogManager.getLogger(LoginController.class);
+    private PlatformTransactionManager txManager;
+    private EmailUtil mail;
+    private LoginService loginService;
+    private MessageSource messageSource;
+    private ClassPathXmlApplicationContext applicationContext;
+    private Environment env;
+    private HttpServletRequest request;
+    private EmailUtil emailUtil;
+    private ProjectDAO projectDAO;
+    private RoleDAO roleDAO;
+    private UserDAO userDAO;
+    private PasswordEncoder passwordEncoder;
 
-    public LoginController() {
-        super();
-        if (log.isInfoEnabled())
-            log.info("Loading LoginUserController for mapping /login");
-    }
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    public LoginController(final PlatformTransactionManager txManager, final EmailUtil mail, final LoginService loginService,
+                           final MessageSource messageSource, final ClassPathXmlApplicationContext applicationContext,
+                           final Environment env, final HttpServletRequest request, final EmailUtil emailUtil,
+                           final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final PasswordEncoder passwordEncoder) {
+        super();
+        log.info("Loading LoginUserController for mapping /login");
+        this.txManager = txManager;
+        this.mail = mail;
+        this.loginService = loginService;
+        this.messageSource = messageSource;
+        this.applicationContext = applicationContext;
+        this.env = env;
+        this.request = request;
+        this.emailUtil = emailUtil;
+        this.projectDAO = projectDAO;
+        this.roleDAO = roleDAO;
+        this.userDAO = userDAO;
+        this.passwordEncoder = passwordEncoder;
+
+    }
 
     @ModelAttribute("UserDTO")
     public UserDTO createUserDTO() {
@@ -120,32 +117,28 @@ public class LoginController {
     }
 
     /**
-     * mapping to "/" to build content outside of the protected areas
+     * This function handles the calls to the welcome.jsp and do not require a logged in user
      *
-     * @param model
-     * @return
+     * @param model {@link ModelMap}
+     * @return Mapping to welcome.jsp
      */
     @RequestMapping(value = {"/", "/home"})
-    public String homePage(ModelMap model) {
-        if (log.isDebugEnabled()) {
-            log.debug("execute homePage()");
-        }
+    public String homePage(final ModelMap model) {
+        log.trace("Entering homePage");
         model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.INDEX, null, null, messageSource));
         return "welcome";
     }
 
     /**
-     * Initialize the register form and throws errors to the view if something went wrong during the user login
+     * This function initializes the login form and forwards errors if something went wrong during the user login
      *
-     * @param error
-     * @param model
-     * @return
+     * @param error {@link String} if an error occurred during login
+     * @param model {@link ModelMap}
+     * @return Mapping to login.jsp
      */
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model) {
-        if (log.isDebugEnabled()) {
-            log.debug("execute loginPage()");
-        }
+        log.trace("Entering loginPage " + (error != null ? "with login error" : ""));
         if (error != null) {
             model.put("error", getErrorMessage("SPRING_SECURITY_LAST_EXCEPTION"));
         }
@@ -154,116 +147,110 @@ public class LoginController {
     }
 
     /**
-     * Initialize the register form
+     * This function initializes the register form in two different ways. The first is when the user clicks on register via DataWiz.
+     * The second option is when a user is invited to a project but not yet registered in the system.
+     * Then the user will receive an e-mail with a link to the registration form. This link contains information such as
+     * the ID of the project to which it was submitted and the email address used for the invitation, as well as a hash to validate the data.
      *
-     * @return
+     * @param model     {@link ModelMap}
+     * @param projectId Project Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param email     E-Mail as {@link Optional}&lt;{@link String}&gt;
+     * @param linkhash  Hash-Value as {@link Optional}&lt;{@link String}&gt;
+     * @return Mapping to register.jsp or if an user is already logged on, redirect mapping to panel
      */
     @RequestMapping(value = {"/register", "/register/{projectId}/{email}/{linkhash}"}, method = RequestMethod.GET)
-    public String registerDataWizUser(ModelMap model, @PathVariable Optional<Long> projectId, @PathVariable Optional<String> email,
-                                      @PathVariable Optional<String> linkhash) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute registerDataWizUser()- GET");
-        }
-        UserDTO admin = UserUtil.getCurrentUser();
-        if (admin != null) {
-            log.warn("Auth User Object not null - no registration needed - redirect panel");
-            return "redirect:/panel";
-        }
-        if (projectId.isPresent() && email.isPresent() && linkhash.isPresent()) {
-            UserDTO user = createUserDTO();
-            user.setEmail(email.get());
-            user.setSecEmail(email.get());
-            user.setComments(String.valueOf(projectId.get()));
-            user.setActivationCode(linkhash.get());
-            model.put("UserDTO", user);
+    public String registerDataWizUser(final ModelMap model, @PathVariable final Optional<Long> projectId, @PathVariable final Optional<String> email,
+                                      @PathVariable final Optional<String> linkhash) {
+        String ret = "register";
+        if (UserUtil.getCurrentUser() != null) {
+            log.trace("Entering registerDataWizUser with logged-in user");
+            ret = "redirect:/panel";
         } else {
-            model.put("UserDTO", createUserDTO());
+            if (projectId.isPresent() && email.isPresent() && linkhash.isPresent()) {
+                log.trace("Entering registerDataWizUser from registration email with [pid: {}; email: {}; linkHash:{ }]", projectId::get, email::get, linkhash::get);
+                UserDTO user = createUserDTO();
+                user.setEmail(email.get());
+                user.setSecEmail(email.get());
+                user.setComments(String.valueOf(projectId.get()));
+                user.setActivationCode(linkhash.get());
+                model.put("UserDTO", user);
+            } else {
+                log.trace("Entering registerDataWizUser");
+                model.put("UserDTO", createUserDTO());
+            }
+            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
-        return "register";
+        log.trace("Leaving registerDataWizUser with mapping to {}", ret);
+        return ret;
     }
 
     /**
-     * Function for user registration. After the validation of the required form fields, the function saves the new user into the database and sends an email to
-     * the given emailadress to complete registration
+     * This function evaluates the received data from the user registration form. If the information entered is correct
+     * and no constrains are violated, the data will be stored in the database and the user will receive an email with a
+     * confirmation link.
      *
-     * @param person
-     * @param bindingResult
-     * @param model
-     * @return
+     * @param person        {@link UserDTO} includes the registration information
+     * @param bindingResult {@link BindingResult} for Validation handling
+     * @param model         {@link ModelMap}
+     * @return Redirect mapping to login with success message on success, mapping to register.jsp on validation errors or mapping to error.jsp on db or mail errors
      */
     @RequestMapping(value = {"/register"}, method = RequestMethod.POST)
-    public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") UserDTO person, BindingResult bindingResult, ModelMap model) {
-        if (log.isTraceEnabled())
-            log.trace("execute registerDataWizUser()- POST {}", person);
+    public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") final UserDTO person, final BindingResult bindingResult, final ModelMap model) {
+        log.trace("Entering saveDataWizUser for new user [email: {}]", person::getEmail);
+        String ret;
+        if (person.getPassword() == null || person.getPassword_retyped() == null) {
+            bindingResult.rejectValue("password", "passwords.not.equal");
+        } else if (!person.getPassword().equals(person.getPassword_retyped())) {
+            bindingResult.rejectValue("password", "passwords.not.equal");
+        }
+        if (!person.isCheckedGTC()) {
+            bindingResult.rejectValue("checkedGTC", "register.gtc.net.set");
+        }
         try {
-            // password check
-            if (person.getPassword() == null || person.getPassword_retyped() == null) {
-                // TOTO password msg
-                bindingResult.rejectValue("password", "passwords.not.equal");
-                log.debug("Passwords are emtpy");
-            } else if (!person.getPassword().equals(person.getPassword_retyped())) {
-                bindingResult.rejectValue("password", "passwords.not.equal");
-                if (log.isDebugEnabled())
-                    log.debug("Password and retyped password not equal!");
-            }
-            // GTC(AGB) check
-            if (!person.isCheckedGTC()) {
-                bindingResult.rejectValue("checkedGTC", "register.gtc.net.set");
-                if (log.isDebugEnabled())
-                    log.debug("Email is already used for an account email:" + person.getEmail());
-            }
-            // Email exists check
             if (userDAO.findByMail(person.getEmail(), false) != null) {
                 bindingResult.rejectValue("email", "email.already.exists");
-                if (log.isDebugEnabled())
-                    log.debug("Email is already used for an account email:" + person.getEmail());
             }
-            if (emailUtil.isFakeMail(person.getEmail()))
-                bindingResult.rejectValue("email", "error.email.fake");
-            // return to registerform if errors
-            if (bindingResult.hasErrors()) {
-                log.trace("UserDTO has Errors - return to register form");
-                model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
-                return "register";
-            }
-            // at this point registerform is valid
-            String chkmail = person.getSecEmail();
-            long projectId = 0;
+        } catch (SQLException e) {
+            log.fatal("DBS error during user registration: ", () -> e);
+            bindingResult.rejectValue("email", "dbs.sql.exception");
+        }
+        if (emailUtil.isFakeMail(person.getEmail()))
+            bindingResult.rejectValue("email", "error.email.fake");
+        if (bindingResult.hasErrors()) {
+            log.debug("UserDTO has Errors - return to register form");
+            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
+            ret = "register";
+        } else {
             try {
-                projectId = (person.getComments() != null && !person.getComments().isEmpty()) ? Long.parseLong(person.getComments()) : -1;
-                person.setComments(null);
-            } catch (Exception e) {
-                log.debug("ProjectId which is temporary stored in comments is not a number : {}", person.getComments());
-            }
-            if (chkmail != null && !chkmail.isEmpty() && projectId > 0) {
-                person.setSecEmail(null);
-                if (!chkmail.equals(person.getEmail())) {
-                    projectDAO.updateInvitationEntity(projectId, chkmail, person.getEmail());
+                long projectId = 0;
+                try {
+                    projectId = (person.getComments() != null && !person.getComments().isEmpty()) ? Long.parseLong(person.getComments()) : -1;
+                    person.setComments(null);
+                } catch (Exception e) {
+                    log.debug("ProjectId which is temporary stored in comments is not a number : {}", person.getComments());
                 }
-            }
-            person.setPassword(passwordEncoder.encode(person.getPassword()));
-            userDAO.saveOrUpdate(person, false);
-            person = userDAO.findByMail(person.getEmail(), false);
-        } catch (Exception e) {
-            log.error("DBS error during user registration: ", () -> e);
-            model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
-            return "error";
-        }
-        // registration mail
-        if (person != null && person.getId() > 0) {
-            try {
-                mail.sendSSLMail(person.getEmail(), messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
+                if (person.getSecEmail() != null && !person.getSecEmail().isEmpty() && projectId > 0) {
+                    person.setSecEmail(null);
+                    if (!person.getSecEmail().equals(person.getEmail())) {
+                        projectDAO.updateInvitationEntity(projectId, person.getSecEmail(), person.getEmail());
+                    }
+                }
+                person.setPassword(passwordEncoder.encode(person.getPassword()));
+                userDAO.saveOrUpdate(person, false);
+                UserDTO personDB = userDAO.findByMail(person.getEmail(), false);
+                mail.sendSSLMail(personDB.getEmail(), messageSource.getMessage("reg.mail.subject", null, LocaleContextHolder.getLocale()),
                         messageSource.getMessage("reg.mail.content", new Object[]{
-                                        request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()), person.getEmail(), person.getActivationCode()},
+                                        request.getRequestURL().toString().replace(request.getRequestURI(), request.getContextPath()), personDB.getEmail(), personDB.getActivationCode()},
                                 LocaleContextHolder.getLocale()));
+                ret = "redirect:/login?activationmail";
             } catch (Exception e) {
-                log.error("Mail error during user registration: ", () -> e);
-                model.put("errormsg", messageSource.getMessage("send.mail.exception", null, LocaleContextHolder.getLocale()));
-                return "error";
+                log.fatal("DBS error during user registration: ", () -> e);
+                model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
+                ret = "error";
             }
         }
-        return "redirect:/login?activationmail";
+        log.trace("Leaving saveDataWizUser with mapping to {}", ret);
+        return ret;
     }
 
     /**
@@ -303,8 +290,6 @@ public class LoginController {
     }
 
     /**
-     * This mapping is used if unauthenticated users try to access protected areas
-     *
      * @param model
      * @return
      */
@@ -321,6 +306,10 @@ public class LoginController {
         return "accessDenied";
     }
 
+    /**
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.GET)
     public String requestResetPassword(ModelMap model) {
         if (log.isTraceEnabled()) {
@@ -331,6 +320,11 @@ public class LoginController {
         return "password";
     }
 
+    /**
+     * @param person
+     * @param model
+     * @return
+     */
     @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.POST)
     public String sendPasswordResetRequest(@ModelAttribute("UserDTO") UserDTO person, ModelMap model) {
         if (log.isTraceEnabled()) {
@@ -354,6 +348,12 @@ public class LoginController {
         return ret;
     }
 
+    /**
+     * @param model
+     * @param email
+     * @param code
+     * @return
+     */
     @RequestMapping(value = {"/login/resetpwd/{email}/{code}"})
     public String showSetPassword(ModelMap model, @PathVariable final Optional<String> email, @PathVariable final Optional<String> code) {
         if (log.isTraceEnabled()) {
@@ -376,6 +376,12 @@ public class LoginController {
         return ret;
     }
 
+    /**
+     * @param person
+     * @param model
+     * @param redirectAttributes
+     * @return
+     */
     @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.POST, params = "setPassword")
     public String saveNewPassword(@ModelAttribute("UserDTO") final UserDTO person, final ModelMap model, final RedirectAttributes redirectAttributes) {
         if (log.isTraceEnabled()) {
@@ -401,7 +407,6 @@ public class LoginController {
     /**
      * Checks out the currently authenticated user from the Spring security SecurityContextLogoutHandler and deletes the remember-me cookie
      *
-     * @param request
      * @param response
      * @return
      */

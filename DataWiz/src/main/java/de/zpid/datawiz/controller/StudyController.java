@@ -1,37 +1,6 @@
 package de.zpid.datawiz.controller;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import de.zpid.datawiz.dto.ContributorDTO;
-import de.zpid.datawiz.dto.StudyConstructDTO;
-import de.zpid.datawiz.dto.StudyDTO;
-import de.zpid.datawiz.dto.StudyInstrumentDTO;
-import de.zpid.datawiz.dto.StudyListTypesDTO;
-import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.*;
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
@@ -44,6 +13,21 @@ import de.zpid.datawiz.service.RecordService;
 import de.zpid.datawiz.service.StudyService;
 import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.UserUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 /**
  * This controller handles all calls to /project/{pid}/study/*

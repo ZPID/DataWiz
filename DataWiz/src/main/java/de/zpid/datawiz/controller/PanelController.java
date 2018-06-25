@@ -1,9 +1,17 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import de.zpid.datawiz.dao.*;
+import de.zpid.datawiz.dto.ProjectDTO;
+import de.zpid.datawiz.dto.StudyDTO;
+import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
+import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
+import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.BreadCrumbUtil;
+import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,22 +25,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.StudyDAO;
-import de.zpid.datawiz.dao.UserDAO;
-import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.dto.StudyDTO;
-import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
-import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.exceptions.DataWizSystemException;
-import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.BreadCrumbUtil;
-import de.zpid.datawiz.util.UserUtil;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This controller handles all calls to /panel/*

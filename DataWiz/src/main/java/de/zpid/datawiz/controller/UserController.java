@@ -1,11 +1,12 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
-import java.util.Locale;
-import java.util.Optional;
-
-import javax.validation.Valid;
-
+import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.util.BreadCrumbUtil;
+import de.zpid.datawiz.util.EmailUtil;
+import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +17,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.UserDAO;
-import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.util.BreadCrumbUtil;
-import de.zpid.datawiz.util.EmailUtil;
-import de.zpid.datawiz.util.UserUtil;
+import javax.validation.Valid;
+import java.sql.SQLException;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * This controller handles all calls to /usersettings/*

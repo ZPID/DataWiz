@@ -1,28 +1,22 @@
 package de.zpid.datawiz.controller;
 
-import java.util.LinkedList;
-import java.util.Optional;
-
+import com.google.gson.Gson;
+import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.service.AdminService;
+import de.zpid.datawiz.util.BreadCrump;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import com.google.gson.Gson;
-
-import de.zpid.datawiz.dao.UserDAO;
-import de.zpid.datawiz.service.AdminService;
-import de.zpid.datawiz.util.BreadCrump;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * This controller handles all calls to /admin/*
- *
+ * <p>
  * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
  * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
  * <p>

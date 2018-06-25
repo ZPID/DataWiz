@@ -1,18 +1,25 @@
 package de.zpid.datawiz.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import de.zpid.datawiz.dto.DataTableDTO;
+import de.zpid.datawiz.dto.RecordDTO;
+import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
+import de.zpid.datawiz.enumeration.PageState;
+import de.zpid.datawiz.exceptions.DWDownloadException;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
+import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.service.*;
+import de.zpid.datawiz.util.BreadCrumbUtil;
+import de.zpid.datawiz.util.ObjectCloner;
+import de.zpid.datawiz.util.StringUtil;
+import de.zpid.datawiz.util.UserUtil;
+import de.zpid.spss.SPSSIO;
+import de.zpid.spss.dto.SPSSValueLabelDTO;
+import de.zpid.spss.dto.SPSSVarDTO;
+import de.zpid.spss.util.SPSSMissing;
+import de.zpid.spss.util.SPSSVarTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,40 +31,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import de.zpid.datawiz.dto.DataTableDTO;
-import de.zpid.datawiz.dto.RecordDTO;
-import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
-import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.exceptions.DWDownloadException;
-import de.zpid.datawiz.exceptions.DataWizSystemException;
-import de.zpid.datawiz.form.StudyForm;
-import de.zpid.datawiz.service.ExceptionService;
-import de.zpid.datawiz.service.ExportService;
-import de.zpid.datawiz.service.ImportService;
-import de.zpid.datawiz.service.ProjectService;
-import de.zpid.datawiz.service.RecordService;
-import de.zpid.datawiz.util.BreadCrumbUtil;
-import de.zpid.datawiz.util.ObjectCloner;
-import de.zpid.datawiz.util.StringUtil;
-import de.zpid.datawiz.util.UserUtil;
-import de.zpid.spss.SPSSIO;
-import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarDTO;
-import de.zpid.spss.util.SPSSMissing;
-import de.zpid.spss.util.SPSSVarTypes;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * This controller handles all calls to /project/{pid}/study/{studyId}/record/*

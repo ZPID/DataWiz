@@ -1,7 +1,6 @@
 package de.zpid.datawiz.controller;
 
-import javax.servlet.http.HttpServletRequest;
-
+import de.zpid.datawiz.exceptions.DWDownloadException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
-import de.zpid.datawiz.exceptions.DWDownloadException;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * This controller handles all not intercepted exceptions

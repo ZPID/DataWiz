@@ -1,24 +1,5 @@
 package de.zpid.datawiz.controller;
 
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Optional;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.exceptions.DWDownloadException;
@@ -30,10 +11,23 @@ import de.zpid.datawiz.service.ProjectService;
 import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Optional;
 
 /**
  * This controller handles all calls to /export/*
- *
+ * <p>
  * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
  * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
  * <p>
@@ -107,11 +101,13 @@ public class ExportController {
     }
 
     /**
+     * This function exports the selected parts of a project. The export package is created in exportService.createExportFileList.
+     *
      * @param exportForm {@link ExportProjectForm}
      * @param pid        Project Identifier as {@link Optional}&lt;{@link Long}&gt;
      * @param model      {@link ModelMap}
      * @param response   {@link HttpServletResponse}
-     * @throws Exception
+     * @throws Exception DWDownloadException or DataWizSystemException on errors
      */
     @RequestMapping(value = {"", "/{pid}"}, method = RequestMethod.POST, produces = "application/zip")
     public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid, final ModelMap model,

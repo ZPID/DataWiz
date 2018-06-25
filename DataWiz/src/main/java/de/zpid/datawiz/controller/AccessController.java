@@ -1,32 +1,5 @@
 package de.zpid.datawiz.controller;
 
-import java.sql.SQLException;
-import java.util.Locale;
-import java.util.Optional;
-
-import javax.mail.MessagingException;
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.core.env.Environment;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.RoleDAO;
 import de.zpid.datawiz.dao.UserDAO;
@@ -42,10 +15,31 @@ import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import java.sql.SQLException;
+import java.util.Locale;
+import java.util.Optional;
 
 /**
  * This controller handles all calls to /access/*
- *
+ * <p>
  * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
  * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
  * <p>

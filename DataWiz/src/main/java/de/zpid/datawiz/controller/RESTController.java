@@ -1,8 +1,13 @@
 package de.zpid.datawiz.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.gson.Gson;
+import de.zpid.datawiz.dao.RoleDAO;
+import de.zpid.datawiz.dao.SideMenuDAO;
+import de.zpid.datawiz.dto.SideMenuDTO;
+import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.dto.UserRoleDTO;
+import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.Gson;
-
-import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.SideMenuDAO;
-import de.zpid.datawiz.dto.SideMenuDTO;
-import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.util.UserUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
