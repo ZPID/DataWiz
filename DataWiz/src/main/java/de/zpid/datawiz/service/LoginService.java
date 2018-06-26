@@ -58,7 +58,6 @@ public class LoginService implements UserDetailsService {
   /**
    * @param person
    * @param request
-   * @param retErr
    * @return
    */
   public String sendPasswordRecoveryMail(UserDTO person, HttpServletRequest request) {

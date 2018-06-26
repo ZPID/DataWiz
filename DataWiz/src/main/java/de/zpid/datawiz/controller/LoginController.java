@@ -140,7 +140,7 @@ public class LoginController {
     public String loginPage(@RequestParam(value = "error", required = false) String error, ModelMap model) {
         log.trace("Entering loginPage " + (error != null ? "with login error" : ""));
         if (error != null) {
-            model.put("error", getErrorMessage("SPRING_SECURITY_LAST_EXCEPTION"));
+            model.put("error", getErrorMessage());
         }
         model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.LOGIN, null, null, messageSource));
         return "login";
@@ -244,7 +244,7 @@ public class LoginController {
                                 LocaleContextHolder.getLocale()));
                 ret = "redirect:/login?activationmail";
             } catch (Exception e) {
-                log.fatal("DBS error during user registration: ", () -> e);
+                log.fatal("DBS or Mail error during user registration: ", () -> e);
                 model.put("errormsg", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
                 ret = "error";
             }
@@ -254,18 +254,18 @@ public class LoginController {
     }
 
     /**
-     * Activation endpoint which needs the email of the account which has to be activated and a random generated UUID to authenticate that mail address
+     * This function is called from invitation mail link. It needs the email of the account which has to be activated and
+     * a random generated UUID to authenticate that mail address
      *
-     * @param mail
-     * @param activationCode
-     * @param model
-     * @return
+     * @param mail           {@link String} contains the email address for the user which hast du be activated
+     * @param activationCode {@link String} contains a generated code to authenticate the user
+     * @param model          {@link ModelMap}
+     * @return Redirect mapping to login on success, otherwise mapping to error.jsp
      */
     @RequestMapping(value = "/activate/{mail}/{activationCode}", method = RequestMethod.GET)
-    public String activateAccount(@PathVariable final String mail, @PathVariable final String activationCode, ModelMap model) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute activateAccount email: " + mail + " code: " + activationCode);
-        }
+    public String activateAccount(@PathVariable final String mail, @PathVariable final String activationCode, final ModelMap model) {
+        log.trace("Entering activateAccount for user [mail: {}] with [code: {}]", () -> mail, () -> activationCode);
+        String ret;
         TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
         try {
             UserDTO user = userDAO.findByMail(mail, false);
@@ -280,24 +280,27 @@ public class LoginController {
                 }
             }
             txManager.commit(status);
+            ret = "redirect:/login?activated";
         } catch (Exception e) {
             txManager.rollback(status);
-            log.warn("DBS error during user registration: ", () -> e);
+            log.fatal("DBS error during user registration: ", () -> e);
             model.put("errormsg", messageSource.getMessage("login.failed", null, LocaleContextHolder.getLocale()));
-            return "error";
+            ret = "error";
         }
-        return "redirect:/login?activated";
+        log.trace("Leaving activateAccount with mapping to [{}]", ret);
+        return ret;
     }
 
     /**
-     * @param model
-     * @return
+     * This function is called if a user tries to access an area to which he has no authorization.
+     * TODO beautify accessDenied.jsp
+     *
+     * @param model {@link ModelMap}
+     * @return Mapping to accessDenied.jsp
      */
     @RequestMapping(value = "/Access_Denied")
-    public String accessDeniedPage(ModelMap model) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute accessDeniedPage() - " + request.getHeader("referer") + " - " + request.getAuthType() + " - " + request.getPathInfo());
-        }
+    public String accessDeniedPage(final ModelMap model) {
+        log.warn("Entering accessDeniedPage - [referer: {}; authType: {}; pathInfo: {}]", () -> request.getHeader("referer"), request::getAuthType, request::getPathInfo);
         try {
             model.addAttribute("user", getPrincipal());
         } catch (Exception e) {
@@ -307,29 +310,31 @@ public class LoginController {
     }
 
     /**
-     * @param model
-     * @return
+     * This function initializes the password request form
+     *
+     * @param model {@link ModelMap}
+     * @return Mapping to password.jsp
      */
     @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.GET)
-    public String requestResetPassword(ModelMap model) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute requestResetPassword");
-        }
+    public String requestResetPassword(final ModelMap model) {
+        log.trace("Entering requestResetPassword");
         model.put("setemailview", true);
         model.put("UserDTO", createUserDTO());
         return "password";
     }
 
     /**
-     * @param person
-     * @param model
-     * @return
+     * This function is the first step of the password recovery process. The mail, or alternative mail address of an user
+     * account has to be submitted to this function. If an user is found which belongs to the passed mail, a mail is sent
+     * to this address which includes instructions for the next step.
+     *
+     * @param person {@link UserDTO} contains the mail address to which the mail has to be sent
+     * @param model  {@link ModelMap}
+     * @return Mapping to password.jsp with a success or error message.
      */
     @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.POST)
-    public String sendPasswordResetRequest(@ModelAttribute("UserDTO") UserDTO person, ModelMap model) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute requestResetPasswordSubmit");
-        }
+    public String sendPasswordResetRequest(@ModelAttribute("UserDTO") final UserDTO person, final ModelMap model) {
+        log.trace("Entering sendPasswordResetRequest for user[mail: {}]", person::getEmail);
         String ret = "password";
         String retErr = loginService.sendPasswordRecoveryMail(person, request);
         if (retErr != null && retErr.equals("dbs.sql.exception")) {
@@ -337,32 +342,36 @@ public class LoginController {
             model.put("errormsg",
                     messageSource.getMessage(retErr, new Object[]{env.getRequiredProperty("organisation.admin.email"), ""}, LocaleContextHolder.getLocale()));
         } else if (retErr != null && (retErr.equals("reset.password.no.secemail") || retErr.equals("reset.password.email.send"))) {
-            model.put("successMSG", messageSource.getMessage(retErr, new Object[]{person != null ? person.getEmail() : ""}, LocaleContextHolder.getLocale()));
+            model.put("successMSG", messageSource.getMessage(retErr, new Object[]{person.getEmail()}, LocaleContextHolder.getLocale()));
             model.put("setemailview", true);
             model.put("sendSuccess", true);
         } else {
-            model.put("errorMSG", messageSource.getMessage(retErr,
-                    new Object[]{person != null ? person.getEmail() : "", env.getRequiredProperty("organisation.admin.email"), ""}, LocaleContextHolder.getLocale()));
+            if (retErr != null)
+                model.put("errorMSG", messageSource.getMessage(retErr,
+                        new Object[]{person.getEmail(), env.getRequiredProperty("organisation.admin.email"), ""}, LocaleContextHolder.getLocale()));
             model.put("setemailview", true);
         }
+        log.trace("Leaving sendPasswordResetRequest with mapping [{}]", ret);
         return ret;
     }
 
     /**
-     * @param model
-     * @param email
-     * @param code
-     * @return
+     * This function is the second step of the password recovery process and it is called from the mail, which is sent
+     * from the sendPasswordResetRequest function. It initializes the form where the user can set its new password.
+     *
+     * @param model {@link ModelMap}
+     * @param email {@link String} contains the email address for the account for which the password has to be reset
+     * @param code  {@link String} contains a generated code to authenticate the user
+     * @return Mapping to password.jsp with success message if the link was valid, otherwise with an error message
      */
     @RequestMapping(value = {"/login/resetpwd/{email}/{code}"})
     public String showSetPassword(ModelMap model, @PathVariable final Optional<String> email, @PathVariable final Optional<String> code) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute showSetPassword for user: [{}]", () -> email.isPresent() ? email.get() : "null");
-        }
+        log.trace("Entering showSetPassword for user: [{}]", () -> email);
         String ret = "password";
         String retErr = loginService.setPasswordResetForm(email, code);
         if (retErr == null || retErr.equals("reset.password.email.link.success")) {
-            model.put("successMSG", messageSource.getMessage(retErr, null, LocaleContextHolder.getLocale()));
+            if (retErr != null)
+                model.put("successMSG", messageSource.getMessage(retErr, null, LocaleContextHolder.getLocale()));
             model.put("setemailview", false);
         } else if (retErr.equals("dbs.sql.exception")) {
             ret = "error";
@@ -373,42 +382,48 @@ public class LoginController {
             model.put("setemailview", true);
             model.put("sendSuccess", true);
         }
+        log.trace("Leaving showSetPassword with mapping [{}]", ret);
         return ret;
     }
 
     /**
-     * @param person
-     * @param model
-     * @param redirectAttributes
-     * @return
+     * This function is the last step of the password recovery process. It validates and saves the new password for the passed user.
+     *
+     * @param person             {@link UserDTO} contains the mail address to which the mail has to be sent
+     * @param model              {@link ModelMap}
+     * @param redirectAttributes {@link RedirectAttributes}
+     * @return Redirect mapping to login on success, to error.jsp on db errors, or to password.jsp on other errors
      */
     @RequestMapping(value = "/login/passwordrequest", method = RequestMethod.POST, params = "setPassword")
     public String saveNewPassword(@ModelAttribute("UserDTO") final UserDTO person, final ModelMap model, final RedirectAttributes redirectAttributes) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute saveNewPassword");
-        }
+        log.trace("Entering saveNewPassword for user [mail {}]", person::getEmail);
         List<String> retMSG = new ArrayList<>();
         String ret = loginService.validateAndSavePassword(person, retMSG);
-        if (ret.equals("redirect:/login")) {
-            redirectAttributes.addFlashAttribute("successMSG",
-                    messageSource.getMessage(retMSG.get(0), new Object[]{person.getEmail()}, LocaleContextHolder.getLocale()));
-        } else if (ret.equals("error")) {
-            model.put("errormsg",
-                    messageSource.getMessage("dbs.sql.exception",
-                            new Object[]{env.getRequiredProperty("organisation.admin.email"), retMSG.get(0).replaceAll("\n", "").replaceAll("\"", "\'")},
-                            LocaleContextHolder.getLocale()));
-        } else {
-            model.put("setemailview", false);
-            model.put("errorMSG", messageSource.getMessage(retMSG.get(0), null, LocaleContextHolder.getLocale()));
+        switch (ret) {
+            case "redirect:/login":
+                redirectAttributes.addFlashAttribute("successMSG",
+                        messageSource.getMessage(retMSG.get(0), new Object[]{person.getEmail()}, LocaleContextHolder.getLocale()));
+                break;
+            case "error":
+                model.put("errormsg",
+                        messageSource.getMessage("dbs.sql.exception",
+                                new Object[]{env.getRequiredProperty("organisation.admin.email"), retMSG.get(0).replaceAll("\n", "").replaceAll("\"", "\'")},
+                                LocaleContextHolder.getLocale()));
+                break;
+            default:
+                model.put("setemailview", false);
+                model.put("errorMSG", messageSource.getMessage(retMSG.get(0), null, LocaleContextHolder.getLocale()));
+                break;
         }
+        log.trace("Leaving saveNewPassword with mapping [{}]", ret);
         return ret;
     }
 
     /**
      * Checks out the currently authenticated user from the Spring security SecurityContextLogoutHandler and deletes the remember-me cookie
      *
-     * @param response
-     * @return
+     * @param response {@link HttpServletResponse}
+     * @return Redirect mapping to redirect:/login?logout
      */
     @RequestMapping(value = "/logout")
     public String logout(ModelMap model, HttpServletResponse response) {
@@ -431,10 +446,10 @@ public class LoginController {
     /**
      * Returns the name of the currently authenticated User
      *
-     * @return
+     * @return User name as {@link String}
      */
     private String getPrincipal() {
-        String userName = null;
+        String userName;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             userName = ((UserDetails) principal).getUsername();
@@ -446,14 +461,13 @@ public class LoginController {
 
     /**
      * Returns custom messages for Login Exceptions - Checks BadCredentialsException, LockedException, AccountExpiredException and
-     * InternalAuthenticationServiceException. Input String
+     * InternalAuthenticationServiceException.
      *
-     * @param key SessionParameterKey
-     * @return Custom ErrorMessage
+     * @return Custom ErrorMessage as {@link String}
      */
-    private String getErrorMessage(String key) {
-        Exception exception = (Exception) request.getSession().getAttribute(key);
-        String error = "";
+    private String getErrorMessage() {
+        Exception exception = (Exception) request.getSession().getAttribute("SPRING_SECURITY_LAST_EXCEPTION");
+        String error;
         if (exception instanceof BadCredentialsException) {
             error = messageSource.getMessage("login.failed", new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale());
         } else if (exception instanceof LockedException) {
