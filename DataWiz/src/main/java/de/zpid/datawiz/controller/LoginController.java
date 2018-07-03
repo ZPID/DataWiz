@@ -125,7 +125,7 @@ public class LoginController {
     @RequestMapping(value = {"/", "/home"})
     public String homePage(final ModelMap model) {
         log.trace("Entering homePage");
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.INDEX, null, null, messageSource));
+        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.INDEX, null, null, messageSource));
         return "welcome";
     }
 
@@ -142,7 +142,7 @@ public class LoginController {
         if (error != null) {
             model.put("error", getErrorMessage());
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.LOGIN, null, null, messageSource));
+        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.LOGIN, null, null, messageSource));
         return "login";
     }
 
@@ -178,7 +178,7 @@ public class LoginController {
                 log.trace("Entering registerDataWizUser");
                 model.put("UserDTO", createUserDTO());
             }
-            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
+            model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
         }
         log.trace("Leaving registerDataWizUser with mapping to {}", ret);
         return ret;
@@ -218,7 +218,7 @@ public class LoginController {
             bindingResult.rejectValue("email", "error.email.fake");
         if (bindingResult.hasErrors()) {
             log.debug("UserDTO has Errors - return to register form");
-            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
+            model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.REGISTER, null, null, messageSource));
             ret = "register";
         } else {
             try {

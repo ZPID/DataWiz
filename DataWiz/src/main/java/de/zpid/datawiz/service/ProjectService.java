@@ -445,7 +445,7 @@ public class ProjectService {
         Roles role = checkProjectRoles(user, pid.get(), 0, false, true);
         getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
         if (!studyId.isPresent()) {
-            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pForm.getProject().getTitle()}, null, messageSource));
+            model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pForm.getProject().getTitle()}, null, messageSource));
             model.put("studyId", -1);
         } else {
             StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
@@ -525,7 +525,6 @@ public class ProjectService {
     /**
      * @param docId
      * @param response
-     * @param resp
      * @return
      */
     public DataWizErrorCodes prepareMaterialDownload(long docId, HttpServletResponse response) {
@@ -573,7 +572,6 @@ public class ProjectService {
 
     /**
      * @param pid
-     * @param studyId
      * @param user
      * @return
      */
@@ -591,7 +589,7 @@ public class ProjectService {
                     List<StudyDTO> studies = studyDAO.findAllStudiesByProjectId(project);
                     if (studies != null && !studies.isEmpty()) {
                         for (StudyDTO study : studies) {
-                            studyService.deleteStudy(pid, Optional.of(study.getId()), user, false);
+                            studyService.deleteStudy(pid.orElse(0L), study.getId(), user, false);
                         }
                     }
                     projectDAO.deleteProject(project.getId());

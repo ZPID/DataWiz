@@ -72,8 +72,9 @@ import de.zpid.spss.SPSSIO;
 import de.zpid.spss.dto.SPSSErrorDTO;
 import de.zpid.spss.dto.SPSSValueLabelDTO;
 import de.zpid.spss.dto.SPSSVarDTO;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class ExportService {
 
 	private static Logger log = LogManager.getLogger(ExportService.class);
@@ -297,10 +298,10 @@ public class ExportService {
 						String recordFolder = studyFolder + RECORD_FOLDER + "(" + recCount++ + ") " + stringUtil.formatFilename(recordDB.getRecordName()) + "/";
 						RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
 						List<String> parsingErrors = new LinkedList<>();
-						recordService.setDataMatrix(parsingErrors, recordDB, false, pid.get());
+						recordService.transformDataMatrix(parsingErrors, recordDB, false, pid.get());
 						if (recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
 							recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
-							recordService.setCodebook(parsingErrors, recordDB, false);
+							recordService.transformCodebook(parsingErrors, recordDB, false);
 							record = recordDB;
 						} else if (!recordEx.isExportMetaData() && recordEx.isExportCodebook()) {
 							record.setRecordName(recordDB.getRecordName());
@@ -308,7 +309,7 @@ public class ExportService {
 							record.setId(recordDB.getId());
 							record.setStudyId(recordDB.getStudyId());
 							record.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
-							recordService.setCodebook(parsingErrors, record, false);
+							recordService.transformCodebook(parsingErrors, record, false);
 						} else if (recordEx.isExportMetaData() && !recordEx.isExportCodebook()) {
 							record = recordDB;
 						} else {
@@ -365,7 +366,7 @@ public class ExportService {
 										if (primContri == null || primContri.getId() == 0)
 											primContri = contributorDAO.findPrimaryContributorByProject(project);
 										recordDB.setVariables(recordDAO.findVariablesByVersionID(recordDB.getVersionId()));
-										recordService.setCodebook(parsingErrors, recordDB, false);
+										recordService.transformCodebook(parsingErrors, recordDB, false);
 										files.add(new SimpleEntry<String, byte[]>(recordFolder + RECORD_CODEBOOK_NAME_PDF,
 										    itextUtil.createRecordCodeBookPDFA(recordDB, studyDB, project, primContri, false, false)));
 									}
@@ -446,7 +447,6 @@ public class ExportService {
 	 * @param attachments
 	 * @param record
 	 * @param res
-	 * @param content
 	 * @return
 	 * @throws Exception
 	 */
@@ -499,7 +499,7 @@ public class ExportService {
 			baos.close();
 		} catch (Exception e) {
 			log.warn("Error during exportZip: Filename: [{}] Exception: {}", fileName, e);
-			res.insert(0, "export.error.exception.thown");
+			res.insert(0, "export.error.exception.thrown");
 		}
 		log.debug("Leaving exportZip with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
 		return content;
@@ -511,7 +511,7 @@ public class ExportService {
 	 * 
 	 * @param record
 	 *          Complete copy of the requested record version
-	 * @param resp
+	 * @param res
 	 *          Reference parameter to handle export errors in the calling function
 	 * @return the spss file as byte array
 	 */
@@ -565,7 +565,7 @@ public class ExportService {
 					log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Error: {}; Exception: {}", () -> record.getId(), () -> record.getVersionId(),
 					    () -> res.toString(), () -> e);
 					e.printStackTrace();
-					res.insert(0, "export.error.exception.thown");
+					res.insert(0, "export.error.exception.thrown");
 				} finally {
 					if (Files.exists(Paths.get(dir + filename)))
 						fileUtil.deleteFile(Paths.get(dir + filename));
@@ -586,7 +586,7 @@ public class ExportService {
 	 * 
 	 * @param record
 	 *          Complete copy of the requested record version
-	 * @param resp
+	 * @param res
 	 *          Reference parameter to handle export errors in the calling function
 	 * @return the csv string as byte array
 	 */
@@ -608,7 +608,7 @@ public class ExportService {
 			} catch (Exception e) {
 				log.warn("Error during CSV export: RecordDTO: [id: {}; version:{} matrix[{}]] Exception: {}", () -> record.getId(), () -> record.getVersionId(),
 				    () -> matrix, () -> e);
-				res.insert(0, "export.error.exception.thown");
+				res.insert(0, "export.error.exception.thrown");
 			}
 		} else {
 			res.insert(0, "export.recorddto.empty");
@@ -623,7 +623,7 @@ public class ExportService {
 	 * 
 	 * @param record
 	 *          Complete copy of the requested record version
-	 * @param resp
+	 * @param res
 	 *          Reference parameter to handle export errors in the calling function
 	 * @return the csv string as byte array
 	 */
@@ -641,7 +641,7 @@ public class ExportService {
 				}
 			} catch (Exception e) {
 				log.warn("Error during JSON export: RecordDTO: [id: {}; version:{}] Exception: ", () -> record.getId(), () -> record.getVersionId(), () -> e);
-				res.insert(0, "export.error.exception.thown");
+				res.insert(0, "export.error.exception.thrown");
 			}
 		} else {
 			res.insert(0, "export.recorddto.empty");
@@ -678,7 +678,7 @@ public class ExportService {
 			varcount = 1;
 			for (Object obj : row) {
 				if (obj == null) {
-					csv.append("");
+					csv.append(" ");
 				} else if (obj instanceof Number)
 					csv.append(obj);
 				else

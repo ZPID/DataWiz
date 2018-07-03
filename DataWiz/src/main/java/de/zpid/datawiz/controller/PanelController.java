@@ -1,33 +1,24 @@
 package de.zpid.datawiz.controller;
 
-import de.zpid.datawiz.dao.*;
-import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.service.PanelService;
 import de.zpid.datawiz.util.BreadCrumbUtil;
-import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This controller handles all calls to /panel/*
@@ -50,135 +41,69 @@ import java.util.List;
  * @author Ronny Boelter
  * @version 1.0
  * <p>
- * TODO Missing service layer: to separate the DBS logic from the web logic! And Error Handling!
  **/
 @Controller
 @RequestMapping(value = "/panel")
 public class PanelController {
 
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    private ClassPathXmlApplicationContext applicationContext;
-    @Autowired
-    private Environment env;
-    @Autowired
-    private ProjectDAO projectDAO;
-    @Autowired
-    private RoleDAO roleDAO;
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
-    private ContributorDAO contributorDAO;
-    @Autowired
-    private StudyDAO studyDAO;
 
     private static Logger log = LogManager.getLogger(PanelController.class);
+    private MessageSource messageSource;
+    private PanelService panelService;
+    private Environment env;
 
     /**
      * Instantiates a new panel controller.
      */
-    public PanelController() {
+    @Autowired
+    public PanelController(MessageSource messageSource, PanelService panelService, Environment env) {
         super();
-        if (log.isInfoEnabled())
-            log.info("Loading PanelController for mapping /panel");
+        log.info("Loading PanelController for mapping /panel");
+        this.messageSource = messageSource;
+        this.panelService = panelService;
+        this.env = env;
     }
 
-    /**
-     * Creates the project form.
-     *
-     * @return {@link ProjectForm}
-     */
-    @ModelAttribute("ProjectForm")
-    public ProjectForm createProjectForm() {
-        return (ProjectForm) applicationContext.getBean("ProjectForm");
-    }
 
     /**
      * This function handles the calls to /panel. Depending on the access rights for the user who has called the panel, it loads only the content which
      * the user has the appropriate rights for.
      *
      * @param model {@link ModelMap}
-     * @return
+     * @return mapping to panel on success
      */
     @RequestMapping(method = RequestMethod.GET)
-    public String dashboardPage(ModelMap model) {
-        if (log.isTraceEnabled()) {
-            log.trace("execute dashboardPage()");
-        }
-
-        UserDTO user = null;
-        List<ProjectForm> cpform = new ArrayList<ProjectForm>();
+    public String getPanel(ModelMap model) {
+        log.trace("Entering getPanel");
+        List<ProjectForm> pFormList;
+        String ret;
         try {
-            if (UserUtil.setCurrentUser(userDAO.findByMail(UserUtil.getCurrentUser().getEmail(), true))) {
-                user = UserUtil.getCurrentUser();
-            } else {
-                throw new DataWizSystemException("User not found in Session", DataWizErrorCodes.NO_DATA_ERROR);
+            UserDTO user = panelService.refreshAndGetUserDTO();
+            final AtomicBoolean parChk = new AtomicBoolean(false);
+            pFormList = panelService.getProjects(user, parChk);
+            if (parChk.get()) {
+                model.put("errorMSG", "");
             }
-			/*List<ProjectDTO> cpdto = null;
-			if (user.hasRole(Roles.ADMIN)) {
-				cpdto = projectDAO.findAll();
-			} else {
-				cpdto = projectDAO.findAllByUserID(user);
-			}*/
-            List<ProjectDTO> cpdto = projectDAO.findAllByUserID(user);
-            if (cpdto != null) {
-                for (ProjectDTO pdto : cpdto) {
-                    ProjectForm pform = createProjectForm();
-                    pform.setProject(pdto);
-                    if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pdto.getId(), false)
-                            || user.hasRole(Roles.PROJECT_READER, pdto.getId(), false) || user.hasRole(Roles.PROJECT_WRITER, pdto.getId(), false)) {
-                        pform.setStudies(studyDAO.findAllStudiesByProjectId(pdto));
-                    } else if (user.hasRole(Roles.DS_READER, pdto.getId(), false) || user.hasRole(Roles.DS_WRITER, pdto.getId(), false)) {
-                        List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pdto.getId());
-                        List<StudyDTO> cStud = new ArrayList<StudyDTO>();
-                        userRoles.parallelStream().forEach(role -> {
-                            Roles uRole = Roles.valueOf(role.getType());
-                            if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
-                                try {
-                                    cStud.add(studyDAO.findById(role.getStudyId(), role.getProjectId(), true, false));
-                                } catch (Exception e) {
-                                    // TODO Auto-generated catch block
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        pform.setStudies(cStud);
-                    }
-                    List<Boolean> par = new ArrayList<>();
-                    if (pform.getStudies() != null)
-                        pform.getStudies().parallelStream().forEach(stud -> {
-                            try {
-                                stud.setContributors(contributorDAO.findByStudy(stud.getId()));
-                            } catch (Exception e) {
-                                // TODO Auto-generated catch block
-                                par.add(false);
-                                e.printStackTrace();
-                            }
-                        });
-                    pform.setContributors(contributorDAO.findByProject(pdto, false, true));
-                    List<UserDTO> sharedUser = userDAO.findGroupedByProject(pdto.getId());
-                    if (sharedUser != null)
-                        sharedUser.parallelStream().forEach(shared -> {
-                            try {
-                                shared.setGlobalRoles(roleDAO.findRolesByUserIDAndProjectID(shared.getId(), pdto.getId()));
-                            } catch (SQLException e) {
-                                // TODO Auto-generated catch block
-                                e.printStackTrace();
-                            }
-                        });
-                    pform.setSharedUser(sharedUser);
-                    cpform.add(pform);
-                }
-            }
+            model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PANEL, null, null, messageSource));
+            model.put("CProjectForm", pFormList);
+            ret = "panel";
         } catch (Exception e) {
-            log.fatal("DBS error during setting Users Dashboardpage for user : {} Message: {}", user.getEmail(), e.getMessage());
-            model.put("errormsg", messageSource.getMessage("dbs.sql.exception", new Object[]{env.getRequiredProperty("organisation.admin.email"), e},
-                    LocaleContextHolder.getLocale()));
-            return "error";
+            if (e instanceof DataWizSystemException) {
+                log.warn("DataWizSystemException [{}] during getPanel ", ((DataWizSystemException) e)::getErrorCode, () -> e);
+                ret = "redirect:/login";
+            } else {
+                log.fatal("Exception during getPanel", () -> e);
+                model.put("errormsg",
+                        messageSource.getMessage("dbs.sql.exception",
+                                new Object[]{env.getRequiredProperty("organisation.admin.email"), e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'")},
+                                LocaleContextHolder.getLocale()));
+                ret = "error";
+            }
+
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PANEL, null, null, messageSource));
-        model.put("CProjectForm", cpform);
-        return "panel";
+        log.trace("Leaving getPanel with mapping [{}]", ret);
+        return ret;
     }
+
+
 }

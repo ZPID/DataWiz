@@ -48,7 +48,7 @@ import java.util.Optional;
  **/
 @Controller
 @RequestMapping(value = "/export")
-@SessionAttributes({"breadcrumpList", "ExportProjectForm"})
+@SessionAttributes({"breadcrumbList", "ExportProjectForm"})
 public class ExportController {
 
     private static Logger log = LogManager.getLogger(ExportController.class);
@@ -88,7 +88,7 @@ public class ExportController {
             ExportProjectForm exportForm;
             try {
                 exportForm = exportService.getExportForm(pid != null && pid.isPresent() ? pid.get() : 0L, user);
-                model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
+                model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
                 model.put("subnaviActive", PageState.EXPORT.name());
                 model.put("ExportProjectForm", exportForm);
                 ret = "export";
@@ -125,7 +125,7 @@ public class ExportController {
                     throw (e);
                 } else {
                     log.error("Exception during EXPORT: ", () -> e);
-                    throw new DWDownloadException("export.error.exception.thown");
+                    throw new DWDownloadException("export.error.exception.thrown");
                 }
             }
         }
@@ -139,16 +139,16 @@ public class ExportController {
                     response.getOutputStream().write(export);
                     response.flushBuffer();
                 } catch (Exception e) {
-                    throw new DWDownloadException("export.error.exception.thown");
+                    throw new DWDownloadException("export.error.exception.thrown");
                 }
-                model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
+                model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
                 model.put("subnaviActive", PageState.EXPORT.name());
             } else {
                 log.warn("Method exportProject->exportZip completed with an error - DWDownloadException thrown: ", res.toString());
                 throw new DWDownloadException(res.toString());
             }
         } else {
-            throw new DWDownloadException("export.error.exception.thown");
+            throw new DWDownloadException("export.error.exception.thrown");
         }
     }
 

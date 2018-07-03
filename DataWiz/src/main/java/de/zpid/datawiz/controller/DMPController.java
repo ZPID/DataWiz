@@ -121,7 +121,7 @@ public class DMPController {
         } catch (Exception e) {
             return exceptionService.setErrorMessagesAndRedirects(pid, Optional.empty(), Optional.empty(), model, redirectAttributes, e, "dmpController.editDMP");
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pName}, null, messageSource));
+        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pName}, null, messageSource));
         model.put("subnaviActive", PageState.DMP.name());
         model.put("ProjectForm", pForm);
         log.trace("Leaving editDMP for DMP [pid: {}]", () -> pid);
@@ -185,7 +185,7 @@ public class DMPController {
             }
         }
         if (bRes.hasErrors()) {
-            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT,
+            model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT,
                     new String[]{(pForm != null && pForm.getProject() != null && pForm.getProject().getTitle() != null) ? pForm.getProject().getTitle() : ""}, null, messageSource));
             model.put("subnaviActive", PageState.DMP.name());
         }

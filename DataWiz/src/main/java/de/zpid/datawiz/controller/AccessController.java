@@ -140,7 +140,7 @@ public class AccessController {
         } catch (Exception e) {
             return exceptionService.setErrorMessagesAndRedirects(projectId, Optional.empty(), Optional.empty(), model, reAtt, e, "accessController.showAccessPage");
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pName}, null, messageSource));
+        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pName}, null, messageSource));
         model.put("subnaviActive", PageState.ACCESS.name());
         model.put("ProjectForm", pForm);
         log.trace("Method showAccessPage successfully completed");

@@ -61,17 +61,11 @@ import java.util.Optional;
 @RequestMapping(value = "/project")
 public class ProjectController {
 
-    @Autowired
     private MessageSource messageSource;
-    @Autowired
     private ClassPathXmlApplicationContext applicationContext;
-    @Autowired
     private SmartValidator validator;
-    @Autowired
     private ProjectService projectService;
-    @Autowired
     private ExceptionService exceptionService;
-    @Autowired
     private Environment env;
 
     /**
@@ -89,9 +83,17 @@ public class ProjectController {
     /**
      * Instantiates a new project controller.
      */
-    public ProjectController() {
+    @Autowired
+    public ProjectController(MessageSource messageSource, ClassPathXmlApplicationContext applicationContext, SmartValidator validator,
+                             ProjectService projectService, ExceptionService exceptionService, Environment env) {
         super();
         log.info("Loading ProjectController for mapping /project");
+        this.messageSource = messageSource;
+        this.applicationContext = applicationContext;
+        this.validator = validator;
+        this.projectService = projectService;
+        this.exceptionService = exceptionService;
+        this.env = env;
     }
 
     /**
@@ -125,8 +127,8 @@ public class ProjectController {
                 projectService.getProjectForm(pForm, pid.get(), user, PageState.PROJECT, role);
                 name = pForm.getProject().getTitle();
             } catch (Exception e) {
-                log.warn("Exception during projectService.getProjectForm for [user: {}, pid: {}]", () -> user.getId(), () -> pid, () -> e);
-                ret = exceptionService.setErrorMessagesAndRedirects(pid, null, null, model, redirectAttributes, e, "ProjectController.showProjectPage");
+                log.warn("Exception during projectService.getProjectForm for [user: {}, pid: {}]", user::getId, () -> pid, () -> e);
+                ret = exceptionService.setErrorMessagesAndRedirects(pid, Optional.empty(), Optional.empty(), model, redirectAttributes, e, "ProjectController.showProjectPage");
             }
         } else {
             model.put("hideMenu", true);
@@ -134,7 +136,7 @@ public class ProjectController {
             cContri.add(new ContributorDTO());
             pForm.setContributors(cContri);
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{name}, null, messageSource));
+        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{name}, null, messageSource));
         model.put("subnaviActive", PageState.PROJECT.name());
         model.put("ProjectForm", pForm);
         log.trace("Leaving showProjectPage for project [id: {}]", () -> pid.isPresent() ? pid.get() : "null (new project)");
@@ -171,12 +173,12 @@ public class ProjectController {
                 }
                 try {
                     projectService.getProjectForm(pForm, pid.get(), user, PageState.STUDIES, role);
-                    model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pForm.getProject().getTitle()}, null, messageSource));
+                    model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pForm.getProject().getTitle()}, null, messageSource));
                     model.put("subnaviActive", PageState.STUDIES.name());
                     model.put("ProjectForm", pForm);
                 } catch (Exception e) {
                     log.warn("Exeption during projectService.getProjectForm - Exception: ", () -> e);
-                    ret = exceptionService.setErrorMessagesAndRedirects(pid, null, null, model, redirectAttributes, e, "ProjectController.showProjectPage");
+                    ret = exceptionService.setErrorMessagesAndRedirects(pid, Optional.empty(), Optional.empty(), model, redirectAttributes, e, "ProjectController.showProjectPage");
                 }
             } else {
                 log.warn(messageSource.getMessage("logging.user.permitted", new Object[]{user.getId(), "project", pid}, Locale.ENGLISH));
@@ -203,7 +205,7 @@ public class ProjectController {
                                    RedirectAttributes redirectAttributes) {
         log.trace("Entering showMaterialPage for project [id: {}]", () -> pid.isPresent() ? pid.get() : "null");
         UserDTO user = UserUtil.getCurrentUser();
-        String ret = null;
+        String ret;
         if (user == null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
             ret = "redirect:/login";
@@ -226,7 +228,7 @@ public class ProjectController {
                     model.put("subnaviActive", PageState.MATERIAL.name());
                 } catch (Exception e) {
                     log.warn("Error in setMaterialForm Message: ", () -> e);
-                    exceptionService.setErrorMessagesAndRedirects(pid, studyId, null, model, redirectAttributes, e, "projectService.setMaterialForm");
+                    exceptionService.setErrorMessagesAndRedirects(pid, studyId, Optional.empty(), model, redirectAttributes, e, "projectService.setMaterialForm");
                 }
             }
         }
@@ -251,7 +253,7 @@ public class ProjectController {
         if (pForm != null && pForm.getProject() != null) {
             log.trace("Entering saveProject for project [id: {}]", () -> (pForm.getProject().getId() == 0 ? "new project" : pForm.getProject().getId()));
             if (pForm.getProject().getId() > 0) {
-                String access = projectService.checkUserAccess(Optional.of(pForm.getProject().getId()), null, redirectAttributes, true, UserUtil.getCurrentUser());
+                String access = projectService.checkUserAccess(Optional.of(pForm.getProject().getId()), Optional.empty(), redirectAttributes, true, UserUtil.getCurrentUser());
                 ret = (access == null) ? ret : access;
             } else {
                 model.put("hideMenu", true);
@@ -272,7 +274,7 @@ public class ProjectController {
                 } else {
                     pForm.setContributors(cContri);
                     DataWizErrorCodes state = projectService.saveOrUpdateProject(pForm);
-                    log.debug("Leaving saveProject with result: [code: {}]", () -> state.name());
+                    log.debug("Leaving saveProject with result: [code: {}]", state::name);
                     if (!state.equals(DataWizErrorCodes.OK)) {
                         model.put("errorMSG", messageSource.getMessage("project.save.error." + state.name(), null, LocaleContextHolder.getLocale()));
                     } else {
@@ -289,7 +291,8 @@ public class ProjectController {
         }
         if (ret.equals("project")) {
             model.put("subnaviActive", PageState.PROJECT.name());
-            model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pForm.getProject().getTitle()}, null, messageSource));
+            String title = pForm != null && pForm.getProject() != null ? pForm.getProject().getTitle() : "";
+            model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{title}, null, messageSource));
         }
         return ret;
     }
@@ -313,31 +316,31 @@ public class ProjectController {
         log.trace("Entering uploadFile for Project or Study [pid: {}, studyId: {}]", () -> pid, () -> studyId);
         if (!pid.isPresent()) {
             log.warn("ProjectForm is empty or missing values");
-            return new ResponseEntity<String>("{\"error\" : \"" + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
+            return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         UserDTO user = UserUtil.getCurrentUser();
         if (user == null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
-            return new ResponseEntity<String>("{\"error\" : \"" + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
+            return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user) != null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
-            return new ResponseEntity<String>("{\"error\" : \"" + messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()) + "\"}",
+            return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()) + "\"}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
         switch (projectService.saveMaterialToMinoAndDB(request, pid, studyId, user)) {
             case MINIO_SAVE_ERROR:
-                return new ResponseEntity<String>("{\"error\" : \"" + messageSource.getMessage("minio.connection.exception.upload",
+                return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("minio.connection.exception.upload",
                         new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale()) + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
             case DATABASE_ERROR:
-                return new ResponseEntity<String>("{\"error\" : \""
+                return new ResponseEntity<>("{\"error\" : \""
                         + messageSource.getMessage("dbs.sql.exception", new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale())
                         + "\"}", HttpStatus.CONFLICT);
             default:
                 log.trace("Leaving uploadFile for Project or Study [pid: {}, studyId: {}]", () -> pid, () -> studyId);
-                return new ResponseEntity<String>("", HttpStatus.OK);
+                return new ResponseEntity<>("", HttpStatus.OK);
         }
     }
 
@@ -350,16 +353,16 @@ public class ProjectController {
      * @return Mapping to material.jsp for project files or study files - depending on the state of the study identifier (set = )
      */
     @RequestMapping(value = {"/{pid}/multisaved", "/{pid}/study/{studyId}/multisaved"})
-    public String multiSaved(@PathVariable Optional<Long> pid, @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes) {
+    public String multiSaved(@PathVariable long pid, @PathVariable Optional<Long> studyId, RedirectAttributes redirectAttributes) {
         log.trace("Entering multiSaved for [pid: {}, studyid: {}]", () -> pid, () -> studyId);
         redirectAttributes.addFlashAttribute("saveState", SavedState.SUCCESS.toString());
         redirectAttributes.addFlashAttribute("saveStateMsg", messageSource.getMessage("material.upload.successful", null, LocaleContextHolder.getLocale()));
-        String ret = null;
+        String ret;
         if (studyId.isPresent()) {
-            ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/material";
+            ret = "redirect:/project/" + pid + "/study/" + studyId.get() + "/material";
         } else {
             redirectAttributes.addFlashAttribute("jQueryMap", "material");
-            ret = "redirect:/project/" + pid.get() + "/material";
+            ret = "redirect:/project/" + pid + "/material";
         }
         log.trace("Leaving multiSaved for [pid: {}, studyid: {}]", () -> pid, () -> studyId);
         return ret;
@@ -368,22 +371,20 @@ public class ProjectController {
     /**
      * This function is called if a user wants to download a file from the material pages.
      *
-     * @param docId              Document Identifier as {@link Long}
-     * @param response           {@link HttpServletResponse}
-     * @param redirectAttributes {@link RedirectAttributes}
+     * @param docId    Document Identifier as {@link Long}
+     * @param response {@link HttpServletResponse}
      * @return Return the file as download, or an error message in case of an error.
-     * @throws DataWizSystemException
+     * @throws DataWizSystemException DataBase or Minio Exceptions
      */
     @RequestMapping(value = {"/{pid}/download/{docId}", "/{pid}/study/{studyId}/download/{docId}"}, method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<String> downloadDocument(@PathVariable long pid, @PathVariable long docId, HttpServletResponse response,
-                                            RedirectAttributes redirectAttributes) throws DataWizSystemException {
+    ResponseEntity<String> downloadDocument(@PathVariable long docId, HttpServletResponse response) throws DataWizSystemException {
         log.trace("Entering downloadDocument [id: {}]", () -> docId);
         UserDTO user = UserUtil.getCurrentUser();
-        ResponseEntity<String> resp = new ResponseEntity<String>("{}", HttpStatus.OK);
+        ResponseEntity<String> resp = new ResponseEntity<>("{}", HttpStatus.OK);
         if (user == null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
-            resp = new ResponseEntity<String>("{}", HttpStatus.UNAUTHORIZED);
+            resp = new ResponseEntity<>("{}", HttpStatus.UNAUTHORIZED);
         } else {
             switch (projectService.prepareMaterialDownload(docId, response)) {
 
@@ -404,34 +405,37 @@ public class ProjectController {
     /**
      * This functions deletes a saved document from database and minio. It is called from the material pages (project and study).
      *
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param pid                Project Identifier as {@link Long}
      * @param docId              Document Identifier as {@link Long}
      * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
      * @param redirectAttributes {@link RedirectAttributes}
      * @return Redirect to material.jsp. In case of an error, with error message
      */
     @RequestMapping(value = {"/{pid}/delDoc/{docId}", "/{pid}/study/{studyId}/delDoc/{docId}"}, method = RequestMethod.GET)
-    public String deleteDocument(@PathVariable Optional<Long> pid, @PathVariable long docId, @PathVariable Optional<Long> studyId,
+    public String deleteDocument(@PathVariable long pid, @PathVariable long docId, @PathVariable Optional<Long> studyId,
                                  RedirectAttributes redirectAttributes) {
         log.trace("Entering deleteDocument [id: {}]", () -> docId);
         UserDTO user = UserUtil.getCurrentUser();
+        String ret;
         if (user == null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
-            return "redirect:/login";
+            ret = "redirect:/login";
+        } else {
+            switch (projectService.deleteMaterialfromMinioAndDB(docId)) {
+                case MINIO_SAVE_ERROR:
+                    redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("material.delete.minio.error", null, LocaleContextHolder.getLocale()));
+                case DATABASE_ERROR:
+                    redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("material.delete.db.error", null, LocaleContextHolder.getLocale()));
+                default:
+                    redirectAttributes.addFlashAttribute("successMSG", messageSource.getMessage("material.delete.successful", null, LocaleContextHolder.getLocale()));
+                    break;
+            }
+            redirectAttributes.addFlashAttribute("jQueryMap", "material");
+            ret = "redirect:/project/" + pid + "/material";
+            if (studyId.isPresent())
+                return "redirect:/project/" + pid + "/study/" + studyId.get() + "/material";
         }
-        switch (projectService.deleteMaterialfromMinioAndDB(docId)) {
-            case MINIO_SAVE_ERROR:
-                redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("material.delete.minio.error", null, LocaleContextHolder.getLocale()));
-            case DATABASE_ERROR:
-                redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("material.delete.db.error", null, LocaleContextHolder.getLocale()));
-            default:
-                redirectAttributes.addFlashAttribute("successMSG", messageSource.getMessage("material.delete.successful", null, LocaleContextHolder.getLocale()));
-                break;
-        }
-        redirectAttributes.addFlashAttribute("jQueryMap", "material");
-        if (studyId.isPresent())
-            return "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/material";
-        return "redirect:/project/" + pid.get() + "/material";
+        return ret;
     }
 
     /**
@@ -443,7 +447,7 @@ public class ProjectController {
      * @param response {@link HttpServletResponse}
      */
     @RequestMapping(value = {"/{pid}/img/{imgId}", "/{pid}/study/{studyId}/img/{imgId}"}, method = RequestMethod.GET)
-    private void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
+    public void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
         final int thumbHeight = 98;
         final int maxWidth = 160;
         try {
@@ -465,7 +469,7 @@ public class ProjectController {
     @RequestMapping(value = {"", "/{pid}/deleteProject"})
     public String deleteProject(@PathVariable final Optional<Long> pid, final ModelMap model, final RedirectAttributes redirectAttributes) {
         UserDTO user = UserUtil.getCurrentUser();
-        log.trace("Entering  deleteProject for [projectId: {}] user[id: {}; email: {}]", () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+        log.trace("Entering  deleteProject for [projectId: {}] user[id: {}; email: {}]", pid::get, user::getId, user::getEmail);
         String ret = "redirect:/panel";
         try {
             projectService.deleteProject(pid, user);

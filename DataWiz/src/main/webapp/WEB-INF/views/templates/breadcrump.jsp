@@ -1,6 +1,6 @@
 <%@ include file="../templates/includes.jsp"%>
 <%-- <ol class="breadcrumb">
-  <c:forEach var="map" items="${breadcrumpList}">
+  <c:forEach var="map" items="${breadcrumbList}">
     <c:choose>
       <c:when test="${empty map.uri}">
         <li class="active"><s:message text="${map.name}" /></li>

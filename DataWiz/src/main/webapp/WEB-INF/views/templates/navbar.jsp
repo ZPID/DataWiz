@@ -15,7 +15,7 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="breadcrumb">
-            <c:forEach var="map" items="${breadcrumpList}">
+            <c:forEach var="map" items="${breadcrumbList}">
               <c:choose>
                 <c:when test="${empty map.uri}">
                   <li class="bractive"><s:message text="${map.name}" /></li>

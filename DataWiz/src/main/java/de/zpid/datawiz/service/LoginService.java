@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import de.zpid.datawiz.dao.UserDAO;
@@ -26,8 +27,7 @@ import de.zpid.datawiz.util.CustomUserDetails;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.RegexUtil;
 
-@Component("LoginService")
-@Scope("singleton")
+@Service("LoginService")
 public class LoginService implements UserDetailsService {
 
   private static Logger log = LogManager.getLogger(LoginService.class);

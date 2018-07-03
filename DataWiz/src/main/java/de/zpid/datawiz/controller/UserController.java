@@ -88,8 +88,8 @@ public class UserController {
     public String showUserSettingPage(@PathVariable final Optional<Long> userId, final ModelMap model, final RedirectAttributes reAtt) {
         final UserDTO auth = UserUtil.getCurrentUser();
         log.trace("Entering showUserSettingPage for user [id: {}]",
-                () -> userId.isPresent() ? userId.get() : (auth != null && auth.getId() > 0) ? auth.getId() : "null");
-        UserDTO user = null;
+                () -> userId.orElseGet(() -> (auth != null && auth.getId() > 0) ? auth.getId() : 0L));
+        UserDTO user;
         try {
             if (userId.isPresent() && auth.hasRole(Roles.ADMIN)) {
                 user = userDAO.findById(userId.get());
@@ -105,7 +105,7 @@ public class UserController {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
             return "redirect:/login";
         }
-        model.put("breadcrumpList", BreadCrumbUtil.generateBC(PageState.USERSETTING, null, null, messageSource));
+        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.USERSETTING, null, null, messageSource));
         model.put("UserDTO", user);
         log.trace("Method showUserSettingPage successfully completed");
         return "usersettings";

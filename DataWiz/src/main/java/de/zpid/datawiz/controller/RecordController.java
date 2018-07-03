@@ -61,47 +61,47 @@ import java.util.stream.Collectors;
  *
  * @author Ronny Boelter
  * @version 1.0
+ * FIXME: StudyForm is stored in Session. This should be revised, because it causes errors on using multiple browser tabs!!!
  **/
 @Controller
 @RequestMapping(value = {"/project/{pid}/study/{studyId}/record"})
-@SessionAttributes({"StudyForm", "subnaviActive", "breadcrumpList"})
+@SessionAttributes({"StudyForm", "subnaviActive", "breadcrumbList"})
 public class RecordController {
 
     private static Logger log = LogManager.getLogger(RecordController.class);
-
-    @Autowired
     private RecordService recordService;
-    @Autowired
     private ExportService exportService;
-    @Autowired
     private ImportService importService;
-    @Autowired
     private MessageSource messageSource;
-    @Autowired
     private Environment env;
-    @Autowired
     private ClassPathXmlApplicationContext applicationContext;
-    @Autowired
     private ExceptionService exceptionService;
-    @Autowired
     private ProjectService projectService;
-    @Autowired
     private SPSSIO spss;
-    @Autowired
     private StringUtil stringUtil;
+
 
     /**
      * Instantiates a new record controller.
      */
-    public RecordController() {
+    @Autowired
+    public RecordController(RecordService recordService, ExportService exportService, ImportService importService, MessageSource messageSource,
+                            Environment env, ClassPathXmlApplicationContext applicationContext, ExceptionService exceptionService,
+                            ProjectService projectService, SPSSIO spss, StringUtil stringUtil) {
         super();
         log.info("Loading RecordController for mapping /project/{pid}/study/{sid}/record");
+        this.recordService = recordService;
+        this.exportService = exportService;
+        this.importService = importService;
+        this.messageSource = messageSource;
+        this.env = env;
+        this.applicationContext = applicationContext;
+        this.exceptionService = exceptionService;
+        this.projectService = projectService;
+        this.spss = spss;
+        this.stringUtil = stringUtil;
     }
 
-    @ModelAttribute("StudyForm")
-    private StudyForm createProjectForm() {
-        return (StudyForm) applicationContext.getBean("StudyForm");
-    }
 
     /**
      * This function is called if a user selects the record meta-data, codebook, or matrix. The mapping depends on the passed "subpage" string.
@@ -114,73 +114,76 @@ public class RecordController {
      * @param model              {@link ModelMap}
      * @param subpage            Mapping variable as {@link String}: "codebook" for mapping to codebook.jsp, "data" for mapping to datamatrix.jsp, or empty for mapping to
      *                           record.jsp
-     * @return Mapping to recordjsp, codebook.jsp, or datamatrix.jsp (depends on subpage) on success, otherwise exception handling via
+     * @return Mapping to record.jsp, codebook.jsp, or datamatrix.jsp (depends on subpage) on success, otherwise exception handling via
      * exceptionService.setErrorMessagesAndRedirects(...)
      */
     @RequestMapping(value = {"", "/{recordId}", "/{recordId}/{subpage}", "/{recordId}/version/{versionId}",
             "/{recordId}/version/{versionId}/{subpage}"}, method = RequestMethod.GET)
-    public String showRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable final Optional<Long> recordId,
+    public String showRecord(@PathVariable final long pid, @PathVariable final long studyId, @PathVariable final Optional<Long> recordId,
                              @PathVariable final Optional<Long> versionId, final RedirectAttributes redirectAttributes, final ModelMap model,
                              @PathVariable final Optional<String> subpage) {
         final UserDTO user = UserUtil.getCurrentUser();
         String ret;
         if (recordId.isPresent()) {
-            log.trace("Entering showRecord(edit) for [recordId: {}; studyId {}; projectId {}]", () -> recordId.get(), () -> studyId.get(), () -> pid.get());
+            log.trace("Entering showRecord(edit) for [recordId: {}; studyId {}; projectId {}]", recordId::get, () -> studyId, () -> pid);
             ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
         } else {
-            log.trace("Entering showRecord(create) ");
+            log.trace("Entering showRecord(create) [studyId {}; projectId {}]", () -> studyId, () -> pid);
             ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
         }
         StudyForm sForm = null;
-        List<String> parsingErrors = new ArrayList<String>();
+        List<String> parsingErrors = new ArrayList<>();
         if (ret == null) {
             try {
-                sForm = recordService.setStudyform(pid, studyId, recordId, versionId, subpage, parsingErrors);
+                sForm = recordService.setStudyform(pid, studyId, recordId.orElse(0L), versionId.orElse(0L), subpage.orElse(null), parsingErrors);
             } catch (Exception e) {
-                ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e, "recordService.setStudyform");
+                ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId.orElse(0L), model, redirectAttributes, e, "recordService.setStudyForm");
             }
         }
         if (sForm != null) {
             model.put("StudyForm", sForm);
             model.put("recordSubMenu", true);
-            model.put("breadcrumpList",
+            model.put("breadcrumbList",
                     BreadCrumbUtil.generateBC(PageState.RECORDS,
                             new String[]{sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
                                     (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
                                             : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale()))},
-                            new long[]{pid.get(), studyId.get()}, messageSource));
+                            new long[]{pid, studyId}, messageSource));
             if (sForm.getPageLoadMin() == 0) {
                 sForm.setPageLoadMin(1);
             }
-            if (subpage.isPresent() && subpage.get().equals("codebook")) {
-                model.put("subnaviActive", PageState.RECORDVAR.name());
-                model.put("errorCodeBookMSG", recordService.validateCodeBook(sForm));
-                if (sForm.getPageLoadMax() == 0) {
-                    sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables() < 5 ? sForm.getRecord().getNumberOfVariables() : 5);
-                }
-                ret = "codebook";
-                model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
-            } else if (subpage.isPresent() && subpage.get().equals("data")) {
-                model.put("subnaviActive", PageState.RECORDDATA.name());
-                if (sForm.getPageLoadMax() == 0) {
-                    sForm.setPageLoadMax(sForm.getRecord().getNumberOfCases() < 100 ? (int) sForm.getRecord().getNumberOfCases() : 100);
-                }
-                ret = "datamatrix";
-            } else {
-                model.put("isSPSSLibLoaded", spss.isLibLoaded());
-                String errormsg = recordService.validateCodeBook(sForm);
-                if (errormsg != null && !errormsg.trim().isEmpty()) {
-                    model.put("errorMSG", messageSource.getMessage("record.spss.export.disabled", null, LocaleContextHolder.getLocale()));
-                    model.put("disableSPSSExport", true);
-                } else {
-                    model.put("disableSPSSExport", false);
-                }
-                model.put("subnaviActive", PageState.RECORDMETA.name());
-                ret = "record";
+            switch (subpage.orElse("")) {
+                case "codebook":
+                    model.put("subnaviActive", PageState.RECORDVAR.name());
+                    model.put("errorCodeBookMSG", recordService.validateCodeBook(sForm));
+                    if (sForm.getPageLoadMax() == 0) {
+                        sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables() < 5 ? sForm.getRecord().getNumberOfVariables() : 5);
+                    }
+                    ret = "codebook";
+                    model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
+                    break;
+                case "data":
+                    model.put("subnaviActive", PageState.RECORDDATA.name());
+                    if (sForm.getPageLoadMax() == 0) {
+                        sForm.setPageLoadMax(sForm.getRecord().getNumberOfCases() < 100 ? (int) sForm.getRecord().getNumberOfCases() : 100);
+                    }
+                    ret = "datamatrix";
+                    break;
+                default:
+                    model.put("isSPSSLibLoaded", spss.isLibLoaded());
+                    String errormsg = recordService.validateCodeBook(sForm);
+                    if (errormsg != null && !errormsg.trim().isEmpty()) {
+                        model.put("errorMSG", messageSource.getMessage("record.spss.export.disabled", null, LocaleContextHolder.getLocale()));
+                        model.put("disableSPSSExport", true);
+                    } else {
+                        model.put("disableSPSSExport", false);
+                    }
+                    model.put("subnaviActive", PageState.RECORDMETA.name());
+                    ret = "record";
+                    break;
             }
         }
-        if (log.isTraceEnabled())
-            log.trace("Method showRecord completed - mapping to {}", ret);
+        log.trace("Method showRecord completed - mapping to {}", ret);
         return ret;
     }
 
@@ -188,39 +191,34 @@ public class RecordController {
      * This function is called after a user submits the upload form from the report.jsp. Before starting the upload process, it checks if the change-log is set.
      * If it is missing it redirects to record.jsp with missing change-log message.
      *
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param recordId           Record Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param pid                Project Identifier as {@link Long}
+     * @param studyId            Study Identifier as {@link Long}
+     * @param recordId           Record Identifier as {@link Long}
      * @param sForm              {@link StudyForm}
      * @param redirectAttributes {@link RedirectAttributes}
      * @param model              {@link ModelMap}
      * @return Mapping to redirect:/importReport on success, otherwise error and mapping handling via exceptionService.setErrorMessagesAndRedirects(...)
      */
     @RequestMapping(value = {"/{recordId}"}, method = RequestMethod.POST, params = {"upload"})
-    public String uploadFile(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable final Optional<Long> recordId,
+    public String uploadFile(@PathVariable final long pid, @PathVariable long studyId, @PathVariable final long recordId,
                              @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes, final ModelMap model) {
         final UserDTO user = UserUtil.getCurrentUser();
-        log.trace("Entering  uploadFile for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
-                () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+        log.trace("Entering  uploadFile for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId, () -> studyId,
+                () -> pid, user::getId, user::getEmail);
         String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
-        if (ret == null) {
+        if (ret == null)
             if (sForm.getNewChangeLog() == null || sForm.getNewChangeLog().isEmpty()) {
-                if (log.isDebugEnabled())
-                    log.debug("New Changelog is Missing - return to jsp with message");
                 redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("record.no.changelog", null, LocaleContextHolder.getLocale()));
-                ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+                ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + recordId;
+            } else {
+                try {
+                    importService.importFile(pid, studyId, recordId, sForm, user);
+                    ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + recordId + "/importReport";
+                } catch (DataWizSystemException e) {
+                    ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e, "importService.importFile");
+                }
             }
-        }
-        if (ret == null) {
-            try {
-                importService.importFile(pid, studyId, recordId, sForm, user);
-                ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get() + "/importReport";
-            } catch (DataWizSystemException e) {
-                ret = exceptionService.setErrorMessagesAndRedirects(pid, studyId, recordId, model, redirectAttributes, e, "importService.importFile");
-            }
-        }
-        if (log.isTraceEnabled())
-            log.trace("Method uploadFile completed - mapping to {}", ret);
+        log.trace("Method uploadFile completed - mapping to {}", ret);
         return ret;
     }
 
@@ -228,21 +226,20 @@ public class RecordController {
      * This function is called if a user wants to delete a record. It checks if the user has the rights to delete the record. If the rights to delete are given
      * recordService.deleteRecord(...) is called to delete the record finally from Database and Minio.
      *
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param recordId           Record Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param sForm              {@link StudyForm}
-     * @param redirectAttributes {@link RedirectAttributes}
-     * @param model              {@link ModelMap}
+     * @param pid      Project Identifier as long
+     * @param studyId  Study Identifier as long
+     * @param recordId Record Identifier as long
+     * @param sForm    {@link StudyForm}
+     * @param model    {@link ModelMap}
      * @return Mapping to redirect/records on success, otherwise to record.jsp or error.jsp (Database Errors) with error messages
      */
     @RequestMapping(value = {"/{recordId}/deleteRecord"}, method = RequestMethod.GET)
-    public String deleteRecord(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable final Optional<Long> recordId,
-                               @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes, final ModelMap model) {
+    public String deleteRecord(@PathVariable final long pid, @PathVariable final long studyId, @PathVariable final long recordId,
+                               @ModelAttribute("StudyForm") StudyForm sForm, final ModelMap model) {
         final UserDTO user = UserUtil.getCurrentUser();
-        log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
-                () -> pid.get(), () -> user.getId(), () -> user.getEmail());
-        String ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/records";
+        log.trace("Entering  deleteRecord for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId, () -> studyId,
+                () -> pid, user::getId, user::getEmail);
+        String ret = "redirect:/project/" + pid + "/study/" + studyId + "/records";
         try {
             recordService.deleteRecord(pid, studyId, recordId, user, true);
         } catch (DataWizSystemException e) {
@@ -267,25 +264,25 @@ public class RecordController {
     /**
      * This function is redirect called from uploadFile(...). It validates the imported Record and compares it to the last saved version.
      *
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param recordId           Record Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param pid                Project Identifier as long
+     * @param studyId            Study Identifier as long
+     * @param recordId           Record Identifier as long
      * @param sForm              {@link StudyForm}
      * @param redirectAttributes {@link RedirectAttributes}
      * @return Mapping to "importReport.jsp" on success, otherwise redirect to /record with error messages.
      */
     @RequestMapping(value = {"/{recordId}/importReport"}, method = RequestMethod.GET)
-    public String showImportReport(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-                                   @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes) {
+    public String showImportReport(@PathVariable final long pid, @PathVariable final long studyId,
+                                   @PathVariable final long recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes) {
         final UserDTO user = UserUtil.getCurrentUser();
-        log.trace("Entering  showImportReport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
-                () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+        log.trace("Entering  showImportReport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId, () -> studyId,
+                () -> pid, user::getId, user::getEmail);
         String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
         if (sForm == null || sForm.getRecord() == null) {
             log.debug("Record Object is empty - Session timeout");
             redirectAttributes.addFlashAttribute("errorMSG",
                     "Ihre Anfrage an den Server enthielt keine Daten, wahrscheinlich waren Sie zu lange inaktiv und die Session ist abgelaufen.");
-            ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+            ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + recordId;
         }
         if (ret == null) {
             try {
@@ -300,7 +297,7 @@ public class RecordController {
                     redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("dbs.sql.exception",
                             new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale()));
                 }
-                ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+                ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + recordId;
             }
         }
         if (log.isTraceEnabled())
@@ -312,17 +309,18 @@ public class RecordController {
      * This function is used by DataTables.js to load the DataMatrix asynchronously to improve the page load speed.
      *
      * @param sForm {@link StudyForm}
-     * @return
+     * @return Selected Part of the Data Matrix
      */
     @RequestMapping(value = {"/{recordId}/getMatrixAsync/{state}", "/{recordId}/version/{versionId}/getMatrixAsync/{state}"}, method = RequestMethod.POST)
     public @ResponseBody
-    String getMatrixAsync(@ModelAttribute("StudyForm") StudyForm sForm, HttpServletRequest request, @PathVariable final String state) {
+    String getMatrixAsync(@PathVariable final Optional<Double> recordId, @PathVariable final Optional<Double> versionId,
+                          @ModelAttribute("StudyForm") final StudyForm sForm, final HttpServletRequest request, @PathVariable final String state) {
         String search = request.getParameter("search[value]");
         String start = request.getParameter("start");
         String length = request.getParameter("length");
         String draw = request.getParameter("draw");
-        log.trace("Entering getMatrixAsync for importReport with Parameter [state: {}; draw: {}; start: {}; length: {}; search: {}]", () -> state, () -> draw,
-                () -> start, () -> length, () -> search);
+        log.trace("Entering getMatrixAsync for importReport with Parameter [state: {}; draw: {}; start: {}; length: {}; search: {}] for record [id: {}; version: {}]", () -> state, () -> draw,
+                () -> start, () -> length, () -> search, () -> recordId, () -> versionId);
         StringBuilder err = new StringBuilder();
         DataTableDTO datatable = new DataTableDTO();
         int startI = 0, lengthI = 0;
@@ -330,33 +328,33 @@ public class RecordController {
             if (draw != null && !draw.isEmpty())
                 datatable.setDraw(Integer.parseInt(draw));
             else {
-                err.append(
-                        "\n " + messageSource.getMessage("record.matrix.async.error", new Object[]{"Parameter 'draw' is not set!"}, LocaleContextHolder.getLocale()));
+                err.append("\n ")
+                        .append(messageSource.getMessage("record.matrix.async.error", new Object[]{"Parameter 'draw' is not set!"}, LocaleContextHolder.getLocale()));
             }
             if (start != null && !start.isEmpty())
                 startI = Integer.parseInt(start);
             else {
-                err.append(
-                        "\n " + messageSource.getMessage("record.matrix.async.error", new Object[]{"Parameter 'start' is not set!"}, LocaleContextHolder.getLocale()));
+                err.append("\n ")
+                        .append(messageSource.getMessage("record.matrix.async.error", new Object[]{"Parameter 'start' is not set!"}, LocaleContextHolder.getLocale()));
             }
             if (length != null && !length.isEmpty())
                 lengthI = Integer.parseInt(length);
             else {
-                err.append("\n "
-                        + messageSource.getMessage("record.matrix.async.error", new Object[]{"Parameter 'length' is not given!"}, LocaleContextHolder.getLocale()));
+                err.append("\n ")
+                        .append(messageSource.getMessage("record.matrix.async.error", new Object[]{"Parameter 'length' is not given!"}, LocaleContextHolder.getLocale()));
             }
         } catch (Exception e) {
             log.warn("Error during parsing String paramater" + e);
-            err.append(
-                    "\n " + messageSource.getMessage("record.matrix.async.error", new Object[]{"Parsing Error: " + e.getMessage()}, LocaleContextHolder.getLocale()));
+            err.append("\n ")
+                    .append(messageSource.getMessage("record.matrix.async.error", new Object[]{"Parsing Error: " + e.getMessage()}, LocaleContextHolder.getLocale()));
         }
         if (err.length() == 0) {
             List<List<Object>> list = null;
             if (state.equals("import") && sForm.getImportMatrix() != null) {
                 List<List<Object>> list_t = new ArrayList<>();
-                sForm.getImportMatrix().forEach(row -> {
-                    list_t.add(new ArrayList<Object>(Arrays.asList(row)));
-                });
+                sForm.getImportMatrix().forEach(row ->
+                        list_t.add(new ArrayList<>(Arrays.asList(row)))
+                );
                 list = list_t;
             } else if (state.equals("final")) {
                 if (sForm != null && sForm.getRecord() != null && sForm.getRecord().getDataMatrix() != null && !sForm.getRecord().getDataMatrix().isEmpty())
@@ -409,14 +407,14 @@ public class RecordController {
      * @return Redirect mapping to /record on success and on error, but with error messages if errors occurred.
      */
     @RequestMapping(value = {"/{recordId}"}, method = RequestMethod.POST)
-    public String saveImport(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable final Optional<Long> recordId,
+    public String saveImport(@PathVariable final long pid, @PathVariable final long studyId, @PathVariable final long recordId,
                              @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes) {
         final UserDTO user = UserUtil.getCurrentUser();
-        log.trace("Entering  saveImport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId.get(), () -> studyId.get(),
-                () -> pid.get(), () -> user.getId(), () -> user.getEmail());
+        log.trace("Entering  saveImport for [recordId: {}; studyId {}; projectId {}] user[id: {}; email: {}]", () -> recordId, () -> studyId,
+                () -> pid, user::getId, user::getEmail);
         String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
         if (ret == null) {
-            ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + recordId.get();
+            ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + recordId;
             try {
                 recordService.sortVariablesAndSetMetaData(sForm);
                 recordService.saveRecordToDBAndMinio(sForm);
@@ -444,8 +442,8 @@ public class RecordController {
     /**
      * This function is called if a user saves the record meta data on record.jsp
      *
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param pid                Project Identifier as long
+     * @param studyId            Study Identifier as long
      * @param recordId           Record Identifier as {@link Optional}&lt;{@link Long}&gt;
      * @param sForm              {@link StudyForm}
      * @param redirectAttributes {@link RedirectAttributes}
@@ -453,14 +451,15 @@ public class RecordController {
      * @return "record.jsp" on error with error messages, or redirect to /record on success.
      */
     @RequestMapping(value = {"", "/{recordId}", "/{recordId}/version/{versionId}"}, params = "saveMetaData")
-    public String saveRecordMetaData(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId,
-                                     @PathVariable final Optional<Long> recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes,
+    public String saveRecordMetaData(@PathVariable final long pid, @PathVariable final long studyId,
+                                     @PathVariable final Optional<Long> recordId, @PathVariable final Optional<Double> versionId,
+                                     @ModelAttribute("StudyForm") final StudyForm sForm, final RedirectAttributes redirectAttributes,
                                      final ModelMap model) {
         final UserDTO user = UserUtil.getCurrentUser();
         if (recordId.isPresent())
-            log.trace("Entering saveRecordMetaData(update) for [recordId: {}; studyId {}; projectId {}]", () -> recordId.get(), () -> studyId.get(), () -> pid.get());
+            log.trace("Entering saveRecordMetaData(update) for [recordId: {}; version: {}; studyId {}; projectId {}]", () -> recordId, () -> versionId, () -> studyId, () -> pid);
         else
-            log.trace("Entering saveRecordMetaData(create) for [studyId {}; projectId {}]", () -> studyId.get(), () -> pid.get());
+            log.trace("Entering saveRecordMetaData(create) for [studyId {}; projectId {}]", () -> studyId, () -> pid);
         String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
         if (ret == null && (sForm.getRecord().getRecordName() == null || sForm.getRecord().getRecordName().isEmpty())) {
             model.put("errorMSG", messageSource.getMessage("record.name.missing", null, LocaleContextHolder.getLocale()));
@@ -476,10 +475,10 @@ public class RecordController {
         }
         if (ret == null) {
             try {
-                recordService.insertOrUpdateRecordMetadata(studyId, recordId, sForm, user);
-                ret = "redirect:/project/" + pid.get() + "/study/" + studyId.get() + "/record/" + sForm.getRecord().getId();
+                recordService.insertOrUpdateRecordMetadata(studyId, recordId.orElse(0L), sForm, user);
+                ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + sForm.getRecord().getId();
             } catch (Exception e) {
-                log.fatal("ERROR: Saving record to DB wasn't sucessful! Exception:", () -> e);
+                log.fatal("ERROR: Saving record to DB wasn't successful! Exception:", () -> e);
                 model.put("errorMSG", messageSource.getMessage("dbs.sql.exception", new Object[]{env.getRequiredProperty("organisation.admin.email")},
                         LocaleContextHolder.getLocale()));
                 ret = "record";
@@ -494,30 +493,20 @@ public class RecordController {
      * This function is called asynchronously if a user opens a modal in the codebook. It load the content for global or single missing, or value-label fields,
      * depending on the given recordID.
      *
-     * @param model    {@link ModelMap}
-     * @param sForm    {@link StudyForm}
-     * @param pid      Project Identifier as {@link Long};
-     * @param studyId  Study Identifier {@link Long};
-     * @param recordId Record Identifier as {@link Long};
-     * @param varId    Variable Identifier as {@link Long};
-     * @param modal    "missing" for missing modal, "values" for value-label modal - type: {@link String};
+     * @param model {@link ModelMap}
+     * @param sForm {@link StudyForm}
+     * @param varId Variable Identifier as {@link Long};
+     * @param modal "missing" for missing modal, "values" for value-label modal - type: {@link String};
      * @return "forms/codebookModalGlobalValues.jsp" if global value-label is selected, "forms/codebookModalGlobalMissings.jsp" if global missing is selected, or
      * "forms/codebookModalContent.jsp" if single missing or value-label is selected
      */
     @RequestMapping(value = {"{recordId}/version/{versionId}/codebook/modal"})
-    public String loadAjaxModal(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Long pid,
-                                @PathVariable final Long studyId, @PathVariable final Long recordId, @RequestParam(value = "varId", required = true) long varId,
-                                @RequestParam(value = "modal", required = true) String modal) {
-        log.trace("Entering loadAjaxModal [{}] for variable [id: {}]", () -> modal, () -> varId);
+    public String loadAjaxModal(@PathVariable final Optional<Long> recordId, @PathVariable final Optional<Double> versionId,
+                                final ModelMap model, @ModelAttribute("StudyForm") final StudyForm sForm, @RequestParam(value = "varId") final long varId,
+                                @RequestParam(value = "modal") final String modal) {
+        log.trace("Entering loadAjaxModal [{}] for variable [recordId: {}; version: {}; id: {}]", () -> modal, () -> recordId, () -> versionId, () -> varId);
         String ret = "forms/codebookModalContent";
-        if (varId != -1) {
-            for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
-                if (var.getId() == varId) {
-                    model.put("VarValues", var);
-                    break;
-                }
-            }
-        } else if (varId == -1) {
+        if (varId == -1) {
             if (modal.equals("values")) {
                 ret = "forms/codebookModalGlobalValues";
                 SPSSVarDTO var = new SPSSVarDTO();
@@ -533,6 +522,13 @@ public class RecordController {
                 }
                 varForm.setViewVars(varL);
                 model.put("VarValues", varForm);
+            }
+        } else {
+            for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
+                if (var.getId() == varId) {
+                    model.put("VarValues", var);
+                    break;
+                }
             }
         }
         model.put("modalView", modal);
@@ -551,8 +547,9 @@ public class RecordController {
      * @return Mapping to codebook.jsp
      */
     @RequestMapping(value = {"/{recordId}/version/{versionId}/codebook"}, params = "setValues")
-    public String setValuesToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal, @ModelAttribute("StudyForm") StudyForm sForm) {
-        log.trace("Entering setValuesToStudyForm for variable [id: {}]", () -> varVal.getId());
+    public String setValuesToStudyForm(@PathVariable final Optional<Long> recordId, @PathVariable final Optional<Double> versionId,
+                                       final ModelMap model, @ModelAttribute("VarValues") final SPSSVarDTO varVal, @ModelAttribute("StudyForm") final StudyForm sForm) {
+        log.trace("Entering setValuesToStudyForm for variable [recordId: {}; version: {}; id: {}]", () -> recordId, () -> versionId, varVal::getId);
         recordService.setVariableValues(varVal, sForm);
         model.put("errorMSG", recordService.validateCodeBook(sForm));
         if (sForm.getWarnings() != null && sForm.getWarnings().size() > 0) {
@@ -580,8 +577,9 @@ public class RecordController {
      * @return Mapping to codebook.jsp
      */
     @RequestMapping(value = {"/{recordId}/version/{versionId}/codebook"}, params = "setMissings")
-    public String setMissingsToStudyForm(final ModelMap model, @ModelAttribute("VarValues") SPSSVarDTO varVal, @ModelAttribute("StudyForm") StudyForm sForm) {
-        log.trace("Entering setMissingsToStudyForm for variable [id: {}]", () -> varVal.getId());
+    public String setMissingsToStudyForm(@PathVariable final Optional<Long> recordId, @PathVariable final Optional<Double> versionId,
+                                         final ModelMap model, @ModelAttribute("VarValues") final SPSSVarDTO varVal, @ModelAttribute("StudyForm") final StudyForm sForm) {
+        log.trace("Entering setMissingsToStudyForm for variable [recordId: {}; version: {}; id: {}]", () -> recordId, () -> versionId, varVal::getId);
 
         for (SPSSVarDTO var : sForm.getRecord().getVariables()) {
             if (var.getId() == varVal.getId()) {
@@ -606,24 +604,23 @@ public class RecordController {
      * data, which is written into the response. Because of the fact, that this function is called with target="_blank" and that exceptions are handled with the
      * ExceptionController, it was decided that this function can throw exceptions.
      *
-     * @param model              {@link ModelMap}
      * @param response           {@link HttpServletResponse}
      * @param redirectAttributes {@link RedirectAttributes}
-     * @param versionId          Version Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param recordId           Record Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
-     * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
+     * @param versionId          Version Identifier as long
+     * @param recordId           Record Identifier as long
+     * @param pid                Project Identifier as long
+     * @param studyId            Study Identifier as long
      * @param exportType         {@link String}
      * @param attachments        {@link Boolean}
-     * @throws Exception
+     * @throws Exception Download Exceptions
      */
     @RequestMapping(value = {"{recordId}/version/{versionId}/export/{exportType}"})
-    public void exportRecord(final ModelMap model, HttpServletResponse response, RedirectAttributes redirectAttributes, @PathVariable long versionId,
-                             @PathVariable long recordId, @PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable String exportType,
+    public void exportRecord(final HttpServletResponse response, final RedirectAttributes redirectAttributes, @PathVariable final long versionId,
+                             @PathVariable final long recordId, @PathVariable final long pid, @PathVariable final long studyId, @PathVariable final String exportType,
                              @RequestParam(value = "attachments", required = false) Boolean attachments) throws Exception {
-        log.trace("Entering exportRecord for [recordid: {}, version: {}, exporttye: {}] ", () -> recordId, () -> versionId, () -> exportType);
+        log.trace("Entering exportRecord for [recordId: {}, version: {}, exportType: {}] ", () -> recordId, () -> versionId, () -> exportType);
         UserDTO user = UserUtil.getCurrentUser();
-        RecordDTO record = null;
+        RecordDTO record;
         StringBuilder res = new StringBuilder();
         byte[] content = null;
         if (user == null || projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user) != null) {
@@ -631,7 +628,7 @@ public class RecordController {
             throw new DWDownloadException("export.access.denied");
         }
         try {
-            record = recordService.loadRecordExportData(versionId, recordId, exportType, res, pid.get());
+            record = recordService.loadRecordExportData(versionId, recordId, exportType, res, pid);
             if (!res.toString().trim().isEmpty()) {
                 record = null;
             }
@@ -642,10 +639,10 @@ public class RecordController {
         }
         if (record != null) {
             try {
-                content = exportService.getRecordExportContentAsByteArray(pid.get(), exportType, attachments, record, res);
+                content = exportService.getRecordExportContentAsByteArray(pid, exportType, attachments, record, res);
             } catch (Exception e) {
                 record = null;
-                res.insert(0, "export.error.exception.thown");
+                res.insert(0, "export.error.exception.thrown");
                 log.error("ERROR: Exception thrown at exportService.getRecordExportContentAsByteArray", () -> e);
             }
         }
@@ -699,38 +696,43 @@ public class RecordController {
      * @return Depends on pagestate, mapping to datamatrix.jsp or codebook.jsp.
      */
     @RequestMapping(value = {"/{recordId}/version/{versionId}/{pagestate}"}, method = RequestMethod.POST, params = "setNumofVars")
-    public String setNumofVars(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final Optional<Long> pid,
-                               @PathVariable final Optional<Long> studyId, @PathVariable final Optional<Long> recordId, @PathVariable final String pagestate) {
-        log.trace("Entering setNumofVars");
+    public String setNumofVars(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @PathVariable final long pid,
+                               @PathVariable final long studyId, @PathVariable final Optional<Long> recordId,
+                               @PathVariable final Optional<Double> versionId, @PathVariable final String pagestate) {
+        log.trace("Entering setNumofVars [recordId: {}; version: {}]", () -> recordId, () -> versionId);
+        String ret;
         if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
             log.warn("Setting setNumofVars failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0)");
-        }
-        String ret = "codebook";
-        if (pagestate.equals("codebook")) {
-            model.put("errorMSG", recordService.validateCodeBook(sForm));
-            model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
-            if (sForm.getPageLoadMin() < 1)
-                sForm.setPageLoadMin(1);
-            if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
-                sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
-            model.put("subnaviActive", PageState.RECORDVAR.name());
+            model.put("errorMSG", messageSource.getMessage("record.codebook.server.error", null, LocaleContextHolder.getLocale()));
+            ret = pagestate.equals("codebook") ? pagestate : "datamatrix";
         } else {
-            if (sForm.getPageLoadMin() < 1)
-                sForm.setPageLoadMin(1);
-            if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfCases())
-                sForm.setPageLoadMax((int) sForm.getRecord().getNumberOfCases());
-            model.put("subnaviActive", PageState.RECORDDATA.name());
-            ret = "datamatrix";
+            ret = "codebook";
+            if (pagestate.equals("codebook")) {
+                model.put("errorMSG", recordService.validateCodeBook(sForm));
+                model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
+                if (sForm.getPageLoadMin() < 1)
+                    sForm.setPageLoadMin(1);
+                if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
+                    sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
+                model.put("subnaviActive", PageState.RECORDVAR.name());
+            } else {
+                if (sForm.getPageLoadMin() < 1)
+                    sForm.setPageLoadMin(1);
+                if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfCases())
+                    sForm.setPageLoadMax((int) sForm.getRecord().getNumberOfCases());
+                model.put("subnaviActive", PageState.RECORDDATA.name());
+                ret = "datamatrix";
+            }
+            model.put("recordSubMenu", true);
+            model.put("breadcrumbList",
+                    BreadCrumbUtil.generateBC(PageState.RECORDS,
+                            new String[]{sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
+                                    (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
+                                            : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale()))},
+                            new long[]{pid, studyId}, messageSource));
+            if (log.isTraceEnabled())
+                log.trace("Method setNumofVars completed - mapping to {}", ret);
         }
-        model.put("recordSubMenu", true);
-        model.put("breadcrumpList",
-                BreadCrumbUtil.generateBC(PageState.RECORDS,
-                        new String[]{sForm.getProject().getTitle(), sForm.getStudy().getTitle(),
-                                (sForm.getRecord() != null ? sForm.getRecord().getRecordName()
-                                        : messageSource.getMessage("record.new.record.breadcrump", null, LocaleContextHolder.getLocale()))},
-                        new long[]{pid.get(), studyId.get()}, messageSource));
-        if (log.isTraceEnabled())
-            log.trace("Method setNumofVars completed - mapping to {}", ret);
         return ret;
     }
 
@@ -738,41 +740,41 @@ public class RecordController {
      * To prevent loss of data, this function is asynchronous called if a user opens a modal (missing, value, global missing/value), because the HTML form which
      * is included in the codebook.jsp would not be submitted, and all by the user entered information would be lost.
      *
-     * @param model {@link ModelMap}
      * @param sForm {@link StudyForm}
-     * @return HTTP Status as @ResponseBody ResponseEntity&lt;String&gt; - HttpStatus.OK on success, otherwise HttpStatus.BAD_REQUEST
+     * @return HTTP Status as @ResponseBody ResponseEntity - HttpStatus.OK on success, otherwise HttpStatus.BAD_REQUEST
      */
     @RequestMapping(value = {"{recordId}/version/{versionId}/asyncSubmit"})
     public @ResponseBody
-    ResponseEntity<String> setFormAsync(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm) {
+    ResponseEntity<String> setFormAsync(@ModelAttribute("StudyForm") final StudyForm sForm) {
         log.trace("Entering setFormAsync");
         if (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) {
             log.warn("Setting Variables Async failed - (sForm == null || sForm.getRecord() == null || sForm.getRecord().getId() == 0) returned status: {}",
-                    () -> HttpStatus.BAD_REQUEST.toString());
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+                    HttpStatus.BAD_REQUEST::toString);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        log.trace("Method setFormAsync completed with satus: {}", () -> HttpStatus.OK.toString());
-        return new ResponseEntity<String>("{}", HttpStatus.OK);
+        log.trace("Method setFormAsync completed with status: {}", HttpStatus.OK::toString);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
     }
+
 
     @RequestMapping(value = {"{recordId}/version/{versionId}/copyCellValue"})
     public @ResponseBody
-    String copyCellValue(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm, @RequestParam("type") final String type,
+    String copyCellValue(@ModelAttribute("StudyForm") StudyForm sForm, @RequestParam("type") final String type,
                          @RequestParam("varId") final long varId) {
         log.trace("Entering copyCellValue for [type {}; varId: {}]", () -> type, () -> varId);
-        String gson = null;
+        String gson;
         try {
             gson = new Gson().toJson(recordService.getVariableValues(varId));
         } catch (Exception e) {
             gson = "[]";
         }
-        log.trace("Method copyCellValue completed with satus: {}", () -> HttpStatus.OK.toString());
+        log.trace("Method copyCellValue completed with satus: {}", HttpStatus.OK::toString);
         return gson;
     }
 
     @RequestMapping(value = {"{recordId}/version/{versionId}/pasteCellValue"})
     public @ResponseBody
-    ResponseEntity<String> pasteCellValue(final ModelMap model, @ModelAttribute("StudyForm") StudyForm sForm,
+    ResponseEntity<String> pasteCellValue(@ModelAttribute("StudyForm") StudyForm sForm,
                                           @RequestParam("type") final String type, @RequestParam("varId") final long varId, @RequestParam("valContent") final String valContent) {
         log.trace("Entering pasteCellValue for [type {}; varId: {}]", () -> type, () -> varId);
         SPSSVarDTO var = sForm.getRecord().getVariables().parallelStream().filter(var_t -> var_t.getId() == varId).findFirst().orElse(null);
@@ -781,8 +783,8 @@ public class RecordController {
         if (var != null && values != null) {
             var.setValues(values);
         }
-        log.trace("Method pasteCellValue completed with satus: {}", () -> HttpStatus.OK.toString());
-        return new ResponseEntity<String>("{}", HttpStatus.OK);
+        log.trace("Method pasteCellValue completed with satus: {}", HttpStatus.OK::toString);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
     }
 
     /**
@@ -820,7 +822,7 @@ public class RecordController {
     /**
      * This function is called if a user wants to save the codebook. It uses recordService.validateAndPrepareCodebookForm(...) for validation. For comparing the
      * new codebook with the codebook which is saved in the database, and for finally saving the codebook to the database if no errors occur,
-     * recordService.compareAndSaveCodebook(...) is called. If the new codebook and the codebook which is stored in the database do not differ, nothing is saved.
+     * recordService.compareAndSaveRecord(...) is called. If the new codebook and the codebook which is stored in the database do not differ, nothing is saved.
      *
      * @param pid                Project Identifier as {@link Optional}&lt;{@link Long}&gt;
      * @param studyId            Study Identifier as {@link Optional}&lt;{@link Long}&gt;
@@ -833,10 +835,10 @@ public class RecordController {
      * success/info message
      */
     @RequestMapping(value = {"/{recordId}/version/{versionId}/codebook"}, method = RequestMethod.POST, params = "saveCodebook")
-    public String saveCodebook(@PathVariable final Optional<Long> pid, @PathVariable final Optional<Long> studyId, @PathVariable long versionId,
+    public String saveCodebook(@PathVariable final long pid, @PathVariable final long studyId, @PathVariable long versionId,
                                @PathVariable long recordId, @ModelAttribute("StudyForm") StudyForm sForm, final RedirectAttributes redirectAttributes, final ModelMap model) {
         UserDTO user = UserUtil.getCurrentUser();
-        log.trace("Entering saveCodebook for record [id: {}; current_version{}] and User [email: {}]", () -> recordId, () -> versionId, () -> user.getEmail());
+        log.trace("Entering saveCodebook for record [id: {}; current_version{}] and User [email: {}]", () -> recordId, () -> versionId, user::getEmail);
         String ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user);
         if (ret == null) {
             if (sForm.getPageLoadMin() < 1)
@@ -844,14 +846,14 @@ public class RecordController {
             if (sForm.getPageLoadMax() > sForm.getRecord().getNumberOfVariables())
                 sForm.setPageLoadMax(sForm.getRecord().getNumberOfVariables());
             RecordDTO currentVersion = sForm.getRecord();
-            Set<String> parsingErrors = new HashSet<String>();
-            Set<String> parsingWarnings = new HashSet<String>();
-            String infoMSG = null;
+            Set<String> parsingErrors = new HashSet<>();
+            Set<String> parsingWarnings = new HashSet<>();
+            String infoMSG;
             try {
                 RecordDTO copy = (RecordDTO) ObjectCloner.deepCopy(currentVersion);
                 recordService.validateAndPrepareCodebookForm(copy, parsingErrors, parsingWarnings, sForm.getNewChangeLog(), false, sForm.isIgnoreValidationErrors());
                 currentVersion = copy;
-                infoMSG = recordService.compareAndSaveCodebook(currentVersion, parsingErrors, sForm.getNewChangeLog(), pid.get());
+                infoMSG = recordService.compareAndSaveRecord(currentVersion, sForm.getNewChangeLog(), pid);
                 if (infoMSG.equals("record.codebook.saved"))
                     redirectAttributes.addFlashAttribute("successMSG", messageSource.getMessage(infoMSG, null, LocaleContextHolder.getLocale()));
                 else {
@@ -863,13 +865,13 @@ public class RecordController {
                 model.put("infoMSG", messageSource.getMessage("record.codebook.not.saved", null, LocaleContextHolder.getLocale()));
                 model.put("warnCodeBookMSG", recordService.setMessageString(sForm.getWarnings()));
                 if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
-                    log.fatal("Database Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(), () -> e.getMessage(), () -> e);
+                    log.fatal("Database Exception during saveCodebook - Code {}; Message: {}", e::getErrorCode, e::getMessage, () -> e);
                     model.put("errorMSG",
                             messageSource.getMessage("dbs.sql.exception",
                                     new Object[]{env.getRequiredProperty("organisation.admin.email"), e.getMessage().replaceAll("\n", "").replaceAll("\"", "\'")},
                                     LocaleContextHolder.getLocale()));
                 } else {
-                    log.debug("Parsing Exception during saveCodebook - Code {}; Message: {}", () -> e.getErrorCode(), () -> e.getMessage());
+                    log.debug("Parsing Exception during saveCodebook - Code {}; Message: {}", e::getErrorCode, e::getMessage);
                     model.put("errorCodeBookMSG", recordService.setMessageString(parsingErrors.parallelStream().collect(Collectors.toList())));
                 }
                 model.put("subnaviActive", PageState.RECORDVAR.name());

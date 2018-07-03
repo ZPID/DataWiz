@@ -7,6 +7,7 @@ import de.zpid.datawiz.dto.SideMenuDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.form.SideMenuForm;
 import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,13 +49,25 @@ public class RESTController {
 
     private static Logger log = LogManager.getLogger(RESTController.class);
 
-    @Autowired
     private SideMenuDAO sideMenuDAO;
-    @Autowired
     private RoleDAO roleDAO;
-    @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    public RESTController(SideMenuDAO sideMenuDAO, RoleDAO roleDAO, MessageSource messageSource) {
+        super();
+        log.info("Loading RestController for mapping /api");
+        this.sideMenuDAO = sideMenuDAO;
+        this.roleDAO = roleDAO;
+        this.messageSource = messageSource;
+    }
+
+    /**
+     * Loads the appropriate data for the side-menu using the logged in user and returns it as a JSON string.
+     * It is called asynchronously by Ajax.
+     *
+     * @return JSON String with side-menu Content.
+     */
     @RequestMapping(value = "/sideMenu", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getProjectList() {
         log.trace("execute loadSideMenu()");
@@ -62,7 +75,7 @@ public class RESTController {
         SideMenuForm sdForm = new SideMenuForm();
         if (user != null) {
             try {
-                List<SideMenuDTO> cpdto = null;
+                List<SideMenuDTO> cpdto;
                 cpdto = sideMenuDAO.findProjectsByUser(user);
                 for (SideMenuDTO project : cpdto) {
                     if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, project.getId(), false)
@@ -78,7 +91,7 @@ public class RESTController {
                         project.setSublist(cStud);
                     } else if (user.hasRole(Roles.DS_READER, project.getId(), false) || user.hasRole(Roles.DS_WRITER, project.getId(), false)) {
                         List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), project.getId());
-                        List<SideMenuDTO> cStud = new ArrayList<SideMenuDTO>();
+                        List<SideMenuDTO> cStud = new ArrayList<>();
                         userRoles.parallelStream().forEach(role -> {
                             Roles uRole = Roles.valueOf(role.getType());
                             if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
@@ -111,131 +124,8 @@ public class RESTController {
                 log.warn("Exception during getProjectList - Sidemenu not loaded: Exception: ", () -> e);
             }
         } else {
-            log.debug("No active user found - Sidemenu is loaded after sucessful login");
+            log.debug("No active user found - side-menu is loaded successfully after  login");
         }
         return new Gson().toJson(sdForm);
     }
-
-    public class SideMenuForm {
-        private String linkProject;
-        private String linkDmp;
-        private String linkStudies;
-        private String linkProMat;
-        private String linkContri;
-        private String linkExport;
-        private String linkStudy;
-        private String linkRecords;
-        private String linkStudMat;
-        private String linkRecord;
-        private String linkCodebook;
-        private String linkMatrix;
-
-        private List<SideMenuDTO> items;
-
-        public String getLinkProject() {
-            return linkProject;
-        }
-
-        public void setLinkProject(String linkProject) {
-            this.linkProject = linkProject;
-        }
-
-        public String getLinkDmp() {
-            return linkDmp;
-        }
-
-        public void setLinkDmp(String linkDmp) {
-            this.linkDmp = linkDmp;
-        }
-
-        public String getLinkStudies() {
-            return linkStudies;
-        }
-
-        public void setLinkStudies(String linkStudies) {
-            this.linkStudies = linkStudies;
-        }
-
-        public String getLinkProMat() {
-            return linkProMat;
-        }
-
-        public void setLinkProMat(String linkProMat) {
-            this.linkProMat = linkProMat;
-        }
-
-        public String getLinkContri() {
-            return linkContri;
-        }
-
-        public void setLinkContri(String linkContri) {
-            this.linkContri = linkContri;
-        }
-
-        public String getLinkExport() {
-            return linkExport;
-        }
-
-        public void setLinkExport(String linkExport) {
-            this.linkExport = linkExport;
-        }
-
-        public String getLinkStudy() {
-            return linkStudy;
-        }
-
-        public void setLinkStudy(String linkStudy) {
-            this.linkStudy = linkStudy;
-        }
-
-        public String getLinkRecords() {
-            return linkRecords;
-        }
-
-        public void setLinkRecords(String linkRecords) {
-            this.linkRecords = linkRecords;
-        }
-
-        public String getLinkStudMat() {
-            return linkStudMat;
-        }
-
-        public void setLinkStudMat(String linkStudMat) {
-            this.linkStudMat = linkStudMat;
-        }
-
-        public String getLinkRecord() {
-            return linkRecord;
-        }
-
-        public void setLinkRecord(String linkRecord) {
-            this.linkRecord = linkRecord;
-        }
-
-        public String getLinkCodebook() {
-            return linkCodebook;
-        }
-
-        public void setLinkCodebook(String linkCodebook) {
-            this.linkCodebook = linkCodebook;
-        }
-
-        public String getLinkMatrix() {
-            return linkMatrix;
-        }
-
-        public void setLinkMatrix(String linkMatrix) {
-            this.linkMatrix = linkMatrix;
-        }
-
-        public List<SideMenuDTO> getItems() {
-            return items;
-        }
-
-        public void setItems(List<SideMenuDTO> items) {
-            this.items = items;
-        }
-
-    }
-
 }

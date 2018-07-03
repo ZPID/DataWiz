@@ -65,7 +65,7 @@ public class AdminController {
         model.put("studyCount", adminService.countValuesByTableName("dw_study"));
         model.put("recordCount", adminService.countValuesByTableName("dw_record"));
         model.put("versionCount", adminService.countValuesByTableName("dw_record_metadata"));
-        model.put("breadcrumpList", new LinkedList<BreadCrump>());
+        model.put("breadcrumbList", new LinkedList<BreadCrump>());
         return "admin/admin";
     }
 
@@ -94,7 +94,7 @@ public class AdminController {
                 break;
         }
         model.put("tabletype", type);
-        model.put("breadcrumpList", new LinkedList<BreadCrump>());
+        model.put("breadcrumbList", new LinkedList<BreadCrump>());
         return "admin/table";
     }
 
