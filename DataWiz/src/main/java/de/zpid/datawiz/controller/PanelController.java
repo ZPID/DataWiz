@@ -47,10 +47,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PanelController {
 
 
-    private static Logger log = LogManager.getLogger(PanelController.class);
-    private MessageSource messageSource;
-    private PanelService panelService;
-    private Environment env;
+    private static final Logger log = LogManager.getLogger(PanelController.class);
+    private final MessageSource messageSource;
+    private final PanelService panelService;
+    private final Environment env;
 
     /**
      * Instantiates a new panel controller.

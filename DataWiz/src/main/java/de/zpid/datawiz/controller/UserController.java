@@ -53,26 +53,27 @@ import java.util.Optional;
 @SessionAttributes({"UserDTO"})
 public class UserController {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
-    private EmailUtil emailUtil;
-    @Autowired
-    private Environment env;
+    private final PasswordEncoder passwordEncoder;
+    private final MessageSource messageSource;
+    private final UserDAO userDAO;
+    private final EmailUtil emailUtil;
+    private final Environment env;
 
-    private static Logger log = LogManager.getLogger(UserController.class);
+    private static final Logger log = LogManager.getLogger(UserController.class);
 
     /**
      * Instantiates a new user controller.
      */
-    public UserController() {
+    @Autowired
+    public UserController(Environment env, EmailUtil emailUtil, UserDAO userDAO, MessageSource messageSource, PasswordEncoder passwordEncoder) {
         super();
         if (log.isInfoEnabled())
             log.info("Loading DataWizUserController for mapping /usersettings");
+        this.env = env;
+        this.emailUtil = emailUtil;
+        this.userDAO = userDAO;
+        this.messageSource = messageSource;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -132,7 +133,7 @@ public class UserController {
         final UserDTO auth = UserUtil.getCurrentUser();
         if (auth == null || (!auth.hasRole(Roles.ADMIN) && auth.getId() != user.getId())) {
             log.warn("Auth User Object == null or user [email: {}] do not have the permission to edit user user [email: {}]",
-                    () -> auth != null ? auth.getEmail() : null, () -> user.getEmail());
+                    () -> auth != null ? auth.getEmail() : null, user::getEmail);
             reAtt.addFlashAttribute("errorMSG", messageSource.getMessage("usersettings.error.noaccess", null, LocaleContextHolder.getLocale()));
             return "redirect:/panel";
         }

@@ -56,14 +56,14 @@ import java.util.*;
 @SessionAttributes({"StudyForm", "subnaviActive", "breadcrumbList", "disStudyContent", "ProjectList"})
 public class StudyController {
 
-    private MessageSource messageSource;
-    private StudyService studyService;
-    private ExceptionService exceptionService;
-    private ClassPathXmlApplicationContext applicationContext;
-    private RecordService recordService;
-    private ProjectService projectService;
-    private Environment env;
-    private static Logger log = LogManager.getLogger(StudyController.class);
+    private final MessageSource messageSource;
+    private final StudyService studyService;
+    private final ExceptionService exceptionService;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final RecordService recordService;
+    private final ProjectService projectService;
+    private final Environment env;
+    private static final Logger log = LogManager.getLogger(StudyController.class);
 
     @Autowired
     public StudyController(MessageSource messageSource, StudyService studyService, ExceptionService exceptionService,

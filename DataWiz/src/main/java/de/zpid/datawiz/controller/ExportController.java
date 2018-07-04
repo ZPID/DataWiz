@@ -51,12 +51,12 @@ import java.util.Optional;
 @SessionAttributes({"breadcrumbList", "ExportProjectForm"})
 public class ExportController {
 
-    private static Logger log = LogManager.getLogger(ExportController.class);
-    private MessageSource messageSource;
-    private ExportService exportService;
-    private ExceptionService exceptionService;
-    private ProjectService projectService;
-    private StringUtil stringUtil;
+    private static final Logger log = LogManager.getLogger(ExportController.class);
+    private final MessageSource messageSource;
+    private final ExportService exportService;
+    private final ExceptionService exceptionService;
+    private final ProjectService projectService;
+    private final StringUtil stringUtil;
 
     @Autowired
     public ExportController(final MessageSource messageSource, final ExportService exportService, final ExceptionService exceptionService,

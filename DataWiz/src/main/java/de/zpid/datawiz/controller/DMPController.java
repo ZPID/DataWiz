@@ -63,14 +63,14 @@ import java.util.Optional;
 @RequestMapping(value = "/dmp")
 public class DMPController {
 
-    private static Logger log = LogManager.getLogger(DMPController.class);
+    private static final Logger log = LogManager.getLogger(DMPController.class);
 
-    private MessageSource messageSource;
-    private ProjectService projectService;
-    private ExceptionService exceptionService;
-    private DMPService dmpService;
-    private Environment env;
-    private PlatformTransactionManager txManager;
+    private final MessageSource messageSource;
+    private final ProjectService projectService;
+    private final ExceptionService exceptionService;
+    private final DMPService dmpService;
+    private final Environment env;
+    private final PlatformTransactionManager txManager;
 
     /**
      * Constructor for DMPController

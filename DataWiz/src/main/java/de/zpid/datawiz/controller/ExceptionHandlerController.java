@@ -38,11 +38,11 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class ExceptionHandlerController {
 
-    private MessageSource messageSource;
-    private Environment env;
+    private final MessageSource messageSource;
+    private final Environment env;
 
     private static final String DEFAULT_ERROR_VIEW = "error";
-    private static Logger log = LogManager.getLogger(ExceptionHandlerController.class);
+    private static final Logger log = LogManager.getLogger(ExceptionHandlerController.class);
 
     @Autowired
     public ExceptionHandlerController(final MessageSource messageSource, final Environment env) {

@@ -165,7 +165,7 @@ public class PanelService {
             sharedUser.parallelStream().forEach(shared -> {
                 try {
                     shared.setGlobalRoles(roleDAO.findRolesByUserIDAndProjectID(shared.getId(), pid));
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     log.warn("Parallel loop Error while getting roles from DBS", () -> e);
                     parChk.set(true);
                 }

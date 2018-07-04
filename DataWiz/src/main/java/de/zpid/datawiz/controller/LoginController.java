@@ -74,19 +74,19 @@ import java.util.Optional;
 @SessionAttributes("UserDTO")
 public class LoginController {
 
-    private static Logger log = LogManager.getLogger(LoginController.class);
-    private PlatformTransactionManager txManager;
-    private EmailUtil mail;
-    private LoginService loginService;
-    private MessageSource messageSource;
-    private ClassPathXmlApplicationContext applicationContext;
-    private Environment env;
-    private HttpServletRequest request;
-    private EmailUtil emailUtil;
-    private ProjectDAO projectDAO;
-    private RoleDAO roleDAO;
-    private UserDAO userDAO;
-    private PasswordEncoder passwordEncoder;
+    private static final Logger log = LogManager.getLogger(LoginController.class);
+    private final PlatformTransactionManager txManager;
+    private final EmailUtil mail;
+    private final LoginService loginService;
+    private final MessageSource messageSource;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final Environment env;
+    private final HttpServletRequest request;
+    private final EmailUtil emailUtil;
+    private final ProjectDAO projectDAO;
+    private final RoleDAO roleDAO;
+    private final UserDAO userDAO;
+    private final PasswordEncoder passwordEncoder;
 
 
     @Autowired

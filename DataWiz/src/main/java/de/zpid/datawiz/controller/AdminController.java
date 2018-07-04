@@ -39,9 +39,9 @@ import java.util.Optional;
 @RequestMapping(value = "/admin")
 public class AdminController {
 
-    private static Logger log = LogManager.getLogger(AdminController.class);
-    private AdminService adminService;
-    private UserDAO userDAO;
+    private static final Logger log = LogManager.getLogger(AdminController.class);
+    private final AdminService adminService;
+    private final UserDAO userDAO;
 
     @Autowired
     private AdminController(AdminService adminService, UserDAO userDAO) {

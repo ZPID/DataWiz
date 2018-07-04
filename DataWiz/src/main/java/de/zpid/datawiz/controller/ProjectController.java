@@ -61,12 +61,12 @@ import java.util.Optional;
 @RequestMapping(value = "/project")
 public class ProjectController {
 
-    private MessageSource messageSource;
-    private ClassPathXmlApplicationContext applicationContext;
-    private SmartValidator validator;
-    private ProjectService projectService;
-    private ExceptionService exceptionService;
-    private Environment env;
+    private final MessageSource messageSource;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final SmartValidator validator;
+    private final ProjectService projectService;
+    private final ExceptionService exceptionService;
+    private final Environment env;
 
     /**
      * Creates the project form.
@@ -78,7 +78,7 @@ public class ProjectController {
         return (ProjectForm) applicationContext.getBean("ProjectForm");
     }
 
-    private static Logger log = LogManager.getLogger(ProjectController.class);
+    private static final Logger log = LogManager.getLogger(ProjectController.class);
 
     /**
      * Instantiates a new project controller.

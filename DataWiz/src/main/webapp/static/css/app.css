@@ -66,9 +66,7 @@ body, #mainWrapper {
 .divTableCell, .divTableHead {
   display: table-cell;
   padding: 3px 10px;
-  border-color: rgba(200, 200, 200, 0.25);
-  border-width: 1px;
-  border-style: solid;
+  border: 1px solid rgba(200, 200, 200, 0.25);
 }
 
 .page_headline_h {
@@ -588,7 +586,6 @@ label.btn::after {
   border-radius: 0px;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
-  -o-border-radius: 0px;
   z-index: 99;
 }
 
@@ -631,10 +628,9 @@ label.btn::after {
 
 #loadstatebar {
   width: 60%;
-  margin: auto;
   position: relative;
   top: 50%;
-  margin-bottom: 0px;
+  margin: auto auto 0px;
   padding-bottom: 0px;
   text-align: center;
 }
@@ -690,11 +686,11 @@ label.btn::after {
 }
 
 .th-width-20 {
-  min-width: : 20px;
+  min-width: 20px;
 }
 
 .th-width-30 {
-  min-width: : 30px;
+  min-width: 30px;
 }
 
 .hidefirst {
@@ -718,7 +714,6 @@ label.btn::after {
 
 .scrollTableFullScreenTBody {
   overflow-y: auto;
-  overflowY: auto;
   overflow-x: hidden;
   max-height: 91vh;
 }
@@ -763,9 +758,7 @@ label.btn::after {
 }
 
 .dwgoup {
-  background-image: url('../images/totop.png');
-  background-repeat: no-repeat;
-  background-position: left top;
+  background: url('../images/totop.png') no-repeat left top;
   background-size: 40px 40px;
   width: 40px;
   height: 40px;

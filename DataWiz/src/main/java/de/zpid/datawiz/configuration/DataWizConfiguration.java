@@ -1,16 +1,7 @@
 package de.zpid.datawiz.configuration;
 
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PreDestroy;
-import javax.sql.DataSource;
-
+import de.zpid.datawiz.util.MinioUtil;
+import de.zpid.spss.SPSSIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,18 +26,16 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import de.zpid.datawiz.util.MinioUtil;
-import de.zpid.spss.SPSSIO;
+import javax.sql.DataSource;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SpringMVC Configuration for DataWiz
@@ -175,12 +164,11 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 
     }
 
-    private ClassPathXmlApplicationContext context;
 
     @Bean(name = "applicationContext")
     public ClassPathXmlApplicationContext applicationContext() {
-        this.context = new ClassPathXmlApplicationContext("spring.xml");
-        return this.context;
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
+        return context;
     }
 
     @Bean
@@ -231,7 +219,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         matcher.setUseRegisteredSuffixPatternMatch(true);
     }
 
-    @PreDestroy
+    /*@PreDestroy
     public void destroy() {
         log.info("Destroy DataWiz Application");
         Enumeration<Driver> drivers = DriverManager.getDrivers();
@@ -245,5 +233,5 @@ public class DataWizConfiguration implements WebMvcConfigurer {
             }
         }
         context.close();
-    }
+    }*/
 }

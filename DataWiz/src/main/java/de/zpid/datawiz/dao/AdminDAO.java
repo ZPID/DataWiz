@@ -15,7 +15,7 @@ import java.util.OptionalInt;
 
 
 /**
- * This
+ * DAO Class for Admin
  * <p>
  * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
  * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
@@ -39,16 +39,15 @@ import java.util.OptionalInt;
 @Scope("singleton")
 public class AdminDAO {
 
-    private JdbcTemplate jdbcTemplate;
-    private PasswordEncoder passwordEncoder;
+    private final JdbcTemplate jdbcTemplate;
+    private final PasswordEncoder passwordEncoder;
 
-    private static Logger log = LogManager.getLogger(AdminDAO.class);
+    private static final Logger log = LogManager.getLogger(AdminDAO.class);
 
     @Autowired
     public AdminDAO(JdbcTemplate jdbcTemplate, PasswordEncoder passwordEncoder) {
         super();
-        if (log.isInfoEnabled())
-            log.info("Loading AdminDAO as Singleton and Service");
+        log.info("Loading AdminDAO as @Scope(\"singleton\") and @Repository");
         this.jdbcTemplate = jdbcTemplate;
         this.passwordEncoder = passwordEncoder;
     }
@@ -71,9 +70,8 @@ public class AdminDAO {
      * Updates user data in dw_user.
      *
      * @param user {@link UserDTO} Contains the data of a user
-     * @return Amount of Changes
      */
-    public int updateUserAccount(final UserDTO user) {
+    public void updateUserAccount(final UserDTO user) {
         log.trace("Entering updateUserAccount for user [id {}]", user::getId);
         final List<Object> params = new ArrayList<>();
         params.add(user.getTitle());
@@ -90,6 +88,5 @@ public class AdminDAO {
                         + ((user.getPassword() != null && !user.getPassword().trim().isEmpty()) ? " password = ?," : "") + " account_state = ? WHERE id = ?",
                 params.toArray());
         log.debug("Transaction for updateUserAccount returned: {}", () -> ret);
-        return ret;
     }
 }

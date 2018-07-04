@@ -64,7 +64,7 @@ public class UserDTO implements Serializable {
   private String account_state;
 
   private String activationCode;
-  private List<UserRoleDTO> globalRoles = new ArrayList<UserRoleDTO>();
+  private List<UserRoleDTO> globalRoles = new ArrayList<>();
   // Values for RegisterCheck
   private String password_retyped;
   private boolean checkedGTC;

@@ -7,9 +7,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -19,7 +19,7 @@ import java.sql.*;
 import java.util.List;
 
 /**
- * This
+ * DAO Class for Contributor
  * <p>
  * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
  * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
@@ -43,9 +43,9 @@ import java.util.List;
 @Scope("singleton")
 public class ContributorDAO {
 
-    private ClassPathXmlApplicationContext applicationContext;
-    private JdbcTemplate jdbcTemplate;
-    private static Logger log = LogManager.getLogger(ContributorDAO.class);
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final JdbcTemplate jdbcTemplate;
+    private static final Logger log = LogManager.getLogger(ContributorDAO.class);
 
     /**
      * Instantiates a new ContributorDAO.
@@ -53,7 +53,7 @@ public class ContributorDAO {
     @Autowired
     public ContributorDAO(ClassPathXmlApplicationContext applicationContext, JdbcTemplate jdbcTemplate) {
         super();
-        log.info("Loading ContributorDAO as Singleton and Repository");
+        log.info("Loading ContributorDAO as @Scope(\"singleton\") and @Repository");
         this.applicationContext = applicationContext;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -105,8 +105,13 @@ public class ContributorDAO {
                 "        AND dw_study_contributors.study_id is NULL " +
                 "        AND dw_study_contributors.project_id = ?" +
                 "  GROUP BY contributor_id, project_id, study_id";
-        ContributorDTO contri = jdbcTemplate.queryForObject(sql, new Object[]{project.getId()}, (resultSet, rowNum) -> setContributorDTO(resultSet));
-        log.debug("Transaction \"findPrimaryContributorByProject\" terminates with result: [ContributorDTO: {}]", () -> contri);
+        ContributorDTO contri;
+        try {
+            contri = jdbcTemplate.queryForObject(sql, new Object[]{project.getId()}, (resultSet, rowNum) -> setContributorDTO(resultSet));
+        } catch (EmptyResultDataAccessException e) {
+            contri = null;
+        }
+        log.debug("Transaction \"findPrimaryContributorByProject\" terminates with result: [ContributorDTO: {}]", contri);
         return contri;
     }
 
@@ -140,7 +145,7 @@ public class ContributorDAO {
     /**
      * Delete a list of contributor relations from study.
      *
-     * @param contri List of ContributorDTO
+     * @param contri List of {@link ContributorDTO}
      */
     public void deleteFromStudy(final List<ContributorDTO> contri) {
         log.trace("Entering deleteFromStudy [size: {}]", contri::size);
@@ -164,8 +169,8 @@ public class ContributorDAO {
     /**
      * Insert study relation.
      *
-     * @param contri  List of ContributorDTO
-     * @param studyId Study Identifier
+     * @param contri  List of {@link ContributorDTO}
+     * @param studyId Study Identifier as long
      */
     public void insertStudyRelation(final List<ContributorDTO> contri, final Long studyId) {
         log.trace("Entering insertIntoStudy [size: {}]", contri::size);
@@ -189,64 +194,52 @@ public class ContributorDAO {
     /**
      * Insert contributor.
      *
-     * @param contri ContributorDTO
-     * @return Amount of Changes (int)
-     * @throws Exception
+     * @param contri {@link ContributorDTO}
      */
-    public int insertContributor(final ContributorDTO contri) throws Exception {
+    public void insertContributor(final ContributorDTO contri) {
         log.trace("Entering insertContributor [contributor: {}]", () -> contri);
         KeyHolder holder = new GeneratedKeyHolder();
         final String stmt = "INSERT INTO dw_contributors (sort, title, first_name, last_name, institution, department, orcid, primaryContributor) "
                 + "VALUES (?,?,?,?,?,?,?,?)";
-        int chk = this.jdbcTemplate.update(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
-                PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
-                ps.setInt(1, contri.getSort());
-                ps.setString(2, contri.getTitle());
-                ps.setString(3, contri.getFirstName());
-                ps.setString(4, contri.getLastName());
-                ps.setString(5, contri.getInstitution());
-                ps.setString(6, contri.getDepartment());
-                ps.setString(7, contri.getOrcid());
-                ps.setBoolean(8, contri.getPrimaryContributor() != null ? contri.getPrimaryContributor() : false);
-                return ps;
-            }
+        int chk = this.jdbcTemplate.update((Connection connection) -> {
+            PreparedStatement ps = connection.prepareStatement(stmt, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, contri.getSort());
+            ps.setString(2, contri.getTitle());
+            ps.setString(3, contri.getFirstName());
+            ps.setString(4, contri.getLastName());
+            ps.setString(5, contri.getInstitution());
+            ps.setString(6, contri.getDepartment());
+            ps.setString(7, contri.getOrcid());
+            ps.setBoolean(8, contri.getPrimaryContributor() != null ? contri.getPrimaryContributor() : false);
+            return ps;
         }, holder);
-        contri.setId((holder.getKey().longValue() > 0) ? holder.getKey().longValue() : -1);
+        contri.setId((holder.getKey() != null && holder.getKey().longValue() > 0) ? holder.getKey().longValue() : -1);
         log.debug("Transaction \"insertContributor\" terminates with result: [success: {}]", () -> chk);
-        return chk;
     }
 
     /**
      * Insert project relation.
      *
-     * @param contri ContributorDTO
-     * @return Amount of Changes (int)
-     * @throws Exception
+     * @param contri {@link ContributorDTO}
      */
-    public int insertProjectRelation(ContributorDTO contri) throws Exception {
-        log.trace("Entering insertIntoProject [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
+    public void insertProjectRelation(ContributorDTO contri) {
+        log.trace("Entering insertIntoProject [projectID: {}, contributor: {}]", contri::getProjectId, () -> contri);
         int ret = this.jdbcTemplate.update("INSERT INTO dw_study_contributors (project_id, contributor_id) VALUES (?,?)", contri.getProjectId(), contri.getId());
         log.debug("Transaction \"insertProjectRelation\" terminates with result: [success: {}]", () -> ret);
-        return ret;
     }
 
     /**
      * Update contributor.
      *
-     * @param contri ContributorDTO
-     * @return Amount of Changes (int)
-     * @throws Exception
+     * @param contri {@link ContributorDTO}
      */
-    public int updateContributor(ContributorDTO contri) throws Exception {
-        log.trace("Entering updateContributor [projectID: {}, contributor: {}]", () -> contri.getProjectId(), () -> contri);
+    public void updateContributor(ContributorDTO contri) {
+        log.trace("Entering updateContributor [projectID: {}, contributor: {}]", contri::getProjectId, () -> contri);
         int ret = this.jdbcTemplate.update(
                 "UPDATE dw_contributors SET title = ?, first_name = ?, last_name = ?, institution = ?, department = ?, orcid = ?, sort = ? WHERE dw_contributors.id = ?",
                 contri.getTitle(), contri.getFirstName(), contri.getLastName(), contri.getInstitution(), contri.getDepartment(), contri.getOrcid(), contri.getSort(),
                 contri.getId());
         log.debug("Transaction \"updateContributor\" terminates with result: [success: {}]", () -> ret);
-        return ret;
     }
 
     /**
@@ -254,7 +247,7 @@ public class ContributorDAO {
      *
      * @param rs ResultSet
      * @return ContributorDTO
-     * @throws SQLException
+     * @throws SQLException DBS Exceptions
      */
     private ContributorDTO setContributorDTO(ResultSet rs) throws SQLException {
         ContributorDTO contri = (ContributorDTO) applicationContext.getBean("ContributorDTO");

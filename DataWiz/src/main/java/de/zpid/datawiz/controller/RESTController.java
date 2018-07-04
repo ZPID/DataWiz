@@ -47,11 +47,11 @@ import java.util.List;
 @RequestMapping("/api")
 public class RESTController {
 
-    private static Logger log = LogManager.getLogger(RESTController.class);
+    private static final Logger log = LogManager.getLogger(RESTController.class);
 
-    private SideMenuDAO sideMenuDAO;
-    private RoleDAO roleDAO;
-    private MessageSource messageSource;
+    private final SideMenuDAO sideMenuDAO;
+    private final RoleDAO roleDAO;
+    private final MessageSource messageSource;
 
     @Autowired
     public RESTController(SideMenuDAO sideMenuDAO, RoleDAO roleDAO, MessageSource messageSource) {

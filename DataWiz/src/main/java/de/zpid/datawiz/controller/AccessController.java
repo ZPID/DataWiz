@@ -63,18 +63,18 @@ import java.util.Optional;
 @SessionAttributes({"ProjectForm", "subnaviActive"})
 public class AccessController {
 
-    private static Logger log = LogManager.getLogger(AccessController.class);
-    private ExceptionService exceptionService;
-    private MessageSource messageSource;
-    private ClassPathXmlApplicationContext applicationContext;
-    private ProjectService projectService;
-    private HttpServletRequest request;
-    private Environment env;
-    private StringUtil stringUtil;
+    private static final Logger log = LogManager.getLogger(AccessController.class);
+    private final ExceptionService exceptionService;
+    private final MessageSource messageSource;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final ProjectService projectService;
+    private final HttpServletRequest request;
+    private final Environment env;
+    private final StringUtil stringUtil;
     // TODO SERVICE CLASS
-    private ProjectDAO projectDAO;
-    private RoleDAO roleDAO;
-    private UserDAO userDAO;
+    private final ProjectDAO projectDAO;
+    private final RoleDAO roleDAO;
+    private final UserDAO userDAO;
 
     @Autowired
     public AccessController(final ExceptionService exceptionService, final MessageSource messageSource,

@@ -895,7 +895,7 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Getter for {@link #storageTechnologies}.
+	 * Getter for {@link #namingCon}.
 	 *
 	 * @return storageTechnologies
 	 */
@@ -1954,9 +1954,9 @@ public class DmpDTO implements Serializable {
 	}
 
 	/**
-	 * Setter for {@link #storageTechnologies}.
+	 * Setter for {@link #namingCon}.
 	 *
-	 * @param storageTechnologies
+	 * @param namingCon
 	 *          -> this.storageTechnologies
 	 */
 	public void setNamingCon(String namingCon) {

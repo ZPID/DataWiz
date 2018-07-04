@@ -68,17 +68,17 @@ import java.util.stream.Collectors;
 @SessionAttributes({"StudyForm", "subnaviActive", "breadcrumbList"})
 public class RecordController {
 
-    private static Logger log = LogManager.getLogger(RecordController.class);
-    private RecordService recordService;
-    private ExportService exportService;
-    private ImportService importService;
-    private MessageSource messageSource;
-    private Environment env;
-    private ClassPathXmlApplicationContext applicationContext;
-    private ExceptionService exceptionService;
-    private ProjectService projectService;
-    private SPSSIO spss;
-    private StringUtil stringUtil;
+    private static final Logger log = LogManager.getLogger(RecordController.class);
+    private final RecordService recordService;
+    private final ExportService exportService;
+    private final ImportService importService;
+    private final MessageSource messageSource;
+    private final Environment env;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final ExceptionService exceptionService;
+    private final ProjectService projectService;
+    private final SPSSIO spss;
+    private final StringUtil stringUtil;
 
 
     /**
