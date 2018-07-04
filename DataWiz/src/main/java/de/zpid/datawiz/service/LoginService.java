@@ -67,7 +67,7 @@ public class LoginService implements UserDetailsService {
       if (person.getEmail() != null && !person.getEmail().trim().isEmpty()) {
         try {
           user = userDAO.findByMail(person.getEmail(), true);
-        } catch (SQLException e) {
+        } catch (Exception e) {
           log.fatal("Exception during sendPasswordRecoveryMail Message[{}]]", () -> e.getMessage());
           retErr = "dbs.sql.exception";
         }
@@ -172,7 +172,7 @@ public class LoginService implements UserDetailsService {
     if (email.isPresent() && code.isPresent()) {
       try {
         user = userDAO.findByMail(email.get(), true);
-      } catch (SQLException e) {
+      } catch (Exception e) {
         log.fatal("Exception during showSetPassword Message: ", () -> e);
         retErr = "dbs.sql.exception";
       }
