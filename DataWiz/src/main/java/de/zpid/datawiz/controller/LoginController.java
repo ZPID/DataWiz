@@ -210,7 +210,7 @@ public class LoginController {
             if (userDAO.findByMail(person.getEmail(), false) != null) {
                 bindingResult.rejectValue("email", "email.already.exists");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.fatal("DBS error during user registration: ", () -> e);
             bindingResult.rejectValue("email", "dbs.sql.exception");
         }

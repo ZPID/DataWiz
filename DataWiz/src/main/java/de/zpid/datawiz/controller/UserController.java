@@ -174,7 +174,7 @@ public class UserController {
                 UserUtil.setCurrentUser(userDAO.findByMail(user.getEmail(), true));
             reAtt.addFlashAttribute("infoMSG",
                     messageSource.getMessage(changePWD ? "usersettings.save.success.pw" : "usersettings.save.success", null, LocaleContextHolder.getLocale()));
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error("ERROR: Database error during database transaction, saveUserSettings aborted - Exception:", e);
             reAtt.addFlashAttribute("globalErrors", messageSource.getMessage("dbs.sql.exception", null, LocaleContextHolder.getLocale()));
             return "redirect:/panel";
