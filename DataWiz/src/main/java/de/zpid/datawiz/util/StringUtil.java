@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import de.zpid.datawiz.dto.UserDTO;
 
 @Component
-@Scope("singleton")
 public class StringUtil {
 
 	private final int FILENAMESIZE = 50;

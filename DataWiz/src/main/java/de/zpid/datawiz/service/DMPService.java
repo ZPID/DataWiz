@@ -1,10 +1,15 @@
 package de.zpid.datawiz.service;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-
+import de.zpid.datawiz.dao.ContributorDAO;
+import de.zpid.datawiz.dao.DmpDAO;
+import de.zpid.datawiz.dao.FormTypesDAO;
+import de.zpid.datawiz.dao.ProjectDAO;
+import de.zpid.datawiz.enumeration.DWFieldTypes;
+import de.zpid.datawiz.enumeration.DataWizErrorCodes;
+import de.zpid.datawiz.enumeration.DmpCategory;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
+import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.ODFUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,63 +21,62 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.SmartValidator;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.enumeration.DWFieldTypes;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
-import de.zpid.datawiz.enumeration.DmpCategory;
-import de.zpid.datawiz.exceptions.DataWizSystemException;
-import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.ODFUtil;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * Service Class for the DMP <br />
- * <br />
- * This file is part of Datawiz.<br />
- *
- * <b>Copyright 2018, Leibniz Institute for Psychology Information (ZPID), <a href="http://zpid.de" title="http://zpid.de">http://zpid.de</a>.</b><br />
- * <br />
- * <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style= "border-width:0" src=
- * "https://i.creativecommons.org/l/by-nc-sa/4.0/80x15.png" /></a><br />
- * <span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Datawiz</span> by
- * <a xmlns:cc="http://creativecommons.org/ns#" href="zpid.de" property="cc:attributionName" rel="cc:attributionURL"> Leibniz Institute for Psychology
- * Information (ZPID)</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons
- * Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+ * Service class for the DMP controller to separate the web logic from the business logic.
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
  *
  * @author Ronny Boelter
  * @version 1.0
- */
+ **/
 @Service
 public class DMPService {
 
-    private static Logger log = LogManager.getLogger(DMPService.class);
+    private static final Logger log = LogManager.getLogger(DMPService.class);
+
+    private final DmpDAO dmpDAO;
+    private final SmartValidator validator;
+    private final FormTypesDAO formTypeDAO;
+    private final MessageSource messageSource;
+    private final ODFUtil odfUtil;
+    private final ProjectService projectService;
+    private final ProjectDAO projectDAO;
+    private final ContributorDAO contributorDAO;
 
     @Autowired
-    private DmpDAO dmpDAO;
-    @Autowired
-    private SmartValidator validator;
-    @Autowired
-    private FormTypesDAO formTypeDAO;
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    private ODFUtil odfUtil;
-    @Autowired
-    private ProjectService projectService;
-    @Autowired
-    private ProjectDAO projectDAO;
-    @Autowired
-    private ContributorDAO contributorDAO;
+    public DMPService(DmpDAO dmpDAO, SmartValidator validator, FormTypesDAO formTypeDAO, MessageSource messageSource,
+                      ODFUtil odfUtil, ProjectService projectService, ProjectDAO projectDAO, ContributorDAO contributorDAO) {
+        this.dmpDAO = dmpDAO;
+        this.validator = validator;
+        this.formTypeDAO = formTypeDAO;
+        this.messageSource = messageSource;
+        this.odfUtil = odfUtil;
+        this.projectService = projectService;
+        this.projectDAO = projectDAO;
+        this.contributorDAO = contributorDAO;
+    }
 
     /**
-     * This function saves a new DMP into the DMP table if the DMP identifier is not set.
+     * Saves a new DMP when a project is created and sets the new identifier to the dmp object included in ProjectForm
      *
-     * @param pForm     ProjectForm
-     * @param hasErrors boolean
-     * @return Returns an error if saving was not sucessful
-     * @throws DataWizSystemException
+     * @param pForm {@link ProjectForm} contains Project and DMP data
      */
     public void saveNewDMPSetID(final ProjectForm pForm) throws DataWizSystemException {
         log.trace("Entering saveNewDMPSetID for Project [pid: {}]", () -> pForm.getProject().getId());
@@ -90,15 +94,13 @@ public class DMPService {
     }
 
     /**
-     * This functions saves the form data of the DMP for each specific subpage. Because of the fact, that the DMP-form is very huge, it was decidet to split them
-     * for a better overview.
+     * This functions saves the form data of the DMP for each specific part. Because of the fact, that the DMP-form is very huge, it was decided to split them
+     * for a better handling.
      *
-     * @param pForm ProjectForm
-     * @param bRes  BindingResult
-     * @param cat   DmpCategory
-     * @param cls   Class
-     * @return Returns an error if saving was not sucessful
-     * @throws DataWizSystemException
+     * @param pForm {@link ProjectForm} contains DMP data
+     * @param bRes  {@link BindingResult}
+     * @param cat   {@link DmpCategory} the part that has to be saved
+     * @param cls   {@link Class} required for validation
      */
     public void saveDMPDataPart(final ProjectForm pForm, final BindingResult bRes, final DmpCategory cat, final Class<?> cls) throws DataWizSystemException {
         BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(pForm, bRes.getObjectName());
@@ -149,11 +151,12 @@ public class DMPService {
     }
 
     /**
-     * @param pForm
-     * @param cat
-     * @throws Exception
+     * Updates the different form type fields of the DMP
+     *
+     * @param pForm {@link ProjectForm} contains DMP data
+     * @param cat   {@link DmpCategory} the part that has to be updated
      */
-    private void updateFormTypes(final ProjectForm pForm, final DmpCategory cat) throws Exception {
+    private void updateFormTypes(final ProjectForm pForm, final DmpCategory cat) {
         if (cat.equals(DmpCategory.RESEARCH)) {
             List<Integer> datatypes = formTypeDAO.findSelectedFormTypesByIdAndType(pForm.getDmp().getId(), DWFieldTypes.DATATYPE, false);
             if (datatypes != null && datatypes.size() > 0) {
@@ -181,13 +184,13 @@ public class DMPService {
     }
 
     /**
-     * TODO
+     * Prepares the DMP data for ODT export
      *
-     * @param pid
-     * @param type
-     * @param locale
-     * @return
-     * @throws Exception
+     * @param pid    {@link Long} Project/DMP identifier
+     * @param type   {@link String} Export type selected by the user
+     * @param locale {@link Locale} EN or DE
+     * @return export document as byte[]
+     * @throws Exception DBS or ODF Exceptions
      */
     public byte[] createDMPExport(final Long pid, final String type, final Locale locale) throws Exception {
         ProjectForm pForm = projectService.createProjectForm();

@@ -15,7 +15,6 @@ import de.zpid.datawiz.dto.StudyDTO;
 import de.zpid.datawiz.form.ExportProjectForm;
 
 @Component
-@Scope("singleton")
 public class ConsistencyCheckUtil {
 
 	@Autowired

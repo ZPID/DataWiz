@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalInt;
 
 
 /**
@@ -60,9 +59,9 @@ public class AdminDAO {
      */
     public int findCountByTableName(final String name) {
         log.trace("Entering findCountByTableName [name: {}", () -> name);
-        OptionalInt count = jdbcTemplate.queryForObject("SELECT count(*) FROM " + name, OptionalInt.class);
+        Integer count = jdbcTemplate.queryForObject("SELECT count(*) FROM " + name, Integer.class);
         log.debug("Leaving getTagsByProjectID [result: {}]", () -> count);
-        return count != null ? count.orElse(0) : 0;
+        return count != null ? count : 0;
     }
 
 

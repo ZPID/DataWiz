@@ -1,5 +1,8 @@
 package de.zpid.datawiz.util;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class RegexUtil {
 
   /**
