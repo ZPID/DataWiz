@@ -20,7 +20,7 @@ import org.odftoolkit.simple.table.Table;
 // import org.odftoolkit.simple.text.Paragraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
+// import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.itextpdf.io.source.ByteArrayOutputStream;
@@ -81,10 +81,13 @@ public class ODFUtil {
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.zpid", null, locale))).setFont(blue_reg);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.headline", null, locale))).setFont(headline);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.subline", null, locale))).setFont(blue_reg);
+			doc.addColumnBreak();
 			
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1h", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			/** doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1h", null, locale))).setFont(blue_large);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1", null, locale))).setFont(regular);
 			Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1it", null, locale)));
@@ -233,7 +236,9 @@ public class ODFUtil {
 			doc.addPageBreak();
 			// Neue Seite bildungsforschung
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu2h", null, locale))).setFont(blue_large);
-			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu2", null, locale))).setFont(regular);			
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu2", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			/** doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu2h", null, locale))).setFont(blue_large);
 			doc.addColumnBreak();
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu2", null, locale))).setFont(regular);
@@ -714,9 +719,12 @@ public class ODFUtil {
 					locale);
 			createCell(table, 3, i, dmp.getBearCost(), regular, null, locale);
 
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.srch", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.src1", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.BMBF.src1l", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.BMBF.src1l", null, locale)));
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.src2", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.BMBF.src2l", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.BMBF.src2l", null, locale)));
 			// write doc to outputstream
@@ -769,7 +777,9 @@ public class ODFUtil {
 			doc.addPageBreak(par, master); **/
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zuAh", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zuA", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			/** doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zu1", null, locale))).setFont(regular);
 
 			par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zu2", null, locale)));
@@ -1093,7 +1103,9 @@ public class ODFUtil {
 					null, locale);
 			createCell(table, 3, i, dmp.getFunderRequirements(), regular, null, locale);
 			
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zuBh", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.H2020.zuB", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.H2020.zuBl", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.H2020.zuBl", null, locale)));
 
@@ -1146,7 +1158,9 @@ public class ODFUtil {
 			doc.addPageBreak(par, master); **/
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zu1h", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zu1", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			
 			/** par.appendHyperlink(messageSource.getMessage("export.odt.DFG.zu2l", null, locale),
 					new URI(messageSource.getMessage("export.odt.DFG.zu2l", null, locale))); **/
@@ -1365,7 +1379,9 @@ public class ODFUtil {
 			createCell(table, 2, i, dmp.getTransferTime(), regular, null, locale);
 
 			// doc.addColumnBreak();
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.zu3", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			// doc.addColumnBreak();
 			table = doc.addTable(3, 3);
 
@@ -1391,15 +1407,19 @@ public class ODFUtil {
 			// doc.addColumnBreak();
 			
 			
-
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.ft1", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.ft2", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.DFG.ft2l", null, locale)));
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.src", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.src0", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.src0l", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.DFG.src0l", null, locale)));
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.src1", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.src1l", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.DFG.src1l", null, locale)));
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.DFG.src2", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.DFG.src2l", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.DFG.src2l", null, locale)));
 
@@ -1453,7 +1473,9 @@ public class ODFUtil {
 			doc.addPageBreak(par, master); **/
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.zu1h", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.zu1", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 
 			Table table = doc.addTable(69, 4);
 			// merge
@@ -1852,8 +1874,10 @@ public class ODFUtil {
 			table.getCellRangeByPosition(1, i-1, 1, i).merge();
 
 			// doc.addColumnBreak();
-
+			
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.ft1h", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.ft1", null, locale))).setFont(regular);
 			doc.addParagraph(messageSource.getMessage("export.odt.PsychData.ft1li", null, locale)).applyHyperlink(new URI(messageSource.getMessage("export.odt.PsychData.ft1li", null, locale)));
 			doc.addColumnBreak();
@@ -1895,6 +1919,7 @@ public class ODFUtil {
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.headline", null, locale))).setFont(headline);
 
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.subline", null, locale))).setFont(blue_reg);
+			doc.addColumnBreak();
 
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu1h", null, locale))).setFont(blue_large);
