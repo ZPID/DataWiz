@@ -51,7 +51,7 @@ public class DDIUtil {
 
 	/**
 	 * Create document for project, dmp and additional project material
-	 * 
+	 *
 	 * @param project
 	 * @param dmp
 	 * @param pFiles
@@ -74,7 +74,7 @@ public class DDIUtil {
 
 	/**
 	 * Create document for study and additional study material
-	 * 
+	 *
 	 * @param project
 	 * @param study
 	 * @param sFiles
@@ -94,13 +94,13 @@ public class DDIUtil {
 			return null;
 		}
 		log.trace("Leaving createStudyDocument for project [id: {}], study [id: {}] without Errors", () -> sForm.getProject().getId(),
-		    () -> sForm.getStudy().getId());
+				() -> sForm.getStudy().getId());
 		return doc;
 	}
 
 	/**
 	 * Create document for study and additional study material
-	 * 
+	 *
 	 * @param project
 	 * @param study
 	 * @param sFiles
@@ -123,7 +123,7 @@ public class DDIUtil {
 
 	/**
 	 * TODO locale listen!!!!
-	 * 
+	 *
 	 * @param pForm
 	 * @param dmpElement
 	 * @throws Exception
@@ -138,7 +138,7 @@ public class DDIUtil {
 			addTextElement(e1, "scope", null, project.getDescription());
 			Element e2;
 			if ((project.getFunding() != null && !project.getFunding().isEmpty())
-			    || (project.getGrantNumber() != null && !project.getGrantNumber().isEmpty())) {
+					|| (project.getGrantNumber() != null && !project.getGrantNumber().isEmpty())) {
 				e2 = addAndReturnElement(e1, "funding", null);
 				addTextElement(e2, "funder", null, project.getFunding());
 				addTextElement(e2, "grantNumber", null, project.getGrantNumber());
@@ -257,7 +257,7 @@ public class DDIUtil {
 				if (dmp.getPublStrategy() != null)
 					if (dmp.getPublStrategy().trim().equals("nopubl") && dmp.getNoAccessReason() != null && !dmp.getNoAccessReason().isEmpty()) {
 						addTextElement(e3, "noAccessReason", null, dmp.getNoAccessReason().equals("other") ? dmp.getNoAccessReasonOther()
-						    : messageSource.getMessage("dmp.edit.noAccessReason." + dmp.getNoAccessReason(), null, locale));
+								: messageSource.getMessage("dmp.edit.noAccessReason." + dmp.getNoAccessReason(), null, locale));
 					} else if (dmp.getPublStrategy().trim().equals("author")) {
 						Element e4 = addAndReturnElement(e3, "onDemand", null);
 						addTextElement(e4, "accessReasonAuthor", null, dmp.getAccessReasonAuthor());
@@ -269,7 +269,7 @@ public class DDIUtil {
 						addTextElement(e4, "searchableData", null, dmp.getSearchableData());
 						if (dmp.getUsedPID() != null && !dmp.getUsedPID().isEmpty())
 							addTextElement(e4, "usedPID", null, dmp.getUsedPID().equals("other") ? dmp.getUsedPIDTxt()
-							    : messageSource.getMessage("dmp.edit.usedPID." + dmp.getUsedPID(), null, locale));
+									: messageSource.getMessage("dmp.edit.usedPID." + dmp.getUsedPID(), null, locale));
 						addTextElement(e4, "transferTime", null, dmp.getTransferTime());
 						addTextElement(e4, "sensitiveData", null, dmp.getSensitiveData());
 						Element e5 = addAndReturnElement(e4, "access", null);
@@ -412,7 +412,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sForm
 	 * @param fileHash
 	 * @param root
@@ -421,11 +421,11 @@ public class DDIUtil {
 	 * @throws Exception
 	 */
 	private void createCodeBookDDI(final StudyForm sForm, final FileDTO fileHash, final Element root, final UserDTO user, final Locale locale)
-	    throws Exception {
+			throws Exception {
 		if (sForm != null && sForm.getRecord() != null) {
 			RecordDTO record = sForm.getRecord();
 			createDocDscr(messageSource.getMessage("export.ddi.rec.title", new Object[] { record.getRecordName() }, locale), null, null, user, root,
-			    locale);
+					locale);
 			createSharedStudyMeta(locale, sForm.getStudy(), addAndReturnElement(addAndReturnElement(root, "stdyDscr", this.xmlns_ddi), "citation", null));
 			if (record.getVersionId() > 0) {
 				Element fileDscr = addAndReturnElement(root, "fileDscr", this.xmlns_ddi);
@@ -435,7 +435,7 @@ public class DDIUtil {
 				addTextElement(addAndReturnElement(fileCitation, "titlStmt", null), "titl", null, record.getRecordName());
 				Element verStmt = addAndReturnElement(fileCitation, "verStmt", null);
 				addTextElement(verStmt, "version", null,
-				    record.getChanged() != null ? record.getChanged().toString() : record.getCreated() != null ? record.getCreated().toString() : "");
+						record.getChanged() != null ? record.getChanged().toString() : record.getCreated() != null ? record.getCreated().toString() : "");
 				addTextElement(verStmt, "verResp", null, record.getChangedBy());
 				addTextElement(verStmt, "notes", null, record.getChangeLog());
 				if (fileHash != null) {
@@ -464,7 +464,7 @@ public class DDIUtil {
 				addTextElement(fileTxt, "format", null, "comma-delimited");
 			} else {
 				addTextElement(addAndReturnElement(root, "fileDscr", this.xmlns_ddi), "notes", null,
-				    messageSource.getMessage("export.ddi.rec.noVers", null, locale));
+						messageSource.getMessage("export.ddi.rec.noVers", null, locale));
 			}
 			if (record.getVariables() != null && !record.getVariables().isEmpty()) {
 				Element dataDscr = addAndReturnElement(root, "dataDscr", this.xmlns_ddi);
@@ -475,7 +475,7 @@ public class DDIUtil {
 					var.addAttribute("representationType", "other");
 					var.addAttribute("otherRepresentationType", messageSource.getMessage("export.ddi.rec.SPSS", null, locale));
 					addAndReturnElement(var, "location", null).addAttribute("StartPos", String.valueOf(variable.getPosition()))
-					    .addAttribute("EndPos", String.valueOf(variable.getPosition())).addAttribute("width", String.valueOf(variable.getWidth()));
+							.addAttribute("EndPos", String.valueOf(variable.getPosition())).addAttribute("width", String.valueOf(variable.getWidth()));
 					addTextElement(var, "labl", null, variable.getLabel());
 					if (variable.getDw_attributes() != null)
 						variable.getDw_attributes().forEach(attr -> {
@@ -487,11 +487,11 @@ public class DDIUtil {
 					if (variable.getMissingFormat().equals(SPSSMissing.SPSS_MISS_RANGE)) {
 						invalrng = addAndReturnElement(var, "invalrng", null);
 						addAndReturnElement(invalrng, "range", null).addAttribute("min", variable.getMissingVal1()).addAttribute("max",
-						    variable.getMissingVal2());
+								variable.getMissingVal2());
 					} else if (variable.getMissingFormat().equals(SPSSMissing.SPSS_MISS_RANGEANDVAL)) {
 						invalrng = addAndReturnElement(var, "invalrng", null);
 						addAndReturnElement(invalrng, "range", null).addAttribute("min", variable.getMissingVal1()).addAttribute("max",
-						    variable.getMissingVal2());
+								variable.getMissingVal2());
 						addAndReturnElement(invalrng, "item", null).addAttribute("VALUE", variable.getMissingVal3());
 					} else if (variable.getMissingFormat().equals(SPSSMissing.SPSS_ONE_MISSVAL)) {
 						invalrng = addAndReturnElement(var, "invalrng", null);
@@ -514,24 +514,24 @@ public class DDIUtil {
 						}
 					}
 					if ((variable.getDw_attributes() != null && variable.getDw_attributes().size() > 0)
-					    || (variable.getAttributes() != null && variable.getAttributes().size() > 0)) {
+							|| (variable.getAttributes() != null && variable.getAttributes().size() > 0)) {
 						Element list = addAndReturnElement(addAndReturnElement(var, "concept", null), "list", null);
 						if (variable.getDw_attributes() != null && !variable.getDw_attributes().isEmpty()) {
 							variable.getDw_attributes().forEach(attr -> {
 								switch (attr.getLabel()) {
-								case "dw_construct":
-									setListItems(list, messageSource.getMessage("dataset.import.report.codebook.construct", null, locale), attr.getValue());
-									break;
-								case "dw_instrument":
-									setListItems(list, messageSource.getMessage("dataset.import.report.codebook.instrument", null, locale), attr.getValue());
-									break;
-								case "dw_measocc":
-									setListItems(list, messageSource.getMessage("dataset.import.report.codebook.measocc", null, locale), attr.getValue());
-									break;
-								case "dw_filtervar":
-									setListItems(list, messageSource.getMessage("dataset.import.report.codebook.filtervar", null, locale),
-									    (attr.getValue() != null && attr.getValue().equals("1") ? true : false));
-									break;
+									case "dw_construct":
+										setListItems(list, messageSource.getMessage("dataset.import.report.codebook.construct", null, locale), attr.getValue());
+										break;
+									case "dw_instrument":
+										setListItems(list, messageSource.getMessage("dataset.import.report.codebook.instrument", null, locale), attr.getValue());
+										break;
+									case "dw_measocc":
+										setListItems(list, messageSource.getMessage("dataset.import.report.codebook.measocc", null, locale), attr.getValue());
+										break;
+									case "dw_filtervar":
+										setListItems(list, messageSource.getMessage("dataset.import.report.codebook.filtervar", null, locale),
+												(attr.getValue() != null && attr.getValue().equals("1") ? true : false));
+										break;
 								}
 							});
 						}
@@ -543,14 +543,14 @@ public class DDIUtil {
 					}
 					Element list = addAndReturnElement(addAndReturnElement(var, "varFormat", null), "list", null);
 					setListItems(list, messageSource.getMessage("export.ddi.rec.SPSS", null, locale),
-					    messageSource.getMessage("spss.type." + (variable.getType() != null ? variable.getType().name() : "SPSS_UNKNOWN"), null, locale));
+							messageSource.getMessage("spss.type." + (variable.getType() != null ? variable.getType().name() : "SPSS_UNKNOWN"), null, locale));
 					setListItems(list, messageSource.getMessage("export.ddi.rec.columns", null, locale), variable.getColumns());
 					setListItems(list, messageSource.getMessage("export.ddi.rec.aligment", null, locale), messageSource
-					    .getMessage("spss.aligment." + (variable.getAligment() != null ? variable.getAligment().name() : "SPSS_UNKNOWN"), null, locale));
+							.getMessage("spss.aligment." + (variable.getAligment() != null ? variable.getAligment().name() : "SPSS_UNKNOWN"), null, locale));
 					setListItems(list, messageSource.getMessage("export.ddi.rec.measureLevel", null, locale), messageSource.getMessage(
-					    "spss.measureLevel." + (variable.getMeasureLevel() != null ? variable.getMeasureLevel().name() : "SPSS_UNKNOWN"), null, locale));
+							"spss.measureLevel." + (variable.getMeasureLevel() != null ? variable.getMeasureLevel().name() : "SPSS_UNKNOWN"), null, locale));
 					setListItems(list, messageSource.getMessage("export.ddi.rec.role", null, locale),
-					    messageSource.getMessage("spss.role." + (variable.getRole() != null ? variable.getRole().name() : "SPSS_UNKNOWN"), null, locale));
+							messageSource.getMessage("spss.role." + (variable.getRole() != null ? variable.getRole().name() : "SPSS_UNKNOWN"), null, locale));
 				}
 
 			} else {
@@ -562,7 +562,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param files
 	 * @param cUploader
 	 * @param root
@@ -571,7 +571,7 @@ public class DDIUtil {
 	 * @throws Exception
 	 */
 	private void createOtherMatDDI(final List<FileDTO> files, final List<UserDTO> cUploader, final Element root, final String lvl, final Locale locale)
-	    throws Exception {
+			throws Exception {
 		Element otherMat_root = addAndReturnElement(root, "otherMat", this.xmlns_ddi);
 		otherMat_root.addAttribute("level", lvl);
 		for (FileDTO file : files) {
@@ -604,7 +604,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sForm
 	 * @param user
 	 * @param root
@@ -624,11 +624,11 @@ public class DDIUtil {
 		Element copyright = addAndReturnElement(prodStmt, "copyright", null);
 		Element list = addAndReturnElement(copyright, "list", null);
 		setListItems(list, messageSource.getMessage("study.copyright", null, locale),
-		    messageSource.getMessage(study.isCopyright() ? "export.boolean.true" : "export.boolean.false", null, locale));
+				messageSource.getMessage(study.isCopyright() ? "export.boolean.true" : "export.boolean.false", null, locale));
 		if (study.isCopyright())
 			setListItems(list, messageSource.getMessage("study.copyrightHolder", null, locale), study.getCopyrightHolder());
 		setListItems(list, messageSource.getMessage("study.thirdParty", null, locale),
-		    messageSource.getMessage(study.isThirdParty() ? "export.boolean.true" : "export.boolean.false", null, locale));
+				messageSource.getMessage(study.isThirdParty() ? "export.boolean.true" : "export.boolean.false", null, locale));
 		if (study.isThirdParty())
 			setListItems(list, messageSource.getMessage("study.thirdPartyHolder", null, locale), study.getThirdPartyHolder());
 		if (study.getSoftware() != null && !study.getSoftware().isEmpty()) {
@@ -642,7 +642,7 @@ public class DDIUtil {
 		addTextElement(prodStmt, "grantNo", null, project.getGrantNumber());
 		Element stdyInfo = addAndReturnElement(stdyDscr, "stdyInfo", null);
 		if ((study.getsAbstract() != null && !study.getsAbstract().isEmpty())
-		    || (study.getsAbstractTrans() != null && !study.getsAbstractTrans().isEmpty())) {
+				|| (study.getsAbstractTrans() != null && !study.getsAbstractTrans().isEmpty())) {
 			Element abstr = addAndReturnElement(stdyInfo, "abstract", null);
 			list = addAndReturnElement(abstr, "list", null);
 			setListItems(list, messageSource.getMessage("study.sAbstract", null, locale), study.getsAbstract());
@@ -717,9 +717,9 @@ public class DDIUtil {
 				list = addAndReturnElement(notes, "list", null);
 				setListItems(list, messageSource.getMessage("export.ddi.objective.text", null, locale), objective.getText());
 				setListItems(list, messageSource.getMessage("export.ddi.objective.type", null, locale),
-				    (objective.getObjectivetype() != null && !objective.getObjectivetype().isEmpty())
-				        ? messageSource.getMessage("study.objectives." + objective.getObjectivetype().trim().toLowerCase(), null, locale)
-				        : "");
+						(objective.getObjectivetype() != null && !objective.getObjectivetype().isEmpty())
+								? messageSource.getMessage("study.objectives." + objective.getObjectivetype().trim().toLowerCase(), null, locale)
+								: "");
 			}
 		}
 		if (study.getConstructs() != null && !study.getConstructs().isEmpty()) {
@@ -732,9 +732,9 @@ public class DDIUtil {
 					setListItems(list, messageSource.getMessage("study.constructs.type", null, locale), construct.getOther());
 				} else {
 					setListItems(list, messageSource.getMessage("study.constructs.type", null, locale),
-					    (construct.getType() != null && !construct.getType().isEmpty())
-					        ? messageSource.getMessage("study.constructs.type." + construct.getType().trim().toLowerCase(), null, locale)
-					        : "");
+							(construct.getType() != null && !construct.getType().isEmpty())
+									? messageSource.getMessage("study.constructs.type." + construct.getType().trim().toLowerCase(), null, locale)
+									: "");
 				}
 			}
 		}
@@ -772,7 +772,7 @@ public class DDIUtil {
 			Element timeMeth = addAndReturnElement(dataColl, "timeMeth", null);
 			addTextElement(timeMeth, "concept", null, messageSource.getMessage("study.repMeasures", null, locale));
 			addTextElement(timeMeth, "txt", null,
-			    messageSource.getMessage("study.repMeasures." + study.getRepMeasures().trim().toLowerCase(), null, locale));
+					messageSource.getMessage("study.repMeasures." + study.getRepMeasures().trim().toLowerCase(), null, locale));
 			if (study.getRepMeasures().trim().equals("MULTIPLE")) {
 				timeMeth = addAndReturnElement(dataColl, "timeMeth", null);
 				addTextElement(timeMeth, "concept", null, messageSource.getMessage("study.timeDim", null, locale));
@@ -792,11 +792,11 @@ public class DDIUtil {
 		if (study.getResponsibility() != null && !study.getResponsibility().isEmpty()) {
 			if (study.getResponsibility().trim().equals("OTHER"))
 				addTextElement(dataColl, "dataCollector", null, study.getResponsibilityOther(),
-				    new SimpleEntry<String, String>("role", messageSource.getMessage("study.responsibility", null, locale)));
+						new SimpleEntry<String, String>("role", messageSource.getMessage("study.responsibility", null, locale)));
 			else
 				addTextElement(dataColl, "dataCollector", null,
-				    messageSource.getMessage("study.responsibility." + study.getResponsibility().toLowerCase(), null, locale),
-				    new SimpleEntry<String, String>("role", messageSource.getMessage("study.responsibility", null, locale)));
+						messageSource.getMessage("study.responsibility." + study.getResponsibility().toLowerCase(), null, locale),
+						new SimpleEntry<String, String>("role", messageSource.getMessage("study.responsibility", null, locale)));
 		}
 		if (study.getSampleSize() != null && !study.getSampleSize().isEmpty()) {
 			Element sampProc = addAndReturnElement(dataColl, "sampProc", null);
@@ -810,10 +810,10 @@ public class DDIUtil {
 				addTextElement(sampProc, "txt", null, study.getSampMethodOther());
 			else
 				addTextElement(sampProc, "txt", null,
-				    messageSource.getMessage("study.sampMethod." + study.getSampMethod().trim().toLowerCase(), null, locale));
+						messageSource.getMessage("study.sampMethod." + study.getSampMethod().trim().toLowerCase(), null, locale));
 		}
 		if ((study.getSampleSize() != null && !study.getSampleSize().isEmpty())
-		    || (study.getPowerAnalysis() != null && !study.getPowerAnalysis().isEmpty())) {
+				|| (study.getPowerAnalysis() != null && !study.getPowerAnalysis().isEmpty())) {
 			Element targetSampleSize = addAndReturnElement(dataColl, "targetSampleSize", null);
 			try {
 				int sampsize = Integer.parseInt(study.getSampleSize());
@@ -829,22 +829,22 @@ public class DDIUtil {
 				for (FormTypesDTO collMode : sForm.getCollectionModes()) {
 					if (collMode.getId() == collId) {
 						switch (collId) {
-						case 1:
-							if (study.getOtherCMIP() != null && !study.getOtherCMIP().isEmpty()) {
-								cmip.add(study.getOtherCMIP());
-							}
-							break;
-						case 2:
-							if (study.getOtherCMINP() != null && !study.getOtherCMINP().isEmpty()) {
-								cminp.add(study.getOtherCMINP());
-							}
-							break;
-						default:
-							if (collMode.isInvestPresent())
-								cmip.add(locale.equals(Locale.GERMAN) ? collMode.getNameDE() : collMode.getNameEN());
-							else
-								cminp.add(locale.equals(Locale.GERMAN) ? collMode.getNameDE() : collMode.getNameEN());
-							break;
+							case 1:
+								if (study.getOtherCMIP() != null && !study.getOtherCMIP().isEmpty()) {
+									cmip.add(study.getOtherCMIP());
+								}
+								break;
+							case 2:
+								if (study.getOtherCMINP() != null && !study.getOtherCMINP().isEmpty()) {
+									cminp.add(study.getOtherCMINP());
+								}
+								break;
+							default:
+								if (collMode.isInvestPresent())
+									cmip.add(locale.equals(Locale.GERMAN) ? collMode.getNameDE() : collMode.getNameEN());
+								else
+									cminp.add(locale.equals(Locale.GERMAN) ? collMode.getNameDE() : collMode.getNameEN());
+								break;
 						}
 					}
 				}
@@ -867,25 +867,25 @@ public class DDIUtil {
 			}
 		}
 		if ((study.getInterTypeExp() != null && !study.getInterTypeExp().isEmpty())
-		    || (study.getInterTypeDes() != null && !study.getInterTypeDes().isEmpty())
-		    || (study.getInterTypeLab() != null && !study.getInterTypeLab().isEmpty())
-		    || (study.getRandomization() != null && !study.getRandomization().isEmpty())
-		    || (study.getInterArms() != null && !study.getInterArms().isEmpty())) {
+				|| (study.getInterTypeDes() != null && !study.getInterTypeDes().isEmpty())
+				|| (study.getInterTypeLab() != null && !study.getInterTypeLab().isEmpty())
+				|| (study.getRandomization() != null && !study.getRandomization().isEmpty())
+				|| (study.getInterArms() != null && !study.getInterArms().isEmpty())) {
 			Element collMode = addAndReturnElement(dataColl, "collMode", null);
 			addTextElement(collMode, "concept", null, messageSource.getMessage("study.interTypeExp", null, locale));
 			list = addAndReturnElement(collMode, "list", null);
 			if (study.getInterTypeExp() != null && !study.getInterTypeExp().isEmpty())
 				addTextElement(list, "itm", null,
-				    messageSource.getMessage("study.interTypeExp." + study.getInterTypeExp().trim().toLowerCase(), null, locale));
+						messageSource.getMessage("study.interTypeExp." + study.getInterTypeExp().trim().toLowerCase(), null, locale));
 			if (study.getInterTypeDes() != null && !study.getInterTypeDes().isEmpty())
 				addTextElement(list, "itm", null,
-				    messageSource.getMessage("study.interTypeDes." + study.getInterTypeDes().trim().toLowerCase(), null, locale));
+						messageSource.getMessage("study.interTypeDes." + study.getInterTypeDes().trim().toLowerCase(), null, locale));
 			if (study.getInterTypeLab() != null && !study.getInterTypeLab().isEmpty())
 				addTextElement(list, "itm", null,
-				    messageSource.getMessage("study.interTypeLab." + study.getInterTypeLab().trim().toLowerCase(), null, locale));
+						messageSource.getMessage("study.interTypeLab." + study.getInterTypeLab().trim().toLowerCase(), null, locale));
 			if (study.getRandomization() != null && !study.getRandomization().isEmpty())
 				addTextElement(list, "itm", null,
-				    messageSource.getMessage("study.randomization." + study.getRandomization().trim().toLowerCase(), null, locale));
+						messageSource.getMessage("study.randomization." + study.getRandomization().trim().toLowerCase(), null, locale));
 			if (study.getInterArms() != null && !study.getInterArms().isEmpty()) {
 				Element itm = addAndReturnElement(list, "itm", null);
 				addTextElement(itm, "label", null, messageSource.getMessage("study.interArms", null, locale));
@@ -902,8 +902,8 @@ public class DDIUtil {
 		}
 		if (study.isSurveyIntervention() && (study.getSurveyType() != null && !study.getSurveyType().isEmpty())) {
 			addTextElement(dataColl, "resInstru", null,
-			    messageSource.getMessage("study.surveyType." + study.getSurveyType().trim().toLowerCase(), null, locale),
-			    new SimpleEntry<String, String>("type", messageSource.getMessage("study.surveyType", null, locale)));
+					messageSource.getMessage("study.surveyType." + study.getSurveyType().trim().toLowerCase(), null, locale),
+					new SimpleEntry<String, String>("type", messageSource.getMessage("study.surveyType", null, locale)));
 		}
 		if (study.getInstruments() != null && !study.getInstruments().isEmpty()) {
 			Element resInstru = addAndReturnElement(dataColl, "resInstru", null);
@@ -935,38 +935,38 @@ public class DDIUtil {
 		setListItems(list, messageSource.getMessage("study.persDataColl", null, locale), study.isPersDataColl());
 		if (study.isPersDataColl() && study.getPersDataPres() != null && !study.getPersDataPres().isEmpty()) {
 			setListItems(list, messageSource.getMessage("study.persDataPres", null, locale),
-			    messageSource.getMessage("study.persDataPres." + study.getPersDataPres().trim().toLowerCase(), null, locale));
+					messageSource.getMessage("study.persDataPres." + study.getPersDataPres().trim().toLowerCase(), null, locale));
 			if (study.getPersDataPres().trim().toLowerCase().equals("anonymous"))
 				setListItems(list, messageSource.getMessage("study.anonymProc", null, locale), study.getAnonymProc());
 		}
 		Element anlyInfo = addAndReturnElement(method, "anlyInfo", null);
 		addTextElement(anlyInfo, "respRate", null, study.getDataRerun());
 		addTextElement(anlyInfo, "dataAppr", null, study.getQualInd(),
-		    new SimpleEntry<String, String>("type", messageSource.getMessage("study.qualInd", null, locale)));
+				new SimpleEntry<String, String>("type", messageSource.getMessage("study.qualInd", null, locale)));
 		addTextElement(anlyInfo, "dataAppr", null, study.getQualLim(),
-		    new SimpleEntry<String, String>("type", messageSource.getMessage("study.qualLim", null, locale)));
+				new SimpleEntry<String, String>("type", messageSource.getMessage("study.qualLim", null, locale)));
 		addTextElement(anlyInfo, "dataAppr", null, study.getSpecCirc(),
-		    new SimpleEntry<String, String>("type", messageSource.getMessage("study.specCirc", null, locale)));
+				new SimpleEntry<String, String>("type", messageSource.getMessage("study.specCirc", null, locale)));
 		if (study.getSourTrans() != null && !study.getSourTrans().isEmpty()) {
 			Element dataProcessing = addAndReturnElement(method, "dataProcessing", null);
 			dataProcessing.addAttribute("type", messageSource.getMessage("export.ddi.type.dataProc", null, locale));
 			list = addAndReturnElement(dataProcessing, "list", null);
 			setListItems(list, messageSource.getMessage("study.sourTrans", null, locale),
-			    messageSource.getMessage("study.sourTrans." + study.getSourTrans().trim().toLowerCase(), null, locale));
+					messageSource.getMessage("study.sourTrans." + study.getSourTrans().trim().toLowerCase(), null, locale));
 			if (study.getSourTrans().trim().toLowerCase().equals("complex")) {
 				setListItems(list, messageSource.getMessage("export.ddi.type.dataProc.other", null, locale), study.getOtherSourTrans());
 			}
 		}
 		addTextElement(method, "dataProcessing", null, study.getTransDescr(),
-		    new SimpleEntry<String, String>("type", messageSource.getMessage("study.transDescr", null, locale)));
+				new SimpleEntry<String, String>("type", messageSource.getMessage("study.transDescr", null, locale)));
 		addTextElement(method, "dataProcessing", null, study.getMissings(),
-		    new SimpleEntry<String, String>("type", messageSource.getMessage("study.missings", null, locale)));
+				new SimpleEntry<String, String>("type", messageSource.getMessage("study.missings", null, locale)));
 		if (study.getCompleteSel() != null && !study.getCompleteSel().isEmpty()) {
 			list = addAndReturnElement(
-			    addAndReturnElement(addAndReturnElement(addAndReturnElement(stdyDscr, "dataAccs", null), "setAvail", null), "complete", null), "list",
-			    null);
+					addAndReturnElement(addAndReturnElement(addAndReturnElement(stdyDscr, "dataAccs", null), "setAvail", null), "complete", null), "list",
+					null);
 			setListItems(list, messageSource.getMessage("study.completeSel", null, locale),
-			    messageSource.getMessage("study.completeSel." + study.getCompleteSel().trim().toLowerCase(), null, locale));
+					messageSource.getMessage("study.completeSel." + study.getCompleteSel().trim().toLowerCase(), null, locale));
 			if (study.getCompleteSel().trim().toLowerCase().equals("excerpt")) {
 				setListItems(list, messageSource.getMessage("study.excerpt", null, locale), study.getExcerpt());
 			}
@@ -976,7 +976,7 @@ public class DDIUtil {
 			if (study.getPrevWork() != null && !study.getPrevWork().isEmpty()) {
 				list = addAndReturnElement(addAndReturnElement(othrStdyMat, "relStdy", null), "list", null);
 				setListItems(list, messageSource.getMessage("study.prevWork", null, locale),
-				    messageSource.getMessage("study.prevWork." + study.getPrevWork().trim().toLowerCase(), null, locale));
+						messageSource.getMessage("study.prevWork." + study.getPrevWork().trim().toLowerCase(), null, locale));
 				if (study.getPrevWork().trim().toLowerCase().equals("other")) {
 					setListItems(list, messageSource.getMessage("export.ddi.prevwork.other", null, locale), study.getPrevWorkStr());
 				}
@@ -992,7 +992,7 @@ public class DDIUtil {
 
 	/**
 	 * This function generates XML/DDI tags which are used in Study and Record export files
-	 * 
+	 *
 	 * @param locale
 	 * @param study
 	 * @param citation
@@ -1009,8 +1009,8 @@ public class DDIUtil {
 				authEnty.addAttribute("affiliation", contributor.getInstitution());
 				Element list = addAndReturnElement(authEnty, "list", null);
 				setListItems(list, messageSource.getMessage("export.ddi.study.role", null, locale),
-				    contributor.getPrimaryContributor() ? messageSource.getMessage("export.ddi.study.role.pi", null, locale)
-				        : messageSource.getMessage("export.ddi.study.role.re", null, locale));
+						contributor.getPrimaryContributor() ? messageSource.getMessage("export.ddi.study.role.pi", null, locale)
+								: messageSource.getMessage("export.ddi.study.role.re", null, locale));
 				setListItems(list, messageSource.getMessage("export.ddi.study.title", null, locale), contributor.getTitle());
 				setListItems(list, messageSource.getMessage("export.ddi.study.orcid", null, locale), contributor.getOrcid());
 				setListItems(list, messageSource.getMessage("export.ddi.study.firstName", null, locale), contributor.getFirstName());
@@ -1020,7 +1020,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param titl
 	 * @param parTitl
 	 * @param idno
@@ -1029,7 +1029,7 @@ public class DDIUtil {
 	 * @param locale
 	 */
 	private void createDocDscr(final String titl, final String parTitl, final String idno, final UserDTO user, final Element root,
-	    final Locale locale) {
+							   final Locale locale) {
 		Element docDscr = addAndReturnElement(root, "docDscr", this.xmlns_ddi);
 		Element citation = addAndReturnElement(docDscr, "citation", null);
 		Element titlStmt = addAndReturnElement(citation, "titlStmt", null);
@@ -1052,7 +1052,7 @@ public class DDIUtil {
 
 	/**
 	 * TODO locale
-	 * 
+	 *
 	 * @param parent
 	 * @param name
 	 * @param nsp
@@ -1060,7 +1060,7 @@ public class DDIUtil {
 	 * @param attributes
 	 */
 	private void addTextElement(final Element parent, final String name, final Namespace nsp, final Object text,
-	    final SimpleEntry<?, ?>... attributes) {
+								final SimpleEntry<?, ?>... attributes) {
 		String input = null;
 		if (text == null) {
 			input = "";
@@ -1086,7 +1086,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param parent
 	 * @param name
 	 * @param nsp
@@ -1102,7 +1102,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param list
 	 * @param label
 	 * @param p
@@ -1116,7 +1116,7 @@ public class DDIUtil {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param txt
 	 * @param concept
 	 * @param sumDscr
@@ -1131,7 +1131,7 @@ public class DDIUtil {
 
 	/**
 	 * Initial new document
-	 * 
+	 *
 	 * @return
 	 */
 	private Document createDoc() {
@@ -1141,7 +1141,7 @@ public class DDIUtil {
 
 	/**
 	 * Create root element and set namespaces
-	 * 
+	 *
 	 * @param doc
 	 * @return
 	 */

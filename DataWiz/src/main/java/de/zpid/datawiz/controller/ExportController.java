@@ -92,7 +92,7 @@ public class ExportController {
                 model.put("subnaviActive", PageState.EXPORT.name());
                 model.put("ExportProjectForm", exportForm);
                 ret = "export";
-            } catch (Exception e) {
+            } catch (DataWizSystemException e) {
                 ret = exceptionService.setErrorMessagesAndRedirects(pid, Optional.empty(), Optional.empty(), model, redirectAttributes, e, "ExportController->showExportPage");
             }
         }
@@ -108,7 +108,6 @@ public class ExportController {
      * @param model      {@link ModelMap}
      * @param response   {@link HttpServletResponse}
      * @throws Exception DWDownloadException or DataWizSystemException on errors
-     * 
      */
     @RequestMapping(value = {"", "/{pid}"}, method = RequestMethod.POST, produces = "application/zip")
     public void exportProject(@ModelAttribute("ExportProjectForm") ExportProjectForm exportForm, @PathVariable final Optional<Long> pid, final ModelMap model,
@@ -117,7 +116,7 @@ public class ExportController {
         List<Entry<String, byte[]>> files = null;
         if (exportForm != null && exportForm.getProjectId() > 0) {
             try {
-                files = exportService.createExportFileList(exportForm, pid, user);
+                files = exportService.createExportFileList(exportForm, pid.orElse(0L), user);
             } catch (Exception e) {
                 if (e instanceof DataWizSystemException) {
                     log.warn("Method exportProject->createExportFileList completed with an error [{}] - DWDownloadException thrown: ",

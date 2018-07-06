@@ -5,7 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import de.zpid.datawiz.dto.StudyListTypesDTO;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ListUtil {
 
   /**

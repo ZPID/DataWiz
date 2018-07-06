@@ -1,136 +1,137 @@
 package de.zpid.datawiz.dto;
 
-import java.io.Serializable;
-
-import javax.validation.constraints.Size;
-
 import de.zpid.datawiz.enumeration.DWFieldTypes;
 
+import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.util.Objects;
+
+/**
+ * StudyListTypes Data Transfer Object
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+ *
+ * @author Ronny Boelter
+ * @version 1.0
+ */
 public class StudyListTypesDTO implements Serializable {
 
-  private static final long serialVersionUID = -3098463141488593526L;
+    private static final long serialVersionUID = -3098463141488593526L;
 
-  private long id;
-  private long studyid;
+    private long id;
+    private long studyid;
 
-  @Size(min = 0, max = 1000, groups = { StudyDTO.StGeneralVal.class, StudyDTO.StDesignVal.class,
-      StudyDTO.StSampleVal.class })
-  private String text;
-  private DWFieldTypes type;
-  private int sort;
-  private boolean timetable;
-  private String objectivetype;
+    @Size(max = 1000, groups = {StudyDTO.StGeneralVal.class, StudyDTO.StDesignVal.class,
+            StudyDTO.StSampleVal.class})
+    private String text;
+    private DWFieldTypes type;
+    private int sort;
+    private boolean timetable;
+    private String objectivetype;
 
-  public StudyListTypesDTO() {
-    super();
-  }
+    public StudyListTypesDTO() {
+        super();
+    }
 
-  public long getId() {
-    return id;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-  public long getStudyid() {
-    return studyid;
-  }
+    public long getStudyid() {
+        return studyid;
+    }
 
-  public void setStudyid(long studyid) {
-    this.studyid = studyid;
-  }
+    public void setStudyid(long studyid) {
+        this.studyid = studyid;
+    }
 
-  public String getText() {
-    return text;
-  }
+    public String getText() {
+        return text;
+    }
 
-  public void setText(String text) {
-    this.text = text;
-  }
+    public void setText(String text) {
+        this.text = text;
+    }
 
-  public DWFieldTypes getType() {
-    return type;
-  }
+    public DWFieldTypes getType() {
+        return type;
+    }
 
-  public void setType(DWFieldTypes type) {
-    this.type = type;
-  }
+    public void setType(DWFieldTypes type) {
+        this.type = type;
+    }
 
-  public int getSort() {
-    return sort;
-  }
+    public int getSort() {
+        return sort;
+    }
 
-  public void setSort(int sort) {
-    this.sort = sort;
-  }
+    public void setSort(int sort) {
+        this.sort = sort;
+    }
 
-  public boolean isTimetable() {
-    return timetable;
-  }
+    public boolean isTimetable() {
+        return timetable;
+    }
 
-  public void setTimetable(boolean timetable) {
-    this.timetable = timetable;
-  }
+    public void setTimetable(boolean timetable) {
+        this.timetable = timetable;
+    }
 
-  public String getObjectivetype() {
-    return objectivetype;
-  }
+    public String getObjectivetype() {
+        return objectivetype;
+    }
 
-  public void setObjectivetype(String objectivetype) {
-    this.objectivetype = objectivetype;
-  }
+    public void setObjectivetype(String objectivetype) {
+        this.objectivetype = objectivetype;
+    }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (int) (id ^ (id >>> 32));
-    result = prime * result + ((objectivetype == null) ? 0 : objectivetype.hashCode());
-    result = prime * result + sort;
-    result = prime * result + (int) (studyid ^ (studyid >>> 32));
-    result = prime * result + ((text == null) ? 0 : text.hashCode());
-    result = prime * result + (timetable ? 1231 : 1237);
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    return result;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StudyListTypesDTO that = (StudyListTypesDTO) o;
+        return id == that.id &&
+                studyid == that.studyid &&
+                sort == that.sort &&
+                timetable == that.timetable &&
+                Objects.equals(text, that.text) &&
+                type == that.type &&
+                Objects.equals(objectivetype, that.objectivetype);
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    StudyListTypesDTO other = (StudyListTypesDTO) obj;
-    if (id != other.id)
-      return false;
-    if (objectivetype == null) {
-      if (other.objectivetype != null)
-        return false;
-    } else if (!objectivetype.equals(other.objectivetype))
-      return false;
-    if (sort != other.sort)
-      return false;
-    if (studyid != other.studyid)
-      return false;
-    if (text == null) {
-      if (other.text != null)
-        return false;
-    } else if (!text.equals(other.text))
-      return false;
-    if (timetable != other.timetable)
-      return false;
-    if (type != other.type)
-      return false;
-    return true;
-  }
+    @Override
+    public int hashCode() {
 
-  @Override
-  public String toString() {
-    return "StudyListTypesDTO [id=" + id + ", studyid=" + studyid + ", text=" + text + ", type=" + type + ", sort="
-        + sort + ", timetable=" + timetable + ", objectivetype=" + objectivetype + "]";
-  }
+        return Objects.hash(id, studyid, text, type, sort, timetable, objectivetype);
+    }
 
+    @Override
+    public String toString() {
+        return "StudyListTypesDTO{" +
+                "id=" + id +
+                ", studyid=" + studyid +
+                ", text='" + text + '\'' +
+                ", type=" + type +
+                ", sort=" + sort +
+                ", timetable=" + timetable +
+                ", objectivetype='" + objectivetype + '\'' +
+                '}';
+    }
 }

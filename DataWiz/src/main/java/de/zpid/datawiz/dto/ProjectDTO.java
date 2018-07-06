@@ -1,233 +1,205 @@
 package de.zpid.datawiz.dto;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
-
+/**
+ * Project Data Transfer Object
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+ *
+ * @author Ronny Boelter
+ * @version 1.0
+ */
 public class ProjectDTO implements Serializable {
 
-  private static final long serialVersionUID = -7148120591732205800L;
+    private static final long serialVersionUID = -7148120591732205800L;
 
-  private long id;
-  private long ownerId;
+    private long id;
+    private long ownerId;
 
-  public interface ProjectVal {
-  }
+    public interface ProjectVal {
+    }
 
-  @NotNull(groups = ProjectVal.class)
-  @NotBlank(groups = ProjectVal.class)
-  private String title;
-  /**
-   * Not the database ID - this is used for documentation and is not unique!
-   */
-  @Size(min = 0, max = 250)
-  private String projectIdent;
+    @NotNull(groups = ProjectVal.class)
+    @NotBlank(groups = ProjectVal.class)
+    private String title;
+    /**
+     * Not the database ID - this is used for documentation and is not unique!
+     */
+    @Size(min = 0, max = 250)
+    private String projectIdent;
 
-  @Size(min = 0, max = 1000)
-  private String funding;
+    @Size(min = 0, max = 1000)
+    private String funding;
 
-  @Size(min = 0, max = 250)
-  private String grantNumber;
+    @Size(min = 0, max = 250)
+    private String grantNumber;
 
-  @Size(min = 0, max = 5000)
-  private String description;
+    @Size(min = 0, max = 5000)
+    private String description;
 
-  private LocalDateTime created;
-  private long lastUserId;
-  private LocalDateTime lastEdit;
-  private String thesaurusType;
+    private LocalDateTime created;
+    private long lastUserId;
+    private LocalDateTime lastEdit;
+    private String thesaurusType;
 
-  private String copyright;
+    private String copyright;
 
-  public long getId() {
-    return id;
-  }
+    public long getId() {
+        return id;
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public void setId(long id) {
+        this.id = id;
+    }
 
-  public long getOwnerId() {
-    return ownerId;
-  }
+    public long getOwnerId() {
+        return ownerId;
+    }
 
-  public void setOwnerId(long ownerId) {
-    this.ownerId = ownerId;
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
 
-  }
+    }
 
-  public String getTitle() {
-    return title;
-  }
+    public String getTitle() {
+        return title;
+    }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-  public String getDescription() {
-    return description;
-  }
+    public String getDescription() {
+        return description;
+    }
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-  public LocalDateTime getCreated() {
-    return created;
-  }
+    public LocalDateTime getCreated() {
+        return created;
+    }
 
-  public void setCreated(LocalDateTime created) {
-    this.created = created;
-  }
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
+    }
 
-  public String getProjectIdent() {
-    return projectIdent;
-  }
+    public String getProjectIdent() {
+        return projectIdent;
+    }
 
-  public void setProjectIdent(String projectIdent) {
-    this.projectIdent = projectIdent;
-  }
+    public void setProjectIdent(String projectIdent) {
+        this.projectIdent = projectIdent;
+    }
 
-  public String getFunding() {
-    return funding;
-  }
+    public String getFunding() {
+        return funding;
+    }
 
-  public void setFunding(String funding) {
-    this.funding = funding;
-  }
+    public void setFunding(String funding) {
+        this.funding = funding;
+    }
 
-  public String getGrantNumber() {
-    return grantNumber;
-  }
+    public String getGrantNumber() {
+        return grantNumber;
+    }
 
-  public void setGrantNumber(String grantNumber) {
-    this.grantNumber = grantNumber;
-  }
+    public void setGrantNumber(String grantNumber) {
+        this.grantNumber = grantNumber;
+    }
 
-  public String getThesaurusType() {
-    return thesaurusType;
-  }
+    public String getThesaurusType() {
+        return thesaurusType;
+    }
 
-  public void setThesaurusType(String thesaurusType) {
-    this.thesaurusType = thesaurusType;
-  }
+    public void setThesaurusType(String thesaurusType) {
+        this.thesaurusType = thesaurusType;
+    }
 
-  public String getCopyright() {
-    return copyright;
-  }
+    public String getCopyright() {
+        return copyright;
+    }
 
-  public void setCopyright(String copyright) {
-    this.copyright = copyright;
-  }
+    public void setCopyright(String copyright) {
+        this.copyright = copyright;
+    }
 
-  public long getLastUserId() {
-    return lastUserId;
-  }
+    public long getLastUserId() {
+        return lastUserId;
+    }
 
-  public void setLastUserId(long lastUserId) {
-    this.lastUserId = lastUserId;
-  }
+    public void setLastUserId(long lastUserId) {
+        this.lastUserId = lastUserId;
+    }
 
-  public LocalDateTime getLastEdit() {
-    return lastEdit;
-  }
+    public LocalDateTime getLastEdit() {
+        return lastEdit;
+    }
 
-  public void setLastEdit(LocalDateTime lastEdit) {
-    this.lastEdit = lastEdit;
-  }
+    public void setLastEdit(LocalDateTime lastEdit) {
+        this.lastEdit = lastEdit;
+    }
 
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((copyright == null) ? 0 : copyright.hashCode());
-    result = prime * result + ((created == null) ? 0 : created.hashCode());
-    result = prime * result + ((description == null) ? 0 : description.hashCode());
-    result = prime * result + ((funding == null) ? 0 : funding.hashCode());
-    result = prime * result + ((grantNumber == null) ? 0 : grantNumber.hashCode());
-    result = prime * result + (int) (id ^ (id >>> 32));
-    result = prime * result + ((lastEdit == null) ? 0 : lastEdit.hashCode());
-    result = prime * result + (int) (lastUserId ^ (lastUserId >>> 32));
-    result = prime * result + (int) (ownerId ^ (ownerId >>> 32));
-    result = prime * result + ((projectIdent == null) ? 0 : projectIdent.hashCode());
-    result = prime * result + ((thesaurusType == null) ? 0 : thesaurusType.hashCode());
-    result = prime * result + ((title == null) ? 0 : title.hashCode());
-    return result;
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProjectDTO that = (ProjectDTO) o;
+        return id == that.id &&
+                ownerId == that.ownerId &&
+                lastUserId == that.lastUserId &&
+                Objects.equals(title, that.title) &&
+                Objects.equals(projectIdent, that.projectIdent) &&
+                Objects.equals(funding, that.funding) &&
+                Objects.equals(grantNumber, that.grantNumber) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(created, that.created) &&
+                Objects.equals(lastEdit, that.lastEdit) &&
+                Objects.equals(thesaurusType, that.thesaurusType) &&
+                Objects.equals(copyright, that.copyright);
+    }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj)
-      return true;
-    if (obj == null)
-      return false;
-    if (getClass() != obj.getClass())
-      return false;
-    ProjectDTO other = (ProjectDTO) obj;
-    if (copyright == null) {
-      if (other.copyright != null)
-        return false;
-    } else if (!copyright.equals(other.copyright))
-      return false;
-    if (created == null) {
-      if (other.created != null)
-        return false;
-    } else if (!created.equals(other.created))
-      return false;
-    if (description == null) {
-      if (other.description != null)
-        return false;
-    } else if (!description.equals(other.description))
-      return false;
-    if (funding == null) {
-      if (other.funding != null)
-        return false;
-    } else if (!funding.equals(other.funding))
-      return false;
-    if (grantNumber == null) {
-      if (other.grantNumber != null)
-        return false;
-    } else if (!grantNumber.equals(other.grantNumber))
-      return false;
-    if (id != other.id)
-      return false;
-    if (lastEdit == null) {
-      if (other.lastEdit != null)
-        return false;
-    } else if (!lastEdit.equals(other.lastEdit))
-      return false;
-    if (lastUserId != other.lastUserId)
-      return false;
-    if (ownerId != other.ownerId)
-      return false;
-    if (projectIdent == null) {
-      if (other.projectIdent != null)
-        return false;
-    } else if (!projectIdent.equals(other.projectIdent))
-      return false;
-    if (thesaurusType == null) {
-      if (other.thesaurusType != null)
-        return false;
-    } else if (!thesaurusType.equals(other.thesaurusType))
-      return false;
-    if (title == null) {
-      if (other.title != null)
-        return false;
-    } else if (!title.equals(other.title))
-      return false;
-    return true;
-  }
+    @Override
+    public int hashCode() {
 
-  @Override
-  public String toString() {
-    return "ProjectDTO [id=" + id + ", ownerId=" + ownerId + ", title=" + title + ", projectIdent=" + projectIdent
-        + ", funding=" + funding + ", grantNumber=" + grantNumber + ", thesaurusType=" + thesaurusType + ", copyright="
-        + copyright + ", description=" + description + ", created=" + created + ", lastUserId=" + lastUserId
-        + ", lastEdit=" + lastEdit + "]";
-  }
+        return Objects.hash(id, ownerId, title, projectIdent, funding, grantNumber, description, created, lastUserId, lastEdit, thesaurusType, copyright);
+    }
 
+    @Override
+    public String toString() {
+        return "ProjectDTO{" +
+                "id=" + id +
+                ", ownerId=" + ownerId +
+                ", title='" + title + '\'' +
+                ", projectIdent='" + projectIdent + '\'' +
+                ", funding='" + funding + '\'' +
+                ", grantNumber='" + grantNumber + '\'' +
+                ", description='" + description + '\'' +
+                ", created=" + created +
+                ", lastUserId=" + lastUserId +
+                ", lastEdit=" + lastEdit +
+                ", thesaurusType='" + thesaurusType + '\'' +
+                ", copyright='" + copyright + '\'' +
+                '}';
+    }
 }

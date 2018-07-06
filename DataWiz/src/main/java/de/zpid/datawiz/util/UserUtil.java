@@ -5,6 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import de.zpid.datawiz.dto.UserDTO;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 /**
  * This class provides static functions for user management.<br />
@@ -25,6 +27,7 @@ import de.zpid.datawiz.dto.UserDTO;
  *
  * 
  */
+@Component
 public class UserUtil {
 
 	private static Logger log = LogManager.getLogger(UserUtil.class);

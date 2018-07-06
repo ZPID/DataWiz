@@ -39,7 +39,6 @@ import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
 
 @Component
-@Scope("singleton")
 public class ODFUtil {
 
 	@Autowired

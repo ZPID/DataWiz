@@ -20,6 +20,7 @@ import io.minio.errors.ErrorResponseException;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
 import io.minio.messages.Upload;
+import org.springframework.stereotype.Component;
 
 /**
  * This file is part of Datawiz.<br />
@@ -39,6 +40,7 @@ import io.minio.messages.Upload;
  * @author Ronny Boelter
  * @version 1.0
  */
+@Component
 public class MinioUtil {
 
     private static final Logger log = LogManager.getLogger(MinioUtil.class);

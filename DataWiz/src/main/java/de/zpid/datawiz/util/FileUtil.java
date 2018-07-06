@@ -60,11 +60,10 @@ import de.zpid.datawiz.dto.FileDTO;
  * 
  */
 @Component
-@Scope("singleton")
 public class FileUtil {
 
 	private static Logger log = LogManager.getLogger(FileUtil.class);
-	final static String OS = System.getProperty("os.name").toLowerCase();
+	private final static String OS = System.getProperty("os.name").toLowerCase();
 	@Autowired
 	protected ClassPathXmlApplicationContext applicationContext;
 	@Autowired

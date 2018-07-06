@@ -58,10 +58,10 @@ public class UserDAO {
 
 
     /**
-     * This function selects the complete User Information for the User with the passed ID. If no user was found, null is returned.
+     * Finds user data by identifier
      *
-     * @param id The ID of an DataWiz User
-     * @return A User TO Object with all Information of this User excluding the password, or NULL if no User for the passed ID.
+     * @param id long user identifier
+     * @return {@link UserDTO} on success, otherwise null
      */
     public UserDTO findById(final long id) {
         log.trace("Entering findById [id: {}]", () -> id);
@@ -80,11 +80,11 @@ public class UserDAO {
     }
 
     /**
-     * This function selects the complete User Information for the User with the passed mail. If no user was found, null is returned.
+     * Finds user data by primary mail, which is unique in dbs system
      *
-     * @param email The primary mail address is defined as unique in the DB, therefore it is possible to search a User by mail.
-     * @param pwd   A boolean value: select true if the password is needed for further execution, otherwise select false
-     * @return A UserDTO object with all available user data if the user exists, otherwise null
+     * @param email {@link String} Primary email
+     * @param pwd   true if password has to be included in result, otherwise false
+     * @return {@link UserDTO} on success, otherwise null
      */
     public UserDTO findByMail(final String email, final boolean pwd) {
         log.trace("Entering findByMail [mail: {}], exptractPWD[{}]", () -> email, () -> pwd);
@@ -103,10 +103,10 @@ public class UserDAO {
     }
 
     /**
-     * Return only the encoded password of a DataWiz User
+     * Returns the encoded password of a DataWiz User
      *
-     * @param id The id of an User
-     * @return The encoded password
+     * @param id long User identifier
+     * @return The encoded password as {@link String}
      */
     public String findPasswordbyId(final long id) {
         log.debug("execute findPasswordbyId [id: {}]", () -> id);
@@ -121,10 +121,10 @@ public class UserDAO {
     }
 
     /**
-     * Returns a list of all project contributors, which are selected by the passed project id
+     * Returns a list of all project co-workers, which are selected by the passed project id
      *
-     * @param pid The projectId
-     * @return List of Projectcontributors
+     * @param pid long Project identifier
+     * @return {@link List} of {@link UserDTO}
      */
     public List<UserDTO> findGroupedByProject(final long pid) {
         log.trace("Entering findGroupedByProject [projectID: {}], exptractPWD[{}]", () -> pid);
@@ -136,9 +136,9 @@ public class UserDAO {
     }
 
     /**
-     * Returns a list of all contributors(administration query).
+     * Returns a list of all users(administration query).
      *
-     * @return List of contributors
+     * @return {@link List} of {@link UserDTO}
      */
     public List<UserDTO> findAll() {
         log.trace("Entering findAll (ADMIN only)");
@@ -148,19 +148,23 @@ public class UserDAO {
         return ret;
     }
 
+    /**
+     * Deletes a user from the DBS. This function is not used because deleting a user is complicated due to dependencies.
+     *
+     * @param user {@link UserDTO} contains the user data
+     */
     @SuppressWarnings("unused")
-    public int deleteUser(final UserDTO user) {
+    public void deleteUser(final UserDTO user) {
         log.trace("Entering deleteUser for user [email: {}]", user::getEmail);
         String query = "DELETE FROM dw_user WHERE " + (user.getEmail() != null && !user.getEmail().isEmpty() ? "email = ?" : "id = ?");
         final int ret = this.jdbcTemplate.update(query, (user.getEmail() != null && !user.getEmail().isEmpty() ? user.getEmail() : user.getId()));
         log.debug("Transaction for deleteUser returned: {}", ret);
-        return ret;
     }
 
     /**
-     * This function decides by evaluation of the ID in the passed UserDTO if the User Data has to be saved or updated.
+     * Saves or updates a user entity, depending on the passed user identifier
      *
-     * @param user      The UserDTO Object
+     * @param user      {@link UserDTO} contains the user data
      * @param changePWD True if the password has to be changed, otherwise false.
      */
     public void saveOrUpdate(final UserDTO user, final boolean changePWD) {
@@ -204,6 +208,11 @@ public class UserDAO {
         log.debug("Transaction for saveOrUpdate returned: {}", ret);
     }
 
+    /**
+     * Updates a user password
+     *
+     * @param user {@link UserDTO} contains the user data
+     */
     public void updatePassword(final UserDTO user) {
         log.trace("Entering updatePassword for user [email: {}]", user::getEmail);
         int ret = this.jdbcTemplate.update("UPDATE dw_user SET password = ? WHERE email = ?", user.getPassword(), user.getEmail());
@@ -213,7 +222,7 @@ public class UserDAO {
     /**
      * Activates a registered user Account
      *
-     * @param user UserDTO
+     * @param user {@link UserDTO} contains the user data
      */
     public void activateUserAccount(final UserDTO user) {
         log.trace("Entering activateUserAccount for user [email: {}]", user::getEmail);
@@ -223,9 +232,9 @@ public class UserDAO {
     }
 
     /**
-     * Private function to save the database transaction result into a UserDTO object an to avoid redundancy
+     * Copies the ResultSet into a UserDTO
      *
-     * @param pwd True if the password should be saved into the DTO Object, otherwise false!
+     * @param pwd true if password has to be included in result, otherwise false
      * @param rs  Result of the database transaction as ResultSet
      * @return a full set of user data
      */
