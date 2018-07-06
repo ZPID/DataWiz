@@ -1899,9 +1899,13 @@ public class ODFUtil {
 
 			// Zweite Seite
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu1h", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu1", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu2", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.zu3", null, locale))).setFont(regular);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 
 			Table table = doc.addTable(57, 3);
 			// merge
@@ -2111,8 +2115,10 @@ public class ODFUtil {
 			
 
 			// doc.addColumnBreak();
-
+			
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.ft1h", null, locale))).setFont(blue_large);
+			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 			doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.ft1", null, locale)));
 
 			doc.save(baos);
