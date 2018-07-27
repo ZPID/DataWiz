@@ -49,6 +49,28 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * Service class for the Import controller to separate the web logic from the business logic.
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+ *
+ * @author Ronny Boelter
+ * @version 1.0
+ * TODO This class should be checked because it may contain code redundancies or is not implemented optimally due to lack of time.
+ **/
 @Service
 public class ImportService {
 
@@ -70,16 +92,19 @@ public class ImportService {
     }
 
     /**
-     * @param pid
-     * @param studyId
-     * @param recordId
-     * @param sForm
-     * @param user
-     * @throws DataWizSystemException
+     * This function is the first step in importing SPSS and CSV files. The uploaded files are validated in this step and checked for (syntax) errors.
+     * The content check takes place manually in the next step.
+     *
+     * @param pid      Project identifier as long
+     * @param studyId  Study identifier as long
+     * @param recordId Record identifier as long
+     * @param sForm    {@link StudyForm} contains the file, and the upload information
+     * @param user     {@link UserDTO} contains user information
+     * @throws DataWizSystemException Import Exceptions
      */
     public void importFile(final long pid, final long studyId, final long recordId, final StudyForm sForm, final UserDTO user)
             throws DataWizSystemException {
-        boolean error = false;
+        boolean error;
         Set<String> warnings = new HashSet<>();
         List<String> errors = new ArrayList<>();
         String fileType = null;
@@ -95,7 +120,7 @@ public class ImportService {
             fileType = file[file.length - 1].trim().toLowerCase();
         if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("SPSS") && sForm.getSpssFile() != null && sForm.getSpssFile().getSize() > 0
                 && fileType != null && fileType.equals("sav")) {
-            error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors, warnings);
+            error = validateSPSSFile(pid, studyId, recordId, sForm, user, errors);
         } else if (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV") && sForm.getCsvFile() != null
                 && sForm.getCsvFile().getSize() > 0 && fileType != null && (fileType.equals("csv") || fileType.equals("txt") || fileType.equals("dat"))) {
             error = validateCSVFile(pid, studyId, recordId, sForm, user, warnings, errors);
@@ -118,11 +143,13 @@ public class ImportService {
     }
 
     /**
-     * @param recordId
-     * @param sForm
-     * @throws Exception
+     * This function generates the import report from the previous importFile function. This report is used to check the data manually by the data provider.
+     *
+     * @param recordId Record identifier as long
+     * @param sForm    {@link StudyForm} contains the file, and the upload information
+     * @throws Exception DBS and IO Exceptions
      */
-    public void loadImportReport(final long recordId, StudyForm sForm) throws Exception {
+    public void loadImportReport(final long recordId, final StudyForm sForm) throws Exception {
         RecordDTO lastVersion = recordDAO.findRecordWithID(recordId, 0);
         List<SPSSVarDTO> vars = recordDAO.findVariablesByVersionID(lastVersion.getVersionId());
         for (SPSSVarDTO newVar : vars) {
@@ -133,10 +160,9 @@ public class ImportService {
         sForm.getRecord().getVariables().parallelStream().forEach(var -> {
             if (sortVariableAttributes(var)) {
                 if (sForm.getWarnings() == null) {
-                    sForm.setWarnings(new HashSet<String>());
+                    sForm.setWarnings(new HashSet<>());
                 }
-                // TODO
-                sForm.getWarnings().add("Fehler bei den DW Attributen, bitte überprüfen!!!!");
+                sForm.getWarnings().add(messageSource.getMessage("dataset.import.report.error.dw.attr", new Object[]{var.getName()}, LocaleContextHolder.getLocale()));
             }
         });
         lastVersion.setVariables(vars);
@@ -144,15 +170,30 @@ public class ImportService {
         compareVarVersion(sForm);
     }
 
+
     /**
-     * @param recordId
-     * @param sForm
-     * @param user
-     * @param warnings
-     * @param errors
+     * Validating a CSV file is not trivial, so this function is a bit more complicated and should be checked and revised if necessary.
+     * It does what it's supposed to, but it's a little confusing.
+     * <p>
+     * The following procedures are applied: <br>
+     * - Reading the file encoding<br>
+     * - Validation of the CSV file for syntactic correctness (number of columns)<br>
+     * - Checking the separator (is passed) and the string quote character (automatic recognition)<br>
+     * - Automatic recognition of number, text and date formats.<br>
+     * - Transfer of various date formats into the standard format.<br>
+     * - Read the header line (if available) and validate the variable names<br>
+     *
+     * @param pid      Project identifier as long
+     * @param studyId  Study identifier as long
+     * @param recordId Record identifier as long
+     * @param sForm    {@link StudyForm} contains the file, and the upload information
+     * @param user     {@link UserDTO} contains user information
+     * @param warnings {@link List} of {@link String} with import warning messages
+     * @param errors   {@link List} of {@link String} with import error messages
+     * @return true if file is valid, otherwise false
      */
-    public Boolean validateCSVFile(final long pid, final long studyId, final long recordId, StudyForm sForm, final UserDTO user,
-                                   Set<String> warnings, List<String> errors) {
+    private Boolean validateCSVFile(final long pid, final long studyId, final long recordId, StudyForm sForm, final UserDTO user,
+                                    Set<String> warnings, List<String> errors) {
         FileDTO file = null;
         boolean init = true, error = false;
         try {
@@ -160,7 +201,7 @@ public class ImportService {
         } catch (Exception e) {
             error = true;
             log.error("Error creating FileDTO with input: [pid: {}; studyid: {}; recordid: {}; userid: {}; uploadedFile: {}]", () -> pid, () -> studyId,
-                    () -> recordId, () -> 0, () -> user.getId(), () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getOriginalFilename(), () -> e);
+                    () -> recordId, () -> 0, user::getId, () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getOriginalFilename(), () -> e);
             errors.add(messageSource.getMessage("error.upload.creating.file", null, LocaleContextHolder.getLocale()));
         }
         if (!error) {
@@ -187,13 +228,12 @@ public class ImportService {
                 List<List<Object>> matrix = new ArrayList<>();
                 List<SPSSVarDTO> vars = new ArrayList<>();
                 List<String> dateFormatList = new ArrayList<>();
-                List<SPSSVarTypes> types = new ArrayList<SPSSVarTypes>();
+                List<SPSSVarTypes> types = new ArrayList<>();
                 List<String[]> importMatrix = new ArrayList<>();
                 int varCount = 1;
                 if (sForm.isHeaderRow() && (nextLine = reader.readNext()) != null) {
                     numOfCol = nextLine.length;
-                    List<String> head = new ArrayList<>();
-                    Set<String> store = new HashSet<String>();
+                    Set<String> store = new HashSet<>();
                     int i = 0;
                     for (String s : nextLine) {
                         s = s.trim();
@@ -222,7 +262,6 @@ public class ImportService {
                         var.setMeasureLevel(SPSSMeasLevel.SPSS_MLVL_UNK);
                         var.setRole(SPSSRoleCodes.SPSS_ROLE_INPUT);
                         vars.add(var);
-                        head.add(s);
                         i++;
                     }
                     importMatrix.add(nextLine);
@@ -247,14 +286,14 @@ public class ImportService {
                         break;
                     }
                     importMatrix.add(nextLine);
-                    List<Object> vector = new ArrayList<Object>();
+                    List<Object> vector = new ArrayList<>();
                     int column = 0;
                     for (String s : nextLine) {
                         s = s.trim();
                         if (s.startsWith("\uFEFF")) {
                             s = s.substring(1);
                         }
-                        String dateFormat = null;
+                        String dateFormat;
                         if ((sForm.isHeaderRow() && lineNumber > 2) || (!sForm.isHeaderRow() && lineNumber > 1)) {
                             // Check Values of the following data matrix values
                             if (types.get(column).equals(SPSSVarTypes.SPSS_FMT_F) || types.get(column).equals(SPSSVarTypes.SPSS_UNKNOWN)) {
@@ -275,12 +314,10 @@ public class ImportService {
                                 if (!s.isEmpty() && (dateFormat == null || !dateFormat.equals(dateFormatList.get(column)))) {
                                     types.set(column, SPSSVarTypes.SPSS_FMT_A);
                                 }
-                            } else if (types.get(column).equals(SPSSVarTypes.SPSS_UNKNOWN)) {
-                                identifyRowType(sForm, dateFormatList, types, column, s);
                             }
                         } else {
                             // Check values in first line of the data matrix
-                            identifyRowType(sForm, dateFormatList, types, column, s);
+                            identifyRowType(dateFormatList, types, column, s);
                         }
                         vector.add(s);
                         column++;
@@ -303,7 +340,7 @@ public class ImportService {
                 RecordDTO record = new RecordDTO();
                 if (!error) {
                     file.setFilePath(null);
-                    parseResult(sForm, numOfCol, matrix, vars, types, dateFormatList, record);
+                    parseResult(numOfCol, matrix, vars, types, dateFormatList, record);
                     record.setNumberOfVariables(vars.size());
                     record.setNumberOfCases(matrix.size());
                     record.setEstimatedNofCases(matrix.size());
@@ -324,7 +361,7 @@ public class ImportService {
                 }
             } catch (IOException e) {
                 error = true;
-                log.error("Error reading CSV File with input: [uploadedFile name: {}; size: {}; contentType: {}]",
+                log.warn("Error reading CSV File with input: [uploadedFile name: {}; size: {}; contentType: {}]",
                         () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getOriginalFilename(),
                         () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getSize(),
                         () -> (sForm.getCsvFile() == null) ? "null" : sForm.getCsvFile().getContentType(), () -> e);
@@ -335,14 +372,23 @@ public class ImportService {
     }
 
     /**
-     * @param vars
-     * @param position
-     * @param curr
-     * @param comp
+     * Compares a passed variable with the variables of the version that is saved in the DBS
+     * Different states can be achieved: <br>
+     * - Variable is equal (all values) <br>
+     * - Name has changed - type is equal <br>
+     * - Type has changed - name is equal <br>
+     * - variable has been moved to another position <br>
+     * - new variable if name and type do not match any variables from the previous version
+     *
+     * @param vars             {@link List} of {@link SPSSVarDTO} from the previous version
+     * @param position         List position of the actual variable which has to be compared
+     * @param curr             {@link SPSSVarDTO} variable which has to be compared
+     * @param selectedFileType {@link String} FileType of the uploaded file - SPSS or CSV are currently supported
+     * @return {@link RecordCompareDTO} Compare Results
      */
-    public void compareVariable(final List<SPSSVarDTO> vars, final int position, final SPSSVarDTO curr, final RecordCompareDTO comp,
-                                final String selectedFileType) {
+    private RecordCompareDTO compareVariable(final List<SPSSVarDTO> vars, final int position, final SPSSVarDTO curr, final String selectedFileType) {
         SPSSVarDTO savedVar;
+        RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
         if ((position) < vars.size()) {
             savedVar = vars.get(position);
         } else {
@@ -372,7 +418,7 @@ public class ImportService {
                     comp.setBootstrapItemColor("success");
                 }
             } else {
-                boolean found = false;
+                boolean found;
                 // name equal type changed
                 if (curr.getName().equals(savedVar.getName())) {
                     comp.setVarStatus(VariableStatus.TYPE_CHANGED);
@@ -387,7 +433,7 @@ public class ImportService {
                 // maybe renamed - type is equal and name not found in list of variables
                 if (!found && curr.getType().equals(savedVar.getType())
                     // && curr.getWidth() == savedVar.getWidth() && curr.getDecimals() == savedVar.getDecimals()
-                        ) {
+                ) {
                     comp.setVarStatus(VariableStatus.NAME_CHANGED);
                     comp.setKeepExpMeta(true);
                     comp.setEqualVarId(savedId);
@@ -405,14 +451,34 @@ public class ImportService {
         }
         savedVar.setId(savedId);
         curr.setId(id);
+        return comp;
     }
 
     /**
-     * @param varList
-     * @param var
-     * @param comp
+     * Tries to find the passed variable in the list of variables of the previous version.
+     * This function is called when a variable wasn't found on its previous position
+     * <p>
+     * Five states can be achieved:
+     * <ul>
+     * <li>not found (return false)</li>
+     * <li>found (return true)</li>
+     * <li>
+     * <ul>
+     * <li>var was moved (VariableStatus.MOVED)</li>
+     * <li>var was moved and fileType is CSV (VariableStatus.MOVED_CSV)</li>
+     * <li>var was moved and type was changed (VariableStatus.MOVED_AND_TYPE_CHANGED)</li>
+     * <li>var was moved and type is equal but other meta information was changed (VariableStatus.MOVED_AND_META_CHANGED)</li>
+     * </ul>
+     * </li>
+     * </ul>
+     *
+     * @param varList          {@link List} of {@link SPSSVarDTO} from the previous version
+     * @param var              {@link SPSSVarDTO} variable which has to be found
+     * @param comp             {@link RecordCompareDTO} Compare Results
+     * @param selectedFileType {@link String} FileType of the uploaded file - SPSS or CSV are currently supported
+     * @return true if found, otherwise false
      */
-    public boolean findVarInList(List<SPSSVarDTO> varList, SPSSVarDTO var, RecordCompareDTO comp, final String selectedFileType) {
+    private boolean findVarInList(final List<SPSSVarDTO> varList, final SPSSVarDTO var, final RecordCompareDTO comp, final String selectedFileType) {
         boolean found = false;
         for (SPSSVarDTO savedtmp : varList) {
             int lastPos = savedtmp.getPosition();
@@ -467,14 +533,17 @@ public class ImportService {
     }
 
     /**
-     * @param sForm
-     * @param numOfCol
-     * @param matrix
-     * @param vars
-     * @param types
+     * Pareses the data matrix values to String, Number or to the default Date-Time, depending on the variable type.
+     *
+     * @param numOfCol       Amount of columns
+     * @param matrix         ({@link List} of {@link List}) of {@link Objects} the data matrix
+     * @param vars           {@link List} of {@link SPSSVarDTO} the variables
+     * @param types          {@link List} of {@link SPSSVarTypes} List of variable types that were determined automatically in the calling function
+     * @param dateFormatList {@link List} of {@link String} List of date types that were determined automatically in the calling function
+     * @param record         {@link RecordDTO}
      */
-    public void parseResult(StudyForm sForm, int numOfCol, List<List<Object>> matrix, List<SPSSVarDTO> vars, List<SPSSVarTypes> types,
-                            List<String> dateFormatList, RecordDTO record) {
+    private void parseResult(final int numOfCol, final List<List<Object>> matrix, final List<SPSSVarDTO> vars, final List<SPSSVarTypes> types,
+                             final List<String> dateFormatList, final RecordDTO record) {
         int caseSize = 0;
         for (int i = 0; i < numOfCol; i++) {
             DateTimeFormatter formatter = null;
@@ -489,18 +558,18 @@ public class ImportService {
             }
             for (List<Object> row : matrix) {
                 String value = String.valueOf(row.get(i)).trim();
-                if (dateFormat != null && !dateFormat.isEmpty())
+                if (!dateFormat.isEmpty())
                     formatter = DateTimeFormatter.ofPattern(dateFormat);
                 int curW = 0;
                 switch (type) {
                     case SPSS_FMT_DATE:
-                        if (formatter != null && value != null && !value.isEmpty())
+                        if (formatter != null && !value.isEmpty())
                             row.set(i, LocalDate.parse(value, formatter).format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
                         else
                             row.set(i, "");
                         break;
                     case SPSS_FMT_TIME:
-                        if (formatter != null && value != null && !value.isEmpty()) {
+                        if (formatter != null && !value.isEmpty()) {
                             LocalTime time = LocalTime.parse(value, formatter);
                             curW = (time.getNano() != 0) ? 11 : (time.getSecond() != 0) ? 8 : 5;
                             width = (width < curW ? curW : width);
@@ -509,7 +578,7 @@ public class ImportService {
                             row.set(i, "");
                         break;
                     case SPSS_FMT_DATE_TIME:
-                        if (formatter != null && value != null && !value.isEmpty()) {
+                        if (formatter != null && !value.isEmpty()) {
                             LocalDateTime dateTime = LocalDateTime.parse(value, formatter);
                             curW = (dateTime.getNano() != 0) ? 23 : (dateTime.getSecond() != 0) ? 20 : 17;
                             width = (width < curW ? curW : width);
@@ -517,7 +586,7 @@ public class ImportService {
                                 row.set(i, dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss.SS")));
                             else if (curW == 20)
                                 row.set(i, dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy HH:mm:ss")));
-                            else if (curW == 17)
+                            else
                                 row.set(i, dateTime.format(DateTimeFormatter.ofPattern("M/d/yyyy HH:mm")));
                         } else
                             row.set(i, "");
@@ -572,37 +641,42 @@ public class ImportService {
             record.setCaseSize(caseSize);
             var.setType(type);
             var.setWidth(width);
-            if (width < 8)
-                var.setColumns(8);
-            else
-                var.setColumns(width);
+            var.setColumns(width);
             vars.set(i, var);
         }
     }
 
     /**
-     * @param pid
-     * @param studyId
-     * @param recordId
-     * @param sForm
-     * @param user
-     * @param errors
-     * @return
+     * The validation of a SPSS file is not absolutely necessary, because it is assumed that the files are already validly written by SPSS.
+     * This function reads only the file and writes the values into the RecordDTO and the FileDTO (for saving in the Minio system) object of StudyForm.
+     * Therefore, the validation is limited to possible import errors.
+     *
+     * @param pid      Project identifier as long
+     * @param studyId  Study identifier as long
+     * @param recordId Record identifier as long
+     * @param sForm    {@link StudyForm} The record is saved into this form after "validation"
+     * @param user     {@link UserDTO} contains information about the user who uploaded this file.
+     * @param errors   {@link List} of {@link String} The errors that can occur during the import are saved here.
+     * @return false if valid, true if not (TODO should be changed )
      */
-    public Boolean validateSPSSFile(final long pid, final long studyId, final long recordId, StudyForm sForm, final UserDTO user,
-                                    final List<String> errors, final Set<String> warnings) {
+    private boolean validateSPSSFile(final long pid, final long studyId, final long recordId, final StudyForm sForm, final UserDTO user,
+                                     final List<String> errors) {
         FileDTO file = null;
-        Boolean error = false;
+        boolean error = false;
         try {
             file = fileUtil.buildFileDTO(pid, studyId, recordId, 0, user.getId(), sForm.getSpssFile());
         } catch (Exception e) {
             error = true;
             log.error("Error creating FileDTO with input: [pid: {}; studyid: {}; recordid: {}; userid: {}; uploadedFile: {}]", () -> pid, () -> studyId,
-                    () -> recordId, () -> 0, () -> user.getId(), () -> (sForm.getSpssFile() == null) ? "null" : sForm.getSpssFile().getOriginalFilename(), () -> e);
+                    () -> recordId, () -> 0, user::getId, () -> (sForm.getSpssFile() == null) ? "null" : sForm.getSpssFile().getOriginalFilename(), () -> e);
             errors.add(messageSource.getMessage("error.upload.creating.file", null, LocaleContextHolder.getLocale()));
         }
         // SAVE TMP FILE!!!
         String path = fileUtil.saveFile(file, true);
+        // SPSS API TEST TODO
+        //RecordDTO test = spssIoService.getJSONFromSPSS(path);
+        // log.warn(test.getCaseSize());
+        // SPSS API TEST TODO
         RecordDTO spssFile = null;
         if (path != null && !error) {
             SPSSFileDTO spssTMP;
@@ -614,9 +688,9 @@ public class ImportService {
                 error = true;
             }
             fileUtil.deleteFile(Paths.get(path));
-            if (!error && (file == null || spssFile == null)) {
-                log.error("ERROR: FileDTO or RecordDTO empty: [FileDTO: {}; RecordDTO: {}]", (file == null) ? "null" : "not null",
-                        (spssFile == null) ? "null" : "not null");
+            if (!error && file == null) {
+                log.error("ERROR: FileDTO or RecordDTO empty: [FileDTO: {}; RecordDTO: {}]", "null",
+                        "not null");
                 error = true;
                 errors.add(messageSource.getMessage("error.upload.internal.error", null, LocaleContextHolder.getLocale()));
             }
@@ -637,7 +711,15 @@ public class ImportService {
         return error;
     }
 
-    public boolean sortVariableAttributes(SPSSVarDTO var) {
+    /**
+     * Filters the DataWiz attributes from the SPSS attribute list and saves them into the dw_attributes list.
+     * This function is also used for validation of the database variables. They should not contain DataWiz attributes at this point.
+     * Therefore, the regex matcher and the boolean result was included.
+     *
+     * @param var {@link SPSSVarDTO} contains the data of a variable
+     * @return True if matcher found a specific dw_attribute that is not allowed at this point!
+     */
+    boolean sortVariableAttributes(final SPSSVarDTO var) {
         boolean dw_construct = false, dw_measocc = false, dw_instrument = false, dw_itemtext = false, dw_filtervar = false;
         Iterator<SPSSValueLabelDTO> itt = var.getAttributes().iterator();
         List<SPSSValueLabelDTO> dw_attr = new ArrayList<>();
@@ -721,13 +803,17 @@ public class ImportService {
     }
 
     /**
-     * @param sForm
-     * @param dateFormatList
-     * @param types
-     * @param column
-     * @param s
+     * This function is used to identify all row types of a CSV File. It differences between Numbers, String and Date formats.
+     * It is called to check the first row of a record matrix. If the type changed during validation of the rest of the matrix, the type will be rearranged by another function.
+     *
+     * @param dateFormatList {@link List} of {@link String} which contains the date format of date rows.
+     *                       This length of the list depends on the number of columns in the imported file and only entries are set for columns of type Date.
+     * @param types          {@link List} of {@link SPSSVarTypes} The length of the list depends on the number of columns in the imported file
+     *                       and contains the evaluated type for each column.
+     * @param column         Count of the current column as int
+     * @param s              {@link String} Value of the first entree from the current column
      */
-    private void identifyRowType(StudyForm sForm, List<String> dateFormatList, List<SPSSVarTypes> types, int column, String s) {
+    private void identifyRowType(final List<String> dateFormatList, final List<SPSSVarTypes> types, final int column, final String s) {
         String dateFormat;
         if (s.trim().isEmpty()) {
             // if string is emtpy set unkown
@@ -738,26 +824,39 @@ public class ImportService {
         } else if ((dateFormat = DateUtil.determineDateFormat(s)) != null) {
             // if date was found set type to date
             dateFormatList.set(column, dateFormat);
-            if (dateFormat.equals("M/d/yyyy") || dateFormat.equals("M/d/yy") || dateFormat.equals("d.M.yyyy") || dateFormat.equals("d.M.yy")
-                    || dateFormat.equals("d-M-yyyy") || dateFormat.equals("d-M-yy") || dateFormat.equals("yyyy-M-d")) {
-                types.set(column, SPSSVarTypes.SPSS_FMT_DATE);
-            } else if (dateFormat.equals("H:m") || dateFormat.equals("H:m:s") || dateFormat.equals("H:m:s.S") || dateFormat.equals("H:m:s.SS")
-                    || dateFormat.equals("H:m:s.SSS")) {
-                types.set(column, SPSSVarTypes.SPSS_FMT_TIME);
-            } else {
-                types.set(column, SPSSVarTypes.SPSS_FMT_DATE_TIME);
+            switch (dateFormat) {
+                case "M/d/yyyy":
+                case "M/d/yy":
+                case "d.M.yyyy":
+                case "d.M.yy":
+                case "d-M-yyyy":
+                case "d-M-yy":
+                case "yyyy-M-d":
+                    types.set(column, SPSSVarTypes.SPSS_FMT_DATE);
+                    break;
+                case "H:m":
+                case "H:m:s":
+                case "H:m:s.S":
+                case "H:m:s.SS":
+                case "H:m:s.SSS":
+                    types.set(column, SPSSVarTypes.SPSS_FMT_TIME);
+                    break;
+                default:
+                    types.set(column, SPSSVarTypes.SPSS_FMT_DATE_TIME);
+                    break;
             }
         } else {
-            // not empty and not parseable, set to ALPHANUMERIC as default
             types.set(column, SPSSVarTypes.SPSS_FMT_A);
         }
     }
 
     /**
-     * @param sForm
-     * @throws Exception
+     * Compares all new Variables with the variables from the Database and save the result into the StudyForm
+     *
+     * @param sForm {@link StudyForm} contains all new Variables and previous Variables
+     * @throws Exception IOExceptions thrown by the deep copy function
      */
-    public void compareVarVersion(StudyForm sForm) throws Exception {
+    private void compareVarVersion(StudyForm sForm) throws Exception {
         List<SPSSVarDTO> vars = new ArrayList<>();
         for (SPSSVarDTO tmp : sForm.getPreviousRecordVersion().getVariables()) {
             vars.add((SPSSVarDTO) ObjectCloner.deepCopy(tmp));
@@ -771,22 +870,19 @@ public class ImportService {
             sForm.getWarnings().add(messageSource.getMessage("record.import.variable.amount.delete", null, LocaleContextHolder.getLocale()));
         }
         int position = 0;
-        List<RecordCompareDTO> compList = new ArrayList<RecordCompareDTO>();
+        List<RecordCompareDTO> compList = new ArrayList<>();
         for (SPSSVarDTO curr : sForm.getRecord().getVariables()) {
-            RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
             curr.setVarHandle(0.0);
-            compareVariable(vars, position, curr, comp, sForm.getSelectedFileType());
+            RecordCompareDTO comp = compareVariable(vars, position, curr, sForm.getSelectedFileType());
             comp.setMessage(messageSource.getMessage("import.check." + comp.getVarStatus().name(), new Object[]{comp.getMovedFrom(), comp.getMovedTo()},
                     LocaleContextHolder.getLocale()));
             compList.add(comp);
             position++;
         }
         position = 0;
-        List<RecordCompareDTO> compList2 = new ArrayList<RecordCompareDTO>();
+        List<RecordCompareDTO> compList2 = new ArrayList<>();
         for (SPSSVarDTO curr : vars) {
-            RecordCompareDTO comp = (RecordCompareDTO) applicationContext.getBean("RecordCompareDTO");
-            compareVariable(sForm.getRecord().getVariables(), position, curr, comp, sForm.getSelectedFileType());
-            compList2.add(comp);
+            compList2.add(compareVariable(sForm.getRecord().getVariables(), position, curr, sForm.getSelectedFileType()));
             position++;
         }
         position = 0;
@@ -809,19 +905,18 @@ public class ImportService {
         });
         List<SPSSVarDTO> viewVars = Stream.generate(SPSSVarDTO::new).limit(varSize.get()).collect(Collectors.toList());
         AtomicInteger atint = new AtomicInteger(0);
-        if (viewVars != null)
-            vars.forEach(s -> {
-                if (atint.get() < viewVars.size())
-                    viewVars.set(atint.get(), s);
-                atint.incrementAndGet();
-            });
+        vars.forEach(s -> {
+            if (atint.get() < viewVars.size())
+                viewVars.set(atint.get(), s);
+            atint.incrementAndGet();
+        });
         for (RecordCompareDTO rc : compList) {
             if (rc.getVarStatus().equals(VariableStatus.MOVED) || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED)
                     || rc.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV) || rc.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)
                     || rc.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
                 SPSSVarDTO moved = sForm.getPreviousRecordVersion().getVariables().get((rc.getMovedFrom() - 1));
-                if (!compList.stream().anyMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())) {
-                    if (viewVars.size() > (rc.getMovedFrom() - 1)) {
+                if (compList.stream().noneMatch(obj -> rc.getMovedFrom() == obj.getMovedTo())) {
+                    if (viewVars.size() > rc.getMovedFrom() - 1) {
                         viewVars.set((rc.getMovedFrom() - 1), new SPSSVarDTO());
                         compList.get((rc.getMovedFrom() - 1)).setKeepExpMeta(false);
                         compList.get((rc.getMovedFrom() - 1)).setVarStatus(VariableStatus.NEW_VAR);

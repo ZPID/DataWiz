@@ -454,7 +454,7 @@ public class StudyService {
      * @param study
      * @throws Exception
      */
-    public void setStudyDTO(final StudyDTO study) throws Exception {
+    public void setStudyDTO(final StudyDTO study) {
         if (study != null && study.getId() > 0) {
             study.setContributors(contributorDAO.findByStudy(study.getId()));
             study.setSoftware(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE), new StudyListTypesDTO()));
@@ -472,7 +472,7 @@ public class StudyService {
         }
     }
 
-    public void setStudyDTOExport(final StudyDTO study) throws Exception {
+    public void setStudyDTOExport(final StudyDTO study) {
         if (study != null && study.getId() > 0) {
             study.setContributors(contributorDAO.findByStudy(study.getId()));
             study.setSoftware(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE));

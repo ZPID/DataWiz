@@ -112,7 +112,7 @@ public class RecordService {
      * @return {@link StudyForm} with Record and Study Data
      * @throws Exception Minio and DBS Exceptions
      */
-    public StudyForm setStudyform(final long pid, final long studyId, final long recordId, final long versionId, final String subPage, final List<String> parsingErrors) throws Exception {
+    public StudyForm setStudyform(final long pid, final long studyId, final long recordId, final long versionId, final String subPage, final List<String> parsingErrors) throws DataWizSystemException {
         if (pid <= 0)
             throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
         if (studyId <= 0)
@@ -161,7 +161,7 @@ public class RecordService {
      * @param isSPSS        Used for Export True, if Export Type is SPSS, otherwise false
      * @throws Exception Minio and DBS Exceptions
      */
-    public void transformCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) throws Exception {
+    public void transformCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS){
         rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
         if (rec.getVariables() != null && rec.getVariables().size() > 0) {
             for (SPSSVarDTO var : rec.getVariables()) {
@@ -200,9 +200,9 @@ public class RecordService {
      * @param rec           {@link RecordDTO} Contains the record information
      * @param isSPSS        Used for Export True, if Export Type is SPSS, otherwise false
      * @param pid           Project identifier as long
-     * @throws Exception Minio and DBS Exceptions
+     * @throws DataWizSystemException Minio and DBS Exceptions
      */
-    public void transformDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws Exception {
+    public void transformDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws DataWizSystemException{
         String dataMatrix = recordDAO.findMatrixByVersionId(rec.getVersionId());
         if (dataMatrix == null || dataMatrix.isEmpty())
             dataMatrix = loadDataMatrix(rec, pid);

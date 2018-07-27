@@ -60,6 +60,7 @@ import java.util.zip.ZipOutputStream;
  *
  * @author Ronny Boelter
  * @version 1.0
+ * TODO This class should be checked because it may contain code redundancies or is not implemented optimally due to lack of time.
  **/
 @Service
 public class ExportService {
@@ -119,13 +120,15 @@ public class ExportService {
     }
 
     /**
+     * Builds the export form for a project. This form contains all projects, studies and records to which the passed user has access.
      *
-     * @param pid
-     * @param user
-     * @return
-     * @throws DataWizSystemException
+     * @param pid  Project identifier as long
+     * @param user {@link UserDTO} contains the user information
+     * @return {@link ExportProjectForm} contains the generated export information
+     * @throws DataWizSystemException possible exceptions are: PROJECT_NOT_AVAILABLE, DATABASE_ERROR, USER_ACCESS_PROJECT_PERMITTED
      */
-    public ExportProjectForm getExportForm(final Long pid, final UserDTO user) throws DataWizSystemException {
+    public ExportProjectForm getExportForm(final long pid, final UserDTO user) throws DataWizSystemException {
+        log.trace("Entering getExportForm for project [pid: {}] and user [mail: {}]", () -> pid, user::getEmail);
         ExportProjectForm exportForm = (ExportProjectForm) applicationContext.getBean("ExportProjectForm");
         if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid, false) || user.hasRole(Roles.PROJECT_WRITER, pid, false)
                 || user.hasRole(Roles.PROJECT_READER, pid, false)) {
@@ -179,11 +182,22 @@ public class ExportService {
                     messageSource.getMessage("logging.user.permitted", new Object[]{user.getEmail(), "getExportForm for project", pid}, Locale.ENGLISH),
                     DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED);
         }
+        log.trace("Leaving getExportForm for project [pid: {}] and user [mail: {}]", () -> pid, user::getEmail);
         return exportForm;
     }
 
-
-    public List<Entry<String, byte[]>> createExportFileList(ExportProjectForm exportForm, final long pid, final UserDTO user) throws Exception {
+    /**
+     * Creates the export List with the items selected by the user.
+     *
+     * @param exportForm {@link ExportProjectForm} contains the selected export information
+     * @param pid        Project identifier as long
+     * @param user       {@link UserDTO} contains the user information
+     * @return {@link List} of {@link Entry} containing a {@link String} with the path where the file will be included in
+     * the zip file and the filename, and the file content as byte[]
+     * @throws Exception DataWizSystemException and IOExceptions
+     */
+    public List<Entry<String, byte[]>> createExportFileList(final ExportProjectForm exportForm, final long pid, final UserDTO user) throws Exception {
+        log.trace("Entering createExportFileList for project [pid: {}] and user [mail: {}]", () -> pid, user::getEmail);
         List<Entry<String, byte[]>> files = new ArrayList<>();
         ProjectDTO projectDB = projectDAO.findById(pid);
         if (projectDB != null) {
@@ -199,8 +213,7 @@ public class ExportService {
                     StudyDTO studyDB = studyDAO.findById(studyEx.getStudyId(), exportForm.getProjectId(), false, false);
                     List<UserDTO> sUploader = new ArrayList<>();
                     if (studyDB != null) {
-                        String STUDY_FOLDER = "studies/";
-                        String studyFolder = STUDY_FOLDER + "(" + studyCount++ + ") " + stringUtil.formatFilename(studyDB.getTitle()) + "/";
+                        String studyFolder = "studies/(" + studyCount++ + ") " + stringUtil.formatFilename(studyDB.getTitle()) + "/";
                         studyService.setStudyDTOExport(studyDB);
                         if (studyEx.isExportMetaData() || studyEx.isExportStudyMaterial()) {
                             if (studyEx.isExportMetaData()) {
@@ -233,7 +246,6 @@ public class ExportService {
                                         DataWizErrorCodes.STUDY_NOT_AVAILABLE);
                             }
                         }
-                        // Create Records
                         createRecordExport(exportForm, pid, user, files, pForm, studyEx, sForm, studyDB, studyFolder);
                     } else {
                         throw new DataWizSystemException(messageSource.getMessage("logging.study.not.found", new Object[]{studyEx.getStudyId()}, Locale.ENGLISH),
@@ -245,21 +257,35 @@ public class ExportService {
             throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[]{exportForm.getProjectId()}, Locale.ENGLISH),
                     DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
         }
+        log.trace("Leaving createExportFileList for project [pid: {}] and user [mail: {}]", () -> pid, user::getEmail);
         return files;
     }
 
-
-    private void createRecordExport(ExportProjectForm exportForm, final long pid, final UserDTO user, List<Entry<String, byte[]>> files,
-                                    ProjectForm pForm, ExportStudyDTO studyEx, StudyForm sForm, StudyDTO studyDB, String studyFolder)
+    /**
+     * Creates the record export (ddi file) for all records of a study
+     *
+     * @param exportForm  {@link ExportProjectForm} contains the selected export information
+     * @param pid         Project identifier as long
+     * @param user        {@link UserDTO} contains the user information
+     * @param files       {@link List} of {@link Entry} contains the files which has to be exported - this function includes its results to this list
+     * @param pForm       {@link ProjectForm} contains project information
+     * @param studyEx     {@link ExportStudyDTO} contains export information for a study (which parts have to be exported)
+     * @param sForm       {@link StudyForm} contains study information which do not fit into StudyDTO
+     * @param studyDB     {@link StudyDTO} contains study information
+     * @param studyFolder {@link String} file path + name, needed for zip container
+     * @throws Exception DataWizSystemException and IOExceptions
+     */
+    private void createRecordExport(final ExportProjectForm exportForm, final long pid, final UserDTO user, final List<Entry<String, byte[]>> files,
+                                    final ProjectForm pForm, final ExportStudyDTO studyEx, final StudyForm sForm, final StudyDTO studyDB, final String studyFolder)
             throws Exception {
+        log.trace("Entering createRecordExport for project [pid: {}] and user [mail: {}]", () -> pid, user::getEmail);
         if (studyEx.getRecords() != null) {
             int recCount = 1;
             for (ExportRecordDTO recordEx : studyEx.getRecords()) {
                 if (recordEx.isExportMetaData() || recordEx.isExportCodebook() || recordEx.isExportMatrix()) {
                     RecordDTO recordDB = recordDAO.findRecordWithID(recordEx.getRecordId(), recordEx.getVersionId());
                     if (recordDB != null) {
-                        String RECORD_FOLDER = "records/";
-                        String recordFolder = studyFolder + RECORD_FOLDER + "(" + recCount++ + ") " + stringUtil.formatFilename(recordDB.getRecordName()) + "/";
+                        String recordFolder = studyFolder + "records/(" + recCount++ + ") " + stringUtil.formatFilename(recordDB.getRecordName()) + "/";
                         RecordDTO record = (RecordDTO) applicationContext.getBean("RecordDTO");
                         List<String> parsingErrors = new LinkedList<>();
                         recordService.transformDataMatrix(parsingErrors, recordDB, false, pid);
@@ -347,10 +373,20 @@ public class ExportService {
                 }
             }
         }
+        log.trace("Leaving createRecordExport for project [pid: {}] and user [mail: {}]", () -> pid, user::getEmail);
     }
 
-
-    private void createProjectExport(ExportProjectForm exportForm, List<Entry<String, byte[]>> files, ProjectDTO projectDB, ProjectForm pForm) throws Exception {
+    /**
+     * Creates the project export (ddi file)
+     *
+     * @param exportForm {@link ExportProjectForm} contains the selected export information
+     * @param files      {@link List} of {@link Entry} contains the files which has to be exported - this function includes its results to this list
+     * @param projectDB  {@link ProjectDTO} contains project information
+     * @param pForm      {@link ProjectForm} contains project information which do not fit into ProjectDTO
+     * @throws DataWizSystemException DataWizSystemException
+     */
+    private void createProjectExport(final ExportProjectForm exportForm, final List<Entry<String, byte[]>> files, final ProjectDTO projectDB, final ProjectForm pForm) throws DataWizSystemException {
+        log.trace("Entering createProjectExport for project [pid: {}]", projectDB::getId);
         if (exportForm.isExportMetaData() || exportForm.isExportDMP() || exportForm.isExportProjectMaterial()) {
             if (exportForm.isExportMetaData()) {
                 pForm.setProject(projectDB);
@@ -398,11 +434,23 @@ public class ExportService {
                         DataWizErrorCodes.STUDY_NOT_AVAILABLE);
             }
         }
+        log.trace("Leaving createProjectExport for project [pid: {}]", projectDB::getId);
     }
 
-
-    public byte[] getRecordExportContentAsByteArray(final Long pid, final String exportType, final Boolean attachments, final RecordDTO record,
+    /**
+     * Creates record export (matrix and/or codebook)
+     *
+     * @param pid         Project identifier as long
+     * @param exportType  {@link String} contains export format
+     * @param attachments Used for PDF Exports - True if codebook and matrix have to be attached to the pdf doc
+     * @param record      {@link RecordDTO} contains record information
+     * @param res         {@link StringBuilder} used if errors occur
+     * @return byte[] of export file
+     * @throws Exception IOException or DataWizSystemException
+     */
+    public byte[] getRecordExportContentAsByteArray(final long pid, final String exportType, final boolean attachments, final RecordDTO record,
                                                     final StringBuilder res) throws Exception {
+        log.trace("Entering getRecordExportContentAsByteArray for record [pid: {}] and exportType[{}]", record::getId, () -> exportType);
         byte[] content = null;
         switch (exportType) {
             case "CSVMatrix":
@@ -434,10 +482,18 @@ public class ExportService {
                 content = exportZip(files, res);
                 break;
         }
+        log.trace("Leaving getRecordExportContentAsByteArray for record [pid: {}] and exportType[{}]", record::getId, () -> exportType);
         return content;
     }
 
-    public byte[] exportZip(List<Entry<String, byte[]>> files, StringBuilder res) {
+    /**
+     * Creates the zip file with all export content and returns it as byte[]
+     *
+     * @param files {@link List} of {@link Entry} contains the files which has to be exported
+     * @param res   {@link StringBuilder} used if errors occur
+     * @return export zip as byte[]
+     */
+    public byte[] exportZip(final List<Entry<String, byte[]>> files, final StringBuilder res) {
         log.trace("Entering exportZip for Num of File: [{}]", files::size);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
@@ -459,11 +515,12 @@ public class ExportService {
             log.warn("Error during exportZip: Filename: [{}] Exception: {}", fileName, e);
             res.insert(0, "export.error.exception.thrown");
         }
-        log.debug("Leaving exportZip with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+        log.trace("Leaving exportZip with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
         return content;
     }
 
     /**
+     * TODO USE OF REST API INSTEAD OF INCLUDED LIB
      * This function prepares the record DTO for the export and transfers it to the SPSS IO Module. If the return of the SPSS IO Module is valid, a byte[] which
      * contains the spss file is returned. If some errors occur diring this process, null is returned and an error code is written to ResponseEntity<String> resp.
      *
@@ -500,20 +557,27 @@ public class ExportService {
                     record.getVariables().parallelStream().forEach(var -> var.setDecimals(var.getDecimals() > 16 ? 16 : var.getDecimals()));
                     if (!Files.exists(Paths.get(dir)))
                         Files.createDirectories(Paths.get(dir));
-                    spss.writeSPSSFile(record, dir + filename);
-                    List<SPSSErrorDTO> errors = record.getErrors();
-                    if (errors.size() > 0) {
-                        for (SPSSErrorDTO error : errors)
-                            if (error.getError().getNumber() > 0) {
-                                res.insert(0, "export.error.spss.error");
-                                break;
-                            }
-                    }
-                    if (Files.exists(Paths.get(dir + filename))) {
-                        content = Files.readAllBytes(Paths.get(dir + filename));
-                    } else {
-                        if (res.length() == 0)
-                            res.insert(0, "export.error.file.not.exist");
+
+                    // REST TEST TODO
+                    // content = getSpssContentFromRest(record);
+                    // REST TEST
+
+                    if (content == null) {
+                        spss.writeSPSSFile(record, dir + filename);
+                        List<SPSSErrorDTO> errors = record.getErrors();
+                        if (errors.size() > 0) {
+                            for (SPSSErrorDTO error : errors)
+                                if (error.getError().getNumber() > 0) {
+                                    res.insert(0, "export.error.spss.error");
+                                    break;
+                                }
+                        }
+                        if (Files.exists(Paths.get(dir + filename))) {
+                            content = Files.readAllBytes(Paths.get(dir + filename));
+                        } else {
+                            if (res.length() == 0)
+                                res.insert(0, "export.error.file.not.exist");
+                        }
                     }
                 } catch (Exception e) {
                     log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Error: {}; Exception: {}", record::getId, record::getVersionId,
@@ -527,12 +591,13 @@ public class ExportService {
             } else {
                 res.insert(0, "export.recorddto.empty");
             }
-            log.debug("Leaving exportSPSSFile with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+            log.trace("Leaving exportSPSSFile with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
         } else {
             res.insert(0, "export.recorddto.empty");
         }
         return content;
     }
+
 
     /**
      * This function transfers the record into a JSON String and returns it as byte array. If some errors occur diring this process, null is returned and an error
@@ -542,7 +607,7 @@ public class ExportService {
      * @param res    Reference parameter to handle export errors in the calling function
      * @return the csv string as byte array
      */
-    private byte[] exportJSON(RecordDTO record, StringBuilder res) {
+    private byte[] exportJSON(final RecordDTO record, final StringBuilder res) {
         log.trace("Entering exportJSON for RecordDTO: [id: {}; version:{}]", record::getId, record::getVersionId);
         byte[] content = null;
         if (record.getVariables() != null && record.getDataMatrix() != null) {
@@ -561,24 +626,36 @@ public class ExportService {
         } else {
             res.insert(0, "export.recorddto.empty");
         }
-        log.debug("Leaving exportJSON with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
+        log.trace("Leaving exportJSON with result [{}]", res.toString().trim().isEmpty() ? "OK" : res.toString());
         return content;
     }
 
-
-    private byte[] createByteArrayFromXML(Document doc) {
+    /**
+     * Parses a DOM4J Document to an byte[]
+     *
+     * @param doc {@link Document}
+     * @return Document as byte[]
+     */
+    private byte[] createByteArrayFromXML(final Document doc) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             XMLWriter writer = new XMLWriter(baos, OutputFormat.createPrettyPrint());
             writer.write(doc);
             return baos.toString().getBytes();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Unexpected IO-Error during createByteArrayFromXML", () -> e);
             return null;
         }
     }
 
+    /**
+     * Saves the additional project and/or study files into the exportList
+     *
+     * @param exportList {@link List} of {@link Entry} contains the files which has to be exported
+     * @param files      {@link List} of {@link FileDTO} contains the additional Files
+     * @param folderName {@link String} file path, needed for zip container
+     * @throws DataWizSystemException Minio Exceptions
+     */
     private void setAdditionalFilestoExportList(final List<Entry<String, byte[]>> exportList, final List<FileDTO> files, final String folderName)
             throws DataWizSystemException {
         Set<String> filenames = new HashSet<>();
