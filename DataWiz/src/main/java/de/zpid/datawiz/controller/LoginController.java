@@ -41,7 +41,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -368,7 +367,7 @@ public class LoginController {
     public String showSetPassword(ModelMap model, @PathVariable final Optional<String> email, @PathVariable final Optional<String> code) {
         log.trace("Entering showSetPassword for user: [{}]", () -> email);
         String ret = "password";
-        String retErr = loginService.setPasswordResetForm(email, code);
+        String retErr = loginService.setPasswordResetForm(email.orElse(""), code.orElse(""));
         if (retErr == null || retErr.equals("reset.password.email.link.success")) {
             if (retErr != null)
                 model.put("successMSG", messageSource.getMessage(retErr, null, LocaleContextHolder.getLocale()));

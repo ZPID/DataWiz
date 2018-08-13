@@ -83,11 +83,11 @@ public class ExportController {
         log.trace("Entering showExportPage for project [id: {}]", () -> pid);
         String ret;
         final UserDTO user = UserUtil.getCurrentUser();
-        ret = projectService.checkUserAccess(pid, Optional.empty(), redirectAttributes, false, user);
+        ret = projectService.checkUserAccess(pid.orElse(0L), 0L, redirectAttributes, false, user);
         if (ret == null) {
             ExportProjectForm exportForm;
             try {
-                exportForm = exportService.getExportForm(pid != null && pid.isPresent() ? pid.get() : 0L, user);
+                exportForm = exportService.getExportForm(pid.isPresent() ? pid.get() : 0L, user);
                 model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{exportForm.getProjectTitle()}, null, messageSource));
                 model.put("subnaviActive", PageState.EXPORT.name());
                 model.put("ExportProjectForm", exportForm);

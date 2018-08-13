@@ -13,10 +13,8 @@ import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.ExportProjectForm;
 import de.zpid.datawiz.form.ProjectForm;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.spss.SPSSValueLabelDTO;
 import de.zpid.datawiz.util.*;
-import de.zpid.spss.SPSSIO;
-import de.zpid.spss.dto.SPSSErrorDTO;
-import de.zpid.spss.dto.SPSSValueLabelDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dom4j.Document;
@@ -27,14 +25,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.*;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -71,7 +68,6 @@ public class ExportService {
 
     private final MessageSource messageSource;
     private final ClassPathXmlApplicationContext applicationContext;
-    private final SPSSIO spss;
     private final FileUtil fileUtil;
     private final MinioUtil minioUtil;
     private final ProjectDAO projectDAO;
@@ -90,19 +86,19 @@ public class ExportService {
     private final StringUtil stringUtil;
     private final CSVUtil csvUtil;
     private final ITextUtil itextUtil;
+    private final SpssIoService spssService;
 
     @Autowired
     public ExportService(MessageSource messageSource, ClassPathXmlApplicationContext applicationContext, StringUtil stringUtil,
-                         StudyService studyService, ContributorDAO contributorDAO, RecordDAO recordDAO, SPSSIO spss, FileUtil fileUtil,
+                         StudyService studyService, ContributorDAO contributorDAO, RecordDAO recordDAO, FileUtil fileUtil,
                          StudyDAO studyDAO, Environment env, RecordService recordService, MinioUtil minioUtil, ProjectDAO projectDAO, DmpDAO dmpDAO,
-                         FormTypesDAO formTypeDAO, FileDAO fileDAO, DDIUtil ddi, UserDAO userDAO, ConsistencyCheckUtil ccUtil, CSVUtil csvUtil, ITextUtil itextUtil) {
+                         FormTypesDAO formTypeDAO, FileDAO fileDAO, DDIUtil ddi, UserDAO userDAO, ConsistencyCheckUtil ccUtil, CSVUtil csvUtil, ITextUtil itextUtil, SpssIoService spssService) {
         this.messageSource = messageSource;
         this.applicationContext = applicationContext;
         this.stringUtil = stringUtil;
         this.studyService = studyService;
         this.contributorDAO = contributorDAO;
         this.recordDAO = recordDAO;
-        this.spss = spss;
         this.fileUtil = fileUtil;
         this.studyDAO = studyDAO;
         this.env = env;
@@ -117,6 +113,7 @@ public class ExportService {
         this.ccUtil = ccUtil;
         this.csvUtil = csvUtil;
         this.itextUtil = itextUtil;
+        this.spssService = spssService;
     }
 
     /**
@@ -452,36 +449,64 @@ public class ExportService {
                                                     final StringBuilder res) throws Exception {
         log.trace("Entering getRecordExportContentAsByteArray for record [pid: {}] and exportType[{}]", record::getId, () -> exportType);
         byte[] content = null;
-        switch (exportType) {
-            case "CSVMatrix":
-                content = csvUtil.exportCSV(record, res, true);
-                break;
-            case "CSVCodebook":
-                content = csvUtil.exportCSV(record, res, false);
-                break;
-            case "JSON":
-                content = exportJSON(record, res);
-                break;
-            case "SPSS":
-                content = exportSPSSFile(record, res);
-                break;
-            case "PDF":
-                ProjectDTO project = projectDAO.findById(pid);
-                ContributorDTO primaryContri = null;
-                if (project != null)
-                    primaryContri = contributorDAO.findPrimaryContributorByProject(project);
-                StudyDTO study = studyDAO.findById(record.getStudyId(), pid, true, false);
-                if (study != null)
-                    study.setContributors(contributorDAO.findByStudy(study.getId()));
-                content = itextUtil.createRecordCodeBookPDFA(record, study, project, primaryContri, false, attachments);
-                break;
-            case "CSVZIP":
-                List<Entry<String, byte[]>> files = new ArrayList<>();
-                files.add(new SimpleEntry<>(record.getRecordName() + "_Matrix.csv", csvUtil.exportCSV(record, res, true)));
-                files.add(new SimpleEntry<>(record.getRecordName() + "_Codebook.csv", csvUtil.exportCSV(record, res, false)));
-                content = exportZip(files, res);
-                break;
-        }
+        if (record.getVariables() == null || record.getVariables().isEmpty())
+            res.insert(0, "error.record.empty");
+        else
+            switch (exportType) {
+                case "CSVMatrix":
+                    content = csvUtil.exportCSV(record, res, true);
+                    break;
+                case "CSVCodebook":
+                    content = csvUtil.exportCSV(record, res, false);
+                    break;
+                case "JSON":
+                    content = exportJSON(record, res);
+                    break;
+                case "SPSS":
+                    try {
+                        AbstractMap.SimpleEntry<HttpStatus, byte[]> response = exportSPSSFile(record, res);
+                        switch (response.getKey()) {
+                            case OK:
+                                content = response.getValue();
+                                break;
+                            case PARTIAL_CONTENT:
+                                res.insert(0, "error.spss.api.partial.content");
+                                break;
+                            case SERVICE_UNAVAILABLE:
+                                res.insert(0, "error.spss.api.service.unavailable");
+                                log.error("SPSS WebService not available - Check if native lib is loaded!");
+                                break;
+                            case INTERNAL_SERVER_ERROR:
+                                res.insert(0, "error.spss.api.internal.error");
+                                log.error("SPSS WebService INTERNAL_SERVER_ERROR - Possible FileIO Exception - Check File Access for WebService");
+                                break;
+                            case UNPROCESSABLE_ENTITY:
+                                res.insert(0, "error.spss.api.unprocessable.entity");
+                                log.error("SPSS WebService UNPROCESSABLE_ENTITY - File Transfer Exception");
+                                break;
+                        }
+                    } catch (Exception e) {
+                        res.insert(0,"error.spss.api.not.found");
+                        log.error("SPSS WebService not available - Check if Service is running! Exception: {}", () -> e);
+                    }
+                    break;
+                case "PDF":
+                    ProjectDTO project = projectDAO.findById(pid);
+                    ContributorDTO primaryContri = null;
+                    if (project != null)
+                        primaryContri = contributorDAO.findPrimaryContributorByProject(project);
+                    StudyDTO study = studyDAO.findById(record.getStudyId(), pid, true, false);
+                    if (study != null)
+                        study.setContributors(contributorDAO.findByStudy(study.getId()));
+                    content = itextUtil.createRecordCodeBookPDFA(record, study, project, primaryContri, false, attachments);
+                    break;
+                case "CSVZIP":
+                    List<Entry<String, byte[]>> files = new ArrayList<>();
+                    files.add(new SimpleEntry<>(record.getRecordName() + "_Matrix.csv", csvUtil.exportCSV(record, res, true)));
+                    files.add(new SimpleEntry<>(record.getRecordName() + "_Codebook.csv", csvUtil.exportCSV(record, res, false)));
+                    content = exportZip(files, res);
+                    break;
+            }
         log.trace("Leaving getRecordExportContentAsByteArray for record [pid: {}] and exportType[{}]", record::getId, () -> exportType);
         return content;
     }
@@ -520,7 +545,6 @@ public class ExportService {
     }
 
     /**
-     * TODO USE OF REST API INSTEAD OF INCLUDED LIB
      * This function prepares the record DTO for the export and transfers it to the SPSS IO Module. If the return of the SPSS IO Module is valid, a byte[] which
      * contains the spss file is returned. If some errors occur diring this process, null is returned and an error code is written to ResponseEntity<String> resp.
      *
@@ -528,14 +552,12 @@ public class ExportService {
      * @param res    Reference parameter to handle export errors in the calling function
      * @return the spss file as byte array
      */
-    private byte[] exportSPSSFile(final RecordDTO record, final StringBuilder res) {
-        byte[] content = null;
+    private SimpleEntry<HttpStatus, byte[]> exportSPSSFile(final RecordDTO record, final StringBuilder res) {
+        SimpleEntry<HttpStatus, byte[]> ret = new SimpleEntry<>(HttpStatus.CONFLICT, null);
         if (record != null) {
             log.trace("Entering exportSPSSFile for RecordDTO: [id: {}; version:{}]", record::getId, record::getVersionId);
             record.setFileIdString(record.getRecordName() + "_Version_(" + record.getVersionId() + ")");
             record.setErrors(new LinkedList<>());
-            String dir = fileUtil.setFolderPath("temp");
-            String filename = UUID.randomUUID().toString() + ".sav";
             if (record.getAttributes() == null) {
                 record.setAttributes(new LinkedList<>());
             }
@@ -553,41 +575,8 @@ public class ExportService {
             // record.getAttributes().add(new SPSSValueLabelDTO("DataWizLastUpdateLog", record.getChangeLog()));
             // record.getAttributes().add(new SPSSValueLabelDTO("DataWizLRecordDescription", record.getDescription()));
             if (record.getVariables() != null && record.getDataMatrix() != null) {
-                try {
-                    record.getVariables().parallelStream().forEach(var -> var.setDecimals(var.getDecimals() > 16 ? 16 : var.getDecimals()));
-                    if (!Files.exists(Paths.get(dir)))
-                        Files.createDirectories(Paths.get(dir));
-
-                    // REST TEST TODO
-                    // content = getSpssContentFromRest(record);
-                    // REST TEST
-
-                    if (content == null) {
-                        spss.writeSPSSFile(record, dir + filename);
-                        List<SPSSErrorDTO> errors = record.getErrors();
-                        if (errors.size() > 0) {
-                            for (SPSSErrorDTO error : errors)
-                                if (error.getError().getNumber() > 0) {
-                                    res.insert(0, "export.error.spss.error");
-                                    break;
-                                }
-                        }
-                        if (Files.exists(Paths.get(dir + filename))) {
-                            content = Files.readAllBytes(Paths.get(dir + filename));
-                        } else {
-                            if (res.length() == 0)
-                                res.insert(0, "export.error.file.not.exist");
-                        }
-                    }
-                } catch (Exception e) {
-                    log.warn("Error during SPSS export: RecordDTO: [id: {}; version:{}] Error: {}; Exception: {}", record::getId, record::getVersionId,
-                            res::toString, () -> e);
-                    e.printStackTrace();
-                    res.insert(0, "export.error.exception.thrown");
-                } finally {
-                    if (Files.exists(Paths.get(dir + filename)))
-                        fileUtil.deleteFile(Paths.get(dir + filename));
-                }
+                record.getVariables().parallelStream().forEach(var -> var.setDecimals(var.getDecimals() > 16 ? 16 : var.getDecimals()));
+                ret = this.spssService.fromJson(record);
             } else {
                 res.insert(0, "export.recorddto.empty");
             }
@@ -595,7 +584,7 @@ public class ExportService {
         } else {
             res.insert(0, "export.recorddto.empty");
         }
-        return content;
+        return ret;
     }
 
 

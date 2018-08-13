@@ -1,7 +1,6 @@
 package de.zpid.datawiz.configuration;
 
 import de.zpid.datawiz.util.MinioUtil;
-import de.zpid.spss.SPSSIO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,7 +126,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         return new JdbcTemplate(getDataSource());
     }
 
-    @Bean(name = "spss")
+/*    @Bean(name = "spss")
     public SPSSIO getSPSSDLL() {
         String OS = System.getProperty("os.name").toLowerCase();
         String path;
@@ -138,7 +137,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         log.info("Loading SPSSDLL with path: {}", () -> path);
         SPSSIO.setAbsoluteLibPath(path);
         return new SPSSIO();
-    }
+    }*/
 
     @Bean(name = "DataWiz")
     public ViewResolver viewResolver() {

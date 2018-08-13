@@ -11,15 +11,14 @@ import de.zpid.datawiz.exceptions.DWDownloadException;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
 import de.zpid.datawiz.service.*;
+import de.zpid.datawiz.spss.SPSSMissing;
+import de.zpid.datawiz.spss.SPSSValueLabelDTO;
+import de.zpid.datawiz.spss.SPSSVarDTO;
+import de.zpid.datawiz.spss.SPSSVarTypes;
 import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.StringUtil;
 import de.zpid.datawiz.util.UserUtil;
-import de.zpid.spss.SPSSIO;
-import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarDTO;
-import de.zpid.spss.util.SPSSMissing;
-import de.zpid.spss.util.SPSSVarTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,8 +76,8 @@ public class RecordController {
     private final ClassPathXmlApplicationContext applicationContext;
     private final ExceptionService exceptionService;
     private final ProjectService projectService;
-    private final SPSSIO spss;
     private final StringUtil stringUtil;
+    private final SpssIoService spssService;
 
 
     /**
@@ -87,7 +86,7 @@ public class RecordController {
     @Autowired
     public RecordController(RecordService recordService, ExportService exportService, ImportService importService, MessageSource messageSource,
                             Environment env, ClassPathXmlApplicationContext applicationContext, ExceptionService exceptionService,
-                            ProjectService projectService, SPSSIO spss, StringUtil stringUtil) {
+                            ProjectService projectService, StringUtil stringUtil, SpssIoService spssService) {
         super();
         log.info("Loading RecordController for mapping /project/{pid}/study/{sid}/record");
         this.recordService = recordService;
@@ -98,8 +97,8 @@ public class RecordController {
         this.applicationContext = applicationContext;
         this.exceptionService = exceptionService;
         this.projectService = projectService;
-        this.spss = spss;
         this.stringUtil = stringUtil;
+        this.spssService = spssService;
     }
 
 
@@ -170,13 +169,25 @@ public class RecordController {
                     ret = "datamatrix";
                     break;
                 default:
-                    model.put("isSPSSLibLoaded", spss.isLibLoaded());
                     String errormsg = recordService.validateCodeBook(sForm);
                     if (errormsg != null && !errormsg.trim().isEmpty()) {
                         model.put("errorMSG", messageSource.getMessage("record.spss.export.disabled", null, LocaleContextHolder.getLocale()));
                         model.put("disableSPSSExport", true);
                     } else {
                         model.put("disableSPSSExport", false);
+                    }
+                    try {
+                        boolean libloaded = spssService.checkAPIState();
+                        if (libloaded) {
+                            model.put("isSPSSLibLoaded", true);
+                        } else {
+                            model.put("isSPSSLibLoaded", false);
+                            model.put("warnMSG", messageSource.getMessage("error.spss.api.service.unavailable", null, LocaleContextHolder.getLocale()));
+                        }
+                    } catch (Exception e) {
+                        log.error("SPSS WS not reachable!");
+                        model.put("isSPSSLibLoaded", false);
+                        model.put("warnMSG", messageSource.getMessage("error.spss.api.not.found", null, LocaleContextHolder.getLocale()));
                     }
                     model.put("subnaviActive", PageState.RECORDMETA.name());
                     ret = "record";
@@ -617,7 +628,7 @@ public class RecordController {
     @RequestMapping(value = {"{recordId}/version/{versionId}/export/{exportType}"})
     public void exportRecord(final HttpServletResponse response, final RedirectAttributes redirectAttributes, @PathVariable final long versionId,
                              @PathVariable final long recordId, @PathVariable final long pid, @PathVariable final long studyId, @PathVariable final String exportType,
-                             @RequestParam(value = "attachments", required = false) Boolean attachments) throws Exception {
+                             @RequestParam(value = "attachments", defaultValue = "false") boolean attachments) throws Exception {
         log.trace("Entering exportRecord for [recordId: {}, version: {}, exportType: {}] ", () -> recordId, () -> versionId, () -> exportType);
         UserDTO user = UserUtil.getCurrentUser();
         RecordDTO record;

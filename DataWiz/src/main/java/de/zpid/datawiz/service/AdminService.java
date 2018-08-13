@@ -71,7 +71,7 @@ public class AdminService {
         List<?> lst = null;
         try {
             switch (type) {
-                case " user":
+                case "user":
                     lst = userDAO.findAll();
                     break;
                 case "project":
@@ -80,7 +80,7 @@ public class AdminService {
                     else
                         lst = projectDAO.findAll();
                     break;
-                case " study":
+                case "study":
                     lst = studyDAO.findAll();
                     break;
             }

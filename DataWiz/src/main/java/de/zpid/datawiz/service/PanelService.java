@@ -18,11 +18,32 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
+/**
+ * Service class for the Panel controller to separate the web logic from the business logic.
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+ *
+ * @author Ronny Boelter
+ * @version 1.0
+ **/
 @Service
 public class PanelService {
 
@@ -63,10 +84,9 @@ public class PanelService {
      * log-off/log-on behaviour if, for example, the user was invited to a new project.
      *
      * @return The current logged-on user
-     * @throws SQLException           Database Exception
      * @throws DataWizSystemException Is thrown if no user is logged-on
      */
-    public UserDTO refreshAndGetUserDTO() throws SQLException, DataWizSystemException {
+    public UserDTO refreshAndGetUserDTO() throws DataWizSystemException {
         UserDTO user;
         if (UserUtil.setCurrentUser(userDAO.findByMail(UserUtil.getCurrentUser().getEmail(), true))) {
             user = UserUtil.getCurrentUser();
@@ -82,9 +102,8 @@ public class PanelService {
      * @param user   {@link UserDTO} The Information of the logged-on user.
      * @param parChk {@link AtomicBoolean} Will be set to true if an error occurs during parallel loop
      * @return List of projects
-     * @throws Exception DataBase Exceptions
      */
-    public List<ProjectForm> getProjects(final UserDTO user, final AtomicBoolean parChk) throws Exception {
+    public List<ProjectForm> getProjects(final UserDTO user, final AtomicBoolean parChk) {
         List<ProjectForm> cpform = new ArrayList<>();
         List<ProjectDTO> cpdto = projectDAO.findAllByUserID(user);
         if (cpdto != null) {
@@ -113,9 +132,8 @@ public class PanelService {
      * @param pid    Project Identifier
      * @param parChk {@link AtomicBoolean} Will be set to true if an error occurs during parallel loop
      * @return List of Studies
-     * @throws SQLException DataBase Exceptions
      */
-    private List<StudyDTO> getStudyDTOS(final long userId, final long pid, final AtomicBoolean parChk) throws SQLException {
+    private List<StudyDTO> getStudyDTOS(final long userId, final long pid, final AtomicBoolean parChk) {
         List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(userId, pid);
         List<StudyDTO> cStud = new ArrayList<>();
         if (userRoles != null)
@@ -157,9 +175,8 @@ public class PanelService {
      * @param pid    Project Identifier
      * @param parChk {@link AtomicBoolean} Will be set to true if an error occurs during parallel loop
      * @return List of Users
-     * @throws SQLException DataBase Exceptions
      */
-    private List<UserDTO> getUserDTOS(final long pid, final AtomicBoolean parChk) throws SQLException {
+    private List<UserDTO> getUserDTOS(final long pid, final AtomicBoolean parChk) {
         List<UserDTO> sharedUser = userDAO.findGroupedByProject(pid);
         if (sharedUser != null)
             sharedUser.parallelStream().forEach(shared -> {

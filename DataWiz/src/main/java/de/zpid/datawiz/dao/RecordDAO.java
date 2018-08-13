@@ -1,9 +1,7 @@
 package de.zpid.datawiz.dao;
 
 import de.zpid.datawiz.dto.RecordDTO;
-import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarDTO;
-import de.zpid.spss.util.*;
+import de.zpid.datawiz.spss.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

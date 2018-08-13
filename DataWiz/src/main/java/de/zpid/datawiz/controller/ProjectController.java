@@ -215,12 +215,12 @@ public class ProjectController {
             ret = "redirect:/panel";
         } else {
             ProjectForm pForm = createProjectForm();
-            ret = projectService.checkUserAccess(pid, studyId, redirectAttributes, false, user);
+            ret = projectService.checkUserAccess(pid.orElse(0L), studyId.orElse(0L), redirectAttributes, false, user);
             if (ret != null) {
                 redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()));
             } else {
                 try {
-                    projectService.setMaterialForm(pid, studyId, model, redirectAttributes, user, pForm);
+                    projectService.setMaterialForm(pid.orElse(0L), studyId.orElse(0L), model, user, pForm);
                     ret = "material";
                     model.put("studyId", studyId.isPresent() ? studyId.get() : -1);
                     model.put("projectId", pid.get());
@@ -253,7 +253,7 @@ public class ProjectController {
         if (pForm != null && pForm.getProject() != null) {
             log.trace("Entering saveProject for project [id: {}]", () -> (pForm.getProject().getId() == 0 ? "new project" : pForm.getProject().getId()));
             if (pForm.getProject().getId() > 0) {
-                String access = projectService.checkUserAccess(Optional.of(pForm.getProject().getId()), Optional.empty(), redirectAttributes, true, UserUtil.getCurrentUser());
+                String access = projectService.checkUserAccess(pForm.getProject().getId(), 0, redirectAttributes, true, UserUtil.getCurrentUser());
                 ret = (access == null) ? ret : access;
             } else {
                 model.put("hideMenu", true);
@@ -325,12 +325,12 @@ public class ProjectController {
             return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()) + "\"}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if (projectService.checkUserAccess(pid, studyId, redirectAttributes, true, user) != null) {
+        if (projectService.checkUserAccess(pid.orElse(0L), studyId.orElse(0L), redirectAttributes, true, user) != null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
             return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("project.access.denied", null, LocaleContextHolder.getLocale()) + "\"}",
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        switch (projectService.saveMaterialToMinoAndDB(request, pid, studyId, user)) {
+        switch (projectService.saveMaterialToMinioAndDB(request, pid.orElse(0L), studyId.orElse(0L), user)) {
             case MINIO_SAVE_ERROR:
                 return new ResponseEntity<>("{\"error\" : \"" + messageSource.getMessage("minio.connection.exception.upload",
                         new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale()) + "\"}", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -472,7 +472,7 @@ public class ProjectController {
         log.trace("Entering  deleteProject for [projectId: {}] user[id: {}; email: {}]", pid::get, user::getId, user::getEmail);
         String ret = "redirect:/panel";
         try {
-            projectService.deleteProject(pid, user);
+            projectService.deleteProject(pid.orElse(0L), user);
         } catch (DataWizSystemException e) {
             if (e.getErrorCode().equals(DataWizErrorCodes.DATABASE_ERROR)) {
                 model.put("errormsg",

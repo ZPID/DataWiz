@@ -10,14 +10,9 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.enumeration.*;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.spss.*;
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.RegexUtil;
-import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarDTO;
-import de.zpid.spss.util.SPSSMeasLevel;
-import de.zpid.spss.util.SPSSMissing;
-import de.zpid.spss.util.SPSSMonths;
-import de.zpid.spss.util.SPSSVarTypes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -961,7 +956,7 @@ public class RecordService {
         List<RecordCompareDTO> compList = sForm.getCompList();
         List<SPSSVarDTO> newVars = sForm.getRecord().getVariables();
         List<SPSSVarDTO> prevVars = sForm.getPreviousRecordVersion().getVariables();
-        Boolean CSV = (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV"));
+        boolean CSV = (sForm.getSelectedFileType() != null && sForm.getSelectedFileType().equals("CSV"));
         if (compList != null) {
             int position = 0;
             for (RecordCompareDTO comp : compList) {

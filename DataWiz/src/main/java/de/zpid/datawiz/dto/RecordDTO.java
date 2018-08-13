@@ -1,7 +1,8 @@
 package de.zpid.datawiz.dto;
 
-import de.zpid.spss.dto.SPSSFileDTO;
-import de.zpid.spss.util.SPSSVarTypes;
+
+import de.zpid.datawiz.spss.SPSSFileDTO;
+import de.zpid.datawiz.spss.SPSSVarTypes;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

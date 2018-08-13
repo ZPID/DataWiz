@@ -14,15 +14,11 @@ import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.enumeration.VariableStatus;
 import de.zpid.datawiz.exceptions.DataWizSystemException;
 import de.zpid.datawiz.form.StudyForm;
+import de.zpid.datawiz.spss.*;
 import de.zpid.datawiz.util.DateUtil;
 import de.zpid.datawiz.util.FileUtil;
 import de.zpid.datawiz.util.ObjectCloner;
 import de.zpid.datawiz.util.RegexUtil;
-import de.zpid.spss.SPSSIO;
-import de.zpid.spss.dto.SPSSFileDTO;
-import de.zpid.spss.dto.SPSSValueLabelDTO;
-import de.zpid.spss.dto.SPSSVarDTO;
-import de.zpid.spss.util.*;
 import org.apache.any23.encoding.TikaEncodingDetector;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -76,19 +73,19 @@ public class ImportService {
 
     private static Logger log = LogManager.getLogger(ImportService.class);
     private ClassPathXmlApplicationContext applicationContext;
-    private SPSSIO spss;
     private FileUtil fileUtil;
     private MessageSource messageSource;
     private RecordDAO recordDAO;
+    private final SpssIoService spssService;
 
     @Autowired
-    public ImportService(ClassPathXmlApplicationContext applicationContext, SPSSIO spss, FileUtil fileUtil, MessageSource messageSource, RecordDAO recordDAO) {
+    public ImportService(ClassPathXmlApplicationContext applicationContext, FileUtil fileUtil, MessageSource messageSource, RecordDAO recordDAO, SpssIoService spssService) {
         super();
         this.applicationContext = applicationContext;
-        this.spss = spss;
         this.fileUtil = fileUtil;
         this.messageSource = messageSource;
         this.recordDAO = recordDAO;
+        this.spssService = spssService;
     }
 
     /**
@@ -671,42 +668,54 @@ public class ImportService {
                     () -> recordId, () -> 0, user::getId, () -> (sForm.getSpssFile() == null) ? "null" : sForm.getSpssFile().getOriginalFilename(), () -> e);
             errors.add(messageSource.getMessage("error.upload.creating.file", null, LocaleContextHolder.getLocale()));
         }
-        // SAVE TMP FILE!!!
-        String path = fileUtil.saveFile(file, true);
-        // SPSS API TEST TODO
-        //RecordDTO test = spssIoService.getJSONFromSPSS(path);
-        // log.warn(test.getCaseSize());
-        // SPSS API TEST TODO
-        RecordDTO spssFile = null;
-        if (path != null && !error) {
-            SPSSFileDTO spssTMP;
-            if ((spssTMP = spss.readWholeSPSSFile(path)) != null) {
-                spssFile = new RecordDTO(spssTMP);
+        if (!error) {
+            String path;
+            if ((path = fileUtil.saveFile(file, true)) != null) {
+                AbstractMap.SimpleEntry<HttpStatus, RecordDTO> response = null;
+                try {
+                    response = this.spssService.toJson(path);
+                } catch (Exception e) {
+                    error = true;
+                    errors.add(messageSource.getMessage("error.spss.api.not.found", null, LocaleContextHolder.getLocale()));
+                    log.error("SPSS WebService not available - Check if Service is running! Exception: {}", () -> e);
+                }
+                if (response != null) {
+                    error = true;
+                    switch (response.getKey()) {
+                        case OK:
+                            RecordDTO spssFile = response.getValue();
+                            file.setFilePath(null);
+                            spssFile.setId(recordId);
+                            spssFile.setChangedBy(user.getEmail());
+                            spssFile.setChangeLog(sForm.getNewChangeLog());
+                            spssFile.setFileName(sForm.getSpssFile().getOriginalFilename());
+                            sForm.setRecord(spssFile);
+                            sForm.setFile(file);
+                            error = false;
+                            break;
+                        case CONFLICT:
+                            errors.add(messageSource.getMessage("error.spss.api.conflict", null, LocaleContextHolder.getLocale()));
+                            log.warn("imported SPSS File possibly not valid");
+                            break;
+                        case SERVICE_UNAVAILABLE:
+                            errors.add(messageSource.getMessage("error.spss.api.service.unavailable", null, LocaleContextHolder.getLocale()));
+                            log.error("SPSS WebService not available - Check if native lib is loaded!");
+                            break;
+                        case INTERNAL_SERVER_ERROR:
+                            errors.add(messageSource.getMessage("error.spss.api.internal.error", null, LocaleContextHolder.getLocale()));
+                            log.error("SPSS WebService INTERNAL_SERVER_ERROR - Possible FileIO Exception - Check File Access for WebService");
+                            break;
+                        case UNPROCESSABLE_ENTITY:
+                            errors.add(messageSource.getMessage("error.spss.api.unprocessable.entity", null, LocaleContextHolder.getLocale()));
+                            log.error("SPSS WebService UNPROCESSABLE_ENTITY - File Transfer Exception");
+                            break;
+                    }
+                }
+                fileUtil.deleteFile(Paths.get(path));
             } else {
-                log.error("ERROR: Reading SPSS file wasn't successful");
-                errors.add(messageSource.getMessage("error.upload.spss.file", null, LocaleContextHolder.getLocale()));
-                error = true;
-            }
-            fileUtil.deleteFile(Paths.get(path));
-            if (!error && file == null) {
-                log.error("ERROR: FileDTO or RecordDTO empty: [FileDTO: {}; RecordDTO: {}]", "null",
-                        "not null");
-                error = true;
                 errors.add(messageSource.getMessage("error.upload.internal.error", null, LocaleContextHolder.getLocale()));
+                log.error("File Path is empty - Temporary saving of SPSS File was not successful");
             }
-            if (!error) {
-                file.setFilePath(null);
-                spssFile.setId(recordId);
-                spssFile.setChangedBy(user.getEmail());
-                spssFile.setChangeLog(sForm.getNewChangeLog());
-                spssFile.setFileName(sForm.getSpssFile().getOriginalFilename());
-                sForm.setRecord(spssFile);
-                sForm.setFile(file);
-            }
-        } else {
-            log.warn("Error: Not FilePath was set - Temporary File was not saved to local Filesystem");
-            errors.add(messageSource.getMessage("error.upload.internal.error", null, LocaleContextHolder.getLocale()));
-            error = true;
         }
         return error;
     }

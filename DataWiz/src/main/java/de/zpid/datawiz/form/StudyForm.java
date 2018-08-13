@@ -1,7 +1,7 @@
 package de.zpid.datawiz.form;
 
 import de.zpid.datawiz.dto.*;
-import de.zpid.spss.dto.SPSSVarDTO;
+import de.zpid.datawiz.spss.SPSSVarDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;

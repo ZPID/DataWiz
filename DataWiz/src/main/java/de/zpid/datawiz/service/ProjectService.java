@@ -51,73 +51,78 @@ import de.zpid.datawiz.util.ListUtil;
 import de.zpid.datawiz.util.MinioUtil;
 import de.zpid.datawiz.util.UserUtil;
 
+
+/**
+ * Service class for the Project controller to separate the web logic from the business logic.
+ * <p>
+ * This file is part of the DataWiz distribution (https://github.com/ZPID/DataWiz).
+ * Copyright (c) 2018 <a href="https://leibniz-psychology.org/">Leibniz Institute for Psychology Information (ZPID)</a>.
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3.
+ * <p>
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.
+ *
+ * @author Ronny Boelter
+ * @version 1.0
+ **/
 @Service
 public class ProjectService {
 
-    @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    private ProjectDAO projectDAO;
-    @Autowired
-    private RoleDAO roleDAO;
-    @Autowired
-    private StudyDAO studyDAO;
-    @Autowired
-    private FileDAO fileDAO;
-    @Autowired
-    private ContributorDAO contributorDAO;
-    @Autowired
-    private FormTypesDAO formTypeDAO;
-    @Autowired
-    private DmpDAO dmpDAO;
-    @Autowired
-    private ClassPathXmlApplicationContext applicationContext;
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
-    private PlatformTransactionManager txManager;
-    @Autowired
-    private StudyService studyService;
-    @Autowired
-    private FileUtil fileUtil;
-    @Autowired
-    private MinioUtil minioUtil;
+    private final MessageSource messageSource;
+    private final ProjectDAO projectDAO;
+    private final RoleDAO roleDAO;
+    private final StudyDAO studyDAO;
+    private final FileDAO fileDAO;
+    private final ContributorDAO contributorDAO;
+    private final FormTypesDAO formTypeDAO;
+    private final DmpDAO dmpDAO;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final UserDAO userDAO;
+    private final PlatformTransactionManager txManager;
+    private final StudyService studyService;
+    private final FileUtil fileUtil;
+    private final MinioUtil minioUtil;
 
     private static Logger log = LogManager.getLogger(ProjectService.class);
 
-    /**
-     * @param pid
-     * @param studyId
-     * @param redirectAttributes
-     * @param onlyWrite
-     * @param user
-     * @return
-     */
-    public String checkUserAccess(final Optional<Long> pid, final Optional<Long> studyId, final RedirectAttributes redirectAttributes, final boolean onlyWrite,
-                                  final UserDTO user) {
-        String ret = null;
-        if (user == null) {
-            log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
-            ret = "redirect:/login";
-        }
-        if (!pid.isPresent() || checkProjectRoles(user, pid.get(), (studyId != null && studyId.isPresent()) ? studyId.get() : -1, onlyWrite, true) == null) {
-            log.warn(
-                    "WARN: access denied because of: " + (!pid.isPresent() ? "missing project identifier" : "user [id: {}] has no rights to read/write study [id: {}]"),
-                    () -> user.getId(), () -> (studyId != null && studyId.isPresent() ? studyId.get() : 0));
-            redirectAttributes.addFlashAttribute("errorMSG", messageSource.getMessage("project.not.available", null, LocaleContextHolder.getLocale()));
-            ret = !pid.isPresent() ? "redirect:/panel" : "redirect:/project/" + pid.get();
-        }
-        return ret;
+    @Autowired
+    public ProjectService(MessageSource messageSource, ProjectDAO projectDAO, RoleDAO roleDAO, StudyDAO studyDAO, FileDAO fileDAO,
+                          ContributorDAO contributorDAO, FormTypesDAO formTypeDAO, DmpDAO dmpDAO, ClassPathXmlApplicationContext applicationContext,
+                          UserDAO userDAO, PlatformTransactionManager txManager, StudyService studyService, MinioUtil minioUtil, FileUtil fileUtil) {
+        this.messageSource = messageSource;
+        this.projectDAO = projectDAO;
+        this.roleDAO = roleDAO;
+        this.studyDAO = studyDAO;
+        this.fileDAO = fileDAO;
+        this.contributorDAO = contributorDAO;
+        this.formTypeDAO = formTypeDAO;
+        this.dmpDAO = dmpDAO;
+        this.applicationContext = applicationContext;
+        this.userDAO = userDAO;
+        this.txManager = txManager;
+        this.studyService = studyService;
+        this.minioUtil = minioUtil;
+        this.fileUtil = fileUtil;
     }
 
 
     /**
-     * @param pid
-     * @param studyId
-     * @param redirectAttributes
-     * @param onlyWrite
-     * @param user
-     * @return
+     * Checks if a user has a suitable role to enter a project and/or study.
+     *
+     * @param pid                Project identifier as long
+     * @param studyId            Study identifier as long
+     * @param redirectAttributes {@link RedirectAttributes}
+     * @param onlyWrite          true if an user tries to write a project or study
+     * @param user               {@link UserDTO} contains user information
+     * @return {@link String} with redirect mapping if access is not allowed for this user, otherwise null
      */
     public String checkUserAccess(final long pid, final long studyId, final RedirectAttributes redirectAttributes, final boolean onlyWrite,
                                   final UserDTO user) {
@@ -138,17 +143,17 @@ public class ProjectService {
     /**
      * Checks if the passed UserDTO has the PROJECT_ADMIN role.
      *
-     * @param redirectAttributes
-     * @param projectId
-     * @param admin
+     * @param redirectAttributes {@link RedirectAttributes}
+     * @param projectId          Project identifier as long
+     * @param admin              {@link UserDTO} contains user information
      * @return String with redirect entry if role is non-existent, and null if existent
      */
     public String checkProjectAdmin(final RedirectAttributes redirectAttributes, final long projectId, final UserDTO admin) {
-        log.trace("Entering checkProjectAdmin for project [id: {}] and user [mail: {}] ", () -> projectId, () -> admin.getEmail());
         if (admin == null) {
             log.warn(messageSource.getMessage("logging.user.auth.missing", null, Locale.ENGLISH));
             return "redirect:/login";
         }
+        log.trace("Entering checkProjectAdmin for project [id: {}] and user [mail: {}] ", () -> projectId, admin::getEmail);
         String ret = null;
         try {
             admin.setGlobalRoles(roleDAO.findRolesByUserID(admin.getId()));
@@ -161,15 +166,16 @@ public class ProjectService {
             log.error("ERROR: Database Error while getting roles - Exception:", e);
             ret = "redirect:/access/" + projectId;
         }
-        log.trace("Method checkProjectAdmin completed");
+        log.trace("Leaving checkProjectAdmin for project [id: {}] and user [mail: {}] ", () -> projectId, admin::getEmail);
         return ret;
     }
 
     /**
-     * @return
-     * @throws Exception
+     * Creates a new ProjectForm
+     *
+     * @return new {@link ProjectForm}
      */
-    public ProjectForm createProjectForm() throws Exception {
+    ProjectForm createProjectForm() {
         ProjectForm pForm = (ProjectForm) applicationContext.getBean("ProjectForm");
         pForm.setDataTypes(formTypeDAO.findAllByType(true, DWFieldTypes.DATATYPE));
         pForm.setCollectionModes(formTypeDAO.findAllByType(true, DWFieldTypes.COLLECTIONMODE));
@@ -178,15 +184,22 @@ public class ProjectService {
     }
 
     /**
-     * @param pid
-     * @param user
-     * @return
-     * @throws Exception
+     * Builds a complete Project form, depending on the passed {@link PageState} and user {@link Roles}
+     *
+     * @param pForm    {@link ProjectForm} This form is filled with information in this function
+     * @param pid      Project identifier as long
+     * @param user     {@link UserDTO} contains user information
+     * @param call     {@link PageState} includes the information for which site the form has to be build
+     * @param userRole {@link Roles} includes the role of the current user
+     * @throws DataWizSystemException Throws one of the following exceptions:
+     *                                PROJECT_NOT_AVAILABLE
+     *                                USER_ACCESS_PROJECT_PERMITTED
+     *                                MISSING_PID_ERROR
      */
-    public void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final PageState call, Roles userRole) throws Exception {
-        log.trace("Entering getProjectData(SuperController) for project [id: {}] and user [mail: {}] ", () -> pid, () -> user.getEmail());
+    public void getProjectForm(final ProjectForm pForm, final long pid, final UserDTO user, final PageState call, final Roles userRole) throws DataWizSystemException {
+        log.trace("Entering getProjectData for project [id: {}] and user [mail: {}] ", () -> pid, user::getEmail);
         // security access check!
-        if (pid > 0 && user != null) {
+        if (pid > 0) {
             if (userRole == null) {
                 throw new DataWizSystemException(
                         "SECURITY: User with email: " + user.getEmail() + " tries to get access to project:" + pid + " without having the permissions to read",
@@ -203,7 +216,7 @@ public class ProjectService {
                 setSpecificPageData(pForm, call);
             } else if (userRole.equals(Roles.DS_READER) || userRole.equals(Roles.DS_WRITER)) {
                 List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
-                List<StudyDTO> cStud = new ArrayList<StudyDTO>();
+                List<StudyDTO> cStud = new ArrayList<>();
                 for (UserRoleDTO role : userRoles) {
                     Roles uRole = Roles.valueOf(role.getType());
                     if (role.getStudyId() > 0 && (uRole.equals(Roles.DS_READER) || uRole.equals(Roles.DS_WRITER))) {
@@ -212,22 +225,20 @@ public class ProjectService {
                 }
                 pForm.setStudies(cStud);
             }
-            log.trace("Method getProjectData(SuperController) successfully completed");
+            log.trace("Leaving getProjectData successfully for project [id: {}] and user [mail: {}] ", () -> pid, user::getEmail);
         } else {
-            log.warn("ProjectID or UserDTO is empty - NULL returned!");
-            if (pid <= 0)
-                throw new DataWizSystemException("ProjectID or UserDTO is empty - getProjectForm() aborted!", DataWizErrorCodes.MISSING_PID_ERROR);
-            else
-                throw new DataWizSystemException("ProjectID or UserDTO is empty - getProjectForm() aborted!", DataWizErrorCodes.MISSING_UID_ERROR);
+            log.warn("ProjectID empty - NULL returned!");
+            throw new DataWizSystemException("ProjectID or UserDTO is empty - getProjectForm() aborted!", DataWizErrorCodes.MISSING_PID_ERROR);
         }
     }
 
     /**
-     * @param pForm
-     * @param call
-     * @throws Exception
+     * Is called by getProjectForm to load the form data for a specific page, depending on the  {@link PageState} call
+     *
+     * @param pForm {@link ProjectForm} This form is filled with information in this function
+     * @param call  {@link PageState} includes the information for which site the form has to be build
      */
-    private void setSpecificPageData(final ProjectForm pForm, final PageState call) throws Exception {
+    private void setSpecificPageData(final ProjectForm pForm, final PageState call) {
         // load /project data
         if (call == null || call.equals(PageState.PROJECT)) {
             pForm.setContributors(ListUtil.addObject(contributorDAO.findByProject(pForm.getProject(), false, false), new ContributorDTO()));
@@ -262,15 +273,18 @@ public class ProjectService {
         } // load /access data
         else if (call.equals(PageState.ACCESS)) {
             pForm.setStudies(studyDAO.findAllStudiesByProjectId(pForm.getProject()));
-        } // load /export data
-        else if (call.equals(PageState.EXPORT)) {
-
         }
     }
 
     /**
-     * @param pForm
-     * @return
+     * Saves a new project into the dbs or updates an existing project from the dbs
+     *
+     * @param pForm {@link ProjectForm} contains the project data
+     * @return Returns {@link DataWizErrorCodes}:
+     * OK on success, otherwise:
+     * MISSING_PID_ERROR
+     * NO_DATA_ERROR
+     * DATABASE_ERROR
      */
     public DataWizErrorCodes saveOrUpdateProject(final ProjectForm pForm) {
         log.trace("Entering saveOrUpdateProject for project [id: {}] ", () -> pForm.getProject().getId());
@@ -307,27 +321,31 @@ public class ProjectService {
                         }
                     }
                 }
-                for (ContributorDTO contri : contriDBList) {
-                    contributorDAO.deleteContributor(contri);
+                if (contriDBList != null) {
+                    for (ContributorDTO contri : contriDBList) {
+                        contributorDAO.deleteContributor(contri);
+                    }
                 }
                 int sort = 1;
-                for (ContributorDTO contri : pForm.getContributors()) {
-                    contri.setProjectId(pForm.getProject().getId());
-                    if (contri.getPrimaryContributor() == null || !contri.getPrimaryContributor())
-                        contri.setSort(sort++);
-                    else
-                        contri.setSort(0);
-                    if (contri.getId() <= 0) {
-                        contributorDAO.insertContributor(contri);
-                        contributorDAO.insertProjectRelation(contri);
-                    } else {
-                        contributorDAO.updateContributor(contri);
+                if (pForm.getContributors() != null) {
+                    for (ContributorDTO contri : pForm.getContributors()) {
+                        contri.setProjectId(pForm.getProject().getId());
+                        if (contri.getPrimaryContributor() == null || !contri.getPrimaryContributor())
+                            contri.setSort(sort++);
+                        else
+                            contri.setSort(0);
+                        if (contri.getId() <= 0) {
+                            contributorDAO.insertContributor(contri);
+                            contributorDAO.insertProjectRelation(contri);
+                        } else {
+                            contributorDAO.updateContributor(contri);
+                        }
                     }
                 }
             } else {
                 success = DataWizErrorCodes.NO_DATA_ERROR;
             }
-            if (UserUtil.getCurrentUser() != null)
+            if (UserUtil.getCurrentUser() != null && user != null)
                 UserUtil.getCurrentUser().setGlobalRoles(roleDAO.findRolesByUserID(user.getId()));
             txManager.commit(status);
         } catch (Exception e) {
@@ -335,19 +353,21 @@ public class ProjectService {
             log.error("Project saving not sucessful error:", () -> e);
             success = DataWizErrorCodes.DATABASE_ERROR;
         }
-        log.trace("Method saveOrUpdateProject completed with sucess={}", success.name());
+        log.trace("Leaving saveOrUpdateProject with message[{}]", success::name);
         return success;
     }
 
     /**
-     * @param user
-     * @param pid
-     * @param studyid
-     * @param onlyWrite
-     * @param withDSRights
-     * @return
+     * Checks the roles for a user and a project or study
+     *
+     * @param user         {@link UserDTO} contains user information
+     * @param pid          Project identifier as long
+     * @param studyId      Study identifier as long
+     * @param onlyWrite    true if an user tries to write a project or study
+     * @param withDSRights true if study roles have to be checked
+     * @return The role {@link Roles} which a user has for the specific project
      */
-    public Roles checkProjectRoles(final UserDTO user, final long pid, final long studyid, final boolean onlyWrite, final boolean withDSRights) {
+    public Roles checkProjectRoles(final UserDTO user, final long pid, final long studyId, final boolean onlyWrite, final boolean withDSRights) {
         log.trace("Entering checkProjectRoles(SuperController) for user [id: {}], project [id: {}], with Rights to write only [{}] and Studyrights [{}] ",
                 user::getId, () -> pid, () -> onlyWrite, () -> withDSRights);
         try {
@@ -358,7 +378,7 @@ public class ProjectService {
             final List<UserRoleDTO> userRoles = roleDAO.findRolesByUserIDAndProjectID(user.getId(), pid);
             if (userRoles == null || userRoles.size() <= 0)
                 return null;
-            userRoles.sort((o1, o2) -> Long.compare(o1.getRoleId(), o2.getRoleId()));
+            userRoles.sort(Comparator.comparingLong(UserRoleDTO::getRoleId));
             for (UserRoleDTO role : userRoles) {
                 Roles uRole = Roles.valueOf(role.getType());
                 if (uRole.equals(Roles.PROJECT_ADMIN)) {
@@ -370,11 +390,11 @@ public class ProjectService {
                 } else if (!onlyWrite && uRole.equals(Roles.PROJECT_READER)) {
                     log.debug("User {} has PROJECT_READER role for project [id: {}]", user::getEmail, () -> pid);
                     return Roles.PROJECT_READER;
-                } else if (withDSRights && uRole.equals(Roles.DS_WRITER) && (studyid == 0 || (studyid > 0 && studyid == role.getStudyId()))) {
-                    log.debug("User {} has DS_WRITER role for project [id: {}] and study [id: {}]", user::getEmail, () -> pid, () -> studyid);
+                } else if (withDSRights && uRole.equals(Roles.DS_WRITER) && (studyId == 0 || (studyId > 0 && studyId == role.getStudyId()))) {
+                    log.debug("User {} has DS_WRITER role for project [id: {}] and study [id: {}]", user::getEmail, () -> pid, () -> studyId);
                     return Roles.DS_WRITER;
-                } else if (!onlyWrite && withDSRights && uRole.equals(Roles.DS_READER) && (studyid == 0 || (studyid > 0 && studyid == role.getStudyId()))) {
-                    log.debug("User {} has DS_READER role for project [id: {}] and study [id: {}]", user::getEmail, () -> pid, () -> studyid);
+                } else if (!onlyWrite && withDSRights && uRole.equals(Roles.DS_READER) && (studyId == 0 || (studyId > 0 && studyId == role.getStudyId()))) {
+                    log.debug("User {} has DS_READER role for project [id: {}] and study [id: {}]", user::getEmail, () -> pid, () -> studyId);
                     return Roles.DS_READER;
                 }
             }
@@ -382,16 +402,19 @@ public class ProjectService {
             log.error("checkProjectRoles not sucessful -> return null! error:", e);
             return null;
         }
-        log.debug("Method gcheckProjectRoles ended without result for user [id: {}] and project [id: {}]", () -> user.getId(), () -> pid);
+        log.debug("Leaving checkProjectRoles without result for user [id: {}] and project [id: {}]", user::getId, () -> pid);
         return null;
     }
 
     /**
-     * @param pForm
-     * @param bindingResult
+     * Validates the contributor list and the primary contributor
+     *
+     * @param pForm         {@link ProjectForm} contains the project data
+     * @param bindingResult {@link BindingResult} contains validation error messages
+     * @return {@link List} of {@link ContributorDTO}
      */
-    public List<ContributorDTO> validateContributors(ProjectForm pForm, BindingResult bindingResult) throws Exception {
-        List<ContributorDTO> cContri = new ArrayList<ContributorDTO>();
+    public List<ContributorDTO> validateContributors(final ProjectForm pForm, final BindingResult bindingResult) {
+        List<ContributorDTO> cContri = new ArrayList<>();
         AtomicInteger contriCount = new AtomicInteger(0);
         if (pForm.getContributors() != null) {
             Iterator<ContributorDTO> itt = pForm.getContributors().iterator();
@@ -411,10 +434,6 @@ public class ProjectService {
                     contriCount.incrementAndGet();
                 }
             }
-
-            pForm.getContributors().forEach(contri -> {
-
-            });
         }
         if (pForm.getPrimaryContributor() != null
                 && (!pForm.getPrimaryContributor().getTitle().trim().equals("") || !pForm.getPrimaryContributor().getOrcid().trim().equals("")
@@ -431,68 +450,56 @@ public class ProjectService {
     }
 
     /**
-     * @param pid
-     * @param studyId
-     * @param model
-     * @param redirectAttributes
-     * @param user
-     * @param pForm
-     * @return
-     * @throws Exception
+     * @param pid     Project identifier as long
+     * @param studyId Study identifier as long
+     * @param model   {@link ModelMap}
+     * @param user    {@link UserDTO} contains user information
+     * @param pForm   {@link ProjectForm} This form is filled with information in this function
+     * @throws DataWizSystemException Exception thrown by setMaterialForm
      */
-    public void setMaterialForm(Optional<Long> pid, Optional<Long> studyId, ModelMap model, RedirectAttributes redirectAttributes, UserDTO user,
-                                ProjectForm pForm) throws Exception {
-        Roles role = checkProjectRoles(user, pid.get(), 0, false, true);
-        getProjectForm(pForm, pid.get(), user, PageState.MATERIAL, role);
-        if (!studyId.isPresent()) {
+    public void setMaterialForm(final long pid, final long studyId, final ModelMap model, final UserDTO user, final ProjectForm pForm) throws DataWizSystemException {
+        Roles role = checkProjectRoles(user, pid, 0, false, true);
+        getProjectForm(pForm, pid, user, PageState.MATERIAL, role);
+        if (studyId <= 0) {
             model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.PROJECT, new String[]{pForm.getProject().getTitle()}, null, messageSource));
             model.put("studyId", -1);
         } else {
-            StudyDTO study = studyDAO.findById(studyId.get(), pid.get(), true, false);
-            studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid.get(), model);
-            pForm.setFiles(fileDAO.findStudyMaterialFiles(pid.get(), studyId.get()));
+            StudyDTO study = studyDAO.findById(studyId, pid, true, false);
+            studyService.createStudyBreadCrump(pForm.getProject().getTitle(), study.getTitle(), pid, model);
+            pForm.setFiles(fileDAO.findStudyMaterialFiles(pid, studyId));
             model.put("studySubMenu", true);
         }
     }
 
     /**
-     * @param imgId
-     * @param response
-     * @param thumbHeight
-     * @param maxWidth
-     * @throws Exception
-     * @throws IOException
+     * Scales images for thumbnail usage by using fileUtil.buildThumbNailAndSetToResponse
+     *
+     * @param imgId       Image identifier as long
+     * @param response    {@link HttpServletResponse}
+     * @param thumbHeight height of the new thumbnail as int
+     * @param maxWidth    max-width of the new thumbnail as int
+     * @throws IOException thrown by fileUtil.buildThumbNailAndSetToResponse
      */
-    public void scaleAndSetThumbnail(long imgId, HttpServletResponse response, final int thumbHeight, final int maxWidth) throws Exception, IOException {
+    public void scaleAndSetThumbnail(final long imgId, final HttpServletResponse response, final int thumbHeight, final int maxWidth) throws IOException {
         FileDTO file = fileDAO.findById(imgId);
-        // fileUtil.setFileBytes(file);
         if (minioUtil.getFile(file, false).equals(MinioResult.OK)) {
             fileUtil.buildThumbNailAndSetToResponse(response, file, thumbHeight, maxWidth);
         }
     }
 
     /**
-     * @param pForm
-     * @throws Exception
+     * Saves Material to the Minio System and the Meta-Information to the DBS System.
+     *
+     * @param request {@link MultipartHttpServletRequest} contains the uploaded material
+     * @param pid     Project identifier as long
+     * @param studyId Study identifier as long
+     * @param user    {@link UserDTO} contains user information
+     * @return {@link DataWizErrorCodes} Returns one of the following codes:
+     * OK (File saved successfully)
+     * MINIO_SAVE_ERROR
+     * DATABASE_ERROR
      */
-    @Deprecated
-    public boolean deleteContributor(ProjectForm pForm) throws Exception {
-        if (pForm.getContributors() != null && pForm.getContributors().size() >= pForm.getDelPos()) {
-            ContributorDTO selected = pForm.getContributors().get(pForm.getDelPos());
-            pForm.getContributors().remove(pForm.getDelPos());
-            if (selected.getId() > 0)
-                return (contributorDAO.deleteContributor(selected) > 0);
-        }
-        return true;
-    }
-
-    /**
-     * @param request
-     * @param pid
-     * @param studyId
-     * @param user
-     */
-    public DataWizErrorCodes saveMaterialToMinoAndDB(MultipartHttpServletRequest request, Optional<Long> pid, Optional<Long> studyId, UserDTO user) {
+    public DataWizErrorCodes saveMaterialToMinioAndDB(final MultipartHttpServletRequest request, final long pid, final long studyId, final UserDTO user) {
         FileDTO file = null;
         DataWizErrorCodes code = DataWizErrorCodes.OK;
         try {
@@ -501,13 +508,12 @@ public class ProjectService {
                 String filename = itr.next();
                 final MultipartFile mpf = request.getFile(filename);
                 if (mpf != null) {
-                    file = fileUtil.buildFileDTO(pid.get(), studyId.isPresent() ? studyId.get() : 0, 0, 0, user.getId(), mpf);
-                    // String filePath = fileUtil.saveFile(file);
+                    file = fileUtil.buildFileDTO(pid, studyId, 0, 0, user.getId(), mpf);
                     MinioResult res = minioUtil.putFile(file, false);
                     if (res.equals(MinioResult.OK)) {
                         fileDAO.saveFile(file);
                     } else {
-                        log.warn("ERROR: During saveToMinoAndDB - MinioResult: {}", () -> res.name());
+                        log.warn("ERROR: During saveToMinioAndDB - MinioResult: {}", res::name);
                         code = DataWizErrorCodes.MINIO_SAVE_ERROR;
                     }
                 }
@@ -516,19 +522,24 @@ public class ProjectService {
             if (file != null && minioUtil.getFile(file, false).equals(MinioResult.OK)) {
                 minioUtil.deleteFile(file);
             }
-            log.warn("Exception during file saveToMinoAndDB: ", () -> e);
+            log.warn("Exception during file saveToMinioAndDB: ", () -> e);
             code = DataWizErrorCodes.DATABASE_ERROR;
         }
         return code;
     }
 
     /**
-     * @param docId
-     * @param response
-     * @return
+     * Prepares material for  download. Gets the file from Minio und the meta information from the dbs system.
+     *
+     * @param docId    file identifier as long
+     * @param response {@link HttpServletResponse} Response with the file stream
+     * @return {@link DataWizErrorCodes} Returns one of the following codes:
+     * OK (File loaded successfully)
+     * MINIO_READ_ERROR
+     * DATABASE_ERROR
      */
-    public DataWizErrorCodes prepareMaterialDownload(long docId, HttpServletResponse response) {
-        FileDTO file = null;
+    public DataWizErrorCodes prepareMaterialDownload(final long docId, final HttpServletResponse response) {
+        FileDTO file;
         DataWizErrorCodes code = DataWizErrorCodes.OK;
         try {
             file = fileDAO.findById(docId);
@@ -539,7 +550,7 @@ public class ProjectService {
                 response.setContentLength(file.getContent().length);
                 FileCopyUtils.copy(file.getContent(), response.getOutputStream());
             } else {
-                log.warn("ERROR: During prepareMaterialDownload - MinioResult: {}", () -> res.name());
+                log.warn("ERROR: During prepareMaterialDownload - MinioResult: {}", res::name);
                 code = DataWizErrorCodes.MINIO_READ_ERROR;
             }
         } catch (Exception e) {
@@ -550,8 +561,13 @@ public class ProjectService {
     }
 
     /**
-     * @param docId
-     * @return
+     * Deletes material from Minio und DB System
+     *
+     * @param docId File identifier as long
+     * @return {@link DataWizErrorCodes} Returns one of the following codes:
+     * * OK (File deleted successfully)
+     * * MINIO_SAVE_ERROR
+     * * DATABASE_ERROR
      */
     public DataWizErrorCodes deleteMaterialfromMinioAndDB(long docId) {
         DataWizErrorCodes code = DataWizErrorCodes.OK;
@@ -560,11 +576,11 @@ public class ProjectService {
             if (res.equals(MinioResult.OK)) {
                 fileDAO.deleteFile(docId);
             } else {
-                log.warn("ERROR: During deleteMaterialfromMinioAndDB - MinioResult: {}", () -> res.name());
+                log.warn("ERROR: During deleteMaterialfromMinioAndDB - MinioResult: {}", res::name);
                 code = DataWizErrorCodes.MINIO_SAVE_ERROR;
             }
         } catch (Exception e) {
-            log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, () -> e.getMessage());
+            log.error("WARN: deleteDocument [id: {}] not successful because of DB Error - Message: {}", () -> docId, e::getMessage);
             code = DataWizErrorCodes.DATABASE_ERROR;
         }
         return code;
@@ -573,23 +589,23 @@ public class ProjectService {
     /**
      * @param pid
      * @param user
-     * @return
+     * @throws DataWizSystemException
      */
-    public void deleteProject(final Optional<Long> pid, final UserDTO user) throws DataWizSystemException {
+    public void deleteProject(final long pid, final UserDTO user) throws DataWizSystemException {
         TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
-        if (!pid.isPresent()) {
-            log.warn("ProjectId emtpy - project delete aborted");
+        if (pid <= 0) {
+            log.warn("ProjectId empty - project delete aborted");
             throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
         }
         try {
-            ProjectDTO project = projectDAO.findById(pid.get());
-            if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid.get(), false)) {
+            ProjectDTO project = projectDAO.findById(pid);
+            if (user.hasRole(Roles.ADMIN) || user.hasRole(Roles.PROJECT_ADMIN, pid, false)) {
                 if (project != null) {
                     List<ContributorDTO> cContri = contributorDAO.findByProject(project, false, true);
                     List<StudyDTO> studies = studyDAO.findAllStudiesByProjectId(project);
                     if (studies != null && !studies.isEmpty()) {
                         for (StudyDTO study : studies) {
-                            studyService.deleteStudy(pid.orElse(0L), study.getId(), user, false);
+                            studyService.deleteStudy(pid, study.getId(), user, false);
                         }
                     }
                     projectDAO.deleteProject(project.getId());
@@ -599,14 +615,14 @@ public class ProjectService {
                         }
                     txManager.commit(status);
                 } else {
-                    log.warn("No Project found for PID {}", () -> pid.get());
-                    throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[]{pid.get()}, Locale.ENGLISH),
+                    log.warn("No Project found for PID {}", () -> pid);
+                    throw new DataWizSystemException(messageSource.getMessage("logging.project.not.found", new Object[]{pid}, Locale.ENGLISH),
                             DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
                 }
             } else {
-                log.warn("User [email:{}; id: {}] tried to delete Project [projectId: {}]", () -> user.getEmail(), () -> user.getId(), () -> pid.get());
+                log.warn("User [email:{}; id: {}] tried to delete Project [projectId: {}]", user::getEmail, user::getId, () -> pid);
                 throw new DataWizSystemException(
-                        messageSource.getMessage("logging.user.permitted", new Object[]{user.getEmail(), "project", pid.get()}, Locale.ENGLISH),
+                        messageSource.getMessage("logging.user.permitted", new Object[]{user.getEmail(), "project", pid}, Locale.ENGLISH),
                         DataWizErrorCodes.USER_ACCESS_PROJECT_PERMITTED);
             }
         } catch (Exception e) {
@@ -627,7 +643,11 @@ public class ProjectService {
         }
     }
 
-    public List<ProjectDTO> getAdminProjectList(final UserDTO user) throws Exception {
+    /**
+     * @param user
+     * @return
+     */
+    public List<ProjectDTO> getAdminProjectList(final UserDTO user) {
         return projectDAO.findAllByAdminRole(user.getId());
     }
 }

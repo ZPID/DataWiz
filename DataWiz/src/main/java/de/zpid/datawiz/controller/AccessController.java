@@ -75,12 +75,13 @@ public class AccessController {
     private final ProjectDAO projectDAO;
     private final RoleDAO roleDAO;
     private final UserDAO userDAO;
+    private final EmailUtil mail;
 
     @Autowired
     public AccessController(final ExceptionService exceptionService, final MessageSource messageSource,
                             final ClassPathXmlApplicationContext applicationContext, final ProjectService projectService,
                             final HttpServletRequest request, final Environment env, final StringUtil stringUtil,
-                            final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO) {
+                            final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final EmailUtil mail) {
         super();
         log.info("Loading AccessController for mapping /access");
         this.exceptionService = exceptionService;
@@ -93,6 +94,7 @@ public class AccessController {
         this.projectDAO = projectDAO;
         this.roleDAO = roleDAO;
         this.userDAO = userDAO;
+        this.mail = mail;
     }
 
     @ModelAttribute("ProjectForm")
@@ -301,7 +303,6 @@ public class AccessController {
                             request.getContextPath() + "/register/" + projectId + "/" + pForm.getDelMail() + "/" + linkhash);
                 }
                 try {
-                    EmailUtil mail = new EmailUtil(env);
                     mail.sendSSLMail(pForm.getDelMail(),
                             messageSource.getMessage(subject, new Object[]{pForm.getProject().getTitle()}, LocaleContextHolder.getLocale()),
                             messageSource.getMessage(content, new Object[]{adminName, pForm.getProject().getTitle(), url}, LocaleContextHolder.getLocale()));
@@ -362,7 +363,6 @@ public class AccessController {
                     }
                     StringBuffer url = request.getRequestURL();
                     url = url.delete(url.indexOf(request.getRequestURI()), url.length()).append(request.getContextPath());
-                    EmailUtil mail = new EmailUtil(env);
                     mail.sendSSLMail(adminMail, messageSource.getMessage("accept.mail.admin.subject", null, LocaleContextHolder.getLocale()),
                             messageSource.getMessage("accept.mail.admin.content",
                                     new Object[]{email, project.getTitle(), url.toString() + "/access/" + String.valueOf(project.getId())}, LocaleContextHolder.getLocale()));

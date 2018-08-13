@@ -6,11 +6,14 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRegistration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.NonNullApi;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 
@@ -56,8 +59,14 @@ public class SpringMvcInitializer extends AbstractAnnotationConfigDispatcherServ
     }
 
     @Override
-    public void onStartup(@NonNull ServletContext servletContext) throws ServletException {
-        super.onStartup(servletContext);
+    public void onStartup(@NonNull ServletContext servletContext){
+        AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
+        ctx.register(DataWizConfiguration.class);
+        ctx.setServletContext(servletContext);
+        ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));
+        servlet.addMapping("/");
+        servlet.setLoadOnStartup(1);
+        servlet.setInitParameter("throwExceptionIfNoHandlerFound", "true");
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         Properties props = new Properties();
         try (InputStream resourceStream = loader.getResourceAsStream("datawiz.properties")) {
