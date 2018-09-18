@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE Configuration>
 <Configuration monitorInterval="30" status="INFO">
-  <Appenders>
-    <Console name="CONSOLE" target="SYSTEM_OUT">
-      <PatternLayout
-        pattern="%highlight{%d{DEFAULT} [%t] %level: %c{3} --- %msg%n}{FATAL=Bright red, ERROR=Bright red, WARN=Bright red, INFO=Bright white, DEBUG=white, TRACE=white}" />
-    </Console>
-    <File name="DataWizLog" fileName="/var/log/tomcat8/DataWizLog.log">
-      <PatternLayout pattern="%d{DEFAULT} [%t] %-5level: %logger{36} --- %msg%n" />
-    </File>
-    <Async name="Async" bufferSize="262144">
-      <AppenderRef ref="CONSOLE" />
-      <AppenderRef ref="DataWizLog" />
-      <LinkedTransferQueue />
-    </Async>
-  </Appenders>
-  <Loggers>
-    <logger name="org.springframework" level="INFO" />
-    <logger name="org.hibernate" level="INFO" />
-    <logger name="de.zpid" level="trace" />
-    <logger name="de.zpid.spss" level="info" />
-    <Root level="info">
-      <AppenderRef ref="Async" />
-    </Root>
-  </Loggers>
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d %highlight{[%5.5p]}{STYLE=Logback} %40.40c{2} : %m%n" disableAnsi="false"/>
+        </Console>
+        <File name="File" fileName="/var/log/tomcat8/DataWiz.log">
+            <PatternLayout pattern="%d{dd MMM yyyy HH:mm:ss,SSS} [%t] %-5level: %logger{36} --- %msg%n"/>
+        </File>
+        
+        <Async name="Async" bufferSize="512">
+            <AppenderRef ref="CONSOLE" level="info"/>
+            <AppenderRef ref="File" level="info"/>
+
+            <LinkedTransferQueue/>
+        </Async>
+    </Appenders>
+    <Loggers>
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.hibernate" level="INFO"/>
+        <logger name="de.zpid" level="INFO"/>
+        <logger name="de.zpid.spss" level="INFO"/>
+        <Root level="INFO">
+            <AppenderRef ref="Async"/>
+        </Root>
+    </Loggers>
 </Configuration>

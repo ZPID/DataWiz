@@ -1,8 +1,6 @@
 /DataWiz/target/
 /DataWiz/META-INF/
-/src/main/resources/log4j2.xml
 /.git/
 /.idea/
 /out/
-
-DataWiz/src/main/resources/log4j2\.xml
+/DataWiz/src/main/resources/log4j2.xml
