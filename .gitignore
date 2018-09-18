@@ -3,6 +3,5 @@
 /.git/
 /.idea/
 /out/
-/DataWiz/src/main/resources/log4j2.xml
-
-DataWiz/src/main/resources/datawiz\.properties
+/DataWiz/src/main/resources/log4j2\.xml
+/DataWiz/src/main/resources/datawiz\.properties

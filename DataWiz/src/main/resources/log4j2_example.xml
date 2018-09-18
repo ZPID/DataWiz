@@ -9,15 +9,9 @@
         <File name="File" fileName="/var/log/tomcat8/DataWiz.log">
             <PatternLayout pattern="%d{dd MMM yyyy HH:mm:ss,SSS} [%t] %-5level: %logger{36} --- %msg%n"/>
         </File>
-        <SMTP name="Mail" subject="DataWiz Error Log" to="rb@leibniz-psychology.org"
-              from="datawiz@leibniz-psychology.org"
-              smtpPassword="4BiBedi_BaBedi_Bou" smtpUsername="datawiz@zpid.de" smtpHost="mail.zpid.de" smtpPort="25"
-              bufferSize="64" smtpProtocol="smtp">
-        </SMTP>
         <Async name="Async" bufferSize="512">
             <AppenderRef ref="CONSOLE" level="info"/>
             <AppenderRef ref="File" level="info"/>
-            <AppenderRef ref="Mail" level="info"/>
             <LinkedTransferQueue/>
         </Async>
     </Appenders>
