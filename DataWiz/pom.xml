@@ -14,7 +14,7 @@
         <!-- <springsecurity.version>4.2.3.RELEASE</springsecurity.version> -->
         <springsecurity.version>5.0.7.RELEASE</springsecurity.version>
         <!-- http://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <mysql.connector.version>8.0.11</mysql.connector.version>
+        <mysql.connector.version>8.0.12</mysql.connector.version>
         <!-- http://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <org.slf4j-version>1.7.25</org.slf4j-version>
         <!-- http://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
@@ -156,12 +156,11 @@
             <version>${springsecurity.version}</version>
         </dependency>
         <!-- MySQL -->
-        <!--    <dependency>
-              <groupId>mysql</groupId>
-              <artifactId>mysql-connector-java</artifactId>
-              <version>${mysql.connector.version}</version>
-              <scope>provided</scope>
-            </dependency> -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.version}</version>
+        </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
