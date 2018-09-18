@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
@@ -64,6 +65,8 @@ public class SpringMvcInitializer extends AbstractAnnotationConfigDispatcherServ
         ctx.register(DataWizConfiguration.class);
         ctx.setServletContext(servletContext);
         ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));
+        MultipartConfigElement multipartConfig = new MultipartConfigElement("/tmp");
+        servlet.setMultipartConfig(multipartConfig);
         servlet.addMapping("/");
         servlet.setLoadOnStartup(1);
         servlet.setInitParameter("throwExceptionIfNoHandlerFound", "true");

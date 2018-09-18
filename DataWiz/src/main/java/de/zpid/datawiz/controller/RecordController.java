@@ -33,6 +33,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -65,6 +66,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping(value = {"/project/{pid}/study/{studyId}/record"})
 @SessionAttributes({"StudyForm", "subnaviActive", "breadcrumbList"})
+@MultipartConfig
 public class RecordController {
 
     private static final Logger log = LogManager.getLogger(RecordController.class);

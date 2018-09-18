@@ -186,7 +186,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         return sm;
     }
 
-    @Bean(name = "filterMultipartResolver")
+    @Bean(name = "multipartResolver")
     public CommonsMultipartResolver commonsMultipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("utf-8");
@@ -212,6 +212,8 @@ public class DataWizConfiguration implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**").addResourceLocations("/static/").setCacheControl(CacheControl.maxAge(1, TimeUnit.DAYS));
     }
+
+
 
     @Override
     public void configurePathMatch(PathMatchConfigurer matcher) {
