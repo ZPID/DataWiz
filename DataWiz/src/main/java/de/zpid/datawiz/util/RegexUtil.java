@@ -16,7 +16,7 @@ public class RegexUtil {
   public static final String emptyOr = "^$|";
 
   // Minimum 8 characters at least 1 Alphabet and 1 Number:
-  public static final String PASSWORDREGEX = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
+  public static final String PASSWORDREGEX = "^(?=.*[A-Za-zäüöÄÜÖß])(?=.*\\d)[A-Za-zäüöÄÜÖß\\d]{8,}$";
   /**
    * Regex for only alphabetic characters with umlauts, blanks and hyphens.
    */
