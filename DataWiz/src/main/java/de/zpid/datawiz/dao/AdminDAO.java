@@ -9,8 +9,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -88,4 +92,50 @@ public class AdminDAO {
                 params.toArray());
         log.debug("Transaction for updateUserAccount returned: {}", () -> ret);
     }
+
+    public Map<String, Integer> findStatsOfLastMonth() {
+        log.trace("Entering findStatsOfLastMonth()");
+        String sql = "SELECT * from dw_usage_stats ORDER BY id DESC LIMIT 1";
+        Map<String, Integer> stats = jdbcTemplate.queryForObject(sql, new Object[]{}, (resultSet, rowNum) -> getStatsMap(resultSet));
+        log.trace("Leaving findStatsOfLastMonth() with size[{}]", () -> stats != null ? stats.size() : "null");
+        return stats;
+    }
+
+    public List<Map<String, Integer>> findStatsOfLastYear() {
+        log.trace("Entering findStatsOfLastYear()");
+        String sql = "SELECT * from dw_usage_stats ORDER BY id DESC LIMIT 12";
+        List<Map<String, Integer>> stats = jdbcTemplate.query(sql, new Object[]{}, (resultSet, rowNum) -> getStatsMap(resultSet));
+        log.trace("Leaving findStatsOfLastYear() with size[{}]", stats::size);
+        return stats;
+    }
+
+
+    private Map<String, Integer> getStatsMap(ResultSet resultSet) throws SQLException {
+        Map<String, Integer> tmp = new HashMap<>();
+        tmp.put("id", resultSet.getInt("id"));
+        tmp.put("month", resultSet.getInt("month"));
+        tmp.put("year", resultSet.getInt("year"));
+        tmp.put("users", resultSet.getInt("users"));
+        tmp.put("projects", resultSet.getInt("projects"));
+        tmp.put("studies", resultSet.getInt("studies"));
+        tmp.put("records", resultSet.getInt("records"));
+        return tmp;
+    }
+
+    public void saveMonthlyStatsValues(final int month, final int year, final int users, final int projects, final int studies, final int records) {
+        log.trace("Entering saveMonthlyStatsValues for file [month: {}, year: {}, users: {}, projects: {}, studies: {}, records: {}]",
+                () -> month, () -> year, () -> users, () -> projects, () -> studies, () -> records);
+        int ret = this.jdbcTemplate.update(
+                "INSERT INTO dw_usage_stats (month, year, users, projects, studies, records) VALUES (?,?,?,?,?,?)", month, year, users, projects, studies, records);
+        log.debug("Transaction saveMonthlyStatsValues terminates with result: [result: {}]", () -> ret);
+    }
+
+    public void deleteMonthlyStatsValues(final int month, final int year) {
+        log.trace("Entering deleteMonthlyStatsValues for file [month: {}, year: {}]",
+                () -> month, () -> year);
+        int ret = this.jdbcTemplate.update("delete FROM dw_usage_stats WHERE month=? and year=?", month, year);
+        log.debug("Transaction \"saveFile\" terminates with result: [result: {}]", () -> ret);
+    }
+
+
 }

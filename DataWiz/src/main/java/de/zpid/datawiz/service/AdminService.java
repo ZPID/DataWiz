@@ -4,6 +4,7 @@ import de.zpid.datawiz.dao.AdminDAO;
 import de.zpid.datawiz.dao.ProjectDAO;
 import de.zpid.datawiz.dao.StudyDAO;
 import de.zpid.datawiz.dao.UserDAO;
+import de.zpid.datawiz.dto.ProjectDTO;
 import de.zpid.datawiz.dto.UserDTO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,6 +108,11 @@ public class AdminService {
         }
         log.trace("Leaving countValuesByTableName with result: {}", count);
         return count;
+    }
+
+    public int countProjectsByUser(final long id) {
+        List<ProjectDTO> projects = projectDAO.findAllByUserID(userDAO.findById(id));
+        return projects == null ? 0 : projects.size();
     }
 
 

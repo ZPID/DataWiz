@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -201,9 +203,9 @@ public class UserDAO {
                             + "street = ?, zip = ?, city = ?, state = ?, country = ?, orcid_id = ?, account_state = ?, activationcode = ? " + "WHERE id = ?",
                     params.toArray());
         } else {
-            ret = this.jdbcTemplate.update("INSERT INTO dw_user  (first_name, last_name, password, email, account_state, activationcode) VALUES (?,?,?,?,?,?)",
-                    user.getFirstName(), user.getLastName(), user.getPassword(), user.getEmail(), AccountState.LOCKED.name(),
-                    (user.getActivationCode() != null && !user.getActivationCode().isEmpty()) ? user.getActivationCode() : UUID.randomUUID().toString());
+            ret = this.jdbcTemplate.update("INSERT INTO dw_user  (first_name, last_name, password, email, account_state, activationcode, reg_date) VALUES (?,?,?,?,?,?,?)",
+                    user.getFirstName(), user.getLastName(), user.getPassword(), user.getEmail(), AccountState.EXPIRED.name(),
+                    (user.getActivationCode() != null && !user.getActivationCode().isEmpty()) ? user.getActivationCode() : UUID.randomUUID().toString(), Timestamp.valueOf(LocalDateTime.now()));
         }
         log.debug("Transaction for saveOrUpdate returned: {}", ret);
     }
@@ -217,6 +219,18 @@ public class UserDAO {
         log.trace("Entering updatePassword for user [email: {}]", user::getEmail);
         int ret = this.jdbcTemplate.update("UPDATE dw_user SET password = ? WHERE email = ?", user.getPassword(), user.getEmail());
         log.debug("Transaction for updatePassword returned: {}", ret);
+    }
+
+    /**
+     * Updates a user last_login
+     *
+     * @param id   User Identifier as long
+     * @param time {@link LocalDateTime} TimeStamp
+     */
+    public void updateLastLogin(final long id, final LocalDateTime time) {
+        log.trace("Entering updateLastLogin for [id: {}, time {}]", () -> id, () -> time);
+        int ret = this.jdbcTemplate.update("UPDATE dw_user SET last_login = ? WHERE id = ?", time, id);
+        log.debug("Transaction for updateLastLogin returned: {}", ret);
     }
 
     /**
@@ -260,6 +274,8 @@ public class UserDAO {
         contact.setCountry(rs.getString("country"));
         contact.setOrcid(rs.getString("orcid_id"));
         contact.setAccountState(rs.getString("account_state"));
+        contact.setRegDate(rs.getTimestamp("reg_date").toLocalDateTime());
+        contact.setLastLogin(rs.getTimestamp("last_login").toLocalDateTime());
         contact.setActivationCode(rs.getString("activationcode"));
         return contact;
     }

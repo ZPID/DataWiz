@@ -2,6 +2,7 @@ package de.zpid.datawiz.service;
 
 import de.zpid.datawiz.dao.UserDAO;
 import de.zpid.datawiz.dto.UserDTO;
+import de.zpid.datawiz.enumeration.AccountState;
 import de.zpid.datawiz.util.CustomUserDetails;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.RegexUtil;
@@ -51,14 +52,17 @@ public class LoginService implements UserDetailsService {
     protected final MessageSource messageSource;
     private final EmailUtil mail;
     private final PasswordEncoder passwordEncoder;
+    private final LoginAttemptService loginAttemptService;
 
     @Autowired
-    public LoginService(UserDAO userDAO, MessageSource messageSource, EmailUtil mail, PasswordEncoder passwordEncoder) {
+    public LoginService(UserDAO userDAO, MessageSource messageSource, EmailUtil mail, PasswordEncoder passwordEncoder, LoginAttemptService loginAttemptService) {
         this.userDAO = userDAO;
         this.messageSource = messageSource;
         this.mail = mail;
         this.passwordEncoder = passwordEncoder;
+        this.loginAttemptService = loginAttemptService;
     }
+
 
     /**
      * Load user details from the DBS, depending on the transferred mail
@@ -76,8 +80,14 @@ public class LoginService implements UserDetailsService {
         } catch (Exception e) {
             log.fatal("Exception during loadUserByUsername Message: ", () -> e);
         }
-        if (user == null)
+        if (user == null) {
+            log.warn("Exception thrown");
             throw new UsernameNotFoundException("User not found email=" + email);
+        }
+        if (loginAttemptService.isBlocked(email)) {
+            log.warn("User [{}] failed login after 5 attempts! Blocked for 15 Minutes", () -> email);
+            user.setAccountState(AccountState.LOCKED.toString());
+        }
         log.trace("Leaving loadUserByUsername with email: [{}] successfully", () -> email);
         return new CustomUserDetails(user);
     }
@@ -244,5 +254,6 @@ public class LoginService implements UserDetailsService {
         log.trace("Entering sendMail with email: [{}] successfully", () -> email);
         return true;
     }
+
 
 }

@@ -7,8 +7,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -75,7 +77,8 @@ public class UserDTO implements Serializable {
     private String country;
     @Pattern(regexp = RegexUtil.regexORCID)
     private String orcid;
-
+    private LocalDateTime regDate;
+    private LocalDateTime lastLogin;
     private String account_state;
 
     private String activationCode;
@@ -277,6 +280,22 @@ public class UserDTO implements Serializable {
         this.checkedGTC = checkedGTC;
     }
 
+    public LocalDateTime getRegDate() {
+        return regDate;
+    }
+
+    public void setRegDate(LocalDateTime regDate) {
+        this.regDate = regDate;
+    }
+
+    public LocalDateTime getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(LocalDateTime lastLogin) {
+        this.lastLogin = lastLogin;
+    }
+
     public String getActivationCode() {
         return activationCode;
     }
@@ -352,138 +371,71 @@ public class UserDTO implements Serializable {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((city == null) ? 0 : city.hashCode());
-        result = prime * result + ((comments == null) ? 0 : comments.hashCode());
-        result = prime * result + ((country == null) ? 0 : country.hashCode());
-        result = prime * result + ((department == null) ? 0 : department.hashCode());
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((fax == null) ? 0 : fax.hashCode());
-        result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-        result = prime * result + ((globalRoles == null) ? 0 : globalRoles.hashCode());
-        result = prime * result + ((homepage == null) ? 0 : homepage.hashCode());
-        result = prime * result + (int) (id ^ (id >>> 32));
-        result = prime * result + ((institution == null) ? 0 : institution.hashCode());
-        result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-        result = prime * result + ((orcid == null) ? 0 : orcid.hashCode());
-        result = prime * result + ((phone == null) ? 0 : phone.hashCode());
-        result = prime * result + ((secEmail == null) ? 0 : secEmail.hashCode());
-        result = prime * result + ((state == null) ? 0 : state.hashCode());
-        result = prime * result + ((street == null) ? 0 : street.hashCode());
-        result = prime * result + ((title == null) ? 0 : title.hashCode());
-        result = prime * result + ((zip == null) ? 0 : zip.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserDTO userDTO = (UserDTO) o;
+        return id == userDTO.id &&
+                checkedGTC == userDTO.checkedGTC &&
+                Objects.equals(email, userDTO.email) &&
+                Objects.equals(secEmail, userDTO.secEmail) &&
+                Objects.equals(password, userDTO.password) &&
+                Objects.equals(title, userDTO.title) &&
+                Objects.equals(firstName, userDTO.firstName) &&
+                Objects.equals(lastName, userDTO.lastName) &&
+                Objects.equals(phone, userDTO.phone) &&
+                Objects.equals(fax, userDTO.fax) &&
+                Objects.equals(comments, userDTO.comments) &&
+                Objects.equals(institution, userDTO.institution) &&
+                Objects.equals(department, userDTO.department) &&
+                Objects.equals(homepage, userDTO.homepage) &&
+                Objects.equals(street, userDTO.street) &&
+                Objects.equals(zip, userDTO.zip) &&
+                Objects.equals(city, userDTO.city) &&
+                Objects.equals(state, userDTO.state) &&
+                Objects.equals(country, userDTO.country) &&
+                Objects.equals(orcid, userDTO.orcid) &&
+                Objects.equals(regDate, userDTO.regDate) &&
+                Objects.equals(lastLogin, userDTO.lastLogin) &&
+                Objects.equals(account_state, userDTO.account_state) &&
+                Objects.equals(activationCode, userDTO.activationCode) &&
+                Objects.equals(globalRoles, userDTO.globalRoles) &&
+                Objects.equals(password_retyped, userDTO.password_retyped) &&
+                Objects.equals(password_old, userDTO.password_old);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        UserDTO other = (UserDTO) obj;
-        if (city == null) {
-            if (other.city != null)
-                return false;
-        } else if (!city.equals(other.city))
-            return false;
-        if (comments == null) {
-            if (other.comments != null)
-                return false;
-        } else if (!comments.equals(other.comments))
-            return false;
-        if (country == null) {
-            if (other.country != null)
-                return false;
-        } else if (!country.equals(other.country))
-            return false;
-        if (department == null) {
-            if (other.department != null)
-                return false;
-        } else if (!department.equals(other.department))
-            return false;
-        if (email == null) {
-            if (other.email != null)
-                return false;
-        } else if (!email.equals(other.email))
-            return false;
-        if (fax == null) {
-            if (other.fax != null)
-                return false;
-        } else if (!fax.equals(other.fax))
-            return false;
-        if (firstName == null) {
-            if (other.firstName != null)
-                return false;
-        } else if (!firstName.equals(other.firstName))
-            return false;
-        if (globalRoles == null) {
-            if (other.globalRoles != null)
-                return false;
-        } else if (!globalRoles.equals(other.globalRoles))
-            return false;
-        if (homepage == null) {
-            if (other.homepage != null)
-                return false;
-        } else if (!homepage.equals(other.homepage))
-            return false;
-        if (id != other.id)
-            return false;
-        if (institution == null) {
-            if (other.institution != null)
-                return false;
-        } else if (!institution.equals(other.institution))
-            return false;
-        if (lastName == null) {
-            if (other.lastName != null)
-                return false;
-        } else if (!lastName.equals(other.lastName))
-            return false;
-        if (orcid == null) {
-            if (other.orcid != null)
-                return false;
-        } else if (!orcid.equals(other.orcid))
-            return false;
-        if (phone == null) {
-            if (other.phone != null)
-                return false;
-        } else if (!phone.equals(other.phone))
-            return false;
-        if (secEmail == null) {
-            if (other.secEmail != null)
-                return false;
-        } else if (!secEmail.equals(other.secEmail))
-            return false;
-        if (state == null) {
-            if (other.state != null)
-                return false;
-        } else if (!state.equals(other.state))
-            return false;
-        if (street == null) {
-            if (other.street != null)
-                return false;
-        } else if (!street.equals(other.street))
-            return false;
-        if (title == null) {
-            if (other.title != null)
-                return false;
-        } else if (!title.equals(other.title))
-            return false;
-        if (zip == null) {
-            return other.zip == null;
-        } else return zip.equals(other.zip);
+    public int hashCode() {
+        return Objects.hash(id, email, secEmail, password, title, firstName, lastName, phone, fax, comments, institution, department, homepage, street, zip, city, state, country, orcid, regDate, lastLogin, account_state, activationCode, globalRoles, password_retyped, checkedGTC, password_old);
     }
 
     @Override
     public String toString() {
-        return "UserDTO [id=" + id + ", email=" + email + ", secEmail=" + secEmail + ", title=" + title + ", firstName="
-                + firstName + ", lastName=" + lastName + ", phone=" + phone + ", fax=" + fax + ", comments=" + comments
-                + ", institution=" + institution + ", department=" + department + ", homepage=" + homepage + ", street="
-                + street + ", zip=" + zip + ", city=" + city + ", state=" + state + ", country=" + country + ", orcid=" + orcid
-                + ", account_state=" + account_state + ", globalRoles=" + globalRoles + "]";
+        return "UserDTO{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", secEmail='" + secEmail + '\'' +
+                ", title='" + title + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", fax='" + fax + '\'' +
+                ", comments='" + comments + '\'' +
+                ", institution='" + institution + '\'' +
+                ", department='" + department + '\'' +
+                ", homepage='" + homepage + '\'' +
+                ", street='" + street + '\'' +
+                ", zip='" + zip + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", orcid='" + orcid + '\'' +
+                ", regDate=" + regDate +
+                ", lastLogin=" + lastLogin +
+                ", account_state='" + account_state + '\'' +
+                ", activationCode='" + activationCode + '\'' +
+                ", globalRoles=" + globalRoles +
+                ", checkedGTC=" + checkedGTC +
+                '}';
     }
 }

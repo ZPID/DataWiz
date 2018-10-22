@@ -9,6 +9,7 @@ import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
 import de.zpid.datawiz.service.LoginService;
 import de.zpid.datawiz.util.BreadCrumbUtil;
+import de.zpid.datawiz.util.ClientInfo;
 import de.zpid.datawiz.util.EmailUtil;
 import de.zpid.datawiz.util.UserUtil;
 import org.apache.logging.log4j.LogManager;
@@ -86,13 +87,14 @@ public class LoginController {
     private final RoleDAO roleDAO;
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
+    private final ClientInfo clientInfo;
 
 
     @Autowired
     public LoginController(final PlatformTransactionManager txManager, final EmailUtil mail, final LoginService loginService,
                            final MessageSource messageSource, final ClassPathXmlApplicationContext applicationContext,
                            final Environment env, final HttpServletRequest request, final EmailUtil emailUtil,
-                           final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final PasswordEncoder passwordEncoder) {
+                           final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final PasswordEncoder passwordEncoder, final ClientInfo clientInfo) {
         super();
         log.info("Loading LoginUserController for mapping /login");
         this.txManager = txManager;
@@ -107,6 +109,7 @@ public class LoginController {
         this.roleDAO = roleDAO;
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
+        this.clientInfo = clientInfo;
 
     }
 
@@ -299,13 +302,16 @@ public class LoginController {
      */
     @RequestMapping(value = "/Access_Denied")
     public String accessDeniedPage(final ModelMap model) {
-        log.warn("Entering accessDeniedPage - [referer: {}; authType: {}; pathInfo: {}]", () -> request.getHeader("referer"), request::getAuthType, request::getPathInfo);
+        log.error("Entering accessDeniedPage from[url:{}; user: {}; client: {}", request::getContextPath, () -> getPrincipal(), () -> clientInfo.getClientInfo(request));
         try {
             model.addAttribute("user", getPrincipal());
         } catch (Exception e) {
             return "redirect:/login";
         }
-        return "accessDenied";
+        model.addAttribute("exceptionTitle", messageSource.getMessage("error.404.title", null, LocaleContextHolder.getLocale()));
+        model.addAttribute("errormsg", messageSource.getMessage("error.404.msg", new Object[]{env.getRequiredProperty("organisation.admin.email")}, LocaleContextHolder.getLocale()));
+        model.addAttribute("exception", "Sorry, You are not allowed to access this page!");
+        return "error";
     }
 
     /**

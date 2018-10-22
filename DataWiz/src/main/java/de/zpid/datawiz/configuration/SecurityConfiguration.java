@@ -1,10 +1,11 @@
 package de.zpid.datawiz.configuration;
 
+import de.zpid.datawiz.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,7 +13,6 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
@@ -46,9 +46,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    @Qualifier("LoginService")
-    private UserDetailsService userDetailsService;
-
+    private LoginService loginService;
     protected JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -57,9 +55,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Autowired
-    public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService);
+    public void configureGlobalSecurity(AuthenticationManagerBuilder auth){
+        try {
+            auth.userDetailsService(loginService);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
         auth.authenticationProvider(authenticationProvider());
+        auth.authenticationEventPublisher(authenticationEventPublisher());
     }
 
     @Bean
@@ -70,9 +73,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
+        authenticationProvider.setUserDetailsService(loginService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
+    }
+
+    @Bean
+    public DefaultAuthenticationEventPublisher authenticationEventPublisher() {
+        return new DefaultAuthenticationEventPublisher();
     }
 
     @Override
@@ -86,7 +94,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/panel").loginPage("/login").permitAll().usernameParameter("email").passwordParameter("password").and().rememberMe()
                 .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400).and().csrf().and()
                 .exceptionHandling().accessDeniedPage("/Access_Denied").and().logout().deleteCookies("remember-me").and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).invalidSessionUrl("/login?session=timeout");
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).invalidSessionUrl("/login?session=timeout").and();
     }
 
     @Override
