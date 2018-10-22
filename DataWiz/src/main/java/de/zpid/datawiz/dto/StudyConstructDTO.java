@@ -51,7 +51,7 @@ public class StudyConstructDTO implements Serializable {
     /**
      * The type for the select box.
      */
-    @Pattern(regexp = "(^$|INDEPENDENT|DEPENDENT|CONTROL|OTHER)", groups = StDesignVal.class)
+    @Pattern(regexp = "(INDEPENDENT|DEPENDENT|CONTROL|OTHER)", groups = StDesignVal.class)
     private String type;
 
     /**

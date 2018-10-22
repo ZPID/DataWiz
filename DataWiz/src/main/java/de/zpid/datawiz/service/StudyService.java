@@ -592,8 +592,8 @@ public class StudyService {
             BeanPropertyBindingResult bResTmp = new BeanPropertyBindingResult(sForm, bRes.getObjectName());
             validator.validate(sForm, bResTmp, cls);
             List<ObjectError> errors = new ArrayList<>();
-            if (bResTmp != null && bResTmp.hasErrors()) {
-                bResTmp.getAllErrors().parallelStream().forEach(err -> errors.add(err));
+            if (bResTmp.hasErrors()) {
+                bResTmp.getAllErrors().parallelStream().forEach(errors::add);
                 Iterator<ObjectError> itt = errors.iterator();
                 while (itt.hasNext()) {
                     ObjectError err = itt.next();
