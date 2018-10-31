@@ -28,6 +28,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
@@ -319,9 +321,9 @@ public class ExportService {
                                 content = csvUtil.exportCSV(copy, res, true);
                             if (content != null && res.toString().trim().isEmpty()) {
                                 fileHash = (FileDTO) applicationContext.getBean("FileDTO");
-                                fileHash.setMd5checksum(fileUtil.getFileChecksum("MD5", content));
-                                fileHash.setSha1Checksum(fileUtil.getFileChecksum("SHA-1", content));
-                                fileHash.setSha256Checksum(fileUtil.getFileChecksum("SHA-256", content));
+                                fileHash.setMd5checksum(fileUtil.getFileChecksum("MD5", new BufferedInputStream(new ByteArrayInputStream(content))));
+                                fileHash.setSha1Checksum(fileUtil.getFileChecksum("SHA-1", new BufferedInputStream(new ByteArrayInputStream(content))));
+                                fileHash.setSha256Checksum(fileUtil.getFileChecksum("SHA-256", new BufferedInputStream(new ByteArrayInputStream(content))));
                                 String RECORD_MATRIX_NAME = "record_matrix.csv";
                                 files.add(new SimpleEntry<>(recordFolder + RECORD_MATRIX_NAME, content));
                             } else if (!res.toString().trim().isEmpty()) {

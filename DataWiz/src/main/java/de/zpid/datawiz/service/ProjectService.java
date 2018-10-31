@@ -1,11 +1,11 @@
 package de.zpid.datawiz.service;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.http.HttpServletResponse;
-
+import de.zpid.datawiz.dao.*;
+import de.zpid.datawiz.dto.*;
+import de.zpid.datawiz.enumeration.*;
+import de.zpid.datawiz.exceptions.DataWizSystemException;
+import de.zpid.datawiz.form.ProjectForm;
+import de.zpid.datawiz.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,39 +17,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import de.zpid.datawiz.dao.ContributorDAO;
-import de.zpid.datawiz.dao.DmpDAO;
-import de.zpid.datawiz.dao.FileDAO;
-import de.zpid.datawiz.dao.FormTypesDAO;
-import de.zpid.datawiz.dao.ProjectDAO;
-import de.zpid.datawiz.dao.RoleDAO;
-import de.zpid.datawiz.dao.StudyDAO;
-import de.zpid.datawiz.dao.UserDAO;
-import de.zpid.datawiz.dto.ContributorDTO;
-import de.zpid.datawiz.dto.DmpDTO;
-import de.zpid.datawiz.dto.FileDTO;
-import de.zpid.datawiz.dto.ProjectDTO;
-import de.zpid.datawiz.dto.StudyDTO;
-import de.zpid.datawiz.dto.UserDTO;
-import de.zpid.datawiz.dto.UserRoleDTO;
-import de.zpid.datawiz.enumeration.DWFieldTypes;
-import de.zpid.datawiz.enumeration.DataWizErrorCodes;
-import de.zpid.datawiz.enumeration.MinioResult;
-import de.zpid.datawiz.enumeration.PageState;
-import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.exceptions.DataWizSystemException;
-import de.zpid.datawiz.form.ProjectForm;
-import de.zpid.datawiz.util.BreadCrumbUtil;
-import de.zpid.datawiz.util.FileUtil;
-import de.zpid.datawiz.util.ListUtil;
-import de.zpid.datawiz.util.MinioUtil;
-import de.zpid.datawiz.util.UserUtil;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -502,14 +478,15 @@ public class ProjectService {
     public DataWizErrorCodes saveMaterialToMinioAndDB(final MultipartHttpServletRequest request, final long pid, final long studyId, final UserDTO user) {
         FileDTO file = null;
         DataWizErrorCodes code = DataWizErrorCodes.OK;
+        MinioResult res = null;
         try {
             Iterator<String> itr = request.getFileNames();
             while (itr.hasNext()) {
                 String filename = itr.next();
                 final MultipartFile mpf = request.getFile(filename);
                 if (mpf != null) {
-                    file = fileUtil.buildFileDTO(pid, studyId, 0, 0, user.getId(), mpf);
-                    MinioResult res = minioUtil.putFile(file, false);
+                    file = fileUtil.buildFileDTOLarge(pid, studyId, 0, 0, user.getId(), mpf);
+                    res = minioUtil.putLargeFile(file, mpf);
                     if (res.equals(MinioResult.OK)) {
                         fileDAO.saveFile(file);
                     } else {
@@ -519,7 +496,7 @@ public class ProjectService {
                 }
             }
         } catch (Exception e) {
-            if (file != null && minioUtil.getFile(file, false).equals(MinioResult.OK)) {
+            if (res != null && res.equals(MinioResult.OK)) {
                 minioUtil.deleteFile(file);
             }
             log.warn("Exception during file saveToMinioAndDB: ", () -> e);
@@ -543,16 +520,10 @@ public class ProjectService {
         DataWizErrorCodes code = DataWizErrorCodes.OK;
         try {
             file = fileDAO.findById(docId);
-            MinioResult res = minioUtil.getFile(file, false);
-            if (res.equals(MinioResult.OK)) {
-                response.setContentType(file.getContentType());
-                response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
-                response.setContentLength(file.getContent().length);
-                FileCopyUtils.copy(file.getContent(), response.getOutputStream());
-            } else {
-                log.warn("ERROR: During prepareMaterialDownload - MinioResult: {}", res::name);
-                code = DataWizErrorCodes.MINIO_READ_ERROR;
-            }
+            response.setContentType(file.getContentType());
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
+            response.setContentLengthLong(file.getFileSize());
+            minioUtil.getFile(file, response.getOutputStream());
         } catch (Exception e) {
             log.warn("Exception during file prepareMaterialDownload: ", () -> e);
             code = DataWizErrorCodes.DATABASE_ERROR;

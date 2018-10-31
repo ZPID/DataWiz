@@ -689,6 +689,9 @@ public class ImportService {
                             spssFile.setChangedBy(user.getEmail());
                             spssFile.setChangeLog(sForm.getNewChangeLog());
                             spssFile.setFileName(sForm.getSpssFile().getOriginalFilename());
+                            if (spssFile.getDataMatrix() != null && spssFile.getDataMatrixJson() == null) {
+                                spssFile.setDataMatrixJson(new Gson().toJson(spssFile.getDataMatrix()));
+                            }
                             sForm.setRecord(spssFile);
                             sForm.setFile(file);
                             error = false;

@@ -1,9 +1,6 @@
 package de.zpid.datawiz.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -52,17 +49,6 @@ public class FileDTO implements Serializable {
     private BufferedImage thumbnail;
     private String filePath;
     private byte[] content;
-
-    public void setMultipartFile(MultipartFile multipartFile) throws IOException {
-        if (this.content == null || this.content.length <= 0)
-            this.content = multipartFile.getBytes();
-        if (this.contentType == null || this.contentType.isEmpty())
-            this.contentType = multipartFile.getContentType();
-        if (this.fileSize == 0)
-            this.fileSize = multipartFile.getSize();
-        if (this.fileName == null || this.fileName.isEmpty())
-            this.fileName = multipartFile.getOriginalFilename();
-    }
 
     public BufferedImage getThumbnail() {
         return thumbnail;

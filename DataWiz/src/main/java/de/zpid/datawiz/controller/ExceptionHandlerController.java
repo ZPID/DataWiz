@@ -12,10 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -109,7 +111,7 @@ public class ExceptionHandlerController {
      * @param e       {@link Exception}
      * @return Mapping to the DEFAULT_ERROR_VIEW (error.jsp)
      */
-    @ExceptionHandler(value = {Exception.class})
+    @ExceptionHandler(Exception.class)
     public ModelAndView defaultException(HttpServletRequest request, Exception e) {
         HashMap<String, String> clientInfo = this.clientInfo.getClientInfo(request);
         log.error("Exception thrown from[{}] Exception: [{}],  Client-Information: [{}]", request::getRequestURL, () -> e, () -> clientInfo);

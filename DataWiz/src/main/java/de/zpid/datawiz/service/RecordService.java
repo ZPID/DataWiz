@@ -156,7 +156,7 @@ public class RecordService {
      * @param isSPSS        Used for Export True, if Export Type is SPSS, otherwise false
      * @throws Exception Minio and DBS Exceptions
      */
-    public void transformCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS){
+    public void transformCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) {
         rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
         if (rec.getVariables() != null && rec.getVariables().size() > 0) {
             for (SPSSVarDTO var : rec.getVariables()) {
@@ -197,7 +197,7 @@ public class RecordService {
      * @param pid           Project identifier as long
      * @throws DataWizSystemException Minio and DBS Exceptions
      */
-    public void transformDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws DataWizSystemException{
+    public void transformDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws DataWizSystemException {
         String dataMatrix = recordDAO.findMatrixByVersionId(rec.getVersionId());
         if (dataMatrix == null || dataMatrix.isEmpty())
             dataMatrix = loadDataMatrix(rec, pid);

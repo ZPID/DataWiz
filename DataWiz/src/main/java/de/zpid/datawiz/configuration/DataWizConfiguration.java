@@ -1,6 +1,6 @@
 package de.zpid.datawiz.configuration;
 
-import de.zpid.datawiz.util.MinioUtil;
+import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.CacheControl;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -22,6 +23,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
@@ -36,7 +38,12 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -105,23 +112,6 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         return dataSource;
     }
 
-
-/*    @Bean
-    public DataSource getDataSource() {
-        PoolProperties poolProperties = new PoolProperties();
-        poolProperties.setDriverClassName(env.getRequiredProperty("dataSource.driverClassName"));
-        poolProperties.setUrl(env.getRequiredProperty("dataSource.url"));
-        poolProperties.setUsername(env.getRequiredProperty("dataSource.username"));
-        poolProperties.setPassword(env.getRequiredProperty("dataSource.password"));
-        poolProperties.setTestWhileIdle(true);
-        poolProperties.setTestOnBorrow(true);
-        poolProperties.setValidationQuery("SELECT 1");
-        poolProperties.setMinIdle(3);
-        poolProperties.setTimeBetweenEvictionRunsMillis(60000);
-        log.info("dataSource succesfully loaded");
-        return new DataSource(poolProperties);
-    }*/
-
     @Bean
     public PlatformTransactionManager txManager() {
         return new DataSourceTransactionManager(getDataSource());
@@ -161,8 +151,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
 
     @Bean(name = "applicationContext")
     public ClassPathXmlApplicationContext applicationContext() {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("spring.xml");
-        return context;
+        return new ClassPathXmlApplicationContext("spring.xml");
     }
 
     @Bean
@@ -185,17 +174,11 @@ public class DataWizConfiguration implements WebMvcConfigurer {
     public CommonsMultipartResolver commonsMultipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
         resolver.setDefaultEncoding("utf-8");
-        resolver.setMaxInMemorySize(268435456);
-        resolver.setMaxUploadSize(1610612736);
+        resolver.setMaxInMemorySize(271360);
+        resolver.setMaxUploadSize(2147483648l);
         log.info("multipartResolver succesfully loaded");
         return resolver;
     }
-
-    @Bean(name = "minioUtil")
-    public MinioUtil minioUtil() {
-        return new MinioUtil(env, true);
-    }
-
 
     @Bean
     public JavaMailSender getJavaMailSender() {
@@ -219,6 +202,16 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         return bean;
     }
 
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(25);
+        return executor;
+    }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
@@ -237,9 +230,10 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         matcher.setUseRegisteredSuffixPatternMatch(true);
     }
 
-    /*@PreDestroy
+    @PreDestroy
     public void destroy() {
         log.info("Destroy DataWiz Application");
+        AbandonedConnectionCleanupThread.checkedShutdown();
         Enumeration<Driver> drivers = DriverManager.getDrivers();
         while (drivers.hasMoreElements()) {
             Driver driver = drivers.nextElement();
@@ -250,6 +244,5 @@ public class DataWizConfiguration implements WebMvcConfigurer {
                 e.printStackTrace();
             }
         }
-        context.close();
-    }*/
+    }
 }

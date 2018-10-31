@@ -258,7 +258,7 @@ Dropzone.options.myDropzone = {
 	autoDiscover : false,
 	parallelUploads : 1,
 	// maxFiles : 20,
-	maxFilesize : 1536, // MB
+	maxFilesize : 2000, // MB
 	dictMaxFilesExceeded : $('#maxFiles').val(),
 	dictResponseError : $('#responseError').val(),
 	dictDefaultMessage : $('#defaultMsg').val(),
@@ -320,6 +320,7 @@ Dropzone.options.myDropzone = {
 		this.on("error", function(file, serverResponse) {
 			uploaderror = true;
 			if (serverResponse.indexOf("Exception") > 0) {
+				console.log(serverResponse)
 				this.defaultOptions.error(file, 'An error occurred!');
 			}
 			$("#loadstate").fadeOut("slow");
@@ -664,7 +665,7 @@ function showAjaxModal(url, id, type, event, item) {
 	if (event.shiftKey) {
 		copyCellVal(id, type);
 	} else if (event.ctrlKey) {
-		if (copyType == type)
+		if (copyType === type)
 			pasteCellVal(id, type, item);
 	} else {
 		asyncSumbit(url, false);

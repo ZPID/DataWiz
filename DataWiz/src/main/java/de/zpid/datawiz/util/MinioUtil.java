@@ -1,17 +1,5 @@
 package de.zpid.datawiz.util;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.net.ConnectException;
-import java.util.List;
-import java.util.UUID;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.core.env.Environment;
-
 import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.enumeration.MinioResult;
 import io.minio.MinioClient;
@@ -20,7 +8,23 @@ import io.minio.errors.ErrorResponseException;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
 import io.minio.messages.Upload;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.ServletOutputStream;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.net.ConnectException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * This file is part of Datawiz.<br />
@@ -46,16 +50,20 @@ public class MinioUtil {
     private static final Logger log = LogManager.getLogger(MinioUtil.class);
     private MinioClient minioClient;
     private final String bucketPrefix;
+    private final Environment env;
+    private final FileUtil fileUtil;
 
     /**
      * MinioUtil Constructor - build a MinioClient Object which is used for the connection to the Minio Server. Environment is required, because it
      * includes the Connection setup
      *
-     * @param env             {@link Environment} includes datawiz.properties
-     * @param cleanIncomplete If true, Minio tries to clean up incomplete Transmissions
+     * @param env {@link Environment} includes datawiz.properties
      */
-    public MinioUtil(final Environment env, final boolean cleanIncomplete) {
+    @Autowired
+    public MinioUtil(final Environment env, final FileUtil fileUtil) {
         super();
+        this.env = env;
+        this.fileUtil = fileUtil;
         this.bucketPrefix = env.getRequiredProperty("minio.bucket.prefix") + ".";
         log.info("Loading MinioDAO with [ServerAddress: {}; Bucket_Prefix: {}]", () -> env.getRequiredProperty("minio.url"),
                 () -> env.getRequiredProperty("minio.bucket.prefix"));
@@ -64,23 +72,21 @@ public class MinioUtil {
                     env.getRequiredProperty("minio.secret.key"));
             if (env.getRequiredProperty("minio.cert.selfsigned").equals("true"))
                 this.minioClient.ignoreCertCheck();
-            if (cleanIncomplete) {
-                log.info("Minio: cleaning incomplete Uploads");
-                List<Bucket> bucketList = minioClient.listBuckets();
-                bucketList.parallelStream().forEach(bucket -> {
-                    Iterable<Result<Upload>> myObjects;
-                    try {
-                        myObjects = minioClient.listIncompleteUploads(bucket.name());
-                        for (Result<Upload> result : myObjects) {
-                            Upload upload = result.get();
-                            log.info("Minio: incomplete upload found [Bucked: {}, name: {}]", bucket::name, upload::objectName);
-                            minioClient.removeIncompleteUpload(bucket.name(), upload.objectName());
-                        }
-                    } catch (Exception e) {
-                        log.warn("WARN: cleaning incomplete Uploads - Exception during parallelStream().forEach(): ", () -> e);
+            log.info("Minio: cleaning incomplete Uploads");
+            List<Bucket> bucketList = minioClient.listBuckets();
+            bucketList.parallelStream().forEach(bucket -> {
+                Iterable<Result<Upload>> myObjects;
+                try {
+                    myObjects = minioClient.listIncompleteUploads(bucket.name());
+                    for (Result<Upload> result : myObjects) {
+                        Upload upload = result.get();
+                        log.info("Minio: incomplete upload found [Bucked: {}, name: {}]", bucket::name, upload::objectName);
+                        minioClient.removeIncompleteUpload(bucket.name(), upload.objectName());
                     }
-                });
-            }
+                } catch (Exception e) {
+                    log.warn("WARN: cleaning incomplete Uploads - Exception during parallelStream().forEach(): ", () -> e);
+                }
+            });
         } catch (Exception e) {
             log.error("ERROR: Creating MinioClient was not successful: Message: {}", () -> e);
         }
@@ -113,16 +119,7 @@ public class MinioUtil {
                 log.debug("Bucket [name: {}] does not exists - new bucket created", bucket);
                 this.minioClient.makeBucket(bucket);
             }
-            while (true) {
-                try {
-                    this.minioClient.statObject(bucket, filePath);
-                    filePath = UUID.randomUUID().toString();
-                    log.debug("File [filePath: {}] exists - new filePath created", filePath);
-                } catch (Exception e) {
-                    file.setFilePath(filePath);
-                    break;
-                }
-            }
+            filePath = checkFileNameUnique(file, bucket, filePath);
             BufferedInputStream bais = new BufferedInputStream(new ByteArrayInputStream(file.getContent()));
             this.minioClient.putObject(bucket, filePath, bais, bais.available(), file.getContentType());
             bais.close();
@@ -137,11 +134,49 @@ public class MinioUtil {
         return MinioResult.OK;
     }
 
+
+    public MinioResult putLargeFile(final FileDTO file, final MultipartFile mpf) {
+        log.trace("Entering putLargeFile for file: [name: {}]", mpf::getOriginalFilename);
+        String bucket = setBucket(file);
+        String fileName = UUID.randomUUID().toString();
+        try {
+            if (!this.minioClient.bucketExists(bucket)) {
+                log.debug("Bucket [name: {}] does not exists - new bucket created", bucket);
+                this.minioClient.makeBucket(bucket);
+            }
+            fileName = checkFileNameUnique(file, bucket, fileName);
+            String tmpPath = fileUtil.setFolderPath(env.getRequiredProperty("folder.temp.dir"));
+            Files.createDirectories(Paths.get(tmpPath));
+            mpf.transferTo(new File(tmpPath + fileName));
+            this.minioClient.putObject(bucket, fileName, tmpPath + fileName);
+            fileUtil.deleteFile(Paths.get(tmpPath + fileName));
+        } catch (Exception e) {
+            log.error("ERROR: Saving file [name: {}; filePath: {}; bucket: {}] to Minio wasn't successful Message: {}", file.getFileName(),
+                    file.getFilePath(), bucket, e);
+        }
+        log.debug("Transaction for putLargeFile successful and set file.setFilePath(filePath) to {}", file::getFilePath);
+        return MinioResult.OK;
+    }
+
+    private String checkFileNameUnique(FileDTO file, String bucket, String filePath) {
+        while (true) {
+            try {
+                this.minioClient.statObject(bucket, filePath);
+                filePath = UUID.randomUUID().toString();
+                log.debug("File [filePath: {}] exists - new filePath created", filePath);
+            } catch (Exception e) {
+                file.setFilePath(filePath);
+                break;
+            }
+        }
+        return filePath;
+    }
+
     /**
      * This functions "gets" a file from the Minio storage.
      *
      * @param file
-     * @param  isMatrix
+     * @param isMatrix
      * @return
      */
     public MinioResult getFile(final FileDTO file, final boolean isMatrix) {
@@ -155,7 +190,9 @@ public class MinioUtil {
                 return MinioResult.BUCKET_NOT_FOUND;
             }
             this.minioClient.statObject(bucket, file.getFilePath());
-            InputStream stream = this.minioClient.getObject(bucket, file.getFilePath());
+            BufferedInputStream stream = new BufferedInputStream(this.minioClient.getObject(bucket, file.getFilePath()));
+            //InputStream stream = this.minioClient.getObject(bucket, file.getFilePath());
+
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             int nRead;
             byte[] data = new byte[1024];
@@ -182,6 +219,26 @@ public class MinioUtil {
         return MinioResult.ERROR;
     }
 
+    public void getFile(final FileDTO file, final ServletOutputStream sos) {
+        log.trace("Entering getFile for file: [name: {}; path: {}]", file::getFileName, file::getFilePath);
+        String bucket = setBucket(file);
+        try {
+            if (!this.minioClient.bucketExists(bucket)) {
+                log.fatal("FATAL: Bucket [name: {}] not exists in Minio FileSystem - Please check file system consistency!", bucket);
+            }
+            this.minioClient.statObject(bucket, file.getFilePath());
+            new BufferedInputStream(this.minioClient.getObject(bucket, file.getFilePath())).transferTo(sos);
+        } catch (Exception e) {
+            if (e instanceof ErrorResponseException && e.toString().contains("Object does not exist")) {
+                log.fatal(
+                        "FATAL: File [id: {}; bucket: {}; filePath: {}] not exists in Minio FileSystem, but in Database - Please check file system and database consistency! Message: {}",
+                        file.getId(), bucket, file.getFilePath(), e);
+
+            }
+            log.error("ERROR: File [id: {}; bucket: {}; filePath: {}] not loaded from Minio - Message: {}", file.getId(), bucket, file.getFilePath(), e);
+        }
+    }
+
     /**
      * @param file
      * @return
@@ -198,8 +255,7 @@ public class MinioUtil {
                 sb.append(file.getRecordID());
             }
         }
-        final String bucket = sb.toString();
-        return bucket;
+        return sb.toString();
     }
 
     /**

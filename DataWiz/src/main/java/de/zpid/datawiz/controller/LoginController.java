@@ -7,6 +7,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
+import de.zpid.datawiz.service.CaptchaService;
 import de.zpid.datawiz.service.LoginService;
 import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.ClientInfo;
@@ -88,13 +89,15 @@ public class LoginController {
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
     private final ClientInfo clientInfo;
+    private final CaptchaService captchaService;
 
 
     @Autowired
     public LoginController(final PlatformTransactionManager txManager, final EmailUtil mail, final LoginService loginService,
                            final MessageSource messageSource, final ClassPathXmlApplicationContext applicationContext,
                            final Environment env, final HttpServletRequest request, final EmailUtil emailUtil,
-                           final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final PasswordEncoder passwordEncoder, final ClientInfo clientInfo) {
+                           final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final PasswordEncoder passwordEncoder,
+                           final ClientInfo clientInfo, final CaptchaService captchaService) {
         super();
         log.info("Loading LoginUserController for mapping /login");
         this.txManager = txManager;
@@ -110,6 +113,7 @@ public class LoginController {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
         this.clientInfo = clientInfo;
+        this.captchaService = captchaService;
 
     }
 
@@ -200,6 +204,24 @@ public class LoginController {
     public String saveDataWizUser(@Valid @ModelAttribute("UserDTO") final UserDTO person, final BindingResult bindingResult, final ModelMap model) {
         log.trace("Entering saveDataWizUser for new user [email: {}]", person::getEmail);
         String ret;
+        String response = request.getParameter("g-recaptcha-response");
+        if (env.getRequiredProperty("google.recaptcha.enabled").equals("true")) {
+            switch (captchaService.processResponse(response)) {
+                case CAPTCHA_EMPTY:
+                    log.debug("Error Captcha Empty for User [{}]", person::getEmail);
+                    model.addAttribute("captcha_err", messageSource.getMessage("captcha.error.empty", null, LocaleContextHolder.getLocale()));
+                    bindingResult.reject("captcha.error.empty");
+                    break;
+                case CAPTCHA_FAILURE:
+                    log.warn("Error Captcha Failure for User [{}]", person::getEmail);
+                    model.addAttribute("captcha_err", messageSource.getMessage("captcha.error.failure", null, LocaleContextHolder.getLocale()));
+                    bindingResult.reject("captcha.error.failure");
+                    break;
+                case CAPTCHA_OK:
+                    log.debug("Captcha successful for User [{}]", person::getEmail);
+                    break;
+            }
+        }
         if (person.getPassword() == null || person.getPassword_retyped() == null) {
             bindingResult.rejectValue("password", "passwords.not.equal");
         } else if (!person.getPassword().equals(person.getPassword_retyped())) {
@@ -231,11 +253,12 @@ public class LoginController {
                 } catch (Exception e) {
                     log.debug("ProjectId which is temporary stored in comments is not a number : {}", person.getComments());
                 }
+                System.err.println(person.getSecEmail());
                 if (person.getSecEmail() != null && !person.getSecEmail().isEmpty() && projectId > 0) {
-                    person.setSecEmail(null);
                     if (!person.getSecEmail().equals(person.getEmail())) {
                         projectDAO.updateInvitationEntity(projectId, person.getSecEmail(), person.getEmail());
                     }
+                    person.setSecEmail(null);
                 }
                 person.setPassword(passwordEncoder.encode(person.getPassword()));
                 userDAO.saveOrUpdate(person, false);

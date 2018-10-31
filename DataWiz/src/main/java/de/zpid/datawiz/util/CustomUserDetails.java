@@ -5,7 +5,6 @@ import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.AccountState;
 import de.zpid.datawiz.enumeration.Roles;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
@@ -70,7 +69,7 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
         this.username = user.getEmail();
         this.password = user.getPassword().trim();
         user.setPassword("");
-        List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+        List<GrantedAuthority> authorities = new ArrayList<>();
         if (user.getGlobalRoles() != null)
             for (UserRoleDTO userProfile : user.getGlobalRoles()) {
                 if (userProfile.getType().equals(Roles.ADMIN.name()) || userProfile.getType().equals(Roles.USER.name()))
@@ -115,7 +114,7 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
         Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
         // Ensure array iteration order is predictable (as per
         // UserDetails.getAuthorities() contract and SEC-717)
-        SortedSet<GrantedAuthority> sortedAuthorities = new TreeSet<GrantedAuthority>(new AuthorityComparator());
+        SortedSet<GrantedAuthority> sortedAuthorities = new TreeSet<>(new AuthorityComparator());
         for (GrantedAuthority grantedAuthority : authorities) {
             Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
             sortedAuthorities.add(grantedAuthority);
@@ -128,12 +127,8 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
         private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
         public int compare(GrantedAuthority g1, GrantedAuthority g2) {
-            // Neither should ever be null as each entry is checked before
-            // adding it to
-            // the set.
-            // If the authority is null, it is a custom authority and should
-            // precede
-            // others.
+            // Neither should ever be null as each entry is checked before adding it to the set. If the authority is null, it is a custom authority and should
+            // precede others.
             if (g2.getAuthority() == null) {
                 return -1;
             }

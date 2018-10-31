@@ -10,6 +10,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,10 @@ public class CronUtil {
         this.env = env;
     }
 
-    @Scheduled(cron = "0 40 12 22 * *")
+    /**
+     * Administration Statistik Cronjob - scheduled on 1st of month at 1am.
+     */
+    @Scheduled(cron = "0 0 1 1 * *")
     public void lastLoginCron() {
         try {
             LocalDateTime date = LocalDateTime.now();
@@ -143,10 +147,11 @@ public class CronUtil {
                 sb.append("</table>");
             }
             adminDAO.saveMonthlyStatsValues(month, year, currentUsers, currentProjects, currentStudies, currentRecords);
-            emailUtil.sendSSLMail(env.getRequiredProperty("organisation.admin.email"), "DataWiz Monthly Statistics (Testing)", sb.toString());
+            emailUtil.sendSSLMail(env.getRequiredProperty("organisation.admin.email"), "DataWiz Monthly Statistics (Server: " +
+                    InetAddress.getLocalHost() + ")", sb.toString());
             log.info("Leaving DataWiz Cronjob for application Statistics date [{}.{}]", () -> month, () -> year);
         } catch (Exception e) {
-            log.fatal("Cronjob Exception!", () -> e);
+            log.fatal("Cronjob Exception", () -> e);
         }
     }
 
