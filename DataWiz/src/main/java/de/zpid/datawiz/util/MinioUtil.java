@@ -192,7 +192,6 @@ public class MinioUtil {
             this.minioClient.statObject(bucket, file.getFilePath());
             BufferedInputStream stream = new BufferedInputStream(this.minioClient.getObject(bucket, file.getFilePath()));
             //InputStream stream = this.minioClient.getObject(bucket, file.getFilePath());
-
             ByteArrayOutputStream buffer = new ByteArrayOutputStream();
             int nRead;
             byte[] data = new byte[1024];
