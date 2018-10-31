@@ -43,7 +43,7 @@
         <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
         <csv.version>4.3.2</csv.version>
         <!-- https://mvnrepository.com/artifact/io.minio/minio -->
-        <minio.version>5.0.1</minio.version>
+        <minio.version>5.0.2</minio.version>
         <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
         <dom4j.version>2.1.1</dom4j.version>
         <!-- https://mvnrepository.com/artifact/org.apache.odftoolkit/simple-odf -->

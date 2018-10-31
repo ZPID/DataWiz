@@ -8,3 +8,5 @@ DataWiz ist ein Assistenzsystem, das Wissenschaftlern und Wissenschaftlerinnen h
 [Die ausführliche Projektdokumentation und Installationsanweisungen für den Serverbetrieb und die Entwicklungsumgebung finden Sie hier](README.pdf)
 
 [Link zur SPSS_IO_Bibliothek](https://github.com/ZPID/SPSS_utils)
+
+[DataWiz Development Blog](https://datawizkb.leibniz-psychology.org/index.php/category/devblog/)
