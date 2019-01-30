@@ -9,17 +9,17 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- http://mvnrepository.com/artifact/org.springframework/spring-core -->
-        <springframework.version>5.1.2.RELEASE</springframework.version>
+        <springframework.version>5.1.4.RELEASE</springframework.version>
         <!-- http://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
-        <springsecurity.version>5.1.1.RELEASE</springsecurity.version>
+        <springsecurity.version>5.1.3.RELEASE</springsecurity.version>
         <!-- http://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <mysql.connector.version>8.0.13</mysql.connector.version>
+        <mysql.connector.version>8.0.14</mysql.connector.version>
         <!-- http://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <!-- http://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
         <javax.servlet.jsp.version>2.3.3</javax.servlet.jsp.version>
         <!-- http://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
-        <hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
+        <hibernate.validator.version>6.0.14.Final</hibernate.validator.version>
         <!-- http://mvnrepository.com/artifact/javax.validation/validation-api -->
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <!-- http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
@@ -27,7 +27,7 @@
         <!-- http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
         <maven-war-plugin.version>3.2.2</maven-war-plugin.version>
         <!-- http://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
-        <commons-fileupload.version>1.3.3</commons-fileupload.version>
+        <commons-fileupload.version>1.4</commons-fileupload.version>
         <!-- http://mvnrepository.com/search?q=org.apache.logging.log4j -->
         <log4j2.version>2.11.1</log4j2.version>
         <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
@@ -41,9 +41,9 @@
         <!-- https://mvnrepository.com/artifact/com.itextpdf/itextpdf -->
         <itext.version>7.0.4</itext.version>
         <!-- https://mvnrepository.com/artifact/com.opencsv/opencsv -->
-        <csv.version>4.3.2</csv.version>
+        <csv.version>4.4</csv.version>
         <!-- https://mvnrepository.com/artifact/io.minio/minio -->
-        <minio.version>5.0.2</minio.version>
+        <minio.version>6.0.0</minio.version>
         <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
         <dom4j.version>2.1.1</dom4j.version>
         <!-- https://mvnrepository.com/artifact/org.apache.odftoolkit/simple-odf -->
@@ -57,7 +57,7 @@
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <googlecode.json-simple.version>1.1.1</googlecode.json-simple.version>
         <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-        <com.google.guava.version>27.0-jre</com.google.guava.version>
+        <com.google.guava.version>27.0.1-jre</com.google.guava.version>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.freemarker/freemarker -->
