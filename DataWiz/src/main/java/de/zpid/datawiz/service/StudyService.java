@@ -62,52 +62,57 @@ public class StudyService {
 
     private static Logger log = LogManager.getLogger(StudyService.class);
 
+    private final MessageSource messageSource;
+    private final ContributorDAO contributorDAO;
+    private final StudyListTypesDAO studyListTypesDAO;
+    private final StudyConstructDAO studyConstructDAO;
+    private final StudyInstrumentDAO studyInstrumentDAO;
+    private final FormTypesDAO formTypeDAO;
+    private final ProjectDAO projectDAO;
+    private final StudyDAO studyDAO;
+    private final RecordDAO recordDAO;
+    private final int sessionTimeout;
+    private final PlatformTransactionManager txManager;
+    private final RecordService recordService;
+    private final SmartValidator validator;
+    private final ODFUtil odfUtil;
+    private final ClassPathXmlApplicationContext applicationContext;
+    private final UserDAO userDAO;
+    private final StringUtil stringUtil;
+
     @Autowired
-    private MessageSource messageSource;
-    @Autowired
-    private ContributorDAO contributorDAO;
-    @Autowired
-    private StudyListTypesDAO studyListTypesDAO;
-    @Autowired
-    private StudyConstructDAO studyConstructDAO;
-    @Autowired
-    private StudyInstrumentDAO studyInstrumentDAO;
-    @Autowired
-    private FormTypesDAO formTypeDAO;
-    @Autowired
-    private ProjectDAO projectDAO;
-    @Autowired
-    private StudyDAO studyDAO;
-    @Autowired
-    private RecordDAO recordDAO;
-    @Autowired
-    private int sessionTimeout;
-    @Autowired
-    private PlatformTransactionManager txManager;
-    @Autowired
-    RecordService recordService;
-    @Autowired
-    private SmartValidator validator;
-    @Autowired
-    private ODFUtil odfUtil;
-    @Autowired
-    private ClassPathXmlApplicationContext applicationContext;
-    @Autowired
-    private UserDAO userDAO;
-    @Autowired
-    private StringUtil stringUtil;
+    public StudyService(MessageSource messageSource, ContributorDAO contributorDAO, StudyListTypesDAO studyListTypesDAO, StudyConstructDAO studyConstructDAO,
+                        ODFUtil odfUtil, StudyInstrumentDAO studyInstrumentDAO, FormTypesDAO formTypeDAO, RecordService recordService, ProjectDAO projectDAO,
+                        StudyDAO studyDAO, RecordDAO recordDAO, int sessionTimeout, UserDAO userDAO, ClassPathXmlApplicationContext applicationContext,
+                        PlatformTransactionManager txManager, SmartValidator validator, StringUtil stringUtil) {
+        this.messageSource = messageSource;
+        this.contributorDAO = contributorDAO;
+        this.studyListTypesDAO = studyListTypesDAO;
+        this.studyConstructDAO = studyConstructDAO;
+        this.odfUtil = odfUtil;
+        this.studyInstrumentDAO = studyInstrumentDAO;
+        this.formTypeDAO = formTypeDAO;
+        this.recordService = recordService;
+        this.projectDAO = projectDAO;
+        this.studyDAO = studyDAO;
+        this.recordDAO = recordDAO;
+        this.sessionTimeout = sessionTimeout;
+        this.userDAO = userDAO;
+        this.applicationContext = applicationContext;
+        this.txManager = txManager;
+        this.validator = validator;
+        this.stringUtil = stringUtil;
+    }
 
     /**
      * @param pid
      * @param studyId
-     * @param redirectAttributes
      * @param user
      * @param sForm
      * @return
-     * @throws Exception
+     * @throws DataWizSystemException
      */
-    public String setStudyForm(final long pid, final long studyId, final RedirectAttributes redirectAttributes, final UserDTO user,
-                               final StudyForm sForm) throws DataWizSystemException {
+    public String setStudyForm(final long pid, final long studyId, final UserDTO user, final StudyForm sForm) throws DataWizSystemException {
         if (pid <= 0)
             throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
         String accessState = "disabled";
@@ -158,11 +163,10 @@ public class StudyService {
     /**
      * @param pid
      * @param studyId
-     * @param redirectAttributes
      * @param sForm
      * @throws DataWizSystemException
      */
-    public void setRecordList(final long pid, final long studyId, final RedirectAttributes redirectAttributes, final StudyForm sForm)
+    public void setRecordList(final long pid, final long studyId, final StudyForm sForm)
             throws DataWizSystemException {
         ProjectDTO project;
         StudyDTO study;
@@ -240,9 +244,6 @@ public class StudyService {
                 } catch (Exception e) {
                     throw new DataWizSystemException(messageSource.getMessage("logging.database.error", new Object[]{e.getMessage()}, Locale.ENGLISH),
                             DataWizErrorCodes.DATABASE_ERROR);
-                }
-                if (currUser != null) {
-
                 }
             }
         }
@@ -383,7 +384,7 @@ public class StudyService {
         }
     }
 
-    private void updateConstructsItems(final Long studyId, List<StudyConstructDTO> list, final boolean createCopy) throws Exception {
+    private void updateConstructsItems(final Long studyId, List<StudyConstructDTO> list, final boolean createCopy) {
         List<StudyConstructDTO> dbtmp = studyConstructDAO.findAllByStudy(studyId);
         if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
             List<StudyConstructDTO> insert = new ArrayList<>();
@@ -417,7 +418,7 @@ public class StudyService {
         }
     }
 
-    private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list, final boolean createCopy) throws Exception {
+    private void updateInstrumentItems(final Long studyId, List<StudyInstrumentDTO> list, final boolean createCopy) {
         List<StudyInstrumentDTO> dbtmp = studyInstrumentDAO.findAllByStudy(studyId, false);
         if (!ListUtil.equalsWithoutOrder(dbtmp, list)) {
             List<StudyInstrumentDTO> insert = new ArrayList<>();
@@ -454,7 +455,7 @@ public class StudyService {
      * @param study
      * @throws Exception
      */
-    public void setStudyDTO(final StudyDTO study) {
+    private void setStudyDTO(final StudyDTO study) {
         if (study != null && study.getId() > 0) {
             study.setContributors(contributorDAO.findByStudy(study.getId()));
             study.setSoftware(ListUtil.addObject(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE), new StudyListTypesDTO()));
@@ -472,7 +473,7 @@ public class StudyService {
         }
     }
 
-    public void setStudyDTOExport(final StudyDTO study) {
+    void setStudyDTOExport(final StudyDTO study) {
         if (study != null && study.getId() > 0) {
             study.setContributors(contributorDAO.findByStudy(study.getId()));
             study.setSoftware(studyListTypesDAO.findAllByStudyAndType(study.getId(), DWFieldTypes.SOFTWARE));

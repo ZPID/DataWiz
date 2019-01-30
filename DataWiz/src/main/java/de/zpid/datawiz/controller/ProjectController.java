@@ -401,6 +401,17 @@ public class ProjectController {
         return resp;
     }
 
+    @RequestMapping(value = {"/{pid}/material/updateDescription", "/{pid}/study/{studyId}/material/updateDescription"}, method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<String> updateMaterialDescription(@RequestParam("txt") String txt, @RequestParam("docId") long docId) {
+        log.trace("Entering updateMaterialDescription for File [id: {}]", () -> docId);
+        ResponseEntity<String> resp = new ResponseEntity<>("{}", HttpStatus.OK);
+        projectService.saveFileDescription(docId, txt);
+
+        return resp;
+    }
+
+
     /**
      * This functions deletes a saved document from database and minio. It is called from the material pages (project and study).
      *
@@ -447,8 +458,8 @@ public class ProjectController {
      */
     @RequestMapping(value = {"/{pid}/img/{imgId}", "/{pid}/study/{studyId}/img/{imgId}"}, method = RequestMethod.GET)
     public void setThumbnailImage(@PathVariable long pid, @PathVariable long imgId, HttpServletResponse response) {
-        final int thumbHeight = 98;
-        final int maxWidth = 160;
+        final int thumbHeight = 300;
+        final int maxWidth = 600;
         try {
             projectService.scaleAndSetThumbnail(imgId, response, thumbHeight, maxWidth);
         } catch (Exception e) {

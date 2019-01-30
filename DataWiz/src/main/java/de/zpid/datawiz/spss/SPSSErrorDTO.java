@@ -94,11 +94,8 @@ public class SPSSErrorDTO implements Serializable {
         } else if (!funcName.equals(other.funcName))
             return false;
         if (varName == null) {
-            if (other.varName != null)
-                return false;
-        } else if (!varName.equals(other.varName))
-            return false;
-        return true;
+            return other.varName == null;
+        } else return varName.equals(other.varName);
     }
 
 }

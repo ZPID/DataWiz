@@ -121,7 +121,7 @@ public class StudyController {
         sForm.setjQueryMap(jQueryMap);
         if (ret == null) {
             try {
-                String accessState = studyService.setStudyForm(pid, studyId.orElse(0L), redirectAttributes, user, sForm);
+                String accessState = studyService.setStudyForm(pid, studyId.orElse(0L), user, sForm);
                 studyService.createStudyBreadCrump(sForm.getProject().getTitle(), sForm.getStudy() != null ? sForm.getStudy().getTitle() : null, pid, model);
                 model.put("disStudyContent", accessState);
                 model.put("StudyForm", sForm);
@@ -157,7 +157,7 @@ public class StudyController {
         if (ret == null) {
             try {
                 StudyForm sForm = createStudyForm();
-                studyService.setRecordList(pid, studyId, redirectAttributes, sForm);
+                studyService.setRecordList(pid, studyId, sForm);
                 model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.STUDY, new String[]{sForm.getProject().getTitle(), sForm.getStudy().getTitle()},
                         new long[]{pid}, messageSource));
                 model.put("studySubMenu", true);

@@ -213,17 +213,19 @@ public class DMPController {
             log.warn("Auth User Object empty or User is permitted to download this file");
             throw new DWDownloadException("export.access.denied");
         }
-        byte[] content;
+        byte[] content = new byte[0];
         try {
             // TODO? locale is set to German - should be changed if the form inputs are available in English
             content = dmpService.createDMPExport(pid, type, Locale.GERMAN);
         } catch (Exception e) {
-            log.warn("Exception during dmpService.createDMPExport Message: ", () -> e);
+            log.error("Exception during dmpService.createDMPExport Message: ", () -> e);
             if (e instanceof DataWizSystemException) {
                 if (((DataWizSystemException) e).getErrorCode().equals(DataWizErrorCodes.NO_DATA_ERROR))
                     throw new DWDownloadException("export.odt.error.dmp");
                 else
                     throw new DWDownloadException("export.odt.error.project");
+            } else if (e instanceof ClassCastException) {
+                log.error("ClassCastException: {}", () -> e);
             } else {
                 throw new DWDownloadException("dbs.sql.exception");
             }

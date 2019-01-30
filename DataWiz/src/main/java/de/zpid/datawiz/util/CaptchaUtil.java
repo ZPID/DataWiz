@@ -1,4 +1,4 @@
-package de.zpid.datawiz.service;
+package de.zpid.datawiz.util;
 
 import de.zpid.datawiz.enumeration.DataWizErrorCodes;
 import de.zpid.datawiz.util.ClientInfo;
@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.regex.Pattern;
 
 @Component
-public class CaptchaService {
+public class CaptchaUtil {
 
     private final HttpServletRequest request;
     private final Environment environment;
@@ -22,7 +22,7 @@ public class CaptchaService {
     private final Pattern RESPONSE_PATTERN = Pattern.compile("[A-Za-z0-9_-]+");
 
     @Autowired
-    public CaptchaService(HttpServletRequest request, Environment environment, ClientInfo clientInfo) {
+    public CaptchaUtil(HttpServletRequest request, Environment environment, ClientInfo clientInfo) {
         this.request = request;
         this.environment = environment;
         this.clientInfo = clientInfo;

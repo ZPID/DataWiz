@@ -340,7 +340,8 @@ public class ExportService {
                             if (rdoc != null) {
                                 if (recordEx.isExportCodebook()) {
                                     String RECORD_CODEBOOK_NAME_CSV = "record_codebook.csv";
-                                    files.add(new SimpleEntry<>(recordFolder + RECORD_CODEBOOK_NAME_CSV, csvUtil.exportCSV(record, res, false)));
+                                    if (record.getVariables() != null && !record.getVariables().isEmpty() && record.getDataMatrix() != null)
+                                        files.add(new SimpleEntry<>(recordFolder + RECORD_CODEBOOK_NAME_CSV, csvUtil.exportCSV(record, res, false)));
                                     if (!res.toString().trim().isEmpty()) {
                                         throw new DataWizSystemException(
                                                 messageSource.getMessage("logging.record.parsing.error",
@@ -488,7 +489,7 @@ public class ExportService {
                                 break;
                         }
                     } catch (Exception e) {
-                        res.insert(0,"error.spss.api.not.found");
+                        res.insert(0, "error.spss.api.not.found");
                         log.error("SPSS WebService not available - Check if Service is running! Exception: {}", () -> e);
                     }
                     break;

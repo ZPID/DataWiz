@@ -48,12 +48,10 @@
                   </c:if>
                 </td>
                 <td>
-                  <javatime:format value="${user.regDate}" style="MS" var="strDate"/>
-                  <s:message text="${strDate}"/>
+                  <s:message text="${user.regDate}"/>
                 </td>
                 <td>
-                  <javatime:format value="${user.lastLogin}" style="MS" var="strDate"/>
-                  <s:message text="${strDate}"/>
+                  <s:message text="${user.lastLogin}"/>
                 </td>
                 <td style="text-align: right;">
                   <a href='<c:url value="/admin/list/project/${user.id}" />'><span class="glyphicon glyphicon-search" aria-hidden="true"></span></a>
@@ -67,6 +65,9 @@
             </c:forEach>
             </tbody>
           </table>
+          <script>
+              $('.table').DataTable();
+          </script>
         </c:when>
         <c:when test="${tabletype eq 'project'}">
           <table class="table table-striped">
@@ -97,6 +98,9 @@
             </c:forEach>
             </tbody>
           </table>
+          <script>
+              $('.table').DataTable();
+          </script>
         </c:when>
       </c:choose>
     </div>
@@ -183,8 +187,6 @@
   </div>
 </div>
 <script>
-    $('.table').DataTable();
-
     function openDetailModal(type, id) {
         $.ajax({
             url: '../detail/' + type + '/' + id,

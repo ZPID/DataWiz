@@ -105,9 +105,15 @@ public class RecordService {
      * @param subPage       Subpage identifier as {@link String}
      * @param parsingErrors {@link Set} of parsing errors.
      * @return {@link StudyForm} with Record and Study Data
-     * @throws Exception Minio and DBS Exceptions
+     * @throws DataWizSystemException One of the following Error Codes: <br>
+     *                                MISSING_PID_ERROR <br>
+     *                                MISSING_STUDYID_ERROR <br>
+     *                                PROJECT_NOT_AVAILABLE <br>
+     *                                STUDY_NOT_AVAILABLE <br>
+     *                                RECORD_NOT_AVAILABLE
      */
-    public StudyForm setStudyform(final long pid, final long studyId, final long recordId, final long versionId, final String subPage, final List<String> parsingErrors) throws DataWizSystemException {
+    public StudyForm setStudyform(final long pid, final long studyId, final long recordId, final long versionId,
+                                  final String subPage, final List<String> parsingErrors) throws DataWizSystemException {
         if (pid <= 0)
             throw new DataWizSystemException(messageSource.getMessage("logging.pid.not.present", null, Locale.ENGLISH), DataWizErrorCodes.MISSING_PID_ERROR);
         if (studyId <= 0)
@@ -154,9 +160,8 @@ public class RecordService {
      * @param parsingErrors {@link Set} of parsing errors.
      * @param rec           {@link RecordDTO} Contains the record information
      * @param isSPSS        Used for Export True, if Export Type is SPSS, otherwise false
-     * @throws Exception Minio and DBS Exceptions
      */
-    public void transformCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) {
+    void transformCodebook(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS) {
         rec.setAttributes(recordDAO.findRecordAttributes(rec.getVersionId(), true));
         if (rec.getVariables() != null && rec.getVariables().size() > 0) {
             for (SPSSVarDTO var : rec.getVariables()) {
@@ -197,7 +202,7 @@ public class RecordService {
      * @param pid           Project identifier as long
      * @throws DataWizSystemException Minio and DBS Exceptions
      */
-    public void transformDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws DataWizSystemException {
+    void transformDataMatrix(final List<String> parsingErrors, final RecordDTO rec, final boolean isSPSS, final long pid) throws DataWizSystemException {
         String dataMatrix = recordDAO.findMatrixByVersionId(rec.getVersionId());
         if (dataMatrix == null || dataMatrix.isEmpty())
             dataMatrix = loadDataMatrix(rec, pid);
@@ -336,9 +341,8 @@ public class RecordService {
      *
      * @param varId Variable identifier as long
      * @return {@link SPSSValueLabelDTO} value label of the passed variable
-     * @throws Exception DBS Exceptions
      */
-    public List<SPSSValueLabelDTO> getVariableValues(final long varId) throws Exception {
+    public List<SPSSValueLabelDTO> getVariableValues(final long varId) {
         return recordDAO.findVariableValues(varId, true);
     }
 
@@ -391,9 +395,8 @@ public class RecordService {
      *
      * @param currentVersion {@link RecordDTO} contains the new record
      * @param changelog      Required changelog as {@link String}
-     * @param pid            Project identifier as long
      * @return {@link String} Messages on successful or failed saving
-     * @throws DataWizSystemException Minio or DBS Exceptions
+     * @throws DataWizSystemException DBS Exceptions DATABASE_ERROR
      */
     public String compareAndSaveRecord(final RecordDTO currentVersion, final String changelog, final long pid)
             throws DataWizSystemException {
@@ -963,8 +966,7 @@ public class RecordService {
                 SPSSVarDTO newVar = null, prevVar = null;
                 if (comp.getVarStatus().equals(VariableStatus.EQUAL) || comp.getVarStatus().equals(VariableStatus.EQUAL_CSV)) {
                     newVars.get(position).setId(prevVars.get(position).getId());
-                } else if (comp.getVarStatus().equals(VariableStatus.MOVED) || comp.getVarStatus().equals(VariableStatus.MOVED_CSV)
-                        || comp.getVarStatus().equals(VariableStatus.MOVED)) {
+                } else if (comp.getVarStatus().equals(VariableStatus.MOVED) || comp.getVarStatus().equals(VariableStatus.MOVED_CSV)) {
                     newVars.get(position).setId(prevVars.get(comp.getMovedFrom() - 1).getId());
                 } else if (comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED) || comp.getVarStatus().equals(VariableStatus.MOVED_AND_META_CHANGED_CSV)
                         || comp.getVarStatus().equals(VariableStatus.MOVED_AND_TYPE_CHANGED)) {

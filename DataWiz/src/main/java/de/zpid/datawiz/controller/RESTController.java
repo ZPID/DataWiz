@@ -2,6 +2,7 @@ package de.zpid.datawiz.controller;
 
 import com.google.gson.Gson;
 import de.zpid.datawiz.dao.RoleDAO;
+import de.zpid.datawiz.dao.SettingsDAO;
 import de.zpid.datawiz.dao.SideMenuDAO;
 import de.zpid.datawiz.dto.SideMenuDTO;
 import de.zpid.datawiz.dto.UserDTO;
@@ -14,9 +15,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +53,12 @@ public class RESTController {
     private final SideMenuDAO sideMenuDAO;
     private final RoleDAO roleDAO;
     private final MessageSource messageSource;
+    private final SettingsDAO settingsDAO;
 
     @Autowired
-    public RESTController(SideMenuDAO sideMenuDAO, RoleDAO roleDAO, MessageSource messageSource) {
+    public RESTController(SideMenuDAO sideMenuDAO, RoleDAO roleDAO, MessageSource messageSource, SettingsDAO settingsDAO) {
         super();
+        this.settingsDAO = settingsDAO;
         log.info("Loading RestController for mapping /api");
         this.sideMenuDAO = sideMenuDAO;
         this.roleDAO = roleDAO;
@@ -127,5 +130,19 @@ public class RESTController {
             log.debug("No active user found - side-menu is loaded successfully after  login");
         }
         return new Gson().toJson(sdForm);
+    }
+
+    @RequestMapping(value = "/setWelcomeText", method = RequestMethod.POST)
+    public @ResponseBody
+    ResponseEntity<String> setWelcomeText(@RequestParam("txt") final String txt, @RequestParam("lang") final String lang) {
+        if (UserUtil.getCurrentUser().hasRole(Roles.ADMIN))
+            settingsDAO.updateSetting("welcome.text.main." + lang, txt);
+        return new ResponseEntity<>("{}", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/getWelcomeText", method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<String> getWelcomeText(@RequestParam("lang") final String lang) {
+        return new ResponseEntity<>(new Gson().toJson(settingsDAO.findSettingValueById("welcome.text.main." + lang)), HttpStatus.OK);
     }
 }

@@ -373,7 +373,7 @@ public class DDIUtil {
                 addTextElement(e2, "name", null, file.getFileName());
                 addTextElement(e2, "size", null, file.getFileSize());
                 addTextElement(e2, "contentType", null, file.getContentType());
-                // TODO addTextElement(e2, "description", null, file.getDe); No Description at the moment!!!
+                addTextElement(e2, "description", null, file.getDescription());
                 addTextElement(e2, "uploadDate", null, file.getUploadDate());
                 addTextElement(e2, "md5", null, file.getMd5checksum());
                 addTextElement(e2, "sha1", null, file.getSha1Checksum());

@@ -13,7 +13,7 @@ public class BreadCrumbUtil {
 
     public static List<BreadCrump> generateBC(final PageState position, final String[] name, final long[] ids,
                                               final MessageSource messageSource) {
-        List<BreadCrump> bcl = new ArrayList<BreadCrump>();
+        List<BreadCrump> bcl = new ArrayList<>();
         switch (position) {
             case INDEX:
                 bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.home", null, LocaleContextHolder.getLocale()), ""));

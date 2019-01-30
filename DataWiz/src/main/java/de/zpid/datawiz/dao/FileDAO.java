@@ -64,7 +64,7 @@ public class FileDAO {
     public List<FileDTO> findProjectMaterialFiles(final ProjectDTO project) {
         log.trace("Entering findProjectMaterialFiles for project [id: {}; name: {}]", project::getId, project::getTitle);
         String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id IS NULL "
-                + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
+                + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.id DESC";
         List<FileDTO> files = jdbcTemplate.query(sql, new Object[]{project.getId()}, (resultSet, rowNum) -> setFileDTO(resultSet));
         log.debug("Transaction \"findProjectMaterialFiles\" terminates with result: [length: {}]", files::size);
         return files;
@@ -80,7 +80,7 @@ public class FileDAO {
     public List<FileDTO> findStudyMaterialFiles(final long pid, final long studyId) {
         log.trace("Entering findStudyMaterialFiles for study [id: {}; pid: {}]", () -> studyId, () -> pid);
         String sql = "SELECT * FROM dw_files WHERE dw_files.project_id = ? AND dw_files.study_id = ? "
-                + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.uploadDate DESC";
+                + "AND dw_files.record_id IS NULL AND dw_files.version_id IS NULL ORDER BY dw_files.id DESC";
         List<FileDTO> files = jdbcTemplate.query(sql, new Object[]{pid, studyId}, (resultSet, rowNum) -> setFileDTO(resultSet));
         log.debug("Transaction \"findStudyMaterialFiles\" terminates with result: [length: {}]", files::size);
         return files;
@@ -113,12 +113,26 @@ public class FileDAO {
     public void saveFile(final FileDTO file) {
         log.trace("Entering saveFile for file [name:{}]", file::getFileName);
         int ret = this.jdbcTemplate.update(
-                "INSERT INTO dw_files (project_id, study_id, record_id, version_id, user_id, name, size, contentType, sha1, sha256, md5, uploadDate, filePath) "
-                        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO dw_files (project_id, study_id, record_id, version_id, user_id, name, size, description, contentType, sha1, sha256, md5, uploadDate, filePath) "
+                        + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 file.getProjectId(), file.getStudyId() == 0 ? null : file.getStudyId(), file.getRecordID() == 0 ? null : file.getRecordID(),
-                file.getVersion() == 0 ? null : file.getVersion(), file.getUserId(), file.getFileName(), file.getFileSize(), file.getContentType(),
+                file.getVersion() == 0 ? null : file.getVersion(), file.getUserId(), file.getFileName(), file.getFileSize(), file.getDescription(), file.getContentType(),
                 file.getSha1Checksum(), file.getSha256Checksum(), file.getMd5checksum(), file.getUploadDate(), file.getFilePath());
         log.debug("Transaction \"saveFile\" terminates with result: [result: {}]", () -> ret);
+    }
+
+    /**
+     * This function updates a description of a file entity which belongs to the passed id.
+     *
+     * @param id   File identifier as long
+     * @param desc {@link String} File description
+     * @return Number of Changes - should be > 0
+     */
+    public int updateFileDescription(final long id, final String desc) {
+        log.trace("Entering updateFileDescription for file [id:{}]", () -> id);
+        int ret = this.jdbcTemplate.update("UPDATE dw_files SET description =? WHERE id = ?", desc, id);
+        log.debug("Transaction \"updateFileDescription\" terminates with result: [result: {}]", () -> ret);
+        return ret;
     }
 
     /**
@@ -149,6 +163,7 @@ public class FileDAO {
         file.setUserId(rs.getInt("user_id"));
         file.setFileName(rs.getString("name"));
         file.setFileSize(rs.getLong("size"));
+        file.setDescription(rs.getString("description"));
         file.setContentType(rs.getString("contentType"));
         file.setSha1Checksum(rs.getString("sha1"));
         file.setSha256Checksum(rs.getString("sha256"));

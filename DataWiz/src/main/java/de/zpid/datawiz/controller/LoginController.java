@@ -7,7 +7,7 @@ import de.zpid.datawiz.dto.UserDTO;
 import de.zpid.datawiz.dto.UserRoleDTO;
 import de.zpid.datawiz.enumeration.PageState;
 import de.zpid.datawiz.enumeration.Roles;
-import de.zpid.datawiz.service.CaptchaService;
+import de.zpid.datawiz.util.CaptchaUtil;
 import de.zpid.datawiz.service.LoginService;
 import de.zpid.datawiz.util.BreadCrumbUtil;
 import de.zpid.datawiz.util.ClientInfo;
@@ -89,7 +89,7 @@ public class LoginController {
     private final UserDAO userDAO;
     private final PasswordEncoder passwordEncoder;
     private final ClientInfo clientInfo;
-    private final CaptchaService captchaService;
+    private final CaptchaUtil captchaUtil;
 
 
     @Autowired
@@ -97,7 +97,7 @@ public class LoginController {
                            final MessageSource messageSource, final ClassPathXmlApplicationContext applicationContext,
                            final Environment env, final HttpServletRequest request, final EmailUtil emailUtil,
                            final ProjectDAO projectDAO, final RoleDAO roleDAO, final UserDAO userDAO, final PasswordEncoder passwordEncoder,
-                           final ClientInfo clientInfo, final CaptchaService captchaService) {
+                           final ClientInfo clientInfo, final CaptchaUtil captchaUtil) {
         super();
         log.info("Loading LoginUserController for mapping /login");
         this.txManager = txManager;
@@ -113,7 +113,7 @@ public class LoginController {
         this.userDAO = userDAO;
         this.passwordEncoder = passwordEncoder;
         this.clientInfo = clientInfo;
-        this.captchaService = captchaService;
+        this.captchaUtil = captchaUtil;
 
     }
 
@@ -131,7 +131,7 @@ public class LoginController {
     @RequestMapping(value = {"/", "/home"})
     public String homePage(final ModelMap model) {
         log.trace("Entering homePage");
-        model.put("breadcrumbList", BreadCrumbUtil.generateBC(PageState.INDEX, null, null, messageSource));
+        model.put("breadcrumbList", "");
         return "welcome";
     }
 
@@ -206,7 +206,7 @@ public class LoginController {
         String ret;
         String response = request.getParameter("g-recaptcha-response");
         if (env.getRequiredProperty("google.recaptcha.enabled").equals("true")) {
-            switch (captchaService.processResponse(response)) {
+            switch (captchaUtil.processResponse(response)) {
                 case CAPTCHA_EMPTY:
                     log.debug("Error Captcha Empty for User [{}]", person::getEmail);
                     model.addAttribute("captcha_err", messageSource.getMessage("captcha.error.empty", null, LocaleContextHolder.getLocale()));

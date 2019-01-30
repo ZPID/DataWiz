@@ -41,6 +41,7 @@ public class FileDTO implements Serializable {
 
     private String fileName;
     private String contentType;
+    private String description;
     private long fileSize;
     private String sha256Checksum;
     private String sha1Checksum;
@@ -178,6 +179,14 @@ public class FileDTO implements Serializable {
         this.filePath = filePath;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -192,6 +201,7 @@ public class FileDTO implements Serializable {
                 fileSize == fileDTO.fileSize &&
                 Objects.equals(fileName, fileDTO.fileName) &&
                 Objects.equals(contentType, fileDTO.contentType) &&
+                Objects.equals(description, fileDTO.description) &&
                 Objects.equals(sha256Checksum, fileDTO.sha256Checksum) &&
                 Objects.equals(sha1Checksum, fileDTO.sha1Checksum) &&
                 Objects.equals(md5checksum, fileDTO.md5checksum) &&
@@ -203,8 +213,7 @@ public class FileDTO implements Serializable {
 
     @Override
     public int hashCode() {
-
-        int result = Objects.hash(id, projectId, studyId, recordID, version, userId, fileName, contentType, fileSize, sha256Checksum, sha1Checksum, md5checksum, uploadDate, thumbnail, filePath);
+        int result = Objects.hash(id, projectId, studyId, recordID, version, userId, fileName, contentType, description, fileSize, sha256Checksum, sha1Checksum, md5checksum, uploadDate, thumbnail, filePath);
         result = 31 * result + Arrays.hashCode(content);
         return result;
     }
@@ -220,6 +229,7 @@ public class FileDTO implements Serializable {
                 ", userId=" + userId +
                 ", fileName='" + fileName + '\'' +
                 ", contentType='" + contentType + '\'' +
+                ", description='" + description + '\'' +
                 ", fileSize=" + fileSize +
                 ", sha256Checksum='" + sha256Checksum + '\'' +
                 ", sha1Checksum='" + sha1Checksum + '\'' +

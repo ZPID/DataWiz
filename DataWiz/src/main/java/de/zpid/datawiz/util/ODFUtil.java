@@ -42,13 +42,12 @@ public class ODFUtil {
     protected MessageSource messageSource;
 
     private static Logger log = LogManager.getLogger(ODFUtil.class);
-
-    private final Font headline = new Font("Calibri", FontStyle.REGULAR, 24.0, new Color(91, 155, 213));
-    private final Font blue_reg = new Font("Calibri", FontStyle.REGULAR, 8.0, new Color(91, 155, 213));
-    private final Font blue_large = new Font("Calibri", FontStyle.REGULAR, 12.0, new Color(91, 155, 213));
-    private final Font regular = new Font("Calibri", FontStyle.REGULAR, 8.0, Color.BLACK);
+    private final Font headline = new Font("Verdana", FontStyle.REGULAR, 24.0, new Color(91, 155, 213));
+    private final Font blue_reg = new Font("Verdana", FontStyle.REGULAR, 8.0, new Color(91, 155, 213));
+    private final Font blue_large = new Font("Verdana", FontStyle.REGULAR, 12.0, new Color(91, 155, 213));
+    private final Font regular = new Font("Verdana", FontStyle.REGULAR, 8.0, new Color(0, 0, 0));
     // private final Font regular_it = new Font("Calibri", FontStyle.ITALIC, 8.0, Color.BLACK);
-    private final Font regular_bold = new Font("Calibri", FontStyle.BOLD, 8.0, Color.BLACK);
+    private final Font regular_bold = new Font("Verdana", FontStyle.BOLD, 8.0, new Color(0, 0, 0));
     private final static List<FormTypesDTO> FORMTYPES = new ArrayList<>();
 
     /**
@@ -56,9 +55,9 @@ public class ODFUtil {
      * returns an byte array, otherwise an exception or an empty byte array!
      *
      * @param pForm, which contains all necessary data for the export
-     * @param locale       to distinguish whether the export is in English or German. At the
-     *                     moment only as a construct, because the export is currently only
-     *                     implemented in German.
+     * @param locale to distinguish whether the export is in English or German. At the
+     *               moment only as a construct, because the export is currently only
+     *               implemented in German.
      * @return The Open Text document as a byte array
      * @throws Exception
      */
@@ -81,12 +80,12 @@ public class ODFUtil {
             doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1", null, locale))).setFont(regular);
             doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
             /** doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1h", null, locale))).setFont(blue_large);
-            //             doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1", null, locale))).setFont(regular);
-            //             Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1it", null, locale)));
-            //             par.setFont(regular_it);
-            //             par.appendHyperlink(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale),
-            //             new URI(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale)));
-            //             doc.addColumnBreak(); **/
+             //             doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1", null, locale))).setFont(regular);
+             //             Paragraph par = doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.BMBF.zu1it", null, locale)));
+             //             par.setFont(regular_it);
+             //             par.appendHyperlink(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale),
+             //             new URI(messageSource.getMessage("export.odt.BMBF.zu1l", null, locale)));
+             //             doc.addColumnBreak(); **/
             //            // Seite mit Tabelle
             Table table = doc.addTable(31, 4);
             // Zusammenführen der Zellen
@@ -166,7 +165,7 @@ public class ODFUtil {
                     : dmp.getMeasOccasions()), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getSpecificCosts(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.specificCosts."+dmp.getSpecificCosts(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
@@ -743,10 +742,10 @@ public class ODFUtil {
      * This function creates the H2020 OTF document for the DPM export On success it
      * returns an byte array, otherwise an exception or an empty byte array!
      *
-     * @param ProjectForm, which contains all necessary data for the export
-     * @param Locale       to distinguish whether the export is in English or German. At the
-     *                     moment only as a construct, because the export is currently only
-     *                     implemented in German.
+     * @param pForm  which contains all necessary data for the export
+     * @param locale to distinguish whether the export is in English or German. At the
+     *               moment only as a construct, because the export is currently only
+     *               implemented in German.
      * @return The Open Text document as a byte array
      * @throws Exception
      */
@@ -1122,10 +1121,10 @@ public class ODFUtil {
      * This function creates the DFG OTF document for the DPM export On success it
      * returns an byte array, otherwise an exception or an empty byte array!
      *
-     * @param ProjectForm, which contains all necessary data for the export
-     * @param Locale       to distinguish whether the export is in English or German. At the
-     *                     moment only as a construct, because the export is currently only
-     *                     implemented in German.
+     * @param pForm, which contains all necessary data for the export
+     * @param locale to distinguish whether the export is in English or German. At the
+     *               moment only as a construct, because the export is currently only
+     *               implemented in German.
      * @return The Open Text document as a byte array
      * @throws Exception
      */
@@ -1436,10 +1435,10 @@ public class ODFUtil {
      * success it returns an byte array, otherwise an exception or an empty byte
      * array!
      *
-     * @param ProjectForm, which contains all necessary data for the export
-     * @param Locale       to distinguish whether the export is in English or German. At the
-     *                     moment only as a construct, because the export is currently only
-     *                     implemented in German.
+     * @param sForm, which contains all necessary data for the export
+     * @param locale to distinguish whether the export is in English or German. At the
+     *               moment only as a construct, because the export is currently only
+     *               implemented in German.
      * @return The Open Text document as a byte array
      * @throws Exception
      */
@@ -1886,10 +1885,10 @@ public class ODFUtil {
      * success it returns an byte array, otherwise an exception or an empty byte
      * array!
      *
-     * @param ProjectForm, which contains all necessary data for the export
-     * @param Locale       to distinguish whether the export is in English or German. At the
-     *                     moment only as a construct, because the export is currently only
-     *                     implemented in German.
+     * @param sForm, which contains all necessary data for the export
+     * @param locale to distinguish whether the export is in English or German. At the
+     *               moment only as a construct, because the export is currently only
+     *               implemented in German.
      * @return The Open Text document as a byte array
      * @throws Exception
      */
@@ -2161,12 +2160,12 @@ public class ODFUtil {
         if (content != null) {
             Cell cell = table.getCellByPosition(col, row);
             if (content instanceof Number) {
-                cell.setDoubleValue(Double.parseDouble(content.toString()));
+                cell.addParagraph(content.toString());
             } else if (content instanceof Boolean) {
-                cell.setStringValue(((boolean) content) ? messageSource.getMessage("gen.yes", null, locale)
+                cell.addParagraph(((boolean) content) ? messageSource.getMessage("gen.yes", null, locale)
                         : messageSource.getMessage("gen.no", null, locale));
-            } else if (content instanceof String) {
-                cell.setStringValue(StringEscapeUtils.UNESCAPE_HTML4.translate(String.valueOf(content)));
+            } else if (content instanceof String && !content.toString().isEmpty()) {
+                cell.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(content.toString()));
             } else if (content instanceof List<?>) {
                 StringBuilder sb = new StringBuilder();
                 List<?> usedTypes = (ArrayList<?>) content;
@@ -2189,9 +2188,9 @@ public class ODFUtil {
                             sb.append("\n");
                     }
                 });
-                cell.setStringValue(StringEscapeUtils.UNESCAPE_HTML4.translate(sb.toString()));
+                cell.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(sb.toString()));
             } else {
-                cell.setStringValue(String.valueOf(content));
+                cell.addParagraph(String.valueOf(content));
             }
             cell.setFont(font);
             if (color != null)

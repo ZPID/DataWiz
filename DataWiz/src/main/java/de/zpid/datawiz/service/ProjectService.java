@@ -558,9 +558,15 @@ public class ProjectService {
     }
 
     /**
-     * @param pid
-     * @param user
-     * @throws DataWizSystemException
+     * @param pid  Project Identifier as long
+     * @param user User identifier as long
+     * @throws DataWizSystemException <br>
+     *                                One of the following error codes: <br>
+     *                                MISSING_PID_ERROR <br>
+     *                                PROJECT_NOT_AVAILABLE <br>
+     *                                USER_ACCESS_PROJECT_PERMITTED <br>
+     *                                STUDY_DELETE_ERROR <br>
+     *                                DATABASE_ERROR
      */
     public void deleteProject(final long pid, final UserDTO user) throws DataWizSystemException {
         TransactionStatus status = txManager.getTransaction(new DefaultTransactionDefinition());
@@ -615,8 +621,19 @@ public class ProjectService {
     }
 
     /**
-     * @param user
-     * @return
+     * @param id   File identifier as long
+     * @param desc {@link String} File description
+     * @return true if saved, otherwise false
+     */
+    public boolean saveFileDescription(final long id, final String desc) {
+        return fileDAO.updateFileDescription(id, desc) > 0;
+    }
+
+    /**
+     * Returns all Projects where the passed user has the role "Project_Admin"
+     *
+     * @param user {@link UserDTO} Contains the user data
+     * @return {@link List} of {@link ProjectDAO}
      */
     public List<ProjectDTO> getAdminProjectList(final UserDTO user) {
         return projectDAO.findAllByAdminRole(user.getId());

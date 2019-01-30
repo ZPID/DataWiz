@@ -20,7 +20,7 @@ public class GoogleResponse {
     @JsonProperty("error-codes")
     private ErrorCode[] errorCodes;
 
-    static enum ErrorCode {
+    enum ErrorCode {
         MissingSecret, InvalidSecret, MissingResponse, InvalidResponse;
 
         private static Map<String, ErrorCode> errorsMap = new HashMap<String, ErrorCode>(4);

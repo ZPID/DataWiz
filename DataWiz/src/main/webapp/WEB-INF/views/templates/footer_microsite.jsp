@@ -1,4 +1,3 @@
-
 <div id="lp_ms_footer">
   <div id="lp_ms_footer_1">
     <div class="lp_ms_footer_1_table">
@@ -7,15 +6,11 @@
           <div class="lp_ms_footer_1_table_2">
             <div class="lp_ms_footer_row">
               <div class="lp_ms_footer_row_left_p">
-
                 <h3>Sie haben Fragen?</h3>
                 <p>Schreiben Sie uns eine E-Mail. Wir helfen Ihnen gern.</p>
-
               </div>
               <div class="lp_ms_footer_row_left_icon">
-
                 <a href="mailto:info@leibniz-psychology.org" class="lp_ms_footer_row_left_icon_a">Kontakt</a>
-
               </div>
             </div>
           </div>
@@ -24,10 +19,8 @@
           <div class="lp_ms_footer_1_table_2">
             <div class="lp_ms_footer_row">
               <div class="lp_ms_footer_row_left_p">
-
                 <h3>Vernetzen</h3>
                 <p>Auf Twitter, Facebook und Google+ informieren wir Sie &uuml;ber Neuigkeiten aus dem ZPID.</p>
-
               </div>
               <div class="lp_ms_footer_row_left_icon">
                 <a href="https://twitter.com/ZPID" target="_blank"><img
@@ -51,7 +44,6 @@
           <div class="lp_ms_footer_1_table_2">
             <div class="lp_ms_footer_row">
               <div class="lp_ms_footer_split_four_cell">
-
                 <h3>Angebote</h3>
                 <ul>
                   <li><a href="https://leibniz-psychology.org/angebote/informierenrecherchieren/" target="_blank"
@@ -71,10 +63,8 @@
                   <li><a href="https://leibniz-psychology.org/angebote/jobs/" target="_blank" title="Jobs">Jobs</a></li>
                   <li><a href="https://leibniz-psychology.org/angebote/events/" target="_blank" title="Events">Events</a></li>
                 </ul>
-
               </div>
               <div class="lp_ms_footer_split_four_cell">
-
                 <h3>Forschung</h3>
                 <ul>
                   <li><a href="https://leibniz-psychology.org/forschung/forschungsliteralitaet/" target="_blank"
@@ -84,7 +74,6 @@
                   <li><a href="https://leibniz-psychology.org/forschung/massendaten/" target="_blank"
                     title="Massendaten">Massendaten</a></li>
                 </ul>
-
               </div>
             </div>
           </div>
@@ -113,21 +102,17 @@
                   <li><a href="https://leibniz-psychology.org/institut/veroeffentlichungen/" target="_blank"
                     title="Veröffentlichungen">Ver&ouml;ffentlichungen</a></li>
                 </ul>
-
               </div>
               <div class="lp_ms_footer_split_four_cell">
-
                 <h3>leibniz-psychology.org</h3>
                 <p>
                   Leibniz-Zentrum f&uuml;r Psychologische Information und Dokumentation (ZPID)<br />
                   Universit&auml;tsring 15<br /> 54296 Trier
                 </p>
-
                 <p>
                   T. +49 (0)651 201-2877<br /> F. +49 (0)651 201-2071<br /> M. <a
                     href="mailto:info@leibniz-psychology.org" title="E-Mail senden">info(at)leibniz-psychology.org</a>
                 </p>
-
               </div>
             </div>
           </div>
@@ -145,12 +130,10 @@
         </div>
         <div class="lp_ms_footer_3_row_right">
           <ul>
-
             <li><a href="https://leibniz-psychology.org/rechtliches/impressum-datenschutz/" target="_blank">Impressum</a>
             </li>
             <li><a href="https://leibniz-psychology.org/rechtliches/impressum-datenschutz/" target="_blank">Datenschutz</a>
             </li>
-
           </ul>
         </div>
       </div>

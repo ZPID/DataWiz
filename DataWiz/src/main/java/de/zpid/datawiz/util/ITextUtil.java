@@ -40,8 +40,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -137,17 +137,18 @@ public class ITextUtil {
             // record descrition
             createRecordDescription(record, document, font_bold);
             // variables codebook & statistic
-            for (SPSSVarDTO var : record.getVariables()) {
-                document.add(new Paragraph().setFontSize(14).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
-                        .add(messageSource.getMessage("export.pdf.line.variable", null, Locale.ENGLISH) + var.getName()));
-                document.add(createVariableCodeBookTable(var));
-                if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F)) {
+            if (record.getVariables() != null)
+                for (SPSSVarDTO var : record.getVariables()) {
                     document.add(new Paragraph().setFontSize(14).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
-                            .add(messageSource.getMessage("export.pdf.line.num.stats", null, Locale.ENGLISH)));
-                    document.add(createVariableDescriptiveStatistikTable(record.getDataMatrix(), var));
+                            .add(messageSource.getMessage("export.pdf.line.variable", null, Locale.ENGLISH) + var.getName()));
+                    document.add(createVariableCodeBookTable(var));
+                    if (RecordDTO.simplifyVarTypes(var.getType()).equals(SPSSVarTypes.SPSS_FMT_F)) {
+                        document.add(new Paragraph().setFontSize(14).setTextAlignment(TextAlignment.LEFT).setFont(font_bold)
+                                .add(messageSource.getMessage("export.pdf.line.num.stats", null, Locale.ENGLISH)));
+                        document.add(createVariableDescriptiveStatistikTable(record.getDataMatrix(), var));
+                    }
+                    document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
                 }
-                document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-            }
             // set footer
             setPagefooter(pdf, document);
             // close document

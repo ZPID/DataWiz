@@ -31,7 +31,7 @@ public enum SPSSAligment {
 
     private final int number;
 
-    private SPSSAligment(int s) {
+    SPSSAligment(int s) {
         number = s;
     }
 
@@ -43,7 +43,7 @@ public enum SPSSAligment {
         return this.number;
     }
 
-    private static final Map<Integer, SPSSAligment> intToTypeMap = new HashMap<Integer, SPSSAligment>();
+    private static final Map<Integer, SPSSAligment> intToTypeMap = new HashMap<>();
 
     static {
         for (SPSSAligment type : SPSSAligment.values()) {

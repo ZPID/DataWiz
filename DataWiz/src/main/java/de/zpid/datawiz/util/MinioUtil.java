@@ -243,7 +243,7 @@ public class MinioUtil {
      * @return
      */
     private String setBucket(final FileDTO file) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(this.bucketPrefix);
         sb.append(file.getProjectId());
         if (file.getStudyId() > 0) {
@@ -265,7 +265,7 @@ public class MinioUtil {
      * @return
      */
     public MinioResult deleteFile(final FileDTO file) {
-        log.trace("Entering deleteFile  file: [name: {}; path: {}]", () -> file.getFileName(), () -> file.getFilePath());
+        log.trace("Entering deleteFile  file: [name: {}; path: {}]", file::getFileName, file::getFilePath);
         final String bucket = setBucket(file);
         try {
             if (!this.minioClient.bucketExists(bucket)) {
@@ -280,8 +280,8 @@ public class MinioUtil {
             }
             return MinioResult.OK;
         } catch (Exception e) {
-            log.error("ERROR: File [id: {}; bucket: {}; filePath: {}] not deleted from Minio - Message: {}", () -> file.getId(), () -> bucket,
-                    () -> file.getFilePath(), () -> e);
+            log.error("ERROR: File [id: {}; bucket: {}; filePath: {}] not deleted from Minio - Message: {}", file::getId, () -> bucket,
+                    file::getFilePath, () -> e);
             return MinioResult.ERROR;
         }
     }
