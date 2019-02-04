@@ -9,7 +9,7 @@
             <%--<s:message code="welcome.text.main"/>--%>
           </div>
           <script>
-              getWelcomePage('${localeCode}');
+            getWelcomePage('${localeCode}');
           </script>
           <br/>
           <sec:authorize access="isAuthenticated()">
