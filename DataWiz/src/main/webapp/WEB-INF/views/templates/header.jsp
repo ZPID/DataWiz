@@ -48,15 +48,11 @@
   <script src="<c:url value='/static/js/jquery-sortable.js' />" type="text/javascript"></script>
   <script src="<c:url value='/static/js/datepicker/js/bootstrap-datepicker.min.js' />" type="text/javascript"></script>
   <script src="https://cdn.ckeditor.com/ckeditor5/11.1.1/balloon/ckeditor.js"></script>
-  <script src="<c:url value='/static/js/app.js' />" type="text/javascript"></script>
+<%--  <script src="<c:url value='/static/js/app.js' />" type="text/javascript"></script>
   <script src="<c:url value='/static/js/modalform.js' />" type="text/javascript"></script>
-  <script src="<c:url value='/static/js/dwfilter.js' />" type="text/javascript"></script>
-  <script src="<c:url value='/static/js/sidemenu.js' />" type="text/javascript"></script>
+  <script src="<c:url value='/static/js/dwfilter.js' />" type="text/javascript"></script>--%>
   <script src="<c:url value='/static/js/dataTables.min.js' />" type="text/javascript"></script>
   <script src="<c:url value='/static/js/dataTables.bootstrap.min.js' />" type="text/javascript"></script>
-  <c:if test="${captcha_enabled}">
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-  </c:if>
 
   <script type="text/javascript">
       var _paq = _paq || [];

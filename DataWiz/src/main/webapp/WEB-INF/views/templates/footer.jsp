@@ -11,5 +11,6 @@
 <script src="<c:url value='/static/js/modalform.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/dwfilter.js' />" type="text/javascript"></script>
 <script src="<c:url value='/static/js/importReport.js' />" type="text/javascript"></script>
+<script src="<c:url value='/static/js/sidemenu.js' />" type="text/javascript"></script>
 </body>
 </html>

@@ -92,7 +92,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/", "/home", "/register", "/login").permitAll().antMatchers("/admin/**").access("hasRole('ADMIN')")
                 .antMatchers("/panel/**", "/user/**", "/project/**", "/dmp/**", "/access/**").access("hasRole('USER') or hasRole('ADMIN')").and().formLogin()
                 .defaultSuccessUrl("/panel").loginPage("/login").permitAll().usernameParameter("email").passwordParameter("password").and().rememberMe()
-                .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).tokenValiditySeconds(86400).and().csrf().and()
+                .rememberMeParameter("remember-me").tokenRepository(persistentTokenRepository()).and().csrf().and()
                 .exceptionHandling().accessDeniedPage("/Access_Denied").and().logout().deleteCookies("remember-me").and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).invalidSessionUrl("/login?session=timeout").and();
     }

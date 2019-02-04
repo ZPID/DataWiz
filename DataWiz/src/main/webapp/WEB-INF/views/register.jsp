@@ -1,5 +1,8 @@
 <%@ include file="templates/header.jsp" %>
 <%@ include file="templates/navbar.jsp" %>
+<c:if test="${captcha_enabled}">
+  <script src='https://www.google.com/recaptcha/api.js'></script>
+</c:if>
 <div id="mainWrapper">
   <div class="content-container">
     <%@ include file="templates/breadcrump.jsp" %>
