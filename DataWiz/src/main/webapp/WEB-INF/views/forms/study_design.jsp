@@ -442,9 +442,6 @@
                     <c:when test="${status.error}">
                       <sf:select path="study.constructs[${loop.index}].type" class="form-control redborder" id="selectConstructType${loop.index}"
                                  onchange="switchViewIfSelected('selectConstructType${loop.index}', 'OTHER');">
-                        <sf:option value="">
-                          <s:message code="gen.select"/>
-                        </sf:option>
                         <sf:option value="INDEPENDENT">
                           <s:message code="study.constructs.type.independent"/>
                         </sf:option>
@@ -463,9 +460,6 @@
                     <c:otherwise>
                       <sf:select path="study.constructs[${loop.index}].type" class="form-control" id="selectConstructType${loop.index}"
                                  onchange="switchViewIfSelected('selectConstructType${loop.index}', 'OTHER');">
-                        <sf:option value="">
-                          <s:message code="gen.select"/>
-                        </sf:option>
                         <sf:option value="INDEPENDENT">
                           <s:message code="study.constructs.type.independent"/>
                         </sf:option>

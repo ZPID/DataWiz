@@ -74,7 +74,7 @@
       })();
   </script>
 </head>
-<body>
+<body itemtype="http://schema.org/WebSite" itemscope>
 <c:choose>
   <c:when test="${isBetaVersion}">
     <s:eval expression="@environment.getProperty('application.logo.url.beta')" var="logoUri"/>

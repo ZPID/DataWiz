@@ -45,7 +45,7 @@ public class StudyConstructDTO implements Serializable {
     /**
      * The name of the construct.
      */
-    @Size(min = 0, max = 500, groups = StudyDTO.StDesignVal.class)
+    @Size(max = 500, groups = StudyDTO.StDesignVal.class)
     private String name;
 
     /**
@@ -57,7 +57,7 @@ public class StudyConstructDTO implements Serializable {
     /**
      * The other -> if other is selected as type.
      */
-    @Size(min = 0, max = 500, groups = StudyDTO.StDesignVal.class)
+    @Size(max = 500, groups = StudyDTO.StDesignVal.class)
     private String other;
 
     public StudyConstructDTO() {
