@@ -144,7 +144,7 @@
                                     </c:choose>
                                   </c:if>
                                   <div class="bg_hoover panel  <s:message text="${sRole}"/> studyFilter"
-                                       onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}"/>';"
+                                       onclick="location.href='<c:url value="project/${form.project.id}/study/${study.id}?_s=${study.id}"/>';"
                                        style="cursor: pointer;">
                                     <div class="panel-heading studyTitleFilter">
                                       <strong><s:message text="${study.title}"/></strong>

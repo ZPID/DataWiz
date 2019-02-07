@@ -214,7 +214,7 @@ public class StudyController {
                 StudyDTO study;
                 try {
                     study = studyService.saveStudyForm(sForm, studyId.orElse(0L), pid, user, false);
-                    ret = "redirect:/project/" + pid + "/study/" + study.getId();
+                    ret = "redirect:/project/" + pid + "/study/" + study.getId() + "?_s=" + study.getId();
                 } catch (DataWizSystemException e) {
                     if (e.getErrorCode().equals(DataWizErrorCodes.STUDY_NOT_AVAILABLE)) {
                         log.error("Unexpected event: Internal Error saveStudyForm - Transaction was rolled back [Message: {}; Code: {}]", e::getMessage,
@@ -259,7 +259,7 @@ public class StudyController {
         if (ret != null)
             log.warn("Unexpected event: User [email: {}] tries to switchEditMode for Study [id: {}] without permissions", user::getEmail, () -> studyId);
         if (ret == null) {
-            ret = "redirect:/project/" + pid + "/study/" + studyId;
+            ret = "redirect:/project/" + pid + "/study/" + studyId + "?_s=" + studyId;
             try {
                 studyService.checkActualLock(pid, studyId, user, (String) model.get("disStudyContent"), redirectAttributes);
             } catch (Exception e) {
@@ -562,7 +562,7 @@ public class StudyController {
         String ret;
         try {
             StudyDTO study = studyService.copyStudy(pid, studyId, selected, user);
-            ret = "redirect:/project/" + study.getProjectId() + "/study/" + study.getId();
+            ret = "redirect:/project/" + study.getProjectId() + "/study/" + study.getId()+ "?_s=" + study.getId();
         } catch (Exception e) {
             model.put("studySubMenu", true);
             model.put("subnaviActive", PageState.STUDY.name());

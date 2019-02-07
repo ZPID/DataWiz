@@ -51,7 +51,7 @@
             </c:choose>
           </c:if>
           <div class="panel <c:out value="${pRole_set}"/>">
-            <div class="panel-heading" onclick="location.href='<c:url value="study/${cstud.id}"/>';"
+            <div class="panel-heading" onclick="location.href='<c:url value="study/${cstud.id}?_s=${cstud.id}"/>';"
                  style="cursor: pointer;">
               <div class="row">
                 <div class="col-sm-12">
@@ -127,7 +127,7 @@
                   <s:message code="panel.last.commit" arguments="${strDate}|${u_name}" htmlEscape="false" argumentSeparator="|"/>
                 </div>
                 <div class="col-sm-8 text-align-right">
-                  <button class="btn btn-info btn-xs" onclick="location.href='<c:url value="study/${cstud.id}"/>';">
+                  <button class="btn btn-info btn-xs" onclick="location.href='<c:url value="study/${cstud.id}?_s=${cstud.id}"/>';">
                     <s:message code="panel.btn.view.edit"/>
                   </button>
                 </div>

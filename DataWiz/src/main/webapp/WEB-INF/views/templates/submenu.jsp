@@ -4,13 +4,13 @@
       <c:if test="${not empty StudyForm.study.id && StudyForm.study.id > 0}">
         <ul class="nav nav-tabs nav-justified">
           <li role="presentation" class="<c:out value="${subnaviActive eq 'STUDY' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}" /> "><s:message
+            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}?_s=${StudyForm.study.id}" /> "><s:message
                 code="submenu.studydoc" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'RECORDS' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records" /> "><s:message
+            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/records?_s=${StudyForm.study.id}" /> "><s:message
                 code="submenu.record" /></a></li>
           <li role="presentation" class="<c:out value="${subnaviActive eq 'MATERIAL' ? 'active' : ''}" /> "><a
-            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/material" /> "><s:message
+            href="<c:url value="/project/${StudyForm.project.id}/study/${StudyForm.study.id}/material?_s=${StudyForm.study.id}" /> "><s:message
                 code="submenu.studymaterial" /></a></li>
         </ul>
       </c:if>

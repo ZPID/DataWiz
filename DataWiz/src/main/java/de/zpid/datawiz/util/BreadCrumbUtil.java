@@ -48,7 +48,7 @@ public class BreadCrumbUtil {
                 bcl.add(new BreadCrump(messageSource.getMessage("breadcrumb.panel", null, LocaleContextHolder.getLocale()),
                         "/panel"));
                 bcl.add(new BreadCrump(name[0], "/project/" + ids[0] + "/studies"));
-                bcl.add(new BreadCrump(name[1], "/project/" + ids[0] + "/study/" + ids[1] + "/records"));
+                bcl.add(new BreadCrump(name[1], "/project/" + ids[0] + "/study/" + ids[1] + "/records?_s=" + ids[1]));
                 bcl.add(new BreadCrump(name[2], ""));
                 break;
             case USERSETTING:
