@@ -130,6 +130,7 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/WEB-INF/views/");
         viewResolver.setSuffix(".jsp");
+        viewResolver.setContentType("text/html; charset=UTF-8");
         log.info("viewResolver succesfully loaded");
         return viewResolver;
     }
@@ -140,14 +141,13 @@ public class DataWizConfiguration implements WebMvcConfigurer {
         resolver.setBasenames("classpath:locale/ApplicationResources", "classpath:locale/DMPResources", "classpath:locale/EmailResources",
                 "classpath:locale/StudyResources", "classpath:locale/RecordResources", "classpath:locale/LoggingResources", "classpath:locale/ExportResources");
         resolver.setDefaultEncoding("UTF-8");
-        Properties fileCharsets = new Properties();
+        /*Properties fileCharsets = new Properties();
         fileCharsets.setProperty("org/springframework/context/support/messages_de", "unicode");
-        resolver.setFileEncodings(fileCharsets);
+        resolver.setFileEncodings(fileCharsets);*/
         log.info("messageSource succesfully loaded");
         return resolver;
 
     }
-
 
     @Bean(name = "applicationContext")
     public ClassPathXmlApplicationContext applicationContext() {
@@ -173,9 +173,9 @@ public class DataWizConfiguration implements WebMvcConfigurer {
     @Bean(name = "multipartResolver")
     public CommonsMultipartResolver commonsMultipartResolver() {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-        resolver.setDefaultEncoding("utf-8");
         resolver.setMaxInMemorySize(271360);
-        resolver.setMaxUploadSize(2147483648l);
+        resolver.setMaxUploadSize(2147483648L);
+        resolver.setDefaultEncoding("UTF-8");
         log.info("multipartResolver succesfully loaded");
         return resolver;
     }

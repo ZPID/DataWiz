@@ -37,6 +37,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -488,6 +489,9 @@ public class RecordController {
         }
         if (ret == null) {
             try {
+                sForm.getRecord().setRecordName(new String(sForm.getRecord().getRecordName().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
+                if (sForm.getRecord().getDescription() != null && !sForm.getRecord().getDescription().isEmpty())
+                    sForm.getRecord().setDescription(new String(sForm.getRecord().getDescription().getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
                 recordService.insertOrUpdateRecordMetadata(studyId, recordId.orElse(0L), sForm, user);
                 ret = "redirect:/project/" + pid + "/study/" + studyId + "/record/" + sForm.getRecord().getId();
             } catch (Exception e) {

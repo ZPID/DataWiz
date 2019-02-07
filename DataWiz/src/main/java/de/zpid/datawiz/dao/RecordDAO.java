@@ -376,6 +376,7 @@ public class RecordDAO {
      */
     public void updateRecordMetaData(final RecordDTO record) {
         log.trace("Entering updateRecordMetaData [recordId: {}]", record::getId);
+        System.err.println(record.getDescription());
         final int ret = this.jdbcTemplate.update("UPDATE dw_record SET name= ?, description = ? WHERE id = ?", record.getRecordName(), record.getDescription(),
                 record.getId());
         log.debug("Transaction for updateRecordMetaData returned [{}]", () -> ret);

@@ -1,9 +1,9 @@
 <%@ include file="includes.jsp" %>
 <!DOCTYPE html>
 <c:set var="localeCode" value="${pageContext.response.locale}"/>
-<html lang="${localeCode}">
+<html lang="de-DE">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta charset="utf-8">
   <sec:csrfMetaTags/>
   <title><s:eval expression="@environment.getProperty('application.name')"/></title>
   <s:eval expression="@environment.getProperty('external.microsite.connection')" var="loadMicrositeContent"/>
