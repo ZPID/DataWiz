@@ -9,14 +9,14 @@ $tag_box = null;
  * @param undefined
  */
 
-(function($, window, document, undefined) {
+(function ($, window, document, undefined) {
     $(document).ready(
-        function() {
+        function () {
             backTotop();
-            $("#dwmainnavbar").on('affixed-top.bs.affix', function() {
+            $("#dwmainnavbar").on('affixed-top.bs.affix', function () {
                 $("#navbarlogo").fadeOut();
             });
-            $("#dwmainnavbar").on('affix.bs.affix', function() {
+            $("#dwmainnavbar").on('affix.bs.affix', function () {
                 $("#navbarlogo").fadeIn();
             });
             /*$.ajaxSetup({
@@ -32,15 +32,15 @@ $tag_box = null;
             $('[data-toggle="tooltip"]').tooltip()
 
             // loading DMP Content
-            if(window.location.pathname.search("/dmp") > 0) {
+            if (window.location.pathname.search("/dmp") > 0) {
                 $("#dmpForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
                 // $("#dmpForm :input").prop("disabled", false);
                 setProjectSubmenu((($("#pagePosi").val() != undefined && $("#pagePosi").val().trim() != "") ? $("#pagePosi")
                     .val() : null));
                 showorHideDMPContent();
                 $("#dmpForm").trackChanges();
-                $(window).on('beforeunload', function(e) {
-                    if($("#dmpForm").isChanged()) {
+                $(window).on('beforeunload', function (e) {
+                    if ($("#dmpForm").isChanged()) {
                         var msg = 'You are about to leave the page.  Continue?';
                         (e || window.event).returnValue = msg; // IE +
                         // Gecko
@@ -48,11 +48,11 @@ $tag_box = null;
                     }
                 });
             } // loading Project Content without study!
-            else if(window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
+            else if (window.location.pathname.search("/project") > 0 && window.location.pathname.search("/study") <= 0) {
                 $("#ProjectForm :input").attr("disabled", $("#disProjectContent").val() === 'disabled');
                 // startTagging();
             } // loading Study Content
-            else if(window.location.pathname.search("/study") > 0
+            else if (window.location.pathname.search("/study") > 0
                 && (window.location.pathname.search("/record") <= 0 || window.location.pathname.search("/records") > 0)) {
                 $("#studyFormDis :input").attr("disabled", $("#disStudyContent").val() === 'disabled');
                 $("#switchEditMode").attr("disabled", false);
@@ -62,18 +62,18 @@ $tag_box = null;
                 setStudySubmenu(null);
                 showorHideStudyContent();
             } // loading Record Content
-            else if(window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
+            else if (window.location.pathname.search("/record") > 0 && window.location.pathname.search("/records") <= 0) {
                 $("#studyFormDis :input:not([name=pageLoadMin],[name=pageLoadMax],[name=setNumofVars])").attr("disabled",
                     $("#disStudyContent").val() === 'disabled');
-                if($("#selectedFileType").val() === 'SPSS') {
+                if ($("#selectedFileType").val() === 'SPSS') {
                     $("#spssSelected").show();
                     $("#csvSelected").hide();
                 } else {
                     $("#spssSelected").hide();
                     $("#csvSelected").show();
                 }
-                $("#selectedFileType").change(function() {
-                    if($("#selectedFileType").val() === 'SPSS') {
+                $("#selectedFileType").change(function () {
+                    if ($("#selectedFileType").val() === 'SPSS') {
                         $("#spssSelected").show();
                         $("#csvSelected").hide();
                     } else {
@@ -82,31 +82,30 @@ $tag_box = null;
                     }
                 });
             }// loading Panel Content
-            else if(window.location.pathname.search("/panel") > 0) {
-                $("#projectfilter").keyup(function() {
+            else if (window.location.pathname.search("/panel") > 0) {
+                $("#projectfilter").keyup(function () {
                     filterProjectList($(this).val());
                 });
-                $("#filterSelect").change(function() {
+                $("#filterSelect").change(function () {
                     filterProjectList($("#projectfilter").val());
                 });
             } // loading access Content
-            else if(window.location.pathname.search("/access") > 0) {
+            else if (window.location.pathname.search("/access") > 0) {
                 showHideNewRole();
             } // loading user settings Content
-            else if(window.location.pathname.search("/usersettings") > 0) {
-                if($('#passwd_error').val())
+            else if (window.location.pathname.search("/usersettings") > 0) {
+                if ($('#passwd_error').val())
                     $('.user-pswd-button, #user-pswd-content').toggle();
                 $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
             }
             $(".loader").fadeOut("slow");
             $(".uploader").fadeOut("slow");
-
-            $(".projectContentClick").click(function() {
+            $(".projectContentClick").click(function () {
                 $("#pagePosi").val($(this).attr("id"));
                 setProjectSubmenu($(this).attr("id"));
             });
 
-            $(".studyContentClick").click(function() {
+            $(".studyContentClick").click(function () {
                 $('#jQueryMap').val($(this).attr("id"));
                 setStudySubmenu($(this).attr("id"));
             });
@@ -114,11 +113,10 @@ $tag_box = null;
 })(window.jQuery, window, document);
 
 
-
 /**
  * saves the tags to a hidden field before project form is submitted!
  */
-$("#meta_submit").click(function() {
+$("#meta_submit").click(function () {
     $("#tags").val($tag_box.tagging("getTags"));
 });
 
@@ -129,8 +127,8 @@ $("#meta_submit").click(function() {
  * @param id
  */
 function setProjectSubmenu(id) {
-    if(id != null) {
-        if(!$("#" + id).hasClass("active")) {
+    if (id != null) {
+        if (!$("#" + id).hasClass("active")) {
             $(".projectContent").hide();
             $(".projectContentClick").removeClass("active");
             $("#" + id).addClass("active");
@@ -139,7 +137,7 @@ function setProjectSubmenu(id) {
     } else {
         $(".projectContent").hide();
         $(".projectContentClick").removeClass("active");
-        switch($("#jQueryMap").val()) {
+        switch ($("#jQueryMap").val()) {
             case "contri":
                 $("#workersActiveClick").addClass("active");
                 $("#workersActiveContent").show();
@@ -163,8 +161,8 @@ function setProjectSubmenu(id) {
 }
 
 function setStudySubmenu(id) {
-    if(id != null) {
-        if(!$("#" + id).hasClass("active")) {
+    if (id != null) {
+        if (!$("#" + id).hasClass("active")) {
             $(".studyContent").hide();
             $(".studyContentClick").removeClass("active");
             $("#" + id).addClass("active");
@@ -173,7 +171,7 @@ function setStudySubmenu(id) {
     } else {
         $(".studyContent").hide();
         $(".studyContentClick").removeClass("active");
-        switch($("#jQueryMap").val()) {
+        switch ($("#jQueryMap").val()) {
             case "designActiveClick":
                 $("#designActiveClick").addClass("active");
                 $("#designActiveContent").show();
@@ -205,9 +203,9 @@ function setStudySubmenu(id) {
  */
 function GetURLParameter(sParam) {
     var sURLVariables = window.location.search.substring(1).split('&');
-    for(var i = 0; i < sURLVariables.length; i++) {
+    for (var i = 0; i < sURLVariables.length; i++) {
         var sParameterName = sURLVariables[i].split('=');
-        if(sParameterName[0] == sParam) {
+        if (sParameterName[0] == sParam) {
             return sParameterName[1];
         }
     }
@@ -222,7 +220,7 @@ function startTagging() {
         "edit-on-delete": false,
         "no-comma": false,
     };
-    if($("#tagging").length) {
+    if ($("#tagging").length) {
         var t = $("#tagging").tagging(my_custom_options);
         $tag_box = t[0];
         $tag_box.addClass("form-control");
@@ -233,10 +231,10 @@ function startTagging() {
 
 function startAccordion() {
     $('[data-toggle="tooltip"]').tooltip();
-    $('#accordion').on('hidden.bs.collapse', function(e) {
+    $('#accordion').on('hidden.bs.collapse', function (e) {
         toggleChevron(e);
     })
-    $('#accordion').on('shown.bs.collapse', function(e) {
+    $('#accordion').on('shown.bs.collapse', function (e) {
         toggleChevron(e);
     })
 }
@@ -257,90 +255,7 @@ function toggleChevron(e) {
         'glyphicon glyphicon-plus glyphicon glyphicon-minus');
 }
 
-var uploaderror = false;
-// Start DROPZONE for project-material upload!
-Dropzone.options.myDropzone = {
-    uploadMultiple: true,
-    autoProcessQueue: false,
-    autoDiscover: false,
-    parallelUploads: 1,
-    // maxFiles : 20,
-    maxFilesize: 2000, // MB
-    dictMaxFilesExceeded: $('#maxFiles').val(),
-    dictResponseError: $('#responseError').val(),
-    dictDefaultMessage: $('#defaultMsg').val(),
-    headers: {
-        'X-CSRF-Token': $('input[name="_csrf"]').val()
-    },
-    init: function() {
-        $("#dz-upload-button").prop('disabled', true);
-        // upload button click event
-        var myDropzone = this;
-        $('#dz-upload-button').on("click", function(e) {
-            uploaderror = false;
-            myDropzone.processQueue();
-        });
-        // reset button click event
-        $('#dz-reset-button').on("click", function(e) {
-            myDropzone.removeAllFiles(true);
-        });
-        // adds the delete button after a file is added
-        this.on("addedfile", function(file) {
-            $("#dz-upload-button").prop('disabled', false);
-            var removeButton = Dropzone
-                .createElement("<button class='btn btn-block btn-danger btn-xs' style='margin-top: 5px;' >"
-                    + $('#genDelete').val() + "</button>");
-            // Capture the Dropzone instance as closure.
-            var _this = this;
-            removeButton.addEventListener("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                _this.removeFile(file);
-            });
-            // Add the button to the file preview element.
-            file.previewElement.appendChild(removeButton);
-        });
-        this.on("removedfile", function(file) {
-            $("#dz-upload-button").prop('disabled', false);
-        });
-        // shows a dialog after multiple upload finished
-        this.on("queuecomplete", function(file, res) {
-            console.log(uploaderror + ' - ' + file + ' - ' + res);
-            // calls controller after successful multiple saving to reload the
-            // page"
-            if(!uploaderror) {
-                setTimeout(function() {
-                    $("form#my-dropzone").attr("enctype", "").attr("action", "multisaved").submit();
-                }, 500);
-            }
-        });
-        this.on("successmultiple", function(files, serverResponse) {
-            myDropzone.processQueue();
-        });
-        var totalpercent = 0;
-        this.on("totaluploadprogress", function(progress) {
-            if(progress > totalpercent)
-                totalpercent = progress;
-            $('#loadstatebar .progress-bar').css('width', totalpercent + '%').attr('aria-valuenow', totalpercent).html(
-                Math.round(totalpercent) + '%');
-        });
-        this.on("error", function(file, serverResponse) {
-            uploaderror = true;
-            if(serverResponse.indexOf("Exception") > 0) {
-                console.log(serverResponse)
-                this.defaultOptions.error(file, 'An error occurred!');
-            }
-            $("#loadstate").fadeOut("slow");
-        });
-        this.on("processingmultiple", function(files, serverResponse) {
-            $("#loadstate").fadeIn("slow");
-        });
-        this.on("maxfilesexceeded", function(file) {
-            $("#dz-upload-button").prop('disabled', true);
-            this.removeFile(file);
-        });
-    }
-};
+
 
 function showorHideDMPContent() {
     switchViewIfSelected("selectExistingData", 'existingUsed');
@@ -397,7 +312,7 @@ function showorHideStudyContent() {
     switchViewIfSelected('selectCompleteSel', 'EXCERPT');
     switchViewIfChecked('selectSurveyIntervention');
     switchViewIfSelected('selectrepMeasures', 'MULTIPLE');
-    for(var i = 0; i < $("#constructSize").val(); i++) {
+    for (var i = 0; i < $("#constructSize").val(); i++) {
         switchViewIfSelected('selectConstructType' + i, 'OTHER');
     }
 }
@@ -437,16 +352,16 @@ function switchViewIfSelected(name, show) {
  * @param show
  */
 function switchViewIfSelectedMulti(name, show) {
-    if($("#" + name).val() != undefined) {
+    if ($("#" + name).val() != undefined) {
         var selected = $("#" + name).val().trim();
         name = name.replace('select', 'content');
         var showA = show.split(',');
         var hideContainer = true;
-        for(var i = 0; i < showA.length; i++)
+        for (var i = 0; i < showA.length; i++)
             $("." + name + i).toggle(false);
-        for(var i = 0; i < showA.length; i++) {
+        for (var i = 0; i < showA.length; i++) {
             $("." + name + i).toggle(showA[i].trim() == selected);
-            if(showA[i] == selected) {
+            if (showA[i] == selected) {
                 hideContainer = false;
                 break;
             }
@@ -469,7 +384,7 @@ function switchViewIfChecked(name) {
 
 function countChar(val) {
     var len = val.value.length;
-    if(len >= 3000) {
+    if (len >= 3000) {
         val.value = val.value.substring(0, 3000);
     } else {
         $('#charNum').text(3000 - len);
@@ -481,22 +396,22 @@ function checkOnSubmit() {
 }
 
 $.fn.extend({
-    trackChanges: function() {
-        $(":input", this).change(function() {
+    trackChanges: function () {
+        $(":input", this).change(function () {
             $(this.form).data("changed", true);
         });
     },
-    isChanged: function() {
+    isChanged: function () {
         return this.data("changed");
     }
 });
 
 function showHideNewRole() {
     var val = $("#accessMailChange").val();
-    if(val != 0) {
+    if (val != 0) {
         $("#accessChange, #accessChangeSel").prop("disabled", false);
         var val2 = $("#accessChangeSel").val();
-        if(val2 == 0 || val2 === "PROJECT_ADMIN" || val2 === "PROJECT_READER" || val2 === "PROJECT_WRITER") {
+        if (val2 == 0 || val2 === "PROJECT_ADMIN" || val2 === "PROJECT_READER" || val2 === "PROJECT_WRITER") {
             $("#accessChange").val("0");
             $("#accessChange").prop("disabled", true);
         } else {
@@ -508,12 +423,12 @@ function showHideNewRole() {
     }
 }
 
-$.fn.serializeObject = function() {
+$.fn.serializeObject = function () {
     var o = {};
     var a = this.serializeArray();
-    $.each(a, function() {
-        if(o[this.name]) {
-            if(!o[this.name].push) {
+    $.each(a, function () {
+        if (o[this.name]) {
+            if (!o[this.name].push) {
                 o[this.name] = [o[this.name]];
             }
             o[this.name].push(this.value || '');
@@ -526,15 +441,15 @@ $.fn.serializeObject = function() {
 
 // Abfangen ob offline, oder Server nicht erreichbar, falls ja speichern der
 // daten in json datei für späteren import
-$(function() {
-    $('#dmpForm').on('submit', function(e) {
+$(function () {
+    $('#dmpForm').on('submit', function (e) {
         var formData = $(this).serializeObject();
         e.preventDefault();
         $.ajax({
             url: "checkConnection",
             timeout: 10000,
-            error: function(jqXHR) {
-                if(jqXHR.status == 0) {
+            error: function (jqXHR) {
+                if (jqXHR.status == 0) {
                     console.log(formData);
                     var a = document.createElement('a');
                     a.setAttribute('href', 'data:text/plain;charset=utf-u,' + encodeURIComponent(JSON.stringify(formData)));
@@ -542,50 +457,50 @@ $(function() {
                     a.click();
                 }
             },
-            success: function() {
+            success: function () {
                 $('#dmpForm').unbind('submit').submit();
             }
         });
     });
 });
 
-$('.user-pswd-button').on("click", function(e) {
+$('.user-pswd-button').on("click", function (e) {
     $('.user-pswd-button, #user-pswd-content').toggle();
 });
 
 /*
  * start password check function
  */
-$('.pwdcheckin').keyup(function() {
+$('.pwdcheckin').keyup(function () {
     $('#pwdcheckstr span').html(checkStrength($('.pwdcheckin').val()))
 })
 
 function checkStrength(password) {
     var str = 0;
-    if(password.length <= 0) {
+    if (password.length <= 0) {
         $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width(0);
         $('.progress_custom span').css('color', '#000');
         return 'Passwort eingeben';
     }
-    if(password.length >= 8) {
+    if (password.length >= 8) {
         str++;
-        if(password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/))
+        if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/))
             str++;
-        if(password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) {
+        if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) {
             str++;
-            if(password.match(/([^A-Za-z0-9])/)) {
+            if (password.match(/([^A-Za-z0-9])/)) {
                 str++;
             }
-            if(password.match(/(.*[^A-Za-z0-9].*[^A-Za-z0-9])/)) {
+            if (password.match(/(.*[^A-Za-z0-9].*[^A-Za-z0-9])/)) {
                 str++;
-                if(password.length >= 16)
+                if (password.length >= 16)
                     str++;
             }
-        } else if(password.match(/([a-zA-Z])/) && password.match(/([^A-Za-z0-9])/)) {
+        } else if (password.match(/([a-zA-Z])/) && password.match(/([^A-Za-z0-9])/)) {
             str++;
         }
     }
-    switch(str) {
+    switch (str) {
         case 0:
             $('#pwdcheckstr').removeClass().addClass('progress-bar progress-bar-danger').width(0);
             $('.progress_custom span').css('color', '#000');
@@ -624,11 +539,11 @@ function checkStrength(password) {
 
 function setScrollPosition() {
     var position = 0;
-    if(typeof window.pageYOffset != 'undefined') {
+    if (typeof window.pageYOffset != 'undefined') {
         position = window.pageYOffset;
-    } else if(typeof document.documentElement.scrollTop != 'undefined' && document.documentElement.scrollTop > 0) {
+    } else if (typeof document.documentElement.scrollTop != 'undefined' && document.documentElement.scrollTop > 0) {
         position = document.documentElement.scrollTop;
-    } else if(typeof document.body.scrollTop != 'undefined') {
+    } else if (typeof document.body.scrollTop != 'undefined') {
         position = document.body.scrollTop;
     }
     $("#scrollPosition").val(position);
@@ -636,15 +551,15 @@ function setScrollPosition() {
 
 function scrollToPosition() {
     var position = $("#scrollPosition").val();
-    if(typeof position != 'undefined' && position > 0) {
+    if (typeof position != 'undefined' && position > 0) {
         window.scrollTo(0, position);
         $("#scrollPosition").val(0);
     }
 }
 
-$(function() {
+$(function () {
     $(".popup").click(
-        function(event) {
+        function (event) {
             event.preventDefault();
             var href = $(this).attr("href");
             var width = $(this).attr("data-width");
@@ -670,10 +585,10 @@ var copyVal = "";
 var copyType = "";
 
 function showAjaxModal(url, id, type, event, item) {
-    if(event.shiftKey) {
+    if (event.shiftKey) {
         copyCellVal(id, type);
-    } else if(event.ctrlKey) {
-        if(copyType === type)
+    } else if (event.ctrlKey) {
+        if (copyType === type)
             pasteCellVal(id, type, item);
     } else {
         asyncSumbit(url, false);
@@ -695,12 +610,12 @@ function copyCellVal(id, type) {
         url: "copyCellValue",
         async: true,
         dataType: "json",
-        success: function(result) {
+        success: function (result) {
             console.log(result);
             copyVal = result;
             copyType = type;
         },
-        error: function(result) {
+        error: function (result) {
             copyVal = "";
             copyType = "";
         }
@@ -720,14 +635,14 @@ function pasteCellVal(id, type, item) {
         url: "pasteCellValue",
         async: true,
         dataType: "json",
-        success: function() {
+        success: function () {
             var txt = "";
-            copyVal.forEach(function(itm) {
+            copyVal.forEach(function (itm) {
                 txt += itm.value + "&nbsp;=&nbsp;&quot" + itm.label + "&quot;<br />";
             });
             item.innerHTML = txt;
         },
-        error: function(result) {
+        error: function (result) {
 
         }
     });
@@ -741,17 +656,17 @@ function asyncSumbit(uri, global) {
         url: "asyncSubmit",
         async: true,
         dataType: "json",
-        success: function() {
+        success: function () {
             loadAjaxModal(uri, global)
         },
-        error: function(result) {
+        error: function (result) {
             loadAjaxModal(null, true);
         }
     });
 }
 
 function loadAjaxModal(url, global) {
-    if(url != null) {
+    if (url != null) {
         // if (!global) {
         // $(".modal-dialog").removeClass("modalWidth")
         // } else {
@@ -773,7 +688,7 @@ document.onkeypress = stopRKey;
 function stopRKey(evt) {
     var evt = (evt) ? evt : ((event) ? event : null);
     var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null);
-    if((evt.which == 13) && (node.type == "text")) {
+    if ((evt.which == 13) && (node.type == "text")) {
         return false;
     }
 }
@@ -784,9 +699,9 @@ function backTotop() {
     $(".dwgoup").hide();
 
     // Funktion für das Scroll-Verhalten
-    $(function() {
-        $(window).scroll(function() {
-            if($(this).scrollTop() > 100) { // Wenn 100 Pixel gescrolled
+    $(function () {
+        $(window).scroll(function () {
+            if ($(this).scrollTop() > 100) { // Wenn 100 Pixel gescrolled
                 // wurde
                 $('.dwgoup').fadeIn();
             } else {
@@ -794,7 +709,7 @@ function backTotop() {
             }
         });
 
-        $('.dwgoup').click(function() { // Klick auf den Button
+        $('.dwgoup').click(function () { // Klick auf den Button
             $('body,html').animate({
                 scrollTop: 0
             }, 800);
@@ -803,33 +718,33 @@ function backTotop() {
     });
 }
 
-$('.exportlist li :checkbox').on('click', function() {
+$('.exportlist li :checkbox').on('click', function () {
     var $chk = $(this), $li = $chk.closest('li'), $ul, $parent;
-    if($chk.hasClass('li_chkbox')) {
+    if ($chk.hasClass('li_chkbox')) {
         $li.siblings().find(':checkbox').not(this).prop('checked', this.checked);
     }
     $state = $chk.prop('checked');
     $ul = $li.closest('ul');
-    if($state == false) {
-        if($ul.hasClass('li_head_u3')) {
+    if ($state == false) {
+        if ($ul.hasClass('li_head_u3')) {
             $ul.find('.li_checkbox_a3').prop('checked', this.checked);
             $ul.parent().closest('ul').find('.li_checkbox_a2').prop('checked', this.checked);
             $ul.parent().closest('ul').parent().closest('ul').find('.li_checkbox_a1').prop('checked', this.checked);
-        } else if($ul.hasClass('li_head_u2')) {
+        } else if ($ul.hasClass('li_head_u2')) {
             $ul.find('.li_checkbox_a2').prop('checked', this.checked);
             $ul.parent().closest('ul').find('.li_checkbox_a1').prop('checked', this.checked);
-        } else if($ul.hasClass('exportlist')) {
+        } else if ($ul.hasClass('exportlist')) {
             $ul.find('.li_checkbox_a1').prop('checked', this.checked);
         }
     } else {
-        if($ul.hasClass('li_head_u3')) {
+        if ($ul.hasClass('li_head_u3')) {
             setParentChkbox($chk, '.li_checkbox_a3', 'li_head_u3');
             setParentChkbox($ul.parent(), '.li_checkbox_a2', 'li_head_u2');
             setParentChkbox($ul.parent().closest('ul').parent(), '.li_checkbox_a1', 'li_head_u1');
-        } else if($ul.hasClass('li_head_u2')) {
+        } else if ($ul.hasClass('li_head_u2')) {
             setParentChkbox($chk, '.li_checkbox_a2', 'li_head_u2');
             setParentChkbox($ul.parent(), '.li_checkbox_a1', 'exportlist');
-        } else if($ul.hasClass('li_head_u2')) {
+        } else if ($ul.hasClass('li_head_u2')) {
             setParentChkbox($chk, '.li_checkbox_a1', 'exportlist');
         }
     }
@@ -837,16 +752,16 @@ $('.exportlist li :checkbox').on('click', function() {
 
 function setParentChkbox($chk, $checkbox, $li) {
     $ul = $chk.closest('ul');
-    if($ul.hasClass($li)) {
+    if ($ul.hasClass($li)) {
         $chkboxes = $ul.find(":checkbox:not(:checked):not(" + $checkbox + ")");
-        if($chkboxes.length == 0) {
+        if ($chkboxes.length == 0) {
             $ul.find($checkbox).prop('checked', true);
         }
     }
 }
 
 function checkDeletePhrase(phrase) {
-    if($("#deleteInputTXT").val() == phrase)
+    if ($("#deleteInputTXT").val() == phrase)
         return true;
     else {
         $("#deleteInputTXT").val("");
@@ -867,7 +782,7 @@ function checkDeletePhrase(phrase) {
  */
 
 function addField(id, springID) {
-    if($("#disStudyContent").val() === "enabled") {
+    if ($("#disStudyContent").val() === "enabled") {
         var parent = $("#" + id);
         var countChildren = $("#" + id + " textarea").length;
         var last = $("#" + id + " textarea")[countChildren - 1];
@@ -878,17 +793,17 @@ function addField(id, springID) {
 }
 
 $("#contriListAdd").click(
-    function() {
+    function () {
         var clone = $("#primaryContri").clone();
         var list = $("#contriList");
         var actPos = $("#contriList").children().length - 1;
         var items = ["title", "orcid", "firstName", "lastName", "institution", "department"]
-        items.forEach(function(item) {
+        items.forEach(function (item) {
             $(clone[0]).find("#primaryContributor\\." + item).val("").attr('id', 'contributors' + actPos + '.' + item)
                 .attr('name', 'contributors[' + actPos + '].' + item);
         });
         $(clone[0]).find(".btn").show();
-        if(actPos >= 1)
+        if (actPos >= 1)
             $(clone).insertAfter(list.children()[actPos - 1])
         else
             $(clone).insertBefore(list.children()[0])
@@ -899,43 +814,44 @@ function removeParentLI(elem) {
     $(elem).parents('li').remove();
 }
 
-$(".bg_hoover").mouseover(function(elem) {
+$(".bg_hoover").mouseover(function (elem) {
     $(this).css("background-color", "rgba(43, 33, 113,0.05)");
 });
 
-$(".bg_hoover").mouseout(function(elem) {
+$(".bg_hoover").mouseout(function (elem) {
     $(this).css("background-color", "white");
-});
-
-
-$(".save-description").click(function() {
-    var id = this.attributes._data.nodeValue;
-    var txt = $('#desc_' + id).val();
-    console.log(txt);
-    var getData = callAPI({txt: txt, docId: id}, "material/updateDescription", "post");
-    $.when(getData).then(function(data) {
-
-    });
 });
 
 
 function saveWelcomePage(lang) {
     var str = $('#ckedit').html();
     var getData = callAPI({txt: str, lang: lang}, "api/setWelcomeText", "post");
-    $.when(getData).then(function(data) {
+    $.when(getData).then(function (data) {
 
     });
 }
 
 function getWelcomePage(lang) {
     var getData = callAPI({lang: lang}, "api/getWelcomeText", "get");
-    $.when(getData).then(function(data) {
+    $.when(getData).then(function (data) {
         console.log(data);
         $('#ckedit').html(data);
     });
 }
 
-var callAPI = function(query, dataURL, method) {
+
+function saveMatDesc(id) {
+    console.log(id)
+    var txt = $('#desc_' + id).val();
+    console.log(txt);
+    var getData = callAPI({txt: txt, docId: id}, "material/updateDescription", "post");
+    $.when(getData).then(function (data) {
+
+
+    });
+}
+
+var callAPI = function (query, dataURL, method) {
     return $.ajax({
         data: query,
         method: method,
