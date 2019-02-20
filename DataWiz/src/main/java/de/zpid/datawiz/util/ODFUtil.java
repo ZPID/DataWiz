@@ -165,7 +165,7 @@ public class ODFUtil {
                     : dmp.getMeasOccasions()), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, messageSource.getMessage("dmp.edit.specificCosts."+dmp.getSpecificCosts(), null, locale), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.specificCosts." + dmp.getSpecificCosts(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
@@ -438,7 +438,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getExistingData(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getDataCitation(), regular, null, locale);
@@ -539,7 +539,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.metaFramework", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getMetaFramework(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.frameworkNationality." + dmp.getFrameworkNationality(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.selectedMetaPurposes", null, locale)), regular,
                     null, locale);
             createCell(table, 3, i, dmp.getSelectedMetaPurposes(), regular, null, locale);
@@ -609,7 +609,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getPublStrategy(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.publStrategy." + dmp.getPublStrategy(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getDepositName(), regular, null, locale);
@@ -704,7 +704,7 @@ public class ODFUtil {
             createCell(table, 3, i, dmp.getStaffDescriptionTxt(), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getSpecificCosts(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.specificCosts." + dmp.getSpecificCosts(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
@@ -851,7 +851,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getExistingData(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getDataCitation(), regular, null, locale);
@@ -938,7 +938,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getPublStrategy(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.publStrategy." + dmp.getPublStrategy(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.depositName", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getDepositName(), regular, null, locale);
@@ -1035,7 +1035,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, dmp.getSpecificCosts(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("dmp.edit.specificCosts." + dmp.getSpecificCosts(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCostsTxt", null, locale)), regular, null,
                     locale);
             createCell(table, 3, i, dmp.getSpecificCostsTxt(), regular, null, locale);
@@ -1199,7 +1199,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.publStrategy", null, locale)), regular, null,
                     locale);
-            createCell(table, 2, i, dmp.getPublStrategy(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("dmp.edit.publStrategy." + dmp.getPublStrategy(), null, locale), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.searchableData", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, dmp.getSearchableData(), regular, null, locale);
@@ -1230,7 +1230,7 @@ public class ODFUtil {
             createCell(table, 2, i, dmp.getUsedDataTypes(), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.existingData", null, locale)), regular, null,
                     locale);
-            createCell(table, 2, i, dmp.getExistingData(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.dataCitation", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, dmp.getDataCitation(), regular, null, locale);
@@ -1391,7 +1391,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.specificCosts", null, locale)), regular, null,
                     locale);
-            createCell(table, 2, i, dmp.getSpecificCosts(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("dmp.edit.specificCosts." + dmp.getSpecificCosts(), null, locale), regular, null, locale);
 
             // doc.addColumnBreak();
 
@@ -1539,7 +1539,7 @@ public class ODFUtil {
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td12", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.completeSel", null, locale)), regular, null, locale);
-            createCell(table, 3, i, study.getCompleteSel(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.completeSel." + study.getCompleteSel().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.excerpt", null, locale)), regular, null, locale);
             createCell(table, 3, i, study.getExcerpt(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td13", null, locale)), regular, null,
@@ -1560,7 +1560,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.repMeasures", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, study.getRepMeasures(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.repMeasures." + study.getRepMeasures().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td19", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td20", null, locale)), regular, null,
@@ -1609,7 +1609,7 @@ public class ODFUtil {
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td25", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.surveyType", null, locale)), regular, null, locale);
-            createCell(table, 3, i, study.getSurveyType(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.surveyType." + study.getSurveyType().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td26", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td27", null, locale)), regular, null,
@@ -1624,7 +1624,7 @@ public class ODFUtil {
                 index++;
                 createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.constructs.type", null, locale)), regular, null,
                         locale);
-                createCell(table, 3, i, construct.getType(), regular, null, locale); // 25
+                createCell(table, 3, i, messageSource.getMessage("study.constructs.type." + construct.getType().toLowerCase(), null, locale), regular, null, locale); // 25
                 index++;
                 createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.constructs.other", null, locale)), regular, null,
                         locale);
@@ -1718,7 +1718,7 @@ public class ODFUtil {
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td35", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.obsUnit", null, locale)), regular, null, locale);
-            createCell(table, 3, i, study.getObsUnit(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.obsUnit." + study.getObsUnit().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td36", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td37", null, locale)), regular, null,
@@ -1767,7 +1767,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.responsibility", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, study.getResponsibility(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.responsibility." + study.getResponsibility().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td52", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td53", null, locale)), regular, null,
@@ -1792,7 +1792,7 @@ public class ODFUtil {
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td59", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.sampMethod", null, locale)), regular, null, locale);
-            createCell(table, 3, i, study.getSampMethod(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.sampMethod." + study.getSampMethod().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td60", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td61", null, locale)), regular, null,
@@ -1811,7 +1811,7 @@ public class ODFUtil {
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td65", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.sourTrans", null, locale)), regular, null, locale);
-            createCell(table, 3, i, study.getSourTrans(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.sourTrans." + study.getSourTrans().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td66", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.PsychData.td67", null, locale)), regular, null,
@@ -1843,7 +1843,7 @@ public class ODFUtil {
             createCell(table, 3, i, study.isPersDataColl(), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.persDataPres", null, locale)), regular, null,
                     locale);
-            createCell(table, 3, i, study.getPersDataPres(), regular, null, locale);
+            createCell(table, 3, i, messageSource.getMessage("study.persDataPres." + study.getPersDataPres().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 2, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.anonymProc", null, locale)), regular, null, locale);
             createCell(table, 3, i, study.getAnonymProc(), regular, null, locale);
             table.getCellRangeByPosition(0, i - 2, 0, i).merge();
@@ -1949,7 +1949,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, study.getsAbstractTrans(), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.prevWork", null, locale)), regular, null, locale);
-            createCell(table, 2, i, study.getPrevWork(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("study.prevWork." + study.getPrevWork().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.prevWorkStr", null, locale)), regular, null, locale);
             createCell(table, 2, i, study.getPrevWorkStr(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.td2", null, locale)), regular, null,
@@ -1983,7 +1983,7 @@ public class ODFUtil {
                 index++;
                 createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.constructs.type", null, locale)), regular, null,
                         locale);
-                createCell(table, 2, i, construct.getType(), regular, null, locale); // 16
+                createCell(table, 2, i, messageSource.getMessage("study.constructs.type." + construct.getType().toLowerCase(), null, locale), regular, null, locale); // 16
                 index++;
                 createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.constructs.other", null, locale)), regular, null,
                         locale);
@@ -2005,7 +2005,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 2, i, study.getIntSampleSize(), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.obsUnit", null, locale)), regular, null, locale);
-            createCell(table, 2, i, study.getObsUnit(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("study.obsUnit." + study.getObsUnit().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.multilevel", null, locale)), regular, null, locale);
             createCell(table, 2, i, study.getMultilevel(), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.country", null, locale)), regular, null, locale);
@@ -2031,7 +2031,7 @@ public class ODFUtil {
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.repMeasures", null, locale)), regular, null,
                     locale);
-            createCell(table, 2, i, study.getRepMeasures(), regular, null, locale); // 31
+            createCell(table, 2, i, messageSource.getMessage("study.repMeasures." + study.getRepMeasures().toLowerCase(), null, locale), regular, null, locale); // 31
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.timeDim", null, locale)), regular, null, locale);
             createCell(table, 2, i, study.getTimeDim(), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.interTypeExp", null, locale)), regular, null,
@@ -2051,7 +2051,7 @@ public class ODFUtil {
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.measOcc", null, locale)), regular, null, locale);
             createCell(table, 2, i, study.getMeasOcc(), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.surveyType", null, locale)), regular, null, locale);
-            createCell(table, 2, i, study.getSurveyType(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("study.surveyType." + study.getSurveyType().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.instruments", null, locale)), regular, null,
                     locale);
             createCell(table, 2, i, study.getInstruments(), regular, null, locale); // 40
@@ -2111,13 +2111,13 @@ public class ODFUtil {
             createCell(table, 2, i, study.getDescription(), regular, null, locale);
             index++;
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.sampMethod", null, locale)), regular, null, locale);
-            createCell(table, 2, i, study.getSampMethod(), regular, null, locale); // 54
+            createCell(table, 2, i, messageSource.getMessage("study.sampMethod." + study.getSampMethod().toLowerCase(), null, locale), regular, null, locale); // 54
             index++;
             table.getCellRangeByPosition(0, i - index, 0, i).merge();
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("export.odt.Pre.td7", null, locale)), regular, null,
                     locale);
             createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.sourTrans", null, locale)), regular, null, locale);
-            createCell(table, 2, i, study.getSourTrans(), regular, null, locale);
+            createCell(table, 2, i, messageSource.getMessage("study.sourTrans." + study.getSourTrans().toLowerCase(), null, locale), regular, null, locale);
             createCell(table, 1, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("study.transDescr", null, locale)), regular, null, locale);
             createCell(table, 2, i, study.getTransDescr(), regular, null, locale); // 56
             table.getCellRangeByPosition(0, i - 1, 0, i).merge();
