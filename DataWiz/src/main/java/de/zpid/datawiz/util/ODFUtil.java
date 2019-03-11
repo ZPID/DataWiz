@@ -2141,6 +2141,283 @@ public class ODFUtil {
         }
     }
 
+    public byte[] createAllDoc(final ProjectForm pForm, final Locale locale) throws Exception {
+        log.trace("Entering createAllDoc");
+        ProjectDTO project = pForm.getProject();
+        DmpDTO dmp = pForm.getDmp();
+        if (dmp != null && project != null) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            TextDocument doc = TextDocument.newTextDocument();
+            // Erste Seite - blaue Schrift
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_reg);
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(headline);
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_reg);
+            doc.addColumnBreak();
+
+            // Zweite Seite
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_large);
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(regular);
+            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
+
+            Table table = doc.addTable(100, 2);
+
+            table.getColumnByIndex(0).setWidth(50);
+
+            Integer i = 0;
+            createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("Item", null, locale)), regular_bold,
+                    new Color(190, 190, 190), locale);
+            createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("Answer", null, locale)), regular_bold,
+                    new Color(190, 190, 190), locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
+                    locale);
+            createCell(table, 1, i, project.getDescription(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.duration", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getDuration(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.organizations", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getOrganizations(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.leader", null, locale)), regular, null, locale);
+            StringBuilder primName = new StringBuilder();
+            if (pForm.getPrimaryContributor() != null) {
+                if (pForm.getPrimaryContributor().getTitle() != null
+                        && !pForm.getPrimaryContributor().getTitle().isEmpty())
+                    primName.append(pForm.getPrimaryContributor().getTitle()).append(" ");
+                if (pForm.getPrimaryContributor().getFirstName() != null
+                        && !pForm.getPrimaryContributor().getFirstName().isEmpty())
+                    primName.append(pForm.getPrimaryContributor().getFirstName()).append(" ");
+                if (pForm.getPrimaryContributor().getLastName() != null
+                        && !pForm.getPrimaryContributor().getLastName().isEmpty())
+                    primName.append(pForm.getPrimaryContributor().getLastName());
+                if (pForm.getPrimaryContributor().getInstitution() != null
+                        && !pForm.getPrimaryContributor().getInstitution().isEmpty())
+                    primName.append(" (").append(pForm.getPrimaryContributor().getInstitution()).append(")");
+                createCell(table, 1, i, primName.toString(), regular, null, locale);
+            }
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.planAims", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getPlanAims(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.existingData", null, locale)), regular, null, locale);
+            createCell(table, 1, i,
+                    (dmp.getExistingData() != null && !dmp.getExistingData().isEmpty()
+                            ? messageSource.getMessage("dmp.edit.existingData." + dmp.getExistingData(), null, locale)
+                            : ""),
+                    regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.existingDataRelevance", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getExistingDataRelevance(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.existingDataIntegration", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getExistingDataIntegration(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.dataCitation", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getDataCitation(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedDataTypes", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getUsedDataTypes(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.otherDataTypes", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getOtherDataTypes(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.dataReproducibility", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getDataReproducibility(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedCollectionModes", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.usedCollectionModes." + dmp.getUsedCollectionModes(), null, locale), regular, null, locale); // ?
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.otherCMIP", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getOtherCMIP(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.otherCMINP", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getOtherCMINP(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.measOccasions", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.measOccasions." + dmp.getMeasOccasions(), null, locale), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.qualityAssurance", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.reliabilityTraining", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getReliabilityTraining(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.multipleMeasurements", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getMultipleMeasurements(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.qualitityOther", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getQualitityOther(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.fileFormat", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getFileFormat(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storage.headline", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.workingCopy", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, dmp.isWorkingCopy(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.goodScientific", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, dmp.isGoodScientific(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.subsequentUse", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, dmp.isSubsequentUse(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.requirements", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, dmp.isRequirements(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.documentation", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, dmp.isDocumentation(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.dataSelection", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isDataSelection(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.selectionTime", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSelectionTime(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.selectionResp", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSelectionResp(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.selectionSoftware", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.selectionCriteria", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageDuration", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageDuration(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.deleteProcedure", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getDeleteProcedure(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.selectedMetaPurposes", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSelectedMetaPurposes(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.metaDescription", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getMetaDescription(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.metaFramework", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getMetaFramework(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.metaGeneration", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getMetaGeneration(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.metaMonitor", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getMetaMonitor(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.metaFormat", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getMetaFormat(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.releaseObligation", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isReleaseObligation(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.expectedGroups", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.expectedUsage", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getExpectedUsage(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.publStrategy", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.publStrategy." + dmp.getPublStrategy(), null, locale), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.searchableData", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSearchableData(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.accessReasonAuthor", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getAccessReasonAuthor(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.noAccessReason", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.noAccessReason." + dmp.getNoAccessReason(), null, locale), regular, null, locale); // Fehler
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.noAccessReasonOther", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getNoAccessReasonOther(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.depositName", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getDepositName(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.transferTime", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getTransferTime(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.sensitiveData", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSensitiveData(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.initialUsage", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getInitialUsage(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usageRestriction", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getUsageRestriction(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.accessCosts", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isAccessCosts(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.accessCostsTxt", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.accessTermsImplementation", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.clarifiedRights", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isClarifiedRights(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.clarifiedRightsTxt", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.acquisitionAgreement", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isAcquisitionAgreement(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedPID", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.usedPID." + dmp.getUsedPID(), null, locale), regular, null, locale); // Fehler
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedPIDTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getUsedPIDTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageResponsible", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageResponsible(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.namingCon=", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getNamingCon(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storagePlaces", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStoragePlaces(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageBackups", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageBackups(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageTransfer", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageTransfer(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageExpectedSize", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageExpectedSize(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageRequirements", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isStorageRequirements(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageRequirementsTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageRequirementsTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageSuccession", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isStorageSuccession(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageSuccessionTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStorageSuccessionTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.frameworkNationality", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.frameworkNationality." + dmp.getFrameworkNationality(), null, locale), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.frameworkNationalityTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getFrameworkNationalityTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.responsibleUnit", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getResponsibleUnit(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.involvedInstitutions", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getInvolvedInstitutions(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.involvedInformed", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isInvolvedInformed(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.contributionsDefined", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isContributionsDefined(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.contributionsDefinedTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getContributionsDefinedTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.givenConsent", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isGivenConsent(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.managementWorkflow", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isManagementWorkflow(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.managementWorkflowTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getManagementWorkflowTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.staffDescription", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isStaffDescription(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.staffDescriptionTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getStaffDescriptionTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.funderRequirements", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getFunderRequirements(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.providerRequirements", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.repoPolicies", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.repoPoliciesResponsible", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.planningAdherence", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getPlanningAdherence(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.dataProtection", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isDataProtection(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.protectionRequirements", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getProtectionRequirements(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.consentObtained", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isConsentObtained(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.consentObtainedTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getConsentObtainedTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.sharingConsidered", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isSharingConsidered(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.irbApproval", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isIrbApproval(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.irbApprovalTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getIrbApprovalTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.sensitiveDataIncluded", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isSensitiveDataIncluded(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.sensitiveDataIncludedTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSensitiveDataIncludedTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.externalCopyright", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isExternalCopyright(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.externalCopyrightTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getExternalCopyrightTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.internalCopyright", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.isInternalCopyright(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.internalCopyrightTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getInternalCopyrightTxt(), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.specificCosts", null, locale)), regular, null, locale);
+            createCell(table, 1, i, messageSource.getMessage("dmp.edit.specificCosts." + dmp.getSpecificCosts(), null, locale), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.specificCostsTxt", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getSpecificCostsTxt(), regular, null, locale);
+            // createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.ariseCosts", null, locale)), regular, null, locale);
+            // createCell(table, 1, i, , regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.bearCost", null, locale)), regular, null, locale);
+            createCell(table, 1, i, dmp.getBearCost(), regular, null, locale);
+
+
+            doc.save(baos);
+            doc.close();
+            log.trace("Leaving createAllDoc");
+            return baos.toByteArray();
+        } else {
+            if (dmp == null) {
+                log.warn("Error during createAllDoc - DMP is null");
+                throw new DataWizSystemException(messageSource.getMessage("export.odt.error.dmp", null, locale),
+                        DataWizErrorCodes.NO_DATA_ERROR);
+            } else {
+                log.warn("Error during createAllDoc - Project is null");
+                throw new DataWizSystemException(messageSource.getMessage("export.odt.error.project", null, locale),
+                        DataWizErrorCodes.PROJECT_NOT_AVAILABLE);
+            }
+        }
+    }
+
     /**
      * This function writes content into a Cell. There it needs the current table
      * and position (colnum, rownum). As content, the function expects an object of
