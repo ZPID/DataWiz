@@ -213,6 +213,7 @@ public class DMPService {
                 content = odfUtil.createH2020Doc(pForm, locale);
                 break;
             default:
+                content = odfUtil.createAllDoc(pForm, locale);
                 break;
         }
         return content;
