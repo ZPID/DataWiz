@@ -2149,25 +2149,25 @@ public class ODFUtil {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             TextDocument doc = TextDocument.newTextDocument();
             // Erste Seite - blaue Schrift
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_reg);
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(headline);
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_reg);
-            doc.addColumnBreak();
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_reg);
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(headline);
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_reg);
+            // doc.addColumnBreak();
 
             // Zweite Seite
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_large);
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(regular);
-            doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(blue_large);
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("test", null, locale))).setFont(regular);
+            // doc.addParagraph(StringEscapeUtils.UNESCAPE_HTML4.translate("")).setFont(regular);
 
             Table table = doc.addTable(100, 2);
 
             table.getColumnByIndex(0).setWidth(50);
 
             Integer i = 0;
-            createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("Item", null, locale)), regular_bold,
+            createCell(table, 0, i, StringEscapeUtils.UNESCAPE_HTML4.translate("Item"), regular_bold,
                     new Color(190, 190, 190), locale);
-            createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("Answer", null, locale)), regular_bold,
+            createCell(table, 1, i, StringEscapeUtils.UNESCAPE_HTML4.translate("Answer"), regular_bold,
                     new Color(190, 190, 190), locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage("dmp.edit.projectAims", null, locale)), regular, null,
                     locale);
@@ -2214,7 +2214,7 @@ public class ODFUtil {
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.dataReproducibility", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getDataReproducibility(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedCollectionModes", null, locale)), regular, null, locale);
-            createCell(table, 1, i, messageSource.getMessage("dmp.edit.usedCollectionModes." + dmp.getUsedCollectionModes(), null, locale), regular, null, locale); // ?
+            createCell(table, 1, i, dmp.getUsedCollectionModes(), regular, null, locale); // Fehler
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.otherCMIP", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getOtherCMIP(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.otherCMINP", null, locale)), regular, null, locale);
@@ -2282,7 +2282,7 @@ public class ODFUtil {
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.accessReasonAuthor", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getAccessReasonAuthor(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.noAccessReason", null, locale)), regular, null, locale);
-            createCell(table, 1, i, messageSource.getMessage("dmp.edit.noAccessReason." + dmp.getNoAccessReason(), null, locale), regular, null, locale); // Fehler
+            createCell(table, 1, i, dmp.getNoAccessReason(), regular, null, locale); // Fehler
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.noAccessReasonOther", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getNoAccessReasonOther(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.depositName", null, locale)), regular, null, locale);
@@ -2308,12 +2308,12 @@ public class ODFUtil {
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.acquisitionAgreement", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.isAcquisitionAgreement(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedPID", null, locale)), regular, null, locale);
-            createCell(table, 1, i, messageSource.getMessage("dmp.edit.usedPID." + dmp.getUsedPID(), null, locale), regular, null, locale); // Fehler
+            createCell(table, 1, i, dmp.getUsedPID(), regular, null, locale); // Fehler
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.usedPIDTxt", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getUsedPIDTxt(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storageResponsible", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getStorageResponsible(), regular, null, locale);
-            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.namingCon=", null, locale)), regular, null, locale);
+            createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.namingCon", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getNamingCon(), regular, null, locale);
             createCell(table, 0, ++i, StringEscapeUtils.UNESCAPE_HTML4.translate(messageSource.getMessage( "dmp.edit.storagePlaces", null, locale)), regular, null, locale);
             createCell(table, 1, i, dmp.getStoragePlaces(), regular, null, locale);
