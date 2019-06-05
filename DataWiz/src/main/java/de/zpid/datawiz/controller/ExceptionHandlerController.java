@@ -12,12 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -98,8 +96,12 @@ public class ExceptionHandlerController {
         ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
         mav.addObject("closePageBTN", true);
         mav.addObject("exceptionTitle", messageSource.getMessage("error.download.title", null, LocaleContextHolder.getLocale()));
-        mav.addObject("errormsg", messageSource.getMessage(e.getMessage(), new Object[]{env.getRequiredProperty("organisation.admin.email")},
-                LocaleContextHolder.getLocale()));
+        try {
+            mav.addObject("errormsg", messageSource.getMessage(e.getMessage(), new Object[]{env.getRequiredProperty("organisation.admin.email")},
+                    LocaleContextHolder.getLocale()));
+        } catch (Exception ex) {
+            mav.addObject("errormsg", e.getMessage());
+        }
         mav.addObject("exception", printExceptionMsg(e));
         return mav;
     }
