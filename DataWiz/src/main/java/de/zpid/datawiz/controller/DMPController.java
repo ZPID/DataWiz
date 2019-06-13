@@ -238,7 +238,7 @@ public class DMPController {
             response.flushBuffer();
             log.trace("Leaving exportDMPODF for DMP [pid: {}] and exportType [{}]", () -> pid, () -> type);
         } catch (Exception e) {
-            log.warn("Exception during creating response ", () -> e);
+            log.warn("Exception during creating response {}", () -> e);
             throw new DWDownloadException("export.error.response");
         }
     }

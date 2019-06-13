@@ -254,7 +254,7 @@ public class RecordService {
                                        boolean missing) {
         String viewDate = null;
         SPSSVarTypes varType = var.getType();
-        if (valueString != null && !valueString.isEmpty()) {
+        if (valueString != null && !valueString.isEmpty() && valueString.length()>4) {
             try {
                 LocalDate date;
                 if (varType.equals(SPSSVarTypes.SPSS_FMT_DATE_TIME)) {

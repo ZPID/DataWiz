@@ -14,7 +14,9 @@
                         <span itemprop="headline">DataWiz is a free data management system that helps prepare research data.</span>
                     </span>
                     <script>
-                        getWelcomePage('${localeCode}');
+                        $( document ).ready(function() {
+                            getWelcomePage('${localeCode}');
+                        });
                     </script>
                     <br/>
                     <sec:authorize access="isAuthenticated()">
@@ -147,7 +149,9 @@
 <sec:authorize access="isAuthenticated()">
     <c:if test="${principal.user.hasRole('ADMIN')}">
         <script>
-            BalloonEditor.create(document.querySelector('#ckedit'));
+            $(document).ready(function () {
+                BalloonEditor.create(document.querySelector('#ckedit'));
+            });
         </script>
     </c:if>
 </sec:authorize>
