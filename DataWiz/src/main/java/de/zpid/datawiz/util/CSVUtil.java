@@ -95,7 +95,7 @@ public class CSVUtil {
                 } else if (obj instanceof Number)
                     csv.append(obj);
                 else
-                    csv.append("\"").append(((String) obj).replaceAll("\"", "\'")).append("\"");
+                    csv.append("\"").append(((String) obj).replaceAll("\\r\\n|\\r|\\n", " ").replaceAll("\"", "\'")).append("\"");
                 if (vars > varcount++)
                     csv.append(",");
             }

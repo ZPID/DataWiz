@@ -4,7 +4,9 @@ package de.zpid.datawiz.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import de.zpid.datawiz.dto.FileDTO;
 import de.zpid.datawiz.dto.RecordDTO;
+import de.zpid.datawiz.util.FileUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.file.Path;
 import java.util.AbstractMap.SimpleEntry;
 
 /**
@@ -44,10 +47,13 @@ public class SpssIoService {
 
     private static Logger log = LogManager.getLogger(SpssIoService.class);
     private final Environment env;
+    private final FileUtil fileUtil;
 
     @Autowired
-    public SpssIoService(Environment env) {
+    public SpssIoService(Environment env, FileUtil fileUtil) {
+
         this.env = env;
+        this.fileUtil = fileUtil;
     }
 
 
@@ -57,7 +63,7 @@ public class SpssIoService {
      * @param record {@link RecordDTO} Contains all Record Data
      * @return {@link SimpleEntry} With the {@link HttpStatus} and the .sav file as byte[] on success.
      */
-    SimpleEntry<HttpStatus, byte[]> fromJson(final RecordDTO record) {
+    /*SimpleEntry<HttpStatus, byte[]> fromJson(final RecordDTO record) {
         log.trace("Entering fromJson for record [id: {}; title: {}]", record::getId, record::getRecordName);
         HttpHeaders header = new HttpHeaders();
         header.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -67,6 +73,23 @@ public class SpssIoService {
         ResponseEntity<byte[]> response = new RestTemplate().exchange(env.getRequiredProperty("spss.api.url") + "fromjson", HttpMethod.POST, request, byte[].class);
         log.trace("Leaving fromJson for record [id: {}; title: {}] with HttpStatus [{}]", record::getId, record::getRecordName, response::getStatusCode);
         return new SimpleEntry<>(response.getStatusCode(), response.getBody());
+    }*/
+    SimpleEntry<HttpStatus, byte[]> fromJson(final RecordDTO record) {
+        log.trace("Entering fromJson for record [id: {}; title: {}]", record::getId, record::getRecordName);
+        HttpHeaders header = new HttpHeaders();
+        header.setContentType(MediaType.MULTIPART_FORM_DATA);
+        MultiValueMap<String, Object> multipartRequest = new LinkedMultiValueMap<>();
+        FileDTO file = fileUtil.buildFileDTO(new GsonBuilder().setPrettyPrinting().create().toJson(record));
+        String path;
+        if ((path = fileUtil.saveFile(file, true)) != null) {
+            multipartRequest.add("file", new FileSystemResource(path));
+            HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(multipartRequest, header);
+            ResponseEntity<byte[]> response = new RestTemplate().exchange(env.getRequiredProperty("spss.api.url") + "fromjsonfile", HttpMethod.POST, request, byte[].class);
+            log.trace("Leaving fromJson for record [id: {}; title: {}] with HttpStatus [{}]", record::getId, record::getRecordName, response::getStatusCode);
+            fileUtil.deleteFile(Path.of(path));
+            return new SimpleEntry<>(response.getStatusCode(), response.getBody());
+        }
+        return new SimpleEntry<>(HttpStatus.CONFLICT, null);
     }
 
     /**

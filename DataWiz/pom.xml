@@ -60,6 +60,12 @@
         <com.google.guava.version>27.1-jre</com.google.guava.version>
     </properties>
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/biz.paluch.logging/logstash-gelf -->
+        <dependency>
+            <groupId>biz.paluch.logging</groupId>
+            <artifactId>logstash-gelf</artifactId>
+            <version>1.13.0</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.pdfbox/pdfbox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
