@@ -19,7 +19,7 @@
         <!-- http://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
         <javax.servlet.jsp.version>2.3.3</javax.servlet.jsp.version>
         <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-        <hibernate.validator.version>6.0.15.Final</hibernate.validator.version>
+        <hibernate.validator.version>6.0.20.Final</hibernate.validator.version>
         <!-- http://mvnrepository.com/artifact/javax.validation/validation-api -->
         <javax.validation.version>2.0.1.Final</javax.validation.version>
         <!-- http://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
