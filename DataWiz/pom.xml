@@ -29,7 +29,7 @@
         <!-- http://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
         <commons-fileupload.version>1.4</commons-fileupload.version>
         <!-- http://mvnrepository.com/search?q=org.apache.logging.log4j -->
-        <log4j2.version>2.11.2</log4j2.version>
+        <log4j2.version>2.16.0</log4j2.version>
         <!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
         <javax.mail.version>1.6.2</javax.mail.version>
         <!-- http://mvnrepository.com/artifact/com.google.code.gson/gson -->
