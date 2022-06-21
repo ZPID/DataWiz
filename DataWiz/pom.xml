@@ -13,7 +13,7 @@
         <!-- http://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
         <springsecurity.version>5.1.4.RELEASE</springsecurity.version>
         <!-- http://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <mysql.connector.version>8.0.15</mysql.connector.version>
+        <mysql.connector.version>8.0.28</mysql.connector.version>
         <!-- http://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <!-- http://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
